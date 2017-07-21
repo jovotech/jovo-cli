@@ -5,20 +5,17 @@ Command Line Interface for the [Jovo Framework](https://github.com/jovotech/jovo
 
 * [Getting Started](#getting-started)
 * [Commands](#commands)
-	* [Templates](#templates)
-* [Run local development server](#run-local-development-server)
-
 
 
 ## Getting Started
 
 ```
-$ npm install -g jovo
+$ npm install -g jovo-cli
 ```
 
 Verify by looking up the version:
 ```
-$ jovo -v
+$ jovo -V
 ```
 
 
@@ -28,19 +25,5 @@ $ jovo -v
 ### Create a new project
 
 ```
-$ jovo new [projectName]
+$ jovo new <directory>
 ```
-
-#### Templates
-
-```
-$ jovo new [projectName] template:audioplayer
-```
-
-### Run local development server
-
-
-```
-$ jovo run
-```
-Alternatively, you can use ``node index.js``.
