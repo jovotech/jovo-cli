@@ -1,6 +1,6 @@
 # Jovo CLI
 
-Command Line Interface for the [Jovo Framework](https://github.com/jovotech/jovo-framework-nodejs)
+Command Line Interface for the [Jovo Framework](https://github.com/jovotech/jovo-framework-nodejs) ⭐️
 
 
 * [Getting Started](#getting-started)
@@ -24,6 +24,10 @@ $ jovo -V
 
 ### Create a new project
 
+You can create a Jovo project into a new directory with the following command:
+
 ```
 $ jovo new <directory>
 ```
+
+This will clone the [Jovo Sample App](https://github.com/jovotech/jovo-sample-voice-app-nodejs) and install all the necessary dependencies so you can get started right away.
