@@ -1,24 +1,21 @@
 # Jovo CLI
 
-Command Line Interface for the [Jovo Framework](https://github.com/jovotech/jovo-framework-nodejs)
+Command Line Interface for the [Jovo Framework](https://github.com/jovotech/jovo-framework-nodejs) ⭐️
 
 
 * [Getting Started](#getting-started)
 * [Commands](#commands)
-	* [Templates](#templates)
-* [Run local development server](#run-local-development-server)
-
 
 
 ## Getting Started
 
 ```
-$ npm install -g jovo
+$ npm install -g jovo-cli
 ```
 
 Verify by looking up the version:
 ```
-$ jovo -v
+$ jovo -V
 ```
 
 
@@ -27,20 +24,10 @@ $ jovo -v
 
 ### Create a new project
 
-```
-$ jovo new [projectName]
-```
-
-#### Templates
+You can create a Jovo project into a new directory with the following command:
 
 ```
-$ jovo new [projectName] template:audioplayer
+$ jovo new <directory>
 ```
 
-### Run local development server
-
-
-```
-$ jovo run
-```
-Alternatively, you can use ``node index.js``.
+This will clone the [Jovo Sample App](https://github.com/jovotech/jovo-sample-voice-app-nodejs) and install all the necessary dependencies so you can get started right away.
