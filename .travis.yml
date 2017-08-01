@@ -3,6 +3,7 @@ install:
   - "npm install mocha -g"
   - "npm install chai -g"
   - "npm install jovo-cli -g"
+  - "npm install"
 
 node_js:
   - "7"
