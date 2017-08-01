@@ -38,7 +38,7 @@ describe('new <project>', function() {
                     console.log(error);
                     return;
                 }
-                assert.ok(stdout.includes('You\'re all set.'));
+                assert.ok(stdout.indexOf('You\'re all set.') > -1);
                 done();
             });
     });
@@ -50,8 +50,8 @@ describe('new <project>', function() {
             detached: true,
         });
         child.stdout.on('data', (data) => {
-            assert.ok(data.includes('Local development server listening on port 3000.'));
-            assert.ok(!data.includes('error'));
+            assert.ok(data.indexOf('Local development server listening on port 3000.') > -1);
+            assert.ok(data.indexOf('error') === -1);
             child.kill();
             done();
         });
