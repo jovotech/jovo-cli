@@ -1,7 +1,6 @@
 language: node_js
 install:
   - "npm install mocha -g"
-  - "npm install chai -g"
   - "npm install jovo-cli -g"
   - "npm install"
 
@@ -10,3 +9,10 @@ node_js:
   - "6"
   - "5"
   - "4"
+
+notifications:
+  email:
+    recipients:
+      - team@jovo.tech
+    on_success: never
+    on_failure: always
