@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 const download = require('download-github-repo');
 const ora = require('ora');
 const program = require('commander');
@@ -9,7 +10,7 @@ const installSpinner = ora('Installing dependencies');
 
 
 program
-    .version('0.4.6')
+    .version('0.4.8')
     .usage('[command] [options]');
 
 program
@@ -58,7 +59,7 @@ program
             downloadSpinner.succeed('Download successful');
 
             installSpinner.start();
-            child = exec('npm install', {
+            let child = exec('npm install', {
                     cwd: folder }
                 ,
                 function(error, stdout, stderr) {

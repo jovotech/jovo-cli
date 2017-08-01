@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli",
-  "version": "0.4.6",
+  "version": "0.4.9",
   "description": "jovo command line tool (alpha)",
   "main": "index.js",
   "scripts": {
@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/jovotech/jovo-cli/issues"
   },
-  "homepage": "https://github.com/jovotech/jovo-cli#readme"
+  "homepage": "https://github.com/jovotech/jovo-cli#readme",
+  "devDependencies": {
+    "chai": "^4.1.0"
+  }
 }
