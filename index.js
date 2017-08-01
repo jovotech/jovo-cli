@@ -10,7 +10,7 @@ const installSpinner = ora('Installing dependencies');
 
 
 program
-    .version('0.4.8')
+    .version('0.4.9')
     .usage('[command] [options]');
 
 program
