@@ -7,14 +7,8 @@ const exec = require('child_process').exec;
 const downloadSpinner = ora('Downloading project files');
 const installSpinner = ora('Installing dependencies');
 
-
-
 program
-    .version('0.4.11')
-    .usage('[command] [options]');
-
-program
-    .command('new <directory>')
+    .usage("<directory>")
     .description('create new project into given directory')
     .option('-t, --template [templateName]', 'Create new project based on specific template. (helloworld)',/^(helloworld|audioPlayer)$/i, 'helloworld')
     .action(function(folder, options){
@@ -83,18 +77,4 @@ program
     console.log();
 });
 
-
-program.on('--help', function(){
-    console.log();
-    console.log('  Examples:');
-    console.log('');
-    console.log('     jovo new HelloWorld');
-    console.log('     jovo new HelloWorld --template helloworld');
-    console.log('');
-});
-
 program.parse(process.argv);
-
-if (!program.args.length) program.help();
-
-

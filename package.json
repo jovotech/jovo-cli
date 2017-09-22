@@ -7,7 +7,7 @@
     "test": "mocha test --recursive"
   },
   "bin": {
-    "jovo": "./index.js"
+    "jovo": "./jovo.js"
   },
   "author": "jovotech",
   "license": "Apache-2.0",
