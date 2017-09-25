@@ -59,6 +59,25 @@ describe('new <project>', function() {
     });
 
 });
+
+describe('proxy', function() {
+    it('should start the webhook without errors', function(done) {
+        this.timeout(5000);
+        let child = spawn('node', ['../jovo.js', 'proxy'], {
+            cwd: folder,
+            detached: true,
+        });
+        child.stdout.on('data', (data) => {
+            assert.ok(data.indexOf('Your public URL for accessing your local service') > -1);
+            assert.ok(data.indexOf('error') === -1);
+            child.kill();
+            done();
+        });
+
+    });
+
+});
+
 after(function() {
     deleteFolderRecursive(folder);
 });
