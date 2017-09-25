@@ -8,7 +8,7 @@ program
 
 program
     .command('new <directory>', 'new thing')
-    .command('proxy [webhookFile]', "Creates a proxy according to your needs to finish your setup.");
+    .command('proxy [webhookFile]', "Creates a public proxy to your local development.");
 
 program.on('--help', function(){
     console.log();
@@ -16,6 +16,8 @@ program.on('--help', function(){
     console.log('');
     console.log('     jovo new HelloWorld');
     console.log('     jovo new HelloWorld --template helloworld');
+    console.log('     jovo proxy');
+    console.log('     jovo proxy index.js');
     console.log('');
 });
 
