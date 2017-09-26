@@ -68,7 +68,7 @@ describe('proxy', function() {
             detached: true,
         });
         child.stdout.on('data', (data) => {
-            assert.ok(data.indexOf('Your public URL for accessing your local service') > -1);
+            assert.ok(data.indexOf('Local development server listening on port 3000.') > -1);
             assert.ok(data.indexOf('error') === -1);
             child.kill();
             done();
