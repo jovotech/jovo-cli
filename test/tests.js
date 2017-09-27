@@ -67,8 +67,15 @@ describe('proxy', function() {
             cwd: folder,
             detached: true,
         });
+
         child.stdout.on('data', (data) => {
-            assert.ok(data.indexOf('Local development server listening on port 3000.') > -1);
+            console.log(data.toString());
+            const validation =
+                // If proxy has already being run a configuration exists
+                data.indexOf('Local development server listening on port 3000.') > -1 ||
+                // If proxy haven't run, one is created
+                data.indexOf('info: CONFIG      No configuration. Creating one') > -1;
+            assert.ok(validation);
             assert.ok(data.indexOf('error') === -1);
             child.kill();
             done();
