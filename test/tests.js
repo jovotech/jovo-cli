@@ -32,7 +32,7 @@ describe('new <project>', function() {
 
         this.timeout(30000);
 
-        exec('jovo new '+folder,
+        exec('node jovo.js new '+folder,
             (error, stdout, stderr) => {
                 if(error) {
                     console.log(error);
