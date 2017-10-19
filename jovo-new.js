@@ -22,7 +22,8 @@ program
         let template = 'helloworld';
 
         if(options.template) {
-            template = options.template;
+            template = options.template.toLowerCase();
+
 
             if(!templates[template]) {
                 console.log('Template "'+template+'" can\'t be found.');

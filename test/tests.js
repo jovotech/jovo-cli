@@ -30,7 +30,7 @@ describe('new <project>', function() {
 
     it('should create a project', function(done) {
 
-        this.timeout(25000);
+        this.timeout(30000);
 
         exec('jovo new '+folder,
             (error, stdout, stderr) => {
@@ -44,7 +44,7 @@ describe('new <project>', function() {
     });
 
     it('should start the webhook without errors', function(done) {
-        this.timeout(5000);
+        this.timeout(8000);
         let child = spawn('node', ['index.js'], {
             cwd: folder,
             detached: true,
@@ -60,31 +60,35 @@ describe('new <project>', function() {
 
 });
 
-describe('proxy', function() {
+//TODO: more tests required
+describe('bst-proxy', function() {
     it('should start the webhook without errors', function(done) {
-        this.timeout(5000);
-        let child = spawn('node', ['../jovo.js', 'proxy'], {
+        this.timeout(15000);
+        let child = spawn('node', ['../jovo.js', 'run', 'index.js', '--bst-proxy'], {
             cwd: folder,
             detached: true,
         });
-
+        let fullData = '';
         child.stdout.on('data', (data) => {
-            console.log(data.toString());
+            fullData += data.toString();
+        });
+        setTimeout(() => {
             const validation =
                 // If proxy has already being run a configuration exists
-                data.indexOf('Local development server listening on port 3000.') > -1 ||
+                fullData.indexOf('Local development server listening on port 3000.') > -1 ||
                 // If proxy haven't run, one is created
-                data.indexOf('info: CONFIG      No configuration. Creating one') > -1;
+                fullData.indexOf('info: CONFIG      No configuration. Creating one') > -1;
             assert.ok(validation);
-            assert.ok(data.indexOf('error') === -1);
             child.kill();
             done();
-        });
+        }, 3000)
 
     });
 
 });
 
-after(function() {
+after(function(done) {
+    this.timeout(5000);
     deleteFolderRecursive(folder);
+    done();
 });

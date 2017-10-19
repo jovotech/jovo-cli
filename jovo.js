@@ -3,12 +3,12 @@
 const program = require('commander');
 
 program
-    .version('0.4.11')
+    .version('0.5.0')
     .usage('[command] [options]');
 
 program
-    .command('new <directory>', 'new thing')
-    .command('proxy [webhookFile]', "Creates a public proxy to your local development.");
+    .command('new <directory>', 'Creates new project in directory')
+    .command('run [webhookFile]', "Creates a public proxy to your local development.")
 
 program.on('--help', function(){
     console.log();
@@ -16,8 +16,11 @@ program.on('--help', function(){
     console.log('');
     console.log('     jovo new HelloWorld');
     console.log('     jovo new HelloWorld --template helloworld');
-    console.log('     jovo proxy');
-    console.log('     jovo proxy index.js');
+    console.log('     jovo run');
+    console.log('     jovo run index.js');
+    console.log('     jovo run --bst-proxy');
+
+
     console.log('');
 });
 
