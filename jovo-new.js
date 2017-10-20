@@ -67,7 +67,7 @@ program
                     installSpinner.succeed('Installation successful');
                     console.log();
                     console.log('You\'re all set.');
-                    console.log('Go into the folder and type "node index.js" to start the server');
+                    console.log('Go into the folder and type "jovo run" to start the server');
                 });
         });
     }).on('--help', function() {
