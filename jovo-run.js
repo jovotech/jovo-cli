@@ -32,7 +32,7 @@ program
         }
 
         const localServerFile = webhookFile ? webhookFile : "index.js";
-        require(process.cwd() + '\\' + localServerFile);
+        require(process.cwd() + path.sep + localServerFile);
     });
 
 // calling the command without parameters doesn't route to this file correctly. Adding default parameter manually

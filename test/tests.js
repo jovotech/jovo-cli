@@ -4,6 +4,10 @@ const exec = require('child_process').exec;
 const execSync = require('child_process').execSync;
 const spawn = require('child_process').spawn;
 const fs = require('fs');
+const path = require("path");
+
+const pathSep = path.sep;
+
 let folder = 'testproject3';
 
 /**
@@ -14,7 +18,7 @@ let folder = 'testproject3';
 let deleteFolderRecursive = function(path) {
     if( fs.existsSync(path) ) {
         fs.readdirSync(path).forEach(function(file,index){
-            let curPath = path + "/" + file;
+            let curPath = path + pathSep + file;
             if(fs.lstatSync(curPath).isDirectory()) { // recurse
                 deleteFolderRecursive(curPath);
             } else { // delete file
@@ -64,7 +68,7 @@ describe('new <project>', function() {
 describe('bst-proxy', function() {
     it('should start the webhook without errors', function(done) {
         this.timeout(15000);
-        let child = spawn('node', ['../jovo.js', 'run', 'index.js', '--bst-proxy'], {
+        let child = spawn('node', ['..'+path.sep+'jovo.js', 'run', 'index.js', '--bst-proxy'], {
             cwd: folder,
             detached: true,
         });
