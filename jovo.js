@@ -3,7 +3,7 @@
 const program = require('commander');
 
 program
-    .version('0.5.6')
+    .version('0.6.0')
     .usage('[command] [options]');
 
 program
@@ -17,6 +17,7 @@ program.on('--help', function(){
     console.log('     jovo new HelloWorld');
     console.log('     jovo new HelloWorld --template helloworld');
     console.log('     jovo run');
+    console.log('     jovo run --watch');
     console.log('     jovo run index.js');
     console.log('     jovo run --bst-proxy');
 

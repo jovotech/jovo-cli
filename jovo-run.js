@@ -5,7 +5,7 @@ const childProcess = require('child_process');
 const BSTProxy = require('bespoken-tools').BSTProxy;
 const fs = require("fs");
 const path = require("path");
-
+const spawn = require('cross-spawn');
 function getUserHome() {
     return process.env[(process.platform === "win32") ? "USERPROFILE" : "HOME"];
 }
@@ -13,6 +13,7 @@ program
     .description("Runs the jovo app.")
     .option('-h, --http', 'Creates http webhook endpoint (default)')
     .option('-b, --bst-proxy', 'Proxies the HTTP service running at the specified port via bst')
+    .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
     .action( function (webhookFile, options) {
         if(options.bstProxy) {
             const proxy = BSTProxy.http(3000);
@@ -32,7 +33,23 @@ program
         }
 
         const localServerFile = webhookFile ? webhookFile : "index.js";
-        require(process.cwd() + path.sep + localServerFile);
+
+        let command = 'node';
+        if(options.watch) {
+            command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
+        }
+        const ls = spawn(command, ['./'+localServerFile, '--ignore \'./db\''], { stdio: 'inherit', cwd: process.cwd() });
+        ls.on('data', (data) => {
+           console.log(`stdout: ${data}`);
+        });
+
+        ls.on('data', (data) => {
+           console.log(`stderr: ${data}`);
+        });
+
+        ls.on('close', (code) => {
+           console.log(`${code}`);
+        });
     });
 
 // calling the command without parameters doesn't route to this file correctly. Adding default parameter manually

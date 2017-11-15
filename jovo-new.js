@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 'use strict';
-const download = require('download-github-repo');
 const ora = require('ora');
 const program = require('commander');
 const exec = require('child_process').exec;
 const downloadSpinner = ora('Downloading project files');
 const installSpinner = ora('Installing dependencies');
+const fs = require('fs');
+const path = require('path');
+const request = require('request');
+const AdmZip = require('adm-zip');
+
 
 program
     .usage("<directory>")
@@ -15,8 +19,8 @@ program
         console.log('I\'m setting everything up');
 
         let templates = {
-            'helloworld' : 'jovotech/jovo-sample-voice-app-nodejs',
-            // 'audioplayer': 'jovotech/jovo-sample-voice-app-nodejs',
+            'helloworld' : 'jovo-sample-voice-app-nodejs',
+            // 'audioplayer': 'jovo-sample-voice-app-nodejs',
         };
 
         let template = 'helloworld';
@@ -60,7 +64,7 @@ program
                 function(error, stdout, stderr) {
                     if(error) {
                         installSpinner.fail('Something went wrong while installing')
-                        console.log(err);
+                        console.log(error);
                         return;
                     }
 
@@ -79,3 +83,28 @@ program
 });
 
 program.parse(process.argv);
+
+/**
+ * Downloads and extracts sample project
+ * @param {string} template
+ * @param {string} folder
+ * @param callback
+ */
+function download(template, folder, callback) {
+    let newPath = process.cwd() + path.sep + folder;
+    if (!fs.existsSync(newPath)) {
+        fs.mkdirSync(newPath);
+    }
+
+    const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/'+template+'.zip';
+    request(REPO_URL)
+        .pipe(fs.createWriteStream(newPath + path.sep + template+'.zip')).on('close', function () {
+            let zip = new AdmZip(newPath + path.sep + template+'.zip');
+
+        zip.extractAllTo(newPath, true);
+        fs.unlinkSync(newPath + path.sep + template+'.zip');
+        callback()
+    }).on('error', function(err) {
+        callback(err);
+    });
+}
