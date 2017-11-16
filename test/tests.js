@@ -93,6 +93,6 @@ describe('bst-proxy', function() {
 
 after(function(done) {
     this.timeout(5000);
-    // deleteFolderRecursive(folder);
+    deleteFolderRecursive(folder);
     done();
 });
