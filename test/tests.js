@@ -34,7 +34,7 @@ describe('new <project>', function() {
 
     it('should create a project', function(done) {
 
-        this.timeout(30000);
+        this.timeout(40000);
 
         exec('node jovo.js new '+folder,
             (error, stdout, stderr) => {
@@ -48,7 +48,7 @@ describe('new <project>', function() {
     });
 
     it('should start the webhook without errors', function(done) {
-        this.timeout(8000);
+        this.timeout(10000);
         let child = spawn('node', ['index.js'], {
             cwd: folder,
             // detached: true,
