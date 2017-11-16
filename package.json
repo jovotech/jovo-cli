@@ -4,7 +4,7 @@
   "description": "jovo command line tool (alpha)",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test --recursive",
+    "test": "mocha test --recursive --exit",
     "nodemon": "nodemon"
   },
   "bin": {
