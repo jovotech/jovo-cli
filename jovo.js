@@ -3,7 +3,7 @@
 const program = require('commander');
 
 program
-    .version('0.6.0')
+    .version('0.6.3')
     .usage('[command] [options]');
 
 program

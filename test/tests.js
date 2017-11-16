@@ -51,7 +51,7 @@ describe('new <project>', function() {
         this.timeout(8000);
         let child = spawn('node', ['index.js'], {
             cwd: folder,
-            detached: true,
+            // detached: true,
         });
         child.stdout.on('data', (data) => {
             assert.ok(data.indexOf('Local development server listening on port 3000.') > -1);
@@ -70,7 +70,7 @@ describe('bst-proxy', function() {
         this.timeout(15000);
         let child = spawn('node', ['..'+path.sep+'jovo.js', 'run', 'index.js', '--bst-proxy'], {
             cwd: folder,
-            detached: true,
+            // detached: true,
         });
         let fullData = '';
         child.stdout.on('data', (data) => {
@@ -93,6 +93,6 @@ describe('bst-proxy', function() {
 
 after(function(done) {
     this.timeout(5000);
-    deleteFolderRecursive(folder);
+    // deleteFolderRecursive(folder);
     done();
 });

@@ -4,4 +4,5 @@ debug
 npm-debug.log
 test
 out
+testproject3
 .eslintrc.json
