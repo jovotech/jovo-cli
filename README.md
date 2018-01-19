@@ -8,7 +8,7 @@
 <br/>
 
 <p align="center">
-<a href="https://travis-ci.org/jovotech/jovo-cli" target="_blank"><img src="https://travis-ci.org/jovotech/jovo-framework-nodejs.svg"></a>
+<a href="https://travis-ci.org/jovotech/jovo-cli" target="_blank"><img src="https://api.travis-ci.org/jovotech/jovo-cli.svg?branch=master"></a>
 <a href="https://www.npmjs.com/package/jovo-cli" target="_blank"><img src="https://img.shields.io/npm/v/jovo-cli.svg"></a>
 <a href="https://gitter.im/jovotech/jovo-framework-nodejs" target="_blank"><img src="https://badges.gitter.im/jovotech/jovo-framework-nodejs.svg"></a>
 </p>
