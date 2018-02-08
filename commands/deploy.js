@@ -11,7 +11,6 @@ const Validator = require('../utils/validator');
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     // Stack Trace
-    console.log(reason.stack);
 });
 
 

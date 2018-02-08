@@ -5,6 +5,7 @@ const exec = require('child_process').exec;
 const _ = require('lodash');
 const request = require('request');
 const AdmZip = require('adm-zip');
+const uuidv4 = require('uuid/v4');
 
 const DEFAULT_LOCALE = 'en-US';
 const DEFAULT_PLATFORM = 'none';
@@ -14,6 +15,7 @@ const DEFAULT_TARGET = 'model';
 const TARGET_ALL = 'all';
 const TARGET_INFO = 'info';
 const TARGET_MODEL = 'model';
+const TARGET_LAMBDA = 'lambda';
 
 
 const DEFAULT_ASK_PROFILE = 'default';
@@ -23,14 +25,18 @@ const PLATFORM_ALEXASKILL = 'alexaSkill';
 const PLATFORM_GOOGLEACTION = 'googleAction';
 const PLATFORM_NONE = 'none';
 
-const DEFAULT_ENDPOINT = 'ngrok';
+const DEFAULT_ENDPOINT = 'jovo';
 const ENDPOINT_NGROK = 'ngrok';
 const ENDPOINT_BSTPROXY = 'bst-proxy';
+const ENDPOINT_JOVO = 'jovo';
+
+const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
+
 
 const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
-// projectPath = 'c:\\DEV\\nodejs\\jovo-cli-v1\\demo10';
+// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\demo12';
 
 
 module.exports.Project = {
@@ -69,6 +75,15 @@ module.exports.Project = {
         return fs.existsSync(this.getProjectPath() + 'index.js') &&
             fs.existsSync(this.getProjectPath() + 'package.json') &&
             fs.existsSync(this.getProjectPath() + 'app' + path.sep);
+    },
+
+    /**
+     * Checks if given directory name is existing
+     * @param {string} directory
+     * @return {boolean}
+     */
+    hasExistingProject(directory) {
+        return fs.existsSync(process.cwd() + path.sep + directory);
     },
 
     /**
@@ -161,10 +176,37 @@ module.exports.Project = {
             }
             return projectPlatform;
         } catch (error) {
-            console.log(error.code);
-
             // if (error.code === 'ENOENT') {
                 return PLATFORM_NONE;
+            // }
+
+            // throw error;
+        }
+    },
+
+    /**
+     * Returns project platforms
+     * @param {string} platform
+     * @return {*}
+     */
+    getPlatform: function(platform) {
+        try {
+            if (platform) {
+                return [platform];
+            }
+            let config = this.getConfig();
+            let projectPlatforms = [];
+            if (config.alexaSkill) {
+                projectPlatforms.push(PLATFORM_ALEXASKILL);
+            }
+            if (config.googleAction) {
+                projectPlatforms.push(PLATFORM_GOOGLEACTION);
+            }
+
+            return projectPlatforms;
+        } catch (error) {
+            // if (error.code === 'ENOENT') {
+            return PLATFORM_NONE;
             // }
 
             // throw error;
@@ -184,6 +226,11 @@ module.exports.Project = {
         }
     },
 
+    /**
+     * Backups model file
+     * @param {string} locale
+     * @return {Promise<any>}
+     */
     backupModel: function(locale) {
         return new Promise((resolve, reject) => {
             let target = this.getModelPath(locale).substr(0, this.getModelPath(locale).length - 5);
@@ -213,6 +260,11 @@ module.exports.Project = {
         });
     },
 
+    /**
+     * Checks if model files for given locales exist
+     * @param {Array<string>} locales
+     * @return {boolean}
+     */
     hasModelFiles: function(locales) {
         for (let locale of locales) {
             try {
@@ -298,8 +350,8 @@ module.exports.Project = {
             } catch (err) {
                 config = {};
             }
-
             _.extend(config, object);
+
             fs.writeFile(this.getConfigPath(), JSON.stringify(config, null, '\t'), function(err) {
                 if (err) {
                     reject(err);
@@ -322,7 +374,6 @@ module.exports.Project = {
                 let model = this.getModel(locale);
                 model.invocation = invocation;
                 this.saveModel(model, locale).then(() => resolve());
-
             } catch (error) {
                 reject(error);
             }
@@ -353,11 +404,10 @@ module.exports.Project = {
 
     /**
      * Updates model locale file
-     * @param locale
+     * @param {string} locale
      * @return {Promise<any>}
      */
     updateModelLocale: function(locale) {
-        let self = this;
         return new Promise((resolve, reject) => {
             const modelPath = this.getModelsPath();
             fs.readdir(modelPath, (err, files) => {
@@ -413,9 +463,25 @@ module.exports.Project = {
                 } catch (err) {
                     reject(err);
                 }
+            } else if (endpointType === ENDPOINT_JOVO) {
+                let config;
+                try {
+                    config = this.loadJovoConfig();
+                    if (!_.get(config, 'webhook.uuid')) {
+                        _.set(config, 'webhook.uuid', uuidv4());
+                        this.saveJovoConfig(config);
+                    }
+                    resolve(JOVO_WEBHOOK_URL + '/' + config.webhook.uuid);
+                } catch (error) {
+                    config = {};
+                    _.set(config, 'webhook.uuid', uuidv4());
+                    this.saveJovoConfig(config);
+                    resolve(JOVO_WEBHOOK_URL + '/' + config.webhook.uuid);
+                }
             }
         });
     },
+
 
     /**
      * Updates endpont to app.json
@@ -426,7 +492,7 @@ module.exports.Project = {
         if (!endpointType) {
             return Promise.resolve();
         }
-        return this.getEndpoint(endpointType).then((uri) => this.updateConfig({endpoint: uri + '/webhook'}));
+        return this.getEndpoint(endpointType).then((uri) => this.updateConfig({endpoint: uri}));
     },
 
     /**
@@ -439,11 +505,17 @@ module.exports.Project = {
      * @return {*}
      */
     createEmptyProject: function(projectName, template, locale) {
-        let self = this;
-        return this.downloadTemplate(projectName, template, locale)
-            .then((pathToUnzip) => {
-                return self.unzip(pathToUnzip, projectName);
-            });
+        return new Promise((resolve) => {
+            if (!fs.existsSync(projectPath)) {
+                fs.mkdirSync(projectPath);
+            }
+            resolve(projectName, template, locale);
+        });
+    },
+
+    downloadAndExtract: function(projectName, template, locale) {
+          return this.downloadTemplate(projectName, template, locale)
+                .then((pathToZip) => this.unzip(pathToZip, projectName));
     },
 
     /**
@@ -460,6 +532,7 @@ module.exports.Project = {
             if (!fs.existsSync(projectPath)) {
                 fs.mkdirSync(projectPath);
             }
+
             request(url)
                 .on('response', function(res) {
                     if (res.statusCode === 200) {
@@ -493,6 +566,34 @@ module.exports.Project = {
                 reject(err);
             }
         });
+    },
+
+    loadJovoConfig: function() {
+        try {
+            const data = fs.readFileSync(path.join(this.getUserHome(), '.jovo/config'));
+            return JSON.parse(data.toString());
+        } catch (err) {
+
+        }
+    },
+
+    saveJovoConfig: function(config) {
+        if (!fs.existsSync(this.getUserHome() + path.sep + '.jovo')) {
+            fs.mkdirSync(this.getUserHome() + path.sep + '.jovo');
+        }
+        fs.writeFileSync(path.join(this.getUserHome(), '.jovo/config'), JSON.stringify(config, null, '\t'));
+    },
+
+    getWebhookUuid() {
+        try {
+            return this.loadJovoConfig().webhook.uuid;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    getUserHome: function() {
+        return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
     },
 
     /**
@@ -675,8 +776,12 @@ module.exports.PLATFORM_ALL = PLATFORM_ALL;
 module.exports.TARGET_ALL = TARGET_ALL;
 module.exports.TARGET_INFO = TARGET_INFO;
 module.exports.TARGET_MODEL = TARGET_MODEL;
+module.exports.TARGET_LAMBDA = TARGET_LAMBDA;
+
 module.exports.ENDPOINT_NGROK = ENDPOINT_NGROK;
 module.exports.ENDPOINT_BSTPROXY = ENDPOINT_BSTPROXY;
 module.exports.DEFAULT_ENDPOINT = DEFAULT_ENDPOINT;
+
+module.exports.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL;
 
 

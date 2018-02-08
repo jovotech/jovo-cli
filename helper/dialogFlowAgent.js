@@ -121,7 +121,8 @@ class DialogFlowAgent {
 
                                 // save synonyms, if defined
                                 if (value.synonyms) {
-                                    dfEntityValueObj.synonyms = dfEntityValueObj.synonyms.concat(value.synonyms);
+                                    dfEntityValueObj.synonyms = dfEntityValueObj.synonyms.concat(
+                                        value.synonyms);
                                 }
                                 entityValues.push(dfEntityValueObj);
                             }
@@ -135,6 +136,11 @@ class DialogFlowAgent {
                     dfIntentObj.responses[0].parameters.push(parameterObj);
                 }
             }
+
+            if (_.get(intent, 'googleAction.dialogflow')) {
+                _.merge(dfIntentObj, intent.googleAction.dialogflow);
+            }
+
             fs.writeFileSync(intentPath, JSON.stringify(dfIntentObj, null, '\t'));
 
 
@@ -205,6 +211,62 @@ class DialogFlowAgent {
             let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + this.config.locale.toLowerCase() + '.json';
             fs.writeFileSync(intentUserSaysFilePath, JSON.stringify(dialogFlowIntentUserSays, null, '\t'));
         }
+
+        // DEFAULT WELCOME INTENT
+
+        let defaultWelcomeIntentObj = {
+            name: 'Default Welcome Intent',
+            auto: true,
+            webhookUsed: true,
+            events: [
+                {
+                    name: 'WELCOME',
+                },
+            ],
+            responses: [
+                {
+                    resetContexts: false,
+                    action: 'input.welcome',
+                },
+            ],
+        };
+        fs.writeFileSync(DialogFlowUtil.getIntentsFolderPath() + 'Default Welcome Intent.json', JSON.stringify(defaultWelcomeIntentObj, null, '\t'));
+
+
+        // DEFAULT FALLBACK INTENT
+        let defaultFallbackIntentObj = {
+            name: 'Default Fallback Intent',
+            auto: true,
+            webhookUsed: false,
+            responses: [
+                {
+                    resetContexts: false,
+                    action: 'input.unknown',
+                    messages: [
+                        {
+                            type: 0,
+                            lang: this.config.locale.toLowerCase().substr(0, 2),
+                            speech: [
+                                'I didn\u0027t get that. Can you say it again?',
+                                'I missed what you said. Say it again?',
+                                'Sorry, could you say that again?',
+                                'Sorry, can you say that again?',
+                                'Can you say that again?',
+                                'Sorry, I didn\u0027t get that.',
+                                'Sorry, what was that?',
+                                'One more time?',
+                                'What was that?',
+                                'Say that again?',
+                                'I didn\u0027t get that.',
+                                'I missed that.',
+                            ],
+                        },
+                    ],
+                },
+            ],
+            fallbackIntent: true,
+        };
+        fs.writeFileSync(DialogFlowUtil.getIntentsFolderPath() + 'Default Fallback Intent.json', JSON.stringify(defaultFallbackIntentObj, null, '\t'));
     }
 }
 

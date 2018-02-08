@@ -124,6 +124,11 @@ module.exports = {
                         _.set(agent, 'webhook', _.get(config, 'endpoint'));
                     }
                 }
+
+                if (_.get(config, 'googleAction.dialogflow.agent')) {
+                    _.merge(agent, config.googleAction.dialogflow.agent);
+                }
+
                 agent.supportedLanguages = [];
                 for (let locale of ctx.locales) {
                     agent.supportedLanguages.push(locale.toLowerCase());

@@ -9,7 +9,6 @@ const fs = require('fs');
 const Listr = require('listr');
 const _ = require('lodash');
 const Prompts = require('./../utils/prompts');
-
 module.exports.newTask = function(ctx) {
 
 };
@@ -35,11 +34,13 @@ module.exports.initTask = function(ctx) {
                     },
                 };
             }
+
             if (platformConfig) {
                 p = p.then(() => Helper.Project.updateConfig(platformConfig));
             }
-            p = p.then(() => Helper.Project.updateEndpoint(ctx.endpoint))
-                .then(() => resolve());
+
+            p.then(() => Helper.Project.updateEndpoint(ctx.endpoint))
+            .then(() => resolve());
         } catch (err) {
             reject();
         }
@@ -95,7 +96,7 @@ module.exports.getTask = function(ctx) {
                 title: 'Getting Alexa Skill model files',
                 enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
                     ctx.target === Helper.TARGET_MODEL,
-                task: (ctx, task) => {
+                task: (ctx) => {
                     let alexaModelPath = AlexaHelper.getModelsPath();
                     if (!fs.existsSync(alexaModelPath)) {
                         fs.mkdirSync(alexaModelPath);
@@ -113,7 +114,7 @@ module.exports.getTask = function(ctx) {
                     for (let locale of locales) {
                         getLocaleSubtasks.push({
                             title: 'Fetching ' + locale,
-                            task: (ctx, task) => {
+                            task: (ctx) => {
                                 return AlexaHelper.Ask.askApiGetModel(
                                     ctx,
                                     AlexaHelper.getModelPath(locale),
@@ -134,16 +135,15 @@ module.exports.buildTask = function(ctx) {
     if (!fs.existsSync(platformsPath)) {
         fs.mkdirSync(platformsPath);
     }
-    if (ctx.type === Helper.PLATFORM_ALEXASKILL || ctx.type === Helper.PLATFORM_ALL) {
-        return new Listr([
-            {
+    let buildPlatformTasks = [];
+    if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
+            buildPlatformTasks.push({
                 title: 'Building Alexa ',
-                task: (ctx, task) => {
-                    let info = 'Info: ';
+                task: () => {
                     let buildSubTasks = [{
                         title: 'Creating initial Alexa project files' + Helper.Project.hasAlexaSkill(),
                         enabled: () => Helper.Project.hasAlexaSkill() === false,
-                        task: (ctx, task) => {
+                        task: (ctx) => {
                            return AlexaHelper.createAlexaSkill(ctx)
                                .then(() => Helper.Project.updateEndpoint(ctx.endpoint))
                                .then(() => Helper.Project.updateConfig({
@@ -160,20 +160,21 @@ module.exports.buildTask = function(ctx) {
                                    return Promise.resolve();
                                });
                         },
-                    }, {
+                    },
+                        {
                         title: 'Building Alexa skill.json',
-                        task: (ctx, task) => {
+                        task: () => {
                             return AlexaHelper.buildSkillAlexa();
                         },
                     }, {
                         title: 'Building Alexa language model',
-                        task: (ctx, task) => {
+                        task: (ctx) => {
                             let buildLocalesTasks = [];
 
                             for (let locale of ctx.locales) {
                                 buildLocalesTasks.push({
                                     title: locale,
-                                    task: (ctx, task) => {
+                                    task: () => {
                                         return AlexaHelper.buildLanguageModelAlexa(locale);
                                     },
                                 });
@@ -183,10 +184,9 @@ module.exports.buildTask = function(ctx) {
                     }];
                     return new Listr(buildSubTasks);
                 },
-            },
-        ]);
+            });
     }
-    if (ctx.type === Helper.PLATFORM_GOOGLEACTION || ctx.type === Helper.PLATFORM_ALL) {
+    if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
         let googleActionPath = GoogleActionUtil.getPath();
         if (!fs.existsSync(googleActionPath)) {
             fs.mkdirSync(googleActionPath);
@@ -195,14 +195,13 @@ module.exports.buildTask = function(ctx) {
         if (!fs.existsSync(dialogFlowPath)) {
             fs.mkdirSync(dialogFlowPath);
         }
-        return new Listr([
-            {
+        buildPlatformTasks.push({
                 title: 'Building Google Action (DialogFlow)',
-                task: (ctx, task) => {
+                task: () => {
                     let buildSubTasks = [{
                         title: 'Creating initial GoogleAction/Dialogflow project files' + Helper.Project.hasAlexaSkill(),
                         enabled: () => Helper.Project.hasGoogleActionDialogFlow() === false,
-                        task: (ctx, task) => {
+                        task: (ctx) => {
                             return Helper.Project.updateEndpoint(ctx.endpoint)
                                 .then(() => Helper.Project.updateConfig({
                                     googleAction: {
@@ -212,18 +211,18 @@ module.exports.buildTask = function(ctx) {
                         },
                     }, {
                         title: 'Building Alexa agent.json',
-                        task: (ctx, task) => {
+                        task: (ctx) => {
                             return DialogFlowHelper.buildDialogFlowAgent(ctx);
                         },
                     }, {
                         title: 'Building Alexa language model',
-                        task: (ctx, task) => {
+                        task: (ctx) => {
                             let buildLocalesTasks = [];
 
                             for (let locale of ctx.locales) {
                                 buildLocalesTasks.push({
                                     title: locale,
-                                    task: (ctx, task) => {
+                                    task: () => {
                                         return DialogFlowHelper
                                             .buildLanguageModelDialogFlow(locale);
                                     },
@@ -233,25 +232,25 @@ module.exports.buildTask = function(ctx) {
                         },
                     }];
                     return new Listr(buildSubTasks);
-
                 },
-            },
-        ]);
+            });
     }
+
+    return new Listr(buildPlatformTasks);
 };
 
-module.exports.buildReverseTask = function(ctx) {
+module.exports.buildReverseTask = function() {
     let buildReverseSubtasks = [];
 
     buildReverseSubtasks.push({
         title: 'Creating backups',
         enabled: (ctx) => ctx.reverse === Prompts.ANSWER_BACKUP,
-        task: (ctx, task) => {
+        task: (ctx) => {
             let backupLocales = [];
             for (let locale of ctx.locales) {
                 backupLocales.push({
                     title: locale,
-                    task: (ctx, task) => {
+                    task: () => {
                         return Helper.Project.backupModel(locale);
                     },
                 });
@@ -262,12 +261,12 @@ module.exports.buildReverseTask = function(ctx) {
 
     buildReverseSubtasks.push({
         title: 'Reversing model files',
-        task: (ctx, task) => {
+        task: (ctx) => {
             let reverseLocales = [];
             for (let locale of ctx.locales) {
                 reverseLocales.push({
                     title: locale,
-                    task: (ctx, task) => {
+                    task: () => {
                         let alexaModel = AlexaHelper.getModel(locale);
                         let alexaInteractionModel =
                             new AlexaHelper.AlexaInteractionModel(alexaModel);
@@ -298,9 +297,9 @@ module.exports.deployTask = function(ctx) {
             {
                 title: 'Creating new skill',
                 enabled: (ctx) => _.isUndefined(ctx.skillId),
-                task: (ctx, task) => {
+                task: (ctx) => {
                     ctx.target = Helper.TARGET_ALL;
-                    let p = AlexaHelper.Ask.checkAsk().then((err) => {
+                    return AlexaHelper.Ask.checkAsk().then((err) => {
                         if (err) {
                             return Promise.reject(err);
                         }
@@ -313,13 +312,12 @@ module.exports.deployTask = function(ctx) {
                             return AlexaHelper.setAlexaSkillId(skillId);
                         }).then(() => getSkillStatus(ctx));
                     });
-                    return p;
                 },
             }, {
                 title: 'Updating skill information',
                 enabled: (ctx) => !_.isUndefined(ctx.skillId) && _.isUndefined(ctx.newSkill) &&
                     (ctx.target === Helper.TARGET_ALL || ctx.target === Helper.TARGET_INFO),
-                task: (ctx, task) => {
+                task: (ctx) => {
                     return AlexaHelper.Ask.askApiUpdateSkill(
                         ctx,
                         AlexaHelper.getSkillJsonPath()
@@ -329,13 +327,13 @@ module.exports.deployTask = function(ctx) {
                 title: 'Deploying language model',
                 enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
                     ctx.target === Helper.TARGET_MODEL,
-                task: (ctx, task) => {
+                task: (ctx) => {
                     let deployLocaleTasks = [];
 
                     for (let locale of ctx.locales) {
                         deployLocaleTasks.push({
                             title: locale,
-                            task: (ctx, task) => {
+                            task: (ctx) => {
                                 let config = _.cloneDeep(ctx);
                                 config.locale = locale;
                                 return AlexaHelper.Ask.askApiUpdateModel(
@@ -349,9 +347,28 @@ module.exports.deployTask = function(ctx) {
                 },
             },
             {
+                title: 'Uploading to lambda',
+                enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
+                    ctx.target === Helper.TARGET_LAMBDA),
+                task: (ctx) => {
+                    try {
+                        let appJson = Helper.Project.getConfig();
+                        let endpoint = AlexaHelper.getSkillJson().manifest.apis.custom.endpoint.uri;
+                        if (!_.startsWith(endpoint, 'arn')) {
+                            return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
+                        }
+                        ctx.lambdaArn = appJson.endpoint;
+                        ctx.lambdaPath = Helper.Project.getProjectPath();
+                        return AlexaHelper.Ask.askLambdaUpload(ctx);
+                    } catch (err) {
+                        throw err;
+                    }
+                },
+            },
+            {
                 title: 'Enabling skill',
                 enabled: (ctx) => !_.isUndefined(ctx.newSkill),
-                task: (ctx, task) => {
+                task: (ctx) => {
                     return AlexaHelper.Ask.askApiEnableSkill(ctx);
                 },
             },
@@ -369,6 +386,11 @@ module.exports.deployTask = function(ctx) {
     }
 };
 
+/**
+ * Asks for model status every 5 seconds
+ * @param {*} config
+ * @return {Promise<any>}
+ */
 function getModelStatus(config) {
     return wait(5000).then(() => AlexaHelper.Ask.askApiGetSkillStatus(config)).then((status) => {
         // return Promise.reject(new Error(status));
@@ -382,6 +404,11 @@ function getModelStatus(config) {
     });
 }
 
+/**
+ * Asks for skillStatus every 5 seconds
+ * @param {*} config
+ * @return {Promise<any>}
+ */
 function getSkillStatus(config) {
     return wait(5000).then(() => AlexaHelper.Ask.askApiGetSkillStatus(config)).then((status) => {
         // return Promise.reject(new Error(status));
@@ -401,7 +428,7 @@ function getSkillStatus(config) {
  * @return {Promise<any>}
  */
 function wait(ms) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         setTimeout(() => {
             resolve();
         }, ms);

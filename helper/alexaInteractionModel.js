@@ -1,7 +1,6 @@
 'use strict';
 const _ = require('lodash');
 const fs = require('fs');
-const helper = require('./lmHelper');
 const BUILTIN_PREFIX = 'AMAZON.';
 
 /**
@@ -195,6 +194,11 @@ class AlexaInteractionModel {
                     alexaIntentObj.slots.push(alexaInputObj);
                 }
             }
+
+            if (_.get(intent, 'alexaSkill')) {
+                _.merge(alexaIntentObj, intent.alexaSkill);
+            }
+
             alexaIntents.push(alexaIntentObj);
         }
 

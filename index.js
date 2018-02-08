@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 
+const vorpal = require('vorpal')();
 const Helper = require('./helper/lmHelper');
 
-const vorpal = require('vorpal')();
 if (parseInt(process.version.substr(1, 2)) < 6) {
     console.error('Please use node version >= 6');
     process.exit(1);
 }
 const versionArg = ['-v', '-V', '--version'];
 
-if (process.argv[2] !== 'new' && versionArg.indexOf(process.argv[2]) === -1) {
-    if (!Helper.Project.isInProjectDirectory()) {
+if (process.argv[2] !== 'new' &&
+    versionArg.indexOf(process.argv[2]) === -1 &&
+    process.argv[2] !== 'help') {
+    if (!Helper.Project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
         console.log('Please go to a valid jovo project.');
         process.exit(1);
     }

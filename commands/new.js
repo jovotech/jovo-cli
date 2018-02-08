@@ -6,21 +6,13 @@ const Validator = require('./../utils/validator');
 
 const Prompts = require('./../utils/prompts');
 const JovoRenderer = require('../utils/jovoRenderer');
-const fs = require('fs');
 const buildTask = require('./tasks').buildTask;
 const deployTask = require('./tasks').deployTask;
-const path = require('path');
-
-process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    // Stack Trace
-    console.log(reason);
-});
 
 
 module.exports = function(vorpal) {
     vorpal
-        .command('new <projectname>', 'test')
+        .command('new <directory>', 'test')
         .description('create new project into given directory')
         .option('-t, --template <templateName>', 'Create new project based on specific template.')
         .option('-l, --locale <locale>', 'Locale')
@@ -32,7 +24,7 @@ module.exports = function(vorpal) {
         .option('--endpoint <endpoint>', 'type of endpoint')
 
         .validate(function(args) {
-            return Validator.isValidProjectName(args.projectname) &&
+            return Validator.isValidProjectName(args.directory) &&
                 Validator.isValidTemplate(args.options.template) &&
                 Validator.isValidLocale(args.options.locale) &&
                 Validator.isValidPlatform(args.options.build) &&
@@ -48,7 +40,7 @@ module.exports = function(vorpal) {
                 collapse: false,
             });
             // asks for approval when projectfolder exists
-            if (fs.existsSync(process.cwd() + path.sep + args.projectname)) {
+            if (Helper.Project.hasExistingProject(args.directory)) {
                 p = p.then(() => {
                     return Prompts.promptOverwriteProject().then((answers) => {
                         if (answers.overwrite === Prompts.ANSWER_CANCEL) {
@@ -67,7 +59,7 @@ module.exports = function(vorpal) {
                 console.log();
 
                 let config = {
-                    projectname: args.projectname,
+                    projectname: args.directory,
                     locales: Helper.Project.getLocales(args.options.locale),
                     template: args.options.template || Helper.DEFAULT_TEMPLATE,
                     type: args.options.build || args.options.ff,
@@ -75,18 +67,32 @@ module.exports = function(vorpal) {
                     endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                     askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
                 };
-                Helper.Project.setProjectPath(args.projectname);
+                Helper.Project.setProjectPath(args.directory);
 
-
-                // Create empty project structure
                 tasks.add({
-                    title: 'Downloading and extracting template "' + config.template + '"',
+                    title: 'Creating new directory "'+config.projectname+'"',
                     task: (ctx, task) => {
-                        task.skip('Info: Created files\n Lorem \n ipsum');
+                        // return Promise.resolve();
+                        // task.skip('Info: Created files\n Lorem \n ipsum');
                         return Helper.Project.createEmptyProject(
                             ctx.projectname,
                             ctx.template,
-                            ctx.locales[0]).then(() => {
+                            ctx.locales[0]);
+                        // .then(() => {
+                        //     return Helper.Project.updateModelLocale(ctx.locales[0]);
+                        // });
+                    },
+                });
+
+                tasks.add({
+                    title: 'Downloading and extracting "'+config.template+'"',
+                    task: (ctx) => {
+                        return Helper.Project.downloadAndExtract(
+                            ctx.projectname,
+                            ctx.template,
+                            ctx.locales[0]
+                        )
+                        .then(() => {
                             return Helper.Project.updateModelLocale(ctx.locales[0]);
                         });
                     },
@@ -104,13 +110,21 @@ module.exports = function(vorpal) {
                             });
                         });
                     }
+
+                    // tasks.add({
+                    //     title: 'bla',
+                    //     task: () => {
+                    //         return new Promise((resolve, reject) => {
+                    //             setTimeout(resolve, 2000);
+                    //         });
+                    //     },
+                    // });
                     tasks.add({
                             title: 'Building language model',
                             task: (ctx, task) => buildTask(ctx, task),
                         }
                     );
                 }
-
                 // deploy project
                 if (args.options.deploy || args.options.ff) {
                     tasks.add({
@@ -139,6 +153,8 @@ module.exports = function(vorpal) {
                 }).catch((err) => {
                     console.error(err);
                 });
+            }).then(() => {
+                console.log('done');
             });
         })
         .help(() => {

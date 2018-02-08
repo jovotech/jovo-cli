@@ -91,8 +91,9 @@ module.exports = {
         if (target) {
             if (target !== Helper.TARGET_ALL &&
                 target !== Helper.TARGET_MODEL &&
+                target !== Helper.TARGET_LAMBDA &&
                 target !== Helper.TARGET_INFO) {
-                console.log('Please use a valid target: (model|info|all)');
+                console.log('Please use a valid target: (model|info|lambda|all)');
                 return false;
             }
         }

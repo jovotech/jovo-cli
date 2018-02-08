@@ -4,6 +4,9 @@ const BSTProxy = require('bespoken-tools').BSTProxy;
 const fs = require('fs');
 const path = require('path');
 const spawn = require('cross-spawn');
+const http = require('http');
+const io = require('socket.io-client');
+const Helper = require('./../helper/lmHelper');
 
 /**
  * Returns path to home directory
@@ -23,10 +26,25 @@ module.exports = function(vorpal) {
         .description('Runs the jovo app.')
         .option('-h, --http', 'Creates http webhook endpoint (default)')
         .option('-b, --bst-proxy', 'Proxies the HTTP service running at the specified port via bst')
+        .option('-p, --port <port>', 'Port to local development webhook')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .action((args) => {
+            const port = args.options.port || 3000;
+
+            const localServerFile = args.webhookFile ? args.webhookFile : 'index.js';
+
+            let command = 'node';
+            if (args.options.watch) {
+                command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
+            }
+
+            let parameters = ['./'+localServerFile, '--ignore db/*'];
+
+            parameters.push('--webhook');
+
+
             if (args.options['bst-proxy']) {
-                const proxy = BSTProxy.http(3000);
+                const proxy = BSTProxy.http(port);
 
                 proxy.start(() => {
                     const data = fs.readFileSync(path.join(getUserHome(), '.bst/config'));
@@ -40,18 +58,27 @@ module.exports = function(vorpal) {
                     messageOutput += 'Copy and paste this to your browser to view your transaction history and summary data.\n';
                     console.log(messageOutput);
                 });
+                parameters.push('--bst-proxy');
+            } else {
+                let user = Helper.Project.getWebhookUuid();
+
+                const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
+                    secure: true,
+                    query: {
+                        user: user,
+                    },
+                });
+                socket.on('connect', function() {
+                    console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + user);
+                });
+                socket.on('request-'+user, (data) => {
+                    post(data.request, port).then((result) => {
+                        socket.emit('response-' + user, result);
+                    });
+                });
+                parameters.push('--jovo-webhook');
             }
 
-            const localServerFile = args.webhookFile ? args.webhookFile : 'index.js';
-
-            let command = 'node';
-            if (args.options.watch) {
-                command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
-            }
-
-            let parameters = ['./'+localServerFile, '--ignore db/*'];
-
-            parameters.push('--webhook');
             const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: process.cwd()});
             ls.on('data', (data) => {
                 console.log(`stdout: ${data}`);
@@ -69,3 +96,56 @@ module.exports = function(vorpal) {
 
         });
 };
+
+
+/**
+ * Send post requests to local webhook
+ * @param {*} requestObj
+ * @param {Number} port
+ * @return {Promise<any>}
+ */
+function post(requestObj, port) {
+    return new Promise((resolve, reject) => {
+        let opt = {
+            hostname: 'localhost',
+            port: port,
+            path: '/webhook',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        let postData = JSON.stringify(requestObj);
+
+        let req = http.request(opt, (res) => {
+            res.setEncoding('utf8');
+            let rawData = '';
+            res.on('data', (chunk) => {
+                rawData += chunk;
+            });
+            res.on('end', () => {
+                let parsedData;
+                try {
+                    parsedData = JSON.parse(rawData);
+                } catch (e) {
+                    reject(new Error('Something went wrong'));
+                    return;
+                }
+
+                resolve(parsedData);
+            });
+        }).on('error', (e) => {
+            if (e.code === 'ECONNRESET') {
+                console.log('Timeout error: No response after ' + 5000 + ' milliseconds');
+            }
+            reject(e);
+        }).on('socket', function(socket) {
+            socket.setTimeout(5000);
+            socket.on('timeout', function() {
+                req.abort();
+            });
+        });
+        req.write(postData);
+        req.end();
+    });
+}

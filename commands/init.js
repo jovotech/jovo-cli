@@ -7,13 +7,6 @@ const initTask = require('./tasks').initTask;
 const Validator = require('../utils/validator');
 const Helper = require('../helper/lmHelper');
 
-process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    // Stack Trace
-    console.log(reason);
-});
-
-
 module.exports = function(vorpal) {
     vorpal
         .command('init <platform>', 'test')
@@ -23,7 +16,7 @@ module.exports = function(vorpal) {
             return Validator.isValidPlatform(args.platform) &&
                 Validator.isValidEndpoint(args.options.endpoint);
         })
-        .action((args, callback) => {
+        .action((args) => {
             const tasks = new Listr([], {
                 renderer: JovoRenderer,
                 collapse: false,

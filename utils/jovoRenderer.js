@@ -21,7 +21,8 @@ const renderHelper = (tasks, options, level) => {
         if (task.isEnabled()) {
             output.push(indentString(` ${utils.getSymbol(task, options)} ${task.title}`, '  ', level));
 
-            if ((task.isPending() || task.isSkipped() || task.hasFailed()) && utils.isDefined(task.output)) {
+            if ((task.isPending() || task.isSkipped() || task.hasFailed()) &&
+                utils.isDefined(task.output)) {
                 let data = task.output;
 
                 if (utils.isDefined(data)) {
@@ -42,12 +43,13 @@ const renderHelper = (tasks, options, level) => {
                 }
             }
 
-            if ((task.isPending() || task.hasFailed() || options.collapse === false) && (task.hasFailed() || options.showSubtasks !== false) && task.subtasks.length > 0) {
+            if ((task.isPending() || task.hasFailed() || options.collapse === false) &&
+                (task.hasFailed() || options.showSubtasks !== false) &&
+                task.subtasks.length > 0) {
                 output = output.concat(renderHelper(task.subtasks, options, level + 1));
             }
         }
     }
-// console.log(output);
     return output.join('\n');
 };
 
@@ -89,8 +91,8 @@ class JovoCliRenderer {
     }
 
     /**
-     * Eend
-     * @param err
+     * End
+     * @param {Error} err
      */
     end(err) {
         if (this._id) {

@@ -223,7 +223,10 @@ module.exports = {
                 fs.mkdirSync(askConfigPath);
             }
 
-            let skillJson = this.createEmptySkillJson(Helper.Project.getProjectName(), config.locales);
+            let skillJson = this.createEmptySkillJson(
+                Helper.Project.getProjectName(),
+                config.locales
+            );
 
             let self = this;
 
@@ -278,7 +281,6 @@ module.exports = {
 
     /**
      * Builds and saves Alexa Skill model from jovo model
-     * @param {string} locale
      * @return {Promise<any>}
      */
     buildSkillAlexa: function() {
@@ -303,6 +305,9 @@ module.exports = {
                             endpoint: _.get(config, 'endpoint.alexaSkill'),
                         });
                     }
+                }
+                if (_.get(config, 'alexaSkill.manifest')) {
+                    _.merge(skillJson.manifest, config.alexaSkill.manifest);
                 }
 
                 fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), function(err) {
@@ -597,6 +602,26 @@ module.exports.Ask = {
     },
 
     /**
+     * Saves account linking information to file
+     * @param {*} config
+     * @return {Promise<any>}
+     */
+    askLambdaUpload: function(config) {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            exec('ask lambda upload -f ' + config.lambdaArn + ' -s ' + config.lambdaPath, {
+            }, function(error, stdout, stderr ) {
+                if (error) {
+                    if (stderr) {
+                        return reject(self.getAskError(stderr));
+                    }
+                }
+                resolve(stdout);
+            });
+        });
+    },
+
+    /**
      * Returns ask error object
      * @param {string} method
      * @param {*} stderr
@@ -612,7 +637,6 @@ module.exports.Ask = {
             } catch (error) {
                 return new Error(method + stderr);
             }
-
         }
         return new Error(stderr);
     },

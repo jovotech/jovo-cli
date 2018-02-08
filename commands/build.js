@@ -3,7 +3,6 @@
 const Prompts = require('./../utils/prompts');
 
 const Listr = require('listr');
-const fs = require('fs');
 
 const Helper = require('./../helper/lmHelper');
 const JovoRenderer = require('../utils/jovoRenderer');
@@ -40,7 +39,7 @@ module.exports = function(vorpal) {
             });
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: args.options.platform || Helper.Project.getProjectPlatform(),
+                type: Helper.Project.getPlatform(args.options.platform),
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };
             let p = Promise.resolve();

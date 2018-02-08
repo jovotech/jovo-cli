@@ -1,7 +1,5 @@
 'use strict';
 let assert = require('chai').assert;
-const exec = require('child_process').exec;
-const execSync = require('child_process').execSync;
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const path = require('path');

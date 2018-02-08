@@ -71,7 +71,7 @@ module.exports = {
             {
                 type: 'list',
                 name: 'overwrite',
-                message: 'There is a folder with a same name. What would you like to do?',
+                message: 'There is already a directory with this name. What would you like to do?',
                 choices: [{
                     value: this.ANSWER_OVERWRITE,
                     name: 'Overwrite',
