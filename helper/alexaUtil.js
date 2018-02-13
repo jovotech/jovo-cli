@@ -84,6 +84,7 @@ module.exports = {
                 return skillId;
             }
         } catch (err) {
+            throw err;
         }
     },
 
@@ -337,6 +338,64 @@ module.exports = {
                 resolve(_.get(JSON.parse(data), 'deploy_settings.default.skill_id'));
             });
         });
+    },
+
+    /**
+     * Returns skill information
+     * @return {*}
+     */
+    getSkillInformation: function() {
+        let info = {
+            name: '',
+            invocationName: '',
+        };
+
+        let skillJson = this.getSkillJson();
+        let locales = skillJson.manifest.publishingInformation.locales;
+        for (let locale of Object.keys(locales)) {
+            info.name += locales[locale].name + ' (' +locale+ ') ';
+            info.invocationName += this.getInvocationName(locale) + ' ('+locale+') ';
+        }
+        info.skillId = this.getSkillId();
+        info.endpoint = skillJson.manifest.apis.custom.endpoint.uri;
+        return info;
+    },
+
+    /**
+     * Returns simple skill information
+     * @return {*}
+     */
+    getSkillSimpleInformation: function() {
+        let info = {
+            name: '',
+        };
+
+        let skillJson = this.getSkillJson();
+        let locales = skillJson.manifest.publishingInformation.locales;
+        for (let locale of Object.keys(locales)) {
+            info.name += locales[locale].name + ' (' +locale+ ') ';
+        }
+        info.skillId = this.getSkillId();
+        info.endpoint = skillJson.manifest.apis.custom.endpoint.uri;
+        return info;
+    },
+
+    /**
+     * Returns true if endpoint is a lambda function arn
+     * @return {boolean}
+     */
+    isLambdaEndpoint() {
+        let skillJson = this.getSkillJson();
+        return _.startsWith(skillJson.manifest.apis.custom.endpoint.uri, 'arn');
+    },
+
+    /**
+     * Returns invocationName for given locale
+     * @param {string} locale
+     * @return {{}|interactionModel.languageModel}
+     */
+    getInvocationName: function(locale) {
+        return this.getModel(locale).interactionModel.languageModel.invocationName;
     },
 
     /**

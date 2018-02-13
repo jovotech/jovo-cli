@@ -31,6 +31,29 @@ module.exports = {
     },
 
     /**
+     * Asks for platform
+     * @return {Promise}
+     */
+    promptForInit: function() {
+        let questions = [
+            {
+                type: 'list',
+                name: 'platform',
+                message: 'To use this command, please first initialize at least one platform with jovo init. You can also choose one here:',
+                choices: [{
+                    value: 'alexaSkill',
+                    name: 'Alexa Skill (alexaSkill)',
+                }, {
+                    value: 'googleAction',
+                    name: 'GoogleAction with DialogFlow (googleAction)',
+                },
+                ],
+            },
+        ];
+        return inquirer.prompt(questions);
+    },
+
+    /**
      * Asks for Skill ID
      * @return {Promise}
      */
@@ -71,7 +94,7 @@ module.exports = {
             {
                 type: 'list',
                 name: 'overwrite',
-                message: 'There is already a directory with this name. What would you like to do?',
+                message: 'There is a folder with a same name. What would you like to do?',
                 choices: [{
                     value: this.ANSWER_OVERWRITE,
                     name: 'Overwrite',
@@ -129,6 +152,21 @@ module.exports = {
                     name: 'Cancel',
                 },
                 ],
+            },
+        ];
+        return inquirer.prompt(questions);
+    },
+
+    /**
+     * Ask for project directory name
+     * @return {*}
+     */
+    promptNewProject: function() {
+        let questions = [
+            {
+                type: 'input',
+                name: 'directory',
+                message: 'Missing argument <directory>. How do you want to name your Jovo project?',
             },
         ];
         return inquirer.prompt(questions);

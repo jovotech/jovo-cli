@@ -20,6 +20,20 @@ module.exports = {
         }
         return true;
     },
+    /**
+     * Checks validity of platform variable
+     * @param {string} platform
+     * @return {boolean}
+     */
+    isValidPlatformGet: function(platform) {
+        if (platform) {
+            if (platform !== Helper.PLATFORM_ALEXASKILL) {
+                console.log('Currently only "alexaSkill" is available.');
+                return false;
+            }
+        }
+        return true;
+    },
 
     /**
      * Checks validity of template variable
@@ -108,8 +122,10 @@ module.exports = {
     isValidEndpoint: function(endpoint) {
         if (endpoint) {
             if (endpoint !== Helper.ENDPOINT_BSTPROXY &&
-                endpoint !== Helper.ENDPOINT_NGROK) {
-                console.log('Please use a valid endpoint: ('+Helper.ENDPOINT_BSTPROXY+'|'+Helper.ENDPOINT_NGROK+')');
+                endpoint !== Helper.ENDPOINT_NGROK &&
+                endpoint !== Helper.ENDPOINT_JOVOWEBHOOK &&
+                endpoint !== Helper.ENDPOINT_NONE) {
+                console.log('Please use a valid endpoint: ('+Helper.ENDPOINT_JOVOWEBHOOK+'|'+Helper.ENDPOINT_BSTPROXY+'|'+Helper.ENDPOINT_NGROK+'|'+Helper.ENDPOINT_NGROK+')');
                 return false;
             }
         }

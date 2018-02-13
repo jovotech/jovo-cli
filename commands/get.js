@@ -23,16 +23,16 @@ if (process.argv.indexOf('get') > 0 &&
 module.exports = function(vorpal) {
 vorpal
     .command('get <platform>', 'test')
-    .description('create new project into given directory')
+    .description('Downloads an existing platform project into the platforms folder.')
     .option('\n')
-    .option('-l, --list-skills', 'list skills')
+    .option('--list-skills', 'list skills')
     .option('-s, --skill-id <skillId>', 'skill id')
     .option('-l, --locale <locale>', 'Locale')
     .option('-t, --target <target>', 'target')
     .option('--ask-profile <askProfile>', 'ask profile')
     .validate(function(args) {
         return Validator.isValidLocale(args.options.locale) &&
-            Validator.isValidPlatform(args.platform) &&
+            Validator.isValidPlatformGet(args.platform) &&
             Validator.isValidDeployTarget(args.options.target) &&
             Validator.isValidAskProfile(args.options['ask-profile']);
     })
@@ -43,7 +43,14 @@ vorpal
             collapse: false,
         });
 
-        if (AlexaHelper.getSkillId()) {
+        let config = {};
+        try {
+            config.skillId = AlexaHelper.getSkillId();
+        } catch (error) {
+        }
+
+
+        if (config.skillId) {
             p = p.then(() => {
                 return Prompts.promptOverwriteProjectAlexaSkill().then((answers) => {
                     if (answers.overwrite === Prompts.ANSWER_CANCEL) {
@@ -57,32 +64,15 @@ vorpal
 
 
         p = p.then(() => {
-            let config = {
+            _.merge(config, {
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: args.options.platform || Helper.Project.getProjectPlatform2(),
                 target: args.options.target || Helper.TARGET_ALL,
-                skillId: args.options['skill-id'] || AlexaHelper.getSkillId(),
+                skillId: args.options['skill-id'] || config.skillId,
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
-            };
-
+            });
             let subp = Promise.resolve();
-            if (config.type === Helper.PLATFORM_NONE) {
-                subp = subp.then(() => {
-                    return Prompts.promptForPlatform().then((answers) => {
-                        config.type = answers.platform;
-                        if (config.type === Helper.PLATFORM_ALEXASKILL) {
-                            if (!config.skillId) {
-                                return Prompts.promptForSkillId().then((answers) => {
-                                    config.skillId = answers.skillId;
-                                });
-                            }
-                            return Promise.resolve();
-                        } else {
-                            return Promise.resolve();
-                        }
-                    });
-                });
-            } else if (config.type === Helper.PLATFORM_ALEXASKILL) {
+            if (config.type === Helper.PLATFORM_ALEXASKILL) {
                 if (!config.skillId) {
                     // if(args.options['list-skills']) {
                     subp = subp.then(() => AlexaHelper.Ask.askApiListSkills(config).then((json) => {
@@ -93,12 +83,7 @@ vorpal
                 }
             }
 
-            tasks.add({
-                title: 'Getting',
-                task: (ctx, task) => getTask(ctx, task),
-            });
-
-
+            getTask(config).forEach((t) => tasks.add(t));
             return subp.then(() => Promise.resolve(config));
         });
 
@@ -106,7 +91,7 @@ vorpal
         p.then((config) => {
             return tasks.run(config).then(() => {
                 console.log();
-                console.log('  get completed. You\'re all set');
+                console.log('  Get completed.');
                 console.log();
                 callback();
             }).catch((err) => {

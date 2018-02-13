@@ -10,25 +10,25 @@ const uuidv4 = require('uuid/v4');
 const DEFAULT_LOCALE = 'en-US';
 const DEFAULT_PLATFORM = 'none';
 const DEFAULT_TEMPLATE = 'helloworld';
-const DEFAULT_TARGET = 'model';
+const DEFAULT_TARGET = 'all';
+const DEFAULT_ENDPOINT = 'jovo-webhook';
+const DEFAULT_ASK_PROFILE = 'default';
 
 const TARGET_ALL = 'all';
 const TARGET_INFO = 'info';
 const TARGET_MODEL = 'model';
 const TARGET_LAMBDA = 'lambda';
 
-
-const DEFAULT_ASK_PROFILE = 'default';
-
 const PLATFORM_ALL = 'all';
 const PLATFORM_ALEXASKILL = 'alexaSkill';
 const PLATFORM_GOOGLEACTION = 'googleAction';
 const PLATFORM_NONE = 'none';
 
-const DEFAULT_ENDPOINT = 'jovo';
 const ENDPOINT_NGROK = 'ngrok';
 const ENDPOINT_BSTPROXY = 'bst-proxy';
-const ENDPOINT_JOVO = 'jovo';
+const ENDPOINT_JOVOWEBHOOK = 'jovo-webhook';
+const ENDPOINT_NONE = 'none';
+
 
 const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 
@@ -36,7 +36,7 @@ const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
-// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\demo12';
+// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\test2';
 
 
 module.exports.Project = {
@@ -186,31 +186,31 @@ module.exports.Project = {
 
     /**
      * Returns project platforms
-     * @param {string} platform
+     * @param {Array<string>} platform
      * @return {*}
      */
     getPlatform: function(platform) {
+        let projectPlatforms = [];
         try {
             if (platform) {
                 return [platform];
             }
             let config = this.getConfig();
-            let projectPlatforms = [];
             if (config.alexaSkill) {
                 projectPlatforms.push(PLATFORM_ALEXASKILL);
             }
             if (config.googleAction) {
                 projectPlatforms.push(PLATFORM_GOOGLEACTION);
             }
-
-            return projectPlatforms;
         } catch (error) {
-            // if (error.code === 'ENOENT') {
-            return PLATFORM_NONE;
-            // }
-
-            // throw error;
+            if (this.hasAlexaSkill()) {
+                projectPlatforms.push(PLATFORM_ALEXASKILL);
+            }
+            if (this.hasGoogleActionDialogFlow()) {
+                projectPlatforms.push(PLATFORM_GOOGLEACTION);
+            }
         }
+        return projectPlatforms;
     },
 
     /**
@@ -304,6 +304,20 @@ module.exports.Project = {
             return require(this.getConfigPath());
         } catch (error) {
             throw error;
+        }
+    },
+
+
+    /**
+     * Returns true if app.json exists
+     * @return {boolean}
+     */
+    hasAppJson: function() {
+        try {
+            require(this.getConfigPath());
+            return true;
+        } catch (error) {
+            return false;
         }
     },
 
@@ -448,9 +462,10 @@ module.exports.Project = {
             if (endpointType === ENDPOINT_NGROK) {
                 getNgrokUrl(null, (error, url) => {
                     if (error) {
-                        return reject(error);
+                        return reject(new Error(`I couldn’t find a uri for ngrok.
+Please run <ngrok http 3000> in another tab if you want to create an ngrok link.`));
                     }
-                    resolve(url);
+                    resolve(url + '/webhook');
                 });
             } else if (endpointType === ENDPOINT_BSTPROXY) {
                 const home = process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
@@ -463,7 +478,7 @@ module.exports.Project = {
                 } catch (err) {
                     reject(err);
                 }
-            } else if (endpointType === ENDPOINT_JOVO) {
+            } else if (endpointType === ENDPOINT_JOVOWEBHOOK) {
                 let config;
                 try {
                     config = this.loadJovoConfig();
@@ -780,6 +795,10 @@ module.exports.TARGET_LAMBDA = TARGET_LAMBDA;
 
 module.exports.ENDPOINT_NGROK = ENDPOINT_NGROK;
 module.exports.ENDPOINT_BSTPROXY = ENDPOINT_BSTPROXY;
+module.exports.ENDPOINT_JOVOWEBHOOK = ENDPOINT_JOVOWEBHOOK;
+module.exports.ENDPOINT_NONE = ENDPOINT_NONE;
+
+
 module.exports.DEFAULT_ENDPOINT = DEFAULT_ENDPOINT;
 
 module.exports.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL;

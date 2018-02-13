@@ -9,18 +9,24 @@ if (parseInt(process.version.substr(1, 2)) < 6) {
 }
 const versionArg = ['-v', '-V', '--version'];
 
+// jovo (no arguments)
+if (process.argv.length === 2) {
+   process.argv.push('help');
+}
+
+
+// check for valid Jovo project directory
 if (process.argv[2] !== 'new' &&
     versionArg.indexOf(process.argv[2]) === -1 &&
     process.argv[2] !== 'help') {
     if (!Helper.Project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-        console.log('Please go to a valid jovo project.');
+        console.log('Please go to a valid Jovo project directory.');
         process.exit(1);
     }
 }
 
 
 if (process.argv.length <= 2) {
-    console.log('help + examples');
 } else if (process.argv.length === 3 &&
     (versionArg.indexOf(process.argv[2]) > -1)) {
     console.log('Jovo CLI Version: ' + require('./package').version);

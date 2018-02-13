@@ -7,6 +7,7 @@ const spawn = require('cross-spawn');
 const http = require('http');
 const io = require('socket.io-client');
 const Helper = require('./../helper/lmHelper');
+const _ = require('lodash');
 
 /**
  * Returns path to home directory
@@ -23,7 +24,7 @@ if (process.argv.indexOf('run') > 0 && (process.argv.length === 3 || process.arg
 module.exports = function(vorpal) {
     vorpal
         .command('run <webhookFile>', 'run')
-        .description('Runs the jovo app.')
+        .description('Runs a local development server (webhook).')
         .option('-h, --http', 'Creates http webhook endpoint (default)')
         .option('-b, --bst-proxy', 'Proxies the HTTP service running at the specified port via bst')
         .option('-p, --port <port>', 'Port to local development webhook')
@@ -61,6 +62,19 @@ module.exports = function(vorpal) {
                 parameters.push('--bst-proxy');
             } else {
                 let user = Helper.Project.getWebhookUuid();
+
+               try {
+                   const config = Helper.Project.getConfig();
+                   if (!config.endpoint) {
+                       throw new Error();
+                   }
+
+                   if (_.startsWith(endpoint, 'arn')) {
+                       throw new Error();
+                   }
+               } catch (err) {
+                   console.log('Warning: Your endpoint in app.json is not a jovo-webhook url.');
+               }
 
                 const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
                     secure: true,

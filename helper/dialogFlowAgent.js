@@ -2,8 +2,8 @@
 const _ = require('lodash');
 const fs = require('fs');
 const DialogFlowUtil = require('./dialogflowUtil');
-
 const BUILTIN_PREFIX = '@sys.';
+const pathSep = require('path').sep;
 
 /**
  * Class DialogFlowAgent
@@ -31,6 +31,17 @@ class DialogFlowAgent {
 
         if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
             fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
+        }
+        fs.readdirSync(DialogFlowUtil.getIntentsFolderPath()).forEach(function(file, index) {
+            let curPath = DialogFlowUtil.getIntentsFolderPath() + pathSep + file;
+            fs.unlinkSync(curPath);
+        });
+
+        if (fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
+            fs.readdirSync(DialogFlowUtil.getEntitiesFolderPath()).forEach(function(file, index) {
+                let curPath = DialogFlowUtil.getEntitiesFolderPath() + pathSep + file;
+                fs.unlinkSync(curPath);
+            });
         }
         // create package.json
         fs.writeFileSync(DialogFlowUtil.getPackageJsonPath(),

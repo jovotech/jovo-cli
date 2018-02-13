@@ -4,6 +4,7 @@ const Helper = require('../helper/lmHelper');
 const AlexaHelper = require('../helper/alexaUtil');
 const DialogFlowHelper = require('../helper/dialogflowUtil');
 const GoogleActionUtil = require('../helper/googleActionUtil');
+const highlight = require('chalk').white.bold;
 
 const fs = require('fs');
 const Listr = require('listr');
@@ -13,40 +14,60 @@ module.exports.newTask = function(ctx) {
 
 };
 
-module.exports.initTask = function(ctx) {
-    return new Promise((resolve, reject) => {
-        try {
-            let platformConfig;
-            let p = Promise.resolve();
-            if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
-                platformConfig = {
-                    alexaSkill: {
-                        nlu: 'alexa',
-                    },
-                };
-            } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
-                platformConfig = {
-                    googleAction: {
-                        nlu: {
-                            name: 'dialogflow',
-                            version: 1,
-                        },
-                    },
-                };
-            }
+module.exports.initTask = function() {
+    let appJsonText = `Creating /app.json`;
+    if (Helper.Project.hasAppJson()) {
+        appJsonText = `Updating /app.json`;
+    }
 
-            if (platformConfig) {
-                p = p.then(() => Helper.Project.updateConfig(platformConfig));
-            }
+    return {
+        title: appJsonText,
+        task: (ctx, task) => {
+            return new Listr([
+                {
+                    title: `Adding ${highlight(ctx.type)} as platform`,
+                    task: (ctx, task) => {
+                        let platformConfig;
+                        if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
+                            platformConfig = {
+                                alexaSkill: {
+                                    nlu: 'alexa',
+                                },
+                            };
+                        } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
+                            platformConfig = {
+                                googleAction: {
+                                    nlu: {
+                                        name: 'dialogflow',
+                                        version: 1,
+                                    },
+                                },
+                            };
+                        }
+                        return Helper.Project.updateConfig(platformConfig);
+                    },
+                }, {
+                    title: `Adding ${highlight(ctx.endpoint)} as endpoint`,
+                    enabled: (ctx) => ctx.endpoint !== Helper.ENDPOINT_NONE,
+                    task: (ctx, task) => {
+                        let info = 'Info: ';
+                        let p = Promise.resolve();
 
-            p.then(() => Helper.Project.updateEndpoint(ctx.endpoint))
-            .then(() => resolve());
-        } catch (err) {
-            reject();
-        }
-    });
+                        return p.then(() => Helper.Project.getEndpoint(ctx.endpoint))
+                            .then((uri) => {
+                                info += 'Endpoint uri: '+uri;
+                                task.skip(info);
+                                return Helper.Project.updateConfig({endpoint: uri});
+                            }).catch((error) => {
+                                info += error.message;
+                                task.skip(info);
+                            });
+                    },
+                },
+            ]);
+        },
+    };
 };
-
 
 module.exports.getTask = function(ctx) {
     let platformsPath = Helper.Project.getPlatformsPath();
@@ -59,9 +80,9 @@ module.exports.getTask = function(ctx) {
             fs.mkdirSync(alexaSkillPath);
         }
 
-        return new Listr([
+        return [
             {
-                title: 'Getting Alexa Skill files',
+                title: 'Getting Alexa Skill project for ASK profile ' + highlight(ctx.askProfile),
                 enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
                     ctx.target === Helper.TARGET_INFO,
                 task: (ctx, task) => {
@@ -87,13 +108,18 @@ module.exports.getTask = function(ctx) {
                                 return Promise.resolve();
                             }
                         }).then(() => {
-                            task.skip(ctx.info);
+                            let info = 'Info: ';
+                            let skillInfo = AlexaHelper.getSkillSimpleInformation();
+                            info += `Skill Name: ${skillInfo.name}
+Skill ID: ${skillInfo.skillId}
+Endpoint: ${skillInfo.endpoint}`;
+                            task.skip(info);
                         });
                     return p;
                 },
             },
             {
-                title: 'Getting Alexa Skill model files',
+                title: 'Getting Alexa Skill model files and saving to /platforms/alexaSkill/models',
                 enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
                     ctx.target === Helper.TARGET_MODEL,
                 task: (ctx) => {
@@ -113,7 +139,7 @@ module.exports.getTask = function(ctx) {
                     let getLocaleSubtasks = [];
                     for (let locale of locales) {
                         getLocaleSubtasks.push({
-                            title: 'Fetching ' + locale,
+                            title: locale,
                             task: (ctx) => {
                                 return AlexaHelper.Ask.askApiGetModel(
                                     ctx,
@@ -126,7 +152,7 @@ module.exports.getTask = function(ctx) {
                     return new Listr(getLocaleSubtasks);
                 },
             },
-        ]);
+        ];
     }
 };
 
@@ -135,56 +161,83 @@ module.exports.buildTask = function(ctx) {
     if (!fs.existsSync(platformsPath)) {
         fs.mkdirSync(platformsPath);
     }
+    //
+
     let buildPlatformTasks = [];
     if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
-            buildPlatformTasks.push({
-                title: 'Building Alexa ',
-                task: () => {
-                    let buildSubTasks = [{
-                        title: 'Creating initial Alexa project files' + Helper.Project.hasAlexaSkill(),
-                        enabled: () => Helper.Project.hasAlexaSkill() === false,
-                        task: (ctx) => {
-                           return AlexaHelper.createAlexaSkill(ctx)
-                               .then(() => Helper.Project.updateEndpoint(ctx.endpoint))
-                               .then(() => Helper.Project.updateConfig({
-                                   alexaSkill: {
-                                       nlu: 'alexa',
-                                   },
-                               })).then(() => {
-                                   if (ctx.invocation) {
-                                       return Helper.Project.updateInvocation(
-                                           ctx.invocation,
-                                           ctx.locales[0]
-                                       );
-                                   }
-                                   return Promise.resolve();
-                               });
-                        },
-                    },
-                        {
-                        title: 'Building Alexa skill.json',
-                        task: () => {
-                            return AlexaHelper.buildSkillAlexa();
-                        },
-                    }, {
-                        title: 'Building Alexa language model',
-                        task: (ctx) => {
-                            let buildLocalesTasks = [];
+        let title = 'Creating /platforms/alexaSkill';
+        let hasAlexaSkill = Helper.Project.hasAlexaSkill();
 
-                            for (let locale of ctx.locales) {
-                                buildLocalesTasks.push({
-                                    title: locale,
-                                    task: () => {
-                                        return AlexaHelper.buildLanguageModelAlexa(locale);
-                                    },
-                                });
-                            }
-                            return new Listr(buildLocalesTasks);
-                        },
-                    }];
-                    return new Listr(buildSubTasks);
+        if (hasAlexaSkill) {
+            title = 'Updating /platforms/alexaSkill';
+        }
+
+        buildPlatformTasks.push({
+            title: title,
+            task: () => {
+                let titleInteractionModel = 'Creating Alexa Interaction Model based on Jovo Language Model in ' + highlight('/models');
+                if (hasAlexaSkill) {
+                    titleInteractionModel = 'Updating Alexa Interaction Model based on Jovo Language Model in ' + highlight('/models');
+                }
+
+                return new Listr([
+                    {
+                    title: 'Creating Alexa project files',
+                    enabled: () => !hasAlexaSkill,
+                    task: () => {
+                        return new Listr([
+                            {
+                                title: 'skill.json',
+                                task: (ctx, task) => {
+                                    return AlexaHelper.createAlexaSkill(ctx)
+                                        .then(() => {
+                                            if (ctx.invocation) {
+                                                return Helper.Project.updateInvocation(
+                                                    ctx.invocation,
+                                                    ctx.locales[0]
+                                                );
+                                            }
+                                            return Promise.resolve();
+                                        })
+                                        .then(() => AlexaHelper.buildSkillAlexa())
+                                        .then(() => wait(500));
+                                },
+                            },
+                        ]);
+                    },
                 },
-            });
+                {
+                    title: 'Updating Alexa project files',
+                    enabled: () => hasAlexaSkill,
+                    task: () => {
+                        return new Listr([
+                            {
+                                title: 'skill.json',
+                                task: (ctx, task) => {
+                                    return AlexaHelper.buildSkillAlexa()
+                                        .then(() => wait(500));
+                                },
+                            },
+                        ]);
+                    },
+                }, {
+                    title: titleInteractionModel,
+                    task: (ctx) => {
+                        let buildLocalesTasks = [];
+                        for (let locale of ctx.locales) {
+                            buildLocalesTasks.push({
+                                title: locale,
+                                task: () => {
+                                    return AlexaHelper.buildLanguageModelAlexa(locale)
+                                        .then(() => wait(500));
+                                },
+                            });
+                        }
+                        return new Listr(buildLocalesTasks);
+                    },
+                }]);
+            },
+        });
     }
     if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
         let googleActionPath = GoogleActionUtil.getPath();
@@ -195,48 +248,61 @@ module.exports.buildTask = function(ctx) {
         if (!fs.existsSync(dialogFlowPath)) {
             fs.mkdirSync(dialogFlowPath);
         }
+        let hasGoogleActionDialogflow = Helper.Project.hasGoogleActionDialogFlow();
+        let title = 'Creating /platforms/googleAction/dialogflow';
+        let titleAgentJson = 'Creating Dialogflow Agent';
+        let titleInteractionModel = 'Creating Language Model based on Jovo Language Model in ' + highlight('/models');
+
+        if (hasGoogleActionDialogflow) {
+            title = 'Updating /platforms/googleAction/dialogflow';
+            titleAgentJson = 'Updating Dialogflow Agent';
+            titleInteractionModel = 'Updating Dialogflow Language Model based on Jovo Language Model in ' + highlight('/models');
+        }
         buildPlatformTasks.push({
-                title: 'Building Google Action (DialogFlow)',
-                task: () => {
-                    let buildSubTasks = [{
-                        title: 'Creating initial GoogleAction/Dialogflow project files' + Helper.Project.hasAlexaSkill(),
-                        enabled: () => Helper.Project.hasGoogleActionDialogFlow() === false,
-                        task: (ctx) => {
-                            return Helper.Project.updateEndpoint(ctx.endpoint)
-                                .then(() => Helper.Project.updateConfig({
-                                    googleAction: {
-                                        nlu: 'dialogflow',
-                                    },
-                                }));
-                        },
-                    }, {
-                        title: 'Building Alexa agent.json',
-                        task: (ctx) => {
-                            return DialogFlowHelper.buildDialogFlowAgent(ctx);
-                        },
-                    }, {
-                        title: 'Building Alexa language model',
-                        task: (ctx) => {
-                            let buildLocalesTasks = [];
+            title: title,
+            task: () => {
+                let buildSubTasks = [{
+                    title: titleAgentJson,
+                    task: (ctx) => {
+                        return new Listr([
+                            {
+                                title: 'agent.json',
+                                task: () => {
+                                    return Promise.resolve();
+                                },
+                            },
+                            {
+                                title: 'package.json',
+                                task: (ctx, task) => {
+                                    return DialogFlowHelper.buildDialogFlowAgent(ctx)
+                                        .then(() => wait(500));
+                                },
+                            },
+                        ]);
+                    },
+                }, {
+                    title: titleInteractionModel,
+                    task: (ctx) => {
+                        let buildLocalesTasks = [];
 
-                            for (let locale of ctx.locales) {
-                                buildLocalesTasks.push({
-                                    title: locale,
-                                    task: () => {
-                                        return DialogFlowHelper
-                                            .buildLanguageModelDialogFlow(locale);
-                                    },
-                                });
-                            }
-                            return new Listr(buildLocalesTasks);
-                        },
-                    }];
-                    return new Listr(buildSubTasks);
-                },
-            });
+                        for (let locale of ctx.locales) {
+                            buildLocalesTasks.push({
+                                title: locale,
+                                task: () => {
+                                    return DialogFlowHelper
+                                        .buildLanguageModelDialogFlow(locale)
+                                        .then(() => wait(500));
+                                },
+                            });
+                        }
+                        return new Listr(buildLocalesTasks);
+                    },
+                }];
+                return new Listr(buildSubTasks);
+            },
+        });
     }
-
-    return new Listr(buildPlatformTasks);
+    return buildPlatformTasks;
 };
 
 module.exports.buildReverseTask = function() {
@@ -289,101 +355,141 @@ module.exports.deployTask = function(ctx) {
     if (!fs.existsSync(platformsPath)) {
         fs.mkdirSync(platformsPath);
     }
+    let deployPlatformTasks = [];
 
-    if (ctx.type === Helper.PLATFORM_ALEXASKILL || ctx.type === Helper.PLATFORM_ALL) {
-        ctx.skillId = AlexaHelper.getSkillId();
+    if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
+        try {
+            ctx.skillId = AlexaHelper.getSkillId();
+        } catch (error) {
+            console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+            return [];
+        }
+        deployPlatformTasks.push({
+            title: 'Deploying Alexa Skill',
+            task: (ctx, task) => {
+                return new Listr([
+                    {
+                        title:
+                            `Creating Alexa Skill project for ASK profile ${highlight(ctx.askProfile)}`, // eslint-disable-line
+                        enabled: (ctx) => _.isUndefined(ctx.skillId),
+                        task: (ctx) => {
+                            ctx.target = Helper.TARGET_ALL;
+                            return AlexaHelper.Ask.checkAsk().then((err) => {
+                                if (err) {
+                                    return Promise.reject(err);
+                                }
+                                return AlexaHelper.Ask.askApiCreateSkill(
+                                    ctx,
+                                    AlexaHelper.getSkillJsonPath()
+                                ).then((skillId) => {
+                                    ctx.skillId = skillId;
+                                    ctx.newSkill = true;
+                                    return AlexaHelper.setAlexaSkillId(skillId);
+                                }).then(() => getSkillStatus(ctx));
+                            });
+                        },
+                    }, {
+                        title: 'Updating Alexa Skill project for ASK profile ' + ctx.askProfile,
+                        enabled: (ctx) => !_.isUndefined(ctx.skillId) &&
+                            _.isUndefined(ctx.newSkill) &&
+                            (ctx.target === Helper.TARGET_ALL || ctx.target === Helper.TARGET_INFO),
+                        task: (ctx, task) => {
+                            return AlexaHelper.Ask.askApiUpdateSkill(
+                                ctx,
+                                AlexaHelper.getSkillJsonPath()
+                            ).then(() => getSkillStatus(ctx)).then(() => {
+                                let info = 'Info: ';
+                                let skillInfo = AlexaHelper.getSkillInformation();
+                                info += `Skill Name: ${skillInfo.name}
+Skill ID: ${skillInfo.skillId}
+Invocation Name: ${skillInfo.invocationName}
+Endpoint: ${skillInfo.endpoint}`;
+                                task.skip(info);
+                                return Promise.resolve();
+                            });
+                        },
+                    }, {
+                        title: 'Deploying Interaction Model, waiting for build',
+                        enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
+                            ctx.target === Helper.TARGET_MODEL,
+                        task: (ctx) => {
+                            let deployLocaleTasks = [];
 
-        return new Listr([
-            {
-                title: 'Creating new skill',
-                enabled: (ctx) => _.isUndefined(ctx.skillId),
-                task: (ctx) => {
-                    ctx.target = Helper.TARGET_ALL;
-                    return AlexaHelper.Ask.checkAsk().then((err) => {
-                        if (err) {
-                            return Promise.reject(err);
-                        }
-                        return AlexaHelper.Ask.askApiCreateSkill(
-                            ctx,
-                            AlexaHelper.getSkillJsonPath()
-                        ).then((skillId) => {
-                            ctx.skillId = skillId;
-                            ctx.newSkill = true;
-                            return AlexaHelper.setAlexaSkillId(skillId);
-                        }).then(() => getSkillStatus(ctx));
-                    });
-                },
-            }, {
-                title: 'Updating skill information',
-                enabled: (ctx) => !_.isUndefined(ctx.skillId) && _.isUndefined(ctx.newSkill) &&
-                    (ctx.target === Helper.TARGET_ALL || ctx.target === Helper.TARGET_INFO),
-                task: (ctx) => {
-                    return AlexaHelper.Ask.askApiUpdateSkill(
-                        ctx,
-                        AlexaHelper.getSkillJsonPath()
-                    ).then(() => getSkillStatus(ctx));
-                },
-            }, {
-                title: 'Deploying language model',
-                enabled: (ctx) => ctx.target === Helper.TARGET_ALL ||
-                    ctx.target === Helper.TARGET_MODEL,
-                task: (ctx) => {
-                    let deployLocaleTasks = [];
-
-                    for (let locale of ctx.locales) {
-                        deployLocaleTasks.push({
-                            title: locale,
-                            task: (ctx) => {
-                                let config = _.cloneDeep(ctx);
-                                config.locale = locale;
-                                return AlexaHelper.Ask.askApiUpdateModel(
-                                    config,
-                                    AlexaHelper.getModelPath(locale),
-                                    locale).then(() => getModelStatus(config));
-                            },
-                        });
-                    }
-                    return new Listr(deployLocaleTasks);
-                },
+                            for (let locale of ctx.locales) {
+                                deployLocaleTasks.push({
+                                    title: locale,
+                                    task: (ctx) => {
+                                        let config = _.cloneDeep(ctx);
+                                        config.locale = locale;
+                                        return AlexaHelper.Ask.askApiUpdateModel(
+                                            config,
+                                            AlexaHelper.getModelPath(locale),
+                                            locale).then(() => getModelStatus(config));
+                                    },
+                                });
+                            }
+                            return new Listr(deployLocaleTasks);
+                        },
+                    },
+                    {
+                        title: 'Uploading to lambda',
+                        enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
+                            ctx.target === Helper.TARGET_LAMBDA) && AlexaHelper.isLambdaEndpoint(),
+                        task: (ctx) => {
+                            try {
+                                let appJson = Helper.Project.getConfig();
+                                let endpoint = AlexaHelper.getSkillJson()
+                                    .manifest.apis.custom.endpoint.uri;
+                                if (!_.startsWith(endpoint, 'arn')) {
+                                    return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
+                                }
+                                ctx.lambdaArn = appJson.endpoint;
+                                ctx.lambdaPath = Helper.Project.getProjectPath();
+                                return AlexaHelper.Ask.askLambdaUpload(ctx);
+                            } catch (err) {
+                                throw err;
+                            }
+                        },
+                    },
+                    {
+                        title: 'Enabling skill',
+                        enabled: (ctx) => !_.isUndefined(ctx.newSkill),
+                        task: (ctx) => {
+                            return AlexaHelper.Ask.askApiEnableSkill(ctx);
+                        },
+                    },
+                ]);
             },
-            {
-                title: 'Uploading to lambda',
-                enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
-                    ctx.target === Helper.TARGET_LAMBDA),
-                task: (ctx) => {
-                    try {
-                        let appJson = Helper.Project.getConfig();
-                        let endpoint = AlexaHelper.getSkillJson().manifest.apis.custom.endpoint.uri;
-                        if (!_.startsWith(endpoint, 'arn')) {
-                            return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
-                        }
-                        ctx.lambdaArn = appJson.endpoint;
-                        ctx.lambdaPath = Helper.Project.getProjectPath();
-                        return AlexaHelper.Ask.askLambdaUpload(ctx);
-                    } catch (err) {
-                        throw err;
-                    }
-                },
-            },
-            {
-                title: 'Enabling skill',
-                enabled: (ctx) => !_.isUndefined(ctx.newSkill),
-                task: (ctx) => {
-                    return AlexaHelper.Ask.askApiEnableSkill(ctx);
-                },
-            },
-        ]);
+        });
     }
-    if (ctx.type === Helper.PLATFORM_GOOGLEACTION || ctx.type === Helper.PLATFORM_ALL) {
-        return new Listr([
-            {
-                title: 'Creating zip file',
-                task: (ctx, task) => {
-                    return DialogFlowHelper.zip().then(() => task.skip('bla'));
-                },
+    if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
+        deployPlatformTasks.push({
+            title: 'Deploying Google Action',
+            task: (ctx, task) => {
+                return new Listr([
+                    {
+                        title: 'Creating file /googleAction/dialogflow_agent.zip',
+                        task: (ctx, task) => {
+                            return DialogFlowHelper.zip().then(() => {
+                                let info = 'Info: ';
+
+                                info += `Language model: `;
+                                for (let locale of Helper.Project.getLocales()) {
+                                    info += `${locale} `;
+                                }
+                                info += '\n';
+                                info += `Fulfillment Endpoint: ${Helper.Project.getConfig().endpoint}`; // eslint-disable-line
+                                info += '\n';
+                                info += `-> Use the Dialogflow Agent import feature at https://console.dialogflow.com `; // eslint-disable-line
+                                task.skip(info);
+                            });
+                        },
+                    },
+                ]);
             },
-        ]);
+        });
     }
+    return deployPlatformTasks;
 };
 
 /**
@@ -434,3 +540,4 @@ function wait(ms) {
         }, ms);
     });
 }
+

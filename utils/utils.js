@@ -3,7 +3,8 @@ const chalk = require('chalk');
 const logSymbols = require('log-symbols');
 const figures = require('figures');
 const elegantSpinner = require('elegant-spinner');
-
+const pathSep = require('path');
+const fs = require('fs');
 /**
  * From Listr utils
  */
@@ -36,4 +37,19 @@ exports.getSymbol = (task, options) => {
     }
 
     return ' ';
+};
+
+
+exports.deleteFolderRecursive = (path) => {
+    if ( fs.existsSync(path) ) {
+        fs.readdirSync(path).forEach(function(file, index) {
+            let curPath = path + pathSep + file;
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
 };

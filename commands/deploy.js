@@ -7,7 +7,6 @@ const JovoRenderer = require('../utils/jovoRenderer');
 const deployTask = require('./tasks').deployTask;
 const Validator = require('../utils/validator');
 
-
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
     // Stack Trace
@@ -17,7 +16,7 @@ process.on('unhandledRejection', (reason, p) => {
 module.exports = function(vorpal) {
     vorpal
         .command('deploy', 'test')
-        .description('create new project into given directory')
+        .description('Deploys the project to the voice platform.')
         .option('-l, --locale <locale>', 'Locale')
         .option('-p, --platform <platform>', 'alexa, dialogflow')
         .option('-t, --target <target>', 'target')
@@ -28,26 +27,29 @@ module.exports = function(vorpal) {
                 Validator.isValidPlatform(args.options.platform) &&
                 Validator.isValidAskProfile(args.options['ask-profile']);
         })
-        .action((args) => {
+        .action((args, callback) => {
             const tasks = new Listr([], {
                 renderer: JovoRenderer,
                 collapse: false,
             });
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: args.options.platform || Helper.Project.getProjectPlatform(),
+                type: Helper.Project.getPlatform(args.options.platform),
                 target: args.options.target || Helper.DEFAULT_TARGET,
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };
-            tasks.add({
-                title: 'Deploying',
-                task: (ctx, task) => deployTask(ctx, task),
-            });
+            if (config.type.length === 0) {
+                console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+                callback();
+            }
 
+            deployTask(config).forEach((t) => tasks.add(t));
             tasks.run(config).then(() => {
-                console.log();
-                console.log('  Deployment completed. You\'re all set');
-                console.log();
+                if (tasks.tasks.length > 0) {
+                    console.log();
+                    console.log('  Deployment completed.');
+                    console.log();
+                }
             }).catch((err) => {
                 console.log();
                 console.error(err.message);

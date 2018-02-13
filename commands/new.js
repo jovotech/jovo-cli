@@ -3,31 +3,41 @@
 const Listr = require('listr');
 const Helper = require('./../helper/lmHelper');
 const Validator = require('./../utils/validator');
-
+const chalk = require('chalk');
 const Prompts = require('./../utils/prompts');
 const JovoRenderer = require('../utils/jovoRenderer');
 const buildTask = require('./tasks').buildTask;
+const initTask = require('./tasks').initTask;
 const deployTask = require('./tasks').deployTask;
-
+const _ = require('lodash');
 
 module.exports = function(vorpal) {
     vorpal
-        .command('new <directory>', 'test')
-        .description('create new project into given directory')
-        .option('-t, --template <templateName>', 'Create new project based on specific template.')
-        .option('-l, --locale <locale>', 'Locale')
-        .option('-b, --build <platform>', 'alexa, dialogflow')
-        .option('-d, --deploy', 'deploy')
-        .option('--ff <platform>', 'fast')
-        .option('-i, --invocation <invocation>', 'invocation')
-        .option('--ask-profile <askProfile>', 'ask profile')
-        .option('--endpoint <endpoint>', 'type of endpoint')
+        .command('new [directory]')
+        .description(`Create a new Jovo project`)
+        .option('-t, --template <template>',
+            'Used to specify which template should be used. \n\t\t\t\tDefault: helloworld')
+        .option('-l, --locale <locale>',
+            'Language of the interaction models in the models folder. \n\t\t\t\t<en-US|de-dE|etc> Default: en-US')
+        .option('-i, --init [platform]',
+            'init \n\t\t\t\t<alexaSkill|googleAction>')
+        .option('-b, --build',
+            'Speed up the creation of your voice application, by building the platform specific files into the platforms folder right at the beginning.')
+        .option('-d, --deploy',
+            'Deploy the platform files to their respective developer site. It will deploy to the platform you specified with the build. The Dialogflow API v1 does not support programmatic agent creation. Therefor you are not able to deploy the application using the Jovo CLI. But you can use the CLI to create zip file, which you can then import into Dialogflow.')
+        .option('--ff [platform]',
+            'Fast forward replaces --init <platform> --build --deploy')
+        .option('--invocation <invocation>',
+            'Sets the invocation name (Alexa Skill)')
+        .option('--ask-profile <askProfile>',
+            'Name of use ASK profile \n\t\t\t\tDefault: default')
+        .option('--endpoint <endpoint>',
+            'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
 
         .validate(function(args) {
             return Validator.isValidProjectName(args.directory) &&
                 Validator.isValidTemplate(args.options.template) &&
                 Validator.isValidLocale(args.options.locale) &&
-                Validator.isValidPlatform(args.options.build) &&
                 Validator.isValidPlatform(args.options.ff) &&
                 Validator.isValidAskProfile(args.options['ask-profile'] &&
                 Validator.isValidEndpoint(args.options.endpoint));
@@ -39,6 +49,25 @@ module.exports = function(vorpal) {
                 renderer: JovoRenderer,
                 collapse: false,
             });
+            let config = {
+                type: args.options.init,
+            };
+
+
+            if (!args.directory) {
+                p = p.then(() => {
+                    return Prompts.promptNewProject().then((answers) => {
+                        args.directory = answers.directory;
+                        if (!Validator.isValidProjectName(args.directory)) {
+                            callback();
+                        } else {
+                            return Promise.resolve();
+                        }
+                    });
+                });
+            }
+
+
             // asks for approval when projectfolder exists
             if (Helper.Project.hasExistingProject(args.directory)) {
                 p = p.then(() => {
@@ -53,39 +82,78 @@ module.exports = function(vorpal) {
                 });
             }
 
+            if (args.options.init) {
+                if (typeof args.options.init === 'boolean') {
+                    p = p.then(() => {
+                        return Prompts.promptForPlatform().then((answers) => {
+                            config.type = answers.platform;
+                            console.log();
+                            console.log();
+                        });
+                    });
+                }
+            }
+
+            if (args.options.ff) {
+                if (typeof args.options.ff === 'boolean') {
+                    p = p.then(() => {
+                        return Prompts.promptForPlatform().then((answers) => {
+                            config.type = answers.platform;
+                            console.log();
+                            console.log();
+                        });
+                    });
+                }
+                config.type = args.options.ff;
+            }
+
+
+            if (args.options.build) {
+                p = p.then(() => {
+                    if (!args.options.init) {
+                        console.log('Please use --init <platform> if you use --build');
+                        callback();
+                    }
+                });
+            }
+            if (args.options.deploy) {
+                p = p.then(() => {
+                    if (!args.options.build) {
+                        console.log('Please use --build if you use --deploy');
+                        callback();
+                    }
+                    if (!args.options.init) {
+                        console.log('Please use --init <platform> if you use --build');
+                        callback();
+                    }
+                });
+            }
+
             p = p.then(() => {
-                console.log('----------------------------------------------------');
                 console.log('  I\'m setting everything up');
                 console.log();
-
-                let config = {
+                _.merge(config, {
                     projectname: args.directory,
                     locales: Helper.Project.getLocales(args.options.locale),
                     template: args.options.template || Helper.DEFAULT_TEMPLATE,
-                    type: args.options.build || args.options.ff,
                     invocation: args.options.invocation,
                     endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                     askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
-                };
+                });
                 Helper.Project.setProjectPath(args.directory);
-
                 tasks.add({
-                    title: 'Creating new directory "'+config.projectname+'"',
+                    title: `Creating new directory /${chalk.white.bold(config.projectname)}`,
                     task: (ctx, task) => {
-                        // return Promise.resolve();
-                        // task.skip('Info: Created files\n Lorem \n ipsum');
                         return Helper.Project.createEmptyProject(
                             ctx.projectname,
                             ctx.template,
                             ctx.locales[0]);
-                        // .then(() => {
-                        //     return Helper.Project.updateModelLocale(ctx.locales[0]);
-                        // });
                     },
                 });
 
                 tasks.add({
-                    title: 'Downloading and extracting "'+config.template+'"',
+                    title:
+                        `Downloading and extracting template ${chalk.white.bold(config.template)}`,
                     task: (ctx) => {
                         return Helper.Project.downloadAndExtract(
                             ctx.projectname,
@@ -98,66 +166,56 @@ module.exports = function(vorpal) {
                     },
                 });
 
+                // init project
+                if (args.options.init || args.options.ff) {
+                    // init project
+                    tasks.add({
+                        title: 'Initializing',
+                        task: (ctx) => {
+                            return new Listr([initTask()]);
+                        },
+                    });
+                }
+
+
                 // build project
                 if (args.options.build || args.options.ff) {
-                    // ask for platform
-                    if (typeof config.type === 'boolean' || config.type === Helper.PLATFORM_NONE) {
-                        p = p.then(() => {
-                            return Prompts.promptForPlatform().then((answers) => {
-                                config.type = answers.platform;
-                                console.log();
-                                console.log();
-                            });
-                        });
-                    }
-
-                    // tasks.add({
-                    //     title: 'bla',
-                    //     task: () => {
-                    //         return new Promise((resolve, reject) => {
-                    //             setTimeout(resolve, 2000);
-                    //         });
-                    //     },
-                    // });
+                    // build project
                     tasks.add({
-                            title: 'Building language model',
-                            task: (ctx, task) => buildTask(ctx, task),
-                        }
-                    );
+                        title: 'Building',
+                        task: (ctx) => {
+                            return new Listr(buildTask(ctx));
+                        },
+                    });
                 }
                 // deploy project
                 if (args.options.deploy || args.options.ff) {
                     tasks.add({
                         title: 'Deploying',
-                        task: (ctx, task) => deployTask(ctx, task),
+                        task: (ctx) => {
+                            return new Listr(deployTask(ctx));
+                        },
                     });
                 }
 
                 // install npm dependencies
                 tasks.add({
-                    title: 'Installing NPM dependecies',
+                    title: 'Installing npm dependencies',
                     task: () => Helper.Project.runNpmInstall(),
                     // task: () => Promise.resolve(),
 
                 });
-
                 return Promise.resolve(config);
             });
-
 
             p.then((config) => {
                 return tasks.run(config).then(() => {
                     console.log();
-                    console.log('  Installation completed. You\'re all set');
+                    console.log('  Installation completed.');
                     console.log();
                 }).catch((err) => {
                     console.error(err);
                 });
-            }).then(() => {
-                console.log('done');
             });
-        })
-        .help(() => {
-            console.log('new HELP');
         });
 };
