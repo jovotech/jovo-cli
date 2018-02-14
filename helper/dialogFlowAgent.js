@@ -32,23 +32,16 @@ class DialogFlowAgent {
         if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
             fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
         }
-        fs.readdirSync(DialogFlowUtil.getIntentsFolderPath()).forEach(function(file, index) {
-            let curPath = DialogFlowUtil.getIntentsFolderPath() + pathSep + file;
-            fs.unlinkSync(curPath);
-        });
 
-        if (fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
-            fs.readdirSync(DialogFlowUtil.getEntitiesFolderPath()).forEach(function(file, index) {
-                let curPath = DialogFlowUtil.getEntitiesFolderPath() + pathSep + file;
-                fs.unlinkSync(curPath);
-            });
+        // take primary language from locales
+        let primLanguage = require('./lmHelper').Project.getLocales().filter((lang) => {
+            return this.config.locale.substr(0, 2) === lang.substr(0, 2);
+        });
+        let outputLocale = this.config.locale.toLowerCase();
+        if (primLanguage.length === 1) {
+            outputLocale = this.config.locale.substr(0, 2);
         }
-        // create package.json
-        fs.writeFileSync(DialogFlowUtil.getPackageJsonPath(),
-            JSON.stringify({
-                version: '1.0.0',
-            }, null, '\t')
-        );
+        // throw Error(outputLocale);
 
 
         for (let intent of model.intents) {
@@ -137,7 +130,7 @@ class DialogFlowAgent {
                                 }
                                 entityValues.push(dfEntityValueObj);
                             }
-                            let entityEntriesFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '_entries_' + this.config.locale.toLowerCase() + '.json';
+                            let entityEntriesFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '_entries_' + outputLocale + '.json';
                             fs.writeFileSync(entityEntriesFilePath,
                                 JSON.stringify(entityValues, null, '\t')
                             );
@@ -148,12 +141,43 @@ class DialogFlowAgent {
                 }
             }
 
-            if (_.get(intent, 'googleAction.dialogflow')) {
-                _.merge(dfIntentObj, intent.googleAction.dialogflow);
+            if (_.get(intent, 'dialogflow')) {
+                _.merge(dfIntentObj, intent.dialogflow);
             }
 
             fs.writeFileSync(intentPath, JSON.stringify(dfIntentObj, null, '\t'));
 
+            // dialogflow intents form locale.json
+            if (_.get(model, 'dialogflow.intents')) {
+                for (let modelDialogflowIntent of _.get(model, 'dialogflow.intents')) {
+                    let path = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '.json';
+                    fs.writeFileSync(path, JSON.stringify(modelDialogflowIntent, null, '\t'));
+                    // user says
+                    if (modelDialogflowIntent.userSays) {
+                        let pathUserSays = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '_usersays_'+ outputLocale + '.json';
+                        fs.writeFileSync(pathUserSays, JSON.stringify(modelDialogflowIntent.userSays, null, '\t'));
+                        delete modelDialogflowIntent.userSays;
+                    }
+                }
+            }
+
+            // dialogflow entities form locale.json
+            if (_.get(model, 'dialogflow.entities')) {
+                // create entities folders + files
+                if (!fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
+                    fs.mkdirSync(DialogFlowUtil.getEntitiesFolderPath());
+                }
+                for (let modelDialogflowEntity of _.get(model, 'dialogflow.entities')) {
+                    let path = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '.json';
+                    fs.writeFileSync(path, JSON.stringify(modelDialogflowEntity, null, '\t'));
+                    // entries
+                    if (modelDialogflowEntity.entries) {
+                        let pathEntries = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '_usersays_'+ outputLocale + '.json';
+                        fs.writeFileSync(pathEntries, JSON.stringify(modelDialogflowEntity.entries, null, '\t'));
+                        delete modelDialogflowEntity.entries;
+                    }
+                }
+            }
 
             // handle user says files for intent
 
@@ -219,65 +243,9 @@ class DialogFlowAgent {
                     count: 0,
                 });
             }
-            let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + this.config.locale.toLowerCase() + '.json';
+            let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + outputLocale + '.json';
             fs.writeFileSync(intentUserSaysFilePath, JSON.stringify(dialogFlowIntentUserSays, null, '\t'));
         }
-
-        // DEFAULT WELCOME INTENT
-
-        let defaultWelcomeIntentObj = {
-            name: 'Default Welcome Intent',
-            auto: true,
-            webhookUsed: true,
-            events: [
-                {
-                    name: 'WELCOME',
-                },
-            ],
-            responses: [
-                {
-                    resetContexts: false,
-                    action: 'input.welcome',
-                },
-            ],
-        };
-        fs.writeFileSync(DialogFlowUtil.getIntentsFolderPath() + 'Default Welcome Intent.json', JSON.stringify(defaultWelcomeIntentObj, null, '\t'));
-
-
-        // DEFAULT FALLBACK INTENT
-        let defaultFallbackIntentObj = {
-            name: 'Default Fallback Intent',
-            auto: true,
-            webhookUsed: false,
-            responses: [
-                {
-                    resetContexts: false,
-                    action: 'input.unknown',
-                    messages: [
-                        {
-                            type: 0,
-                            lang: this.config.locale.toLowerCase().substr(0, 2),
-                            speech: [
-                                'I didn\u0027t get that. Can you say it again?',
-                                'I missed what you said. Say it again?',
-                                'Sorry, could you say that again?',
-                                'Sorry, can you say that again?',
-                                'Can you say that again?',
-                                'Sorry, I didn\u0027t get that.',
-                                'Sorry, what was that?',
-                                'One more time?',
-                                'What was that?',
-                                'Say that again?',
-                                'I didn\u0027t get that.',
-                                'I missed that.',
-                            ],
-                        },
-                    ],
-                },
-            ],
-            fallbackIntent: true,
-        };
-        fs.writeFileSync(DialogFlowUtil.getIntentsFolderPath() + 'Default Fallback Intent.json', JSON.stringify(defaultFallbackIntentObj, null, '\t'));
     }
 }
 

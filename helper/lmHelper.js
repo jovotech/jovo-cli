@@ -36,7 +36,7 @@ const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
-// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\test2';
+// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\final5';
 
 
 module.exports.Project = {
@@ -237,8 +237,14 @@ module.exports.Project = {
             let today = new Date();
             today = today.toISOString().substring(0, 10);
             target = target + today + '.json';
-            copyFile(this.getModelPath(locale), target);
-            resolve();
+            // copyFile(this.getModelPath(locale), target);
+            fs.writeFile(target, JSON.stringify(this.getModel(locale), null, '\t'), function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
         });
     },
 
@@ -250,6 +256,10 @@ module.exports.Project = {
      */
     saveModel: function(model, locale) {
         return new Promise((resolve, reject) => {
+            if (!fs.existsSync(this.getModelsPath())) {
+                fs.mkdirSync(this.getModelsPath());
+            }
+
             fs.writeFile(this.getModelPath(locale), JSON.stringify(model, null, '\t'), function(err) {
                 if (err) {
                     reject(err);
@@ -373,6 +383,69 @@ module.exports.Project = {
                 }
                 resolve();
             });
+        });
+    },
+
+    updatePlatformConfig: function(platform) {
+        return new Promise((resolve, reject) => {
+            let config;
+            try {
+                config = this.getConfig();
+            } catch (err) {
+                config = {};
+            }
+
+            if (platform === PLATFORM_ALEXASKILL) {
+                if (!config.alexaSkill) {
+                    _.extend(config, {
+                        alexaSkill: {
+                            nlu: 'alexa',
+                        },
+                    });
+                }
+            } else if (platform === PLATFORM_GOOGLEACTION) {
+                if (!config.googleAction) {
+                    _.extend(config, {
+                        googleAction: {
+                            nlu: {
+                                name: 'dialogflow',
+                                version: 1,
+                            },
+                        },
+                    });
+                }
+            }
+            fs.writeFile(this.getConfigPath(), JSON.stringify(config, null, '\t'), function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+    },
+
+    updateModelPlatformDefault: function(platform) {
+        return new Promise((resolve, reject) => {
+            let p = Promise.resolve();
+            for (let locale of this.getLocales()) {
+                let model = this.getModel(locale);
+
+                if (platform === PLATFORM_ALEXASKILL) {
+                    const AlexaSkill = require('./alexaUtil');
+                    if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
+                        let result = _.unionBy(_.get(model, 'alexa.interactionModel.languageModel.intents'), AlexaSkill.getDefaultIntents(), 'name');
+                        _.set(model, 'alexa.interactionModel.languageModel.intents', result);
+                    } else {
+                        _.set(model, 'alexa.interactionModel.languageModel.intents', AlexaSkill.getDefaultIntents());
+                    }
+                } else if (platform === PLATFORM_GOOGLEACTION) {
+                    const DialogFlow = require('./dialogflowUtil');
+                    _.set(model, 'dialogflow.intents', DialogFlow.getDefaultIntents());
+                }
+                p = p.then(() => this.saveModel(model, locale));
+            }
+            p.then(() => resolve());
         });
     },
 

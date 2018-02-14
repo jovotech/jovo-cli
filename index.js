@@ -20,7 +20,7 @@ if (process.argv[2] !== 'new' &&
     versionArg.indexOf(process.argv[2]) === -1 &&
     process.argv[2] !== 'help') {
     if (!Helper.Project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-        console.log('Please go to a valid Jovo project directory.');
+        console.log('To use this command, please go into the directory of a valid Jovo project.');
         process.exit(1);
     }
 }

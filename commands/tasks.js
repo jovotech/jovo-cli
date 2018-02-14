@@ -9,6 +9,7 @@ const highlight = require('chalk').white.bold;
 const fs = require('fs');
 const Listr = require('listr');
 const _ = require('lodash');
+const pathSep = require('path').sep;
 const Prompts = require('./../utils/prompts');
 module.exports.newTask = function(ctx) {
 
@@ -27,24 +28,12 @@ module.exports.initTask = function() {
                 {
                     title: `Adding ${highlight(ctx.type)} as platform`,
                     task: (ctx, task) => {
-                        let platformConfig;
-                        if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
-                            platformConfig = {
-                                alexaSkill: {
-                                    nlu: 'alexa',
-                                },
-                            };
-                        } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
-                            platformConfig = {
-                                googleAction: {
-                                    nlu: {
-                                        name: 'dialogflow',
-                                        version: 1,
-                                    },
-                                },
-                            };
-                        }
-                        return Helper.Project.updateConfig(platformConfig);
+                        return Helper.Project.updatePlatformConfig(ctx.type);
+                    },
+                }, {
+                    title: `Adding platform specific properties to app.json`,
+                    task: (ctx, task) => {
+                        return Helper.Project.updateModelPlatformDefault(ctx.type);
                     },
                 }, {
                     title: `Adding ${highlight(ctx.endpoint)} as endpoint`,
@@ -284,7 +273,20 @@ module.exports.buildTask = function(ctx) {
                     title: titleInteractionModel,
                     task: (ctx) => {
                         let buildLocalesTasks = [];
+                        // delete old folder
+                        if (fs.existsSync(DialogFlowHelper.getIntentsFolderPath())) {
+                            fs.readdirSync(DialogFlowHelper.getIntentsFolderPath()).forEach(function(file, index) { //eslint-disable-line
+                                let curPath = DialogFlowHelper.getIntentsFolderPath() + pathSep + file; //eslint-disable-line
+                                fs.unlinkSync(curPath);
+                            });
+                        }
 
+                        if (fs.existsSync(DialogFlowHelper.getEntitiesFolderPath())) {
+                            fs.readdirSync(DialogFlowHelper.getEntitiesFolderPath()).forEach(function(file, index) { //eslint-disable-line
+                                let curPath = DialogFlowHelper.getEntitiesFolderPath() + pathSep + file; //eslint-disable-line
+                                fs.unlinkSync(curPath);
+                            });
+                        }
                         for (let locale of ctx.locales) {
                             buildLocalesTasks.push({
                                 title: locale,

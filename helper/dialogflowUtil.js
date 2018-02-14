@@ -77,18 +77,8 @@ module.exports = {
     createEmptyAgentJson: function(locales) {
         let agentJson = {
             description: '',
-            language: Helper.DEFAULT_LOCALE.substr(0, 2),
-            supportedLanguages: [],
+            // language: Helper.DEFAULT_LOCALE.substr(0, 2),
         };
-
-        for (let locale of locales) {
-            agentJson.supportedLanguages.push(locale.toLowerCase());
-        }
-
-        if (locales.length === 1) {
-            agentJson.language = locales[0].substr(0, 2);
-        }
-
 
         return agentJson;
     },
@@ -125,14 +115,48 @@ module.exports = {
                     }
                 }
 
+
+                // setup languages
+                if (ctx.locales.length === 1) {
+                    _.set(agent, 'language', ctx.locales[0].substr(0, 2));
+                    delete agent.supportedLanguages;
+                } else {
+                    let primLanguages = {};
+                    let supportedLanguages = {};
+                    for (let locale of ctx.locales) {
+                        primLanguages[locale.substr(0, 2)] = '';
+                        supportedLanguages[locale.toLowerCase()] = '';
+
+                        let findings = ctx.locales.filter((loc) => {
+                            return locale.substr(0, 2) === loc.substr(0, 2);
+                        });
+                        if (findings.length === 1) {
+                            delete supportedLanguages[locale.toLowerCase()];
+                            supportedLanguages[locale.toLowerCase().substr(0, 2)] = '';
+                        }
+                    }
+                    if (Object.keys(primLanguages) === 1) {
+                        _.set(agent, 'language', Object.keys(primLanguages)[0]);
+                    } else {
+                        if (Object.keys(primLanguages).indexOf('en')) {
+                            _.set(agent, 'language', 'en');
+                        } else {
+                            _.set(agent, 'language', Object.keys(primLanguages)[0]);
+                        }
+
+                        agent.supportedLanguages = Object.keys(supportedLanguages);
+                    }
+                }
+
                 if (_.get(config, 'googleAction.dialogflow.agent')) {
                     _.merge(agent, config.googleAction.dialogflow.agent);
                 }
-
-                agent.supportedLanguages = [];
-                for (let locale of ctx.locales) {
-                    agent.supportedLanguages.push(locale.toLowerCase());
-                }
+                // create package.json
+                fs.writeFileSync(this.getPackageJsonPath(),
+                    JSON.stringify({
+                        version: '1.0.0',
+                    }, null, '\t')
+                );
 
                 fs.writeFile(this.getAgentJsonPath(), JSON.stringify(agent, null, '\t'), function(err) {
                     if (err) {
@@ -147,6 +171,27 @@ module.exports = {
         });
     },
 
+    getDefaultIntents: function() {
+        return [
+            {
+                'name': 'Default Fallback Intent',
+                'auto': true,
+                'webhookUsed': true,
+                'fallbackIntent': true,
+            },
+            {
+                'name': 'Default Welcome Intent',
+                'auto': true,
+                'webhookUsed': true,
+                'events': [
+                    {
+                        'name': 'WELCOME',
+                    },
+                ],
+            },
+        ];
+    },
+
     /**
      * Builds Dialog Flow language model files from Jovo model
      * @param {string} locale
@@ -156,6 +201,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             try {
                 const DialogFlowAgent = require('./dialogFlowAgent').DialogFlowAgent;
+
                 let dfa = new DialogFlowAgent({locale: locale});
                 dfa.transform(Helper.Project.getModel(locale));
                 resolve();
@@ -198,6 +244,9 @@ module.exports = {
             archive.pipe(output);
             let file1 = this.getPath() + path.sep + 'package.json';
             archive.append(fs.createReadStream(file1), {name: 'package.json'});
+            let file2 = this.getPath() + path.sep + 'agent.json';
+            archive.append(fs.createReadStream(file2), {name: 'agent.json'});
+
             archive.directory(this.getIntentsFolderPath(), 'intents');
             if (fs.existsSync(this.getEntitiesFolderPath())) {
                 archive.directory(this.getEntitiesFolderPath(), 'entities');

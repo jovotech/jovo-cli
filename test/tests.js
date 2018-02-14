@@ -27,12 +27,17 @@ let deleteFolderRecursive = function(path) {
     }
 };
 
+before(function(done) {
+    this.timeout(5000);
+    deleteFolderRecursive(folder);
+    done();
+});
 
 describe('new <project>', function() {
     it('should create a project', function(done) {
         this.timeout(50000);
 
-        let child = spawn('node', ['jovo.js', 'new', folder], {
+        let child = spawn('node', ['index.js', 'new', folder, '-t', 'helloworldtest'], {
         });
         child.stdout.on('data', (data) => {
             if (data.indexOf('Installation completed.') > -1) {
@@ -64,7 +69,7 @@ describe('new <project>', function() {
 describe('bst-proxy', function() {
     it('should start the webhook without errors', function(done) {
         this.timeout(15000);
-        let child = spawn('node', ['..'+path.sep+'jovo.js', 'run', 'index.js', '--bst-proxy'], {
+        let child = spawn('node', ['..'+path.sep+'index.js', 'run', 'index.js', '--bst-proxy'], {
             cwd: folder,
         });
         let fullData = '';

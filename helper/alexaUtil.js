@@ -399,6 +399,33 @@ module.exports = {
     },
 
     /**
+     * Default Alexa Intents
+     * @return {Array<*>}
+     */
+    getDefaultIntents: function() {
+        return [
+            {
+                'name': 'AMAZON.CancelIntent',
+                'samples': [
+
+                ],
+            },
+            {
+                'name': 'AMAZON.HelpIntent',
+                'samples': [
+
+                ],
+            },
+            {
+                'name': 'AMAZON.StopIntent',
+                'samples': [
+
+                ],
+            },
+        ];
+    },
+
+    /**
      * Saves Skill ID to .ask/config
      * @param {string} skillId
      * @return {Promise<any>}

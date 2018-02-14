@@ -15,20 +15,26 @@ const buildReverseTask = require('./tasks').buildReverseTask;
 const deployTask = require('./tasks').deployTask;
 
 
-// Helper.Project.validateModel('en-US');
-// process.exit();
 
 module.exports = function(vorpal) {
     vorpal
-        .command('build', 'test')
+        .command('build')
         .description('Build platform-specific language models based on jovo models folder.')
-        .option('-l, --locale <locale>', 'Locale')
-        .option('-p, --platform <platform>', 'alexa, dialogflow')
-        .option('-d, --deploy', 'deploy')
-        .option('-r, --reverse', 'from alexa')
-        .option('-t, --target <target>', 'target')
-        .option('--ask-profile <askProfile>', 'ask profile')
-        .option('--endpoint <endpoint>', 'type of endpoint')
+        .option('-l, --locale <locale>',
+            'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: en-US')
+        .option('-p, --platform <platform>',
+            'Platform \n\t\t\t\t <alexaSkill|googleAction>')
+        .option('-d, --deploy',
+            'Runs deploy after build')
+        .option('-r, --reverse',
+            'Builds Jovo language model from Alexa Interaction Model')
+        .option('-t, --target <target>',
+            'Target of build \n\t\t\t\t<info|model> Default: all')
+        .option('--endpoint <endpoint>',
+            'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
+        .option('\n')
+        .option('--ask-profile <askProfile>',
+            'Name of use ASK profile \n\t\t\t\tDefault: default')
         .validate(function(args) {
             return Validator.isValidLocale(args.options.locale) &&
                 Validator.isValidPlatform(args.options.platform) &&
@@ -116,7 +122,6 @@ module.exports = function(vorpal) {
                             });
                         }
                     }
-
                     return tasks.run(config).then(() => {
                     console.log();
                     console.log('  Installation completed.');

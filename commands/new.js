@@ -16,17 +16,17 @@ module.exports = function(vorpal) {
         .command('new [directory]')
         .description(`Create a new Jovo project`)
         .option('-t, --template <template>',
-            'Used to specify which template should be used. \n\t\t\t\tDefault: helloworld')
+            'Name of the template. \n\t\t\t\tDefault: helloworld')
         .option('-l, --locale <locale>',
-            'Language of the interaction models in the models folder. \n\t\t\t\t<en-US|de-dE|etc> Default: en-US')
+            'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: en-US')
         .option('-i, --init [platform]',
-            'init \n\t\t\t\t<alexaSkill|googleAction>')
+            'Runs init after new \n\t\t\t\t<alexaSkill|googleAction>')
         .option('-b, --build',
-            'Speed up the creation of your voice application, by building the platform specific files into the platforms folder right at the beginning.')
+            'Runs build after new/init.')
         .option('-d, --deploy',
-            'Deploy the platform files to their respective developer site. It will deploy to the platform you specified with the build. The Dialogflow API v1 does not support programmatic agent creation. Therefor you are not able to deploy the application using the Jovo CLI. But you can use the CLI to create zip file, which you can then import into Dialogflow.')
+            'Runs deploy after new/init/build')
         .option('--ff [platform]',
-            'Fast forward replaces --init <platform> --build --deploy')
+            'Fast forward runs --init <platform> --build --deploy')
         .option('--invocation <invocation>',
             'Sets the invocation name (Alexa Skill)')
         .option('--ask-profile <askProfile>',
@@ -202,8 +202,6 @@ module.exports = function(vorpal) {
                 tasks.add({
                     title: 'Installing npm dependencies',
                     task: () => Helper.Project.runNpmInstall(),
-                    // task: () => Promise.resolve(),
-
                 });
                 return Promise.resolve(config);
             });

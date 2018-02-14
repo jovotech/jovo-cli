@@ -15,12 +15,17 @@ process.on('unhandledRejection', (reason, p) => {
 
 module.exports = function(vorpal) {
     vorpal
-        .command('deploy', 'test')
+        .command('deploy')
         .description('Deploys the project to the voice platform.')
-        .option('-l, --locale <locale>', 'Locale')
-        .option('-p, --platform <platform>', 'alexa, dialogflow')
-        .option('-t, --target <target>', 'target')
-        .option('--ask-profile <askProfile>', 'ask profile')
+        .option('-l, --locale <locale>',
+            'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: en-US')
+        .option('-p, --platform <platform>',
+            'Platform \n\t\t\t\t <alexaSkill|googleAction>')
+        .option('-t, --target <target>',
+            'Target of deployment \n\t\t\t\t<info|model|lambda|all> Default: all')
+        .option('\n')
+        .option('--ask-profile <askProfile>',
+            'Name of use ASK profile \n\t\t\t\tDefault: default')
         .validate(function(args) {
             return Validator.isValidLocale(args.options.locale) &&
                 Validator.isValidDeployTarget(args.options.target) &&

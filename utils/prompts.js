@@ -54,21 +54,6 @@ module.exports = {
     },
 
     /**
-     * Asks for Skill ID
-     * @return {Promise}
-     */
-    promptForSkillId: function() {
-        let questions = [
-            {
-                type: 'input',
-                name: 'skillId',
-                message: 'What\'s the skill id?',
-            },
-        ];
-        return inquirer.prompt(questions);
-    },
-
-    /**
      * Asks for Skill ID (list)
      * @param {Array<*>} choices
      * @return {Promise}

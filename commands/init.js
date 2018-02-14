@@ -12,15 +12,21 @@ const Helper = require('../helper/lmHelper');
 
 module.exports = function(vorpal) {
     vorpal
-        .command('init [platform]', 'test')
+        .command('init [platform]')
         .description('Initializes platform-specific projects in app.json.')
-        .option('-i, --init [platform]', 'alexa, dialogflow')
-        .option('-b, --build', 'alexa, dialogflow')
-        .option('-d, --deploy', 'deploy')
-        .option('-l, --locale <locale>', 'Locale')
-        .option('-t, --target <target>', 'target')
-        .option('--ask-profile <askProfile>', 'ask profile')
-        .option('-e, --endpoint <endpoint>', 'type of endpoint')
+        .option('-b, --build',
+            'Runs build after init.')
+        .option('-d, --deploy',
+            'Runs deploy after init/build')
+        .option('-l, --locale <locale>',
+            'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: en-US')
+        .option('-t, --target <target>',
+            'Target of build and deployment \n\t\t\t\t<info|model|all> Default: all')
+        .option('--endpoint <endpoint>',
+            'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
+        .option('\n')
+        .option('--ask-profile <askProfile>',
+            'Name of use ASK profile \n\t\t\t\tDefault: default')
         .validate(function(args) {
             return Validator.isValidPlatform(args.platform) &&
                 Validator.isValidLocale(args.options.locale) &&

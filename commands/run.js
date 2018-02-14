@@ -25,8 +25,8 @@ module.exports = function(vorpal) {
     vorpal
         .command('run <webhookFile>', 'run')
         .description('Runs a local development server (webhook).')
-        .option('-h, --http', 'Creates http webhook endpoint (default)')
         .option('-b, --bst-proxy', 'Proxies the HTTP service running at the specified port via bst')
+        .option('-n, --ngrok', 'Http tunnel via ngrok. Ngrok instance has to run.')
         .option('-p, --port <port>', 'Port to local development webhook')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .action((args) => {
@@ -60,19 +60,22 @@ module.exports = function(vorpal) {
                     console.log(messageOutput);
                 });
                 parameters.push('--bst-proxy');
+            } else if (args.options.ngrok) {
             } else {
                 let user = Helper.Project.getWebhookUuid();
 
                try {
                    const config = Helper.Project.getConfig();
+
                    if (!config.endpoint) {
-                       throw new Error();
+                       throw new Error('a');
                    }
 
-                   if (_.startsWith(endpoint, 'arn')) {
-                       throw new Error();
+                   if (_.startsWith(config.endpoint, 'arn')) {
+                       throw new Error('b');
                    }
                } catch (err) {
+                   console.log(err);
                    console.log('Warning: Your endpoint in app.json is not a jovo-webhook url.');
                }
 
@@ -105,9 +108,6 @@ module.exports = function(vorpal) {
             ls.on('close', (code) => {
                 console.log(`${code}`);
             });
-        })
-        .help((args) => {
-
         });
 };
 

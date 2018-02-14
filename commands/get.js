@@ -22,14 +22,20 @@ if (process.argv.indexOf('get') > 0 &&
 
 module.exports = function(vorpal) {
 vorpal
-    .command('get <platform>', 'test')
+    .command('get <platform>')
     .description('Downloads an existing platform project into the platforms folder.')
+    .option('-l, --locale <locale>',
+        'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: all locales')
     .option('\n')
-    .option('--list-skills', 'list skills')
-    .option('-s, --skill-id <skillId>', 'skill id')
-    .option('-l, --locale <locale>', 'Locale')
-    .option('-t, --target <target>', 'target')
-    .option('--ask-profile <askProfile>', 'ask profile')
+    .option('-t, --target <target>',
+        'Type of data that is downloaded. \n\t\t\t\t<info|model|all> Default: all')
+    .option('--list-skills',
+        'Lists all skills for the given ASK profile')
+    .option('-s, --skill-id <skillId>',
+        'Alexa Skill ID')
+    .option('--ask-profile <askProfile>',
+        'Name of use ASK profile \n\t\t\t\tDefault: default')
+
     .validate(function(args) {
         return Validator.isValidLocale(args.options.locale) &&
             Validator.isValidPlatformGet(args.platform) &&
