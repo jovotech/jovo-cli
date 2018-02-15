@@ -29,7 +29,7 @@ module.exports = function(vorpal) {
         .option('-n, --ngrok', 'Http tunnel via ngrok. Ngrok instance has to run.')
         .option('-p, --port <port>', 'Port to local development webhook')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
-        .action((args) => {
+        .action((args, callback) => {
             const port = args.options.port || 3000;
 
             const localServerFile = args.webhookFile ? args.webhookFile : 'index.js';
@@ -62,21 +62,32 @@ module.exports = function(vorpal) {
                 parameters.push('--bst-proxy');
             } else if (args.options.ngrok) {
             } else {
-                let user = Helper.Project.getWebhookUuid();
+                let user;
+
+                try {
+                    user = Helper.Project.getWebhookUuid();
+                } catch (err) {
+                    console.log('Warning: Please initialize your project: $ jovo init');
+                    callback();
+                }
 
                try {
                    const config = Helper.Project.getConfig();
 
                    if (!config.endpoint) {
-                       throw new Error('a');
+                       throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
                    }
 
                    if (_.startsWith(config.endpoint, 'arn')) {
-                       throw new Error('b');
+                       throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
                    }
                } catch (err) {
-                   console.log(err);
-                   console.log('Warning: Your endpoint in app.json is not a jovo-webhook url.');
+                   if (_.startsWith(err.message, 'Warning:')) {
+                       console.log(err);
+                   } else {
+                       console.log('Warning: Please initialize your project: $ jovo init');
+                       callback();
+                   }
                }
 
                 const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
