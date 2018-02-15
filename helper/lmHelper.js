@@ -36,7 +36,6 @@ const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
-// projectPath = 'c:\\DEV\\nodejs\\jovo-cli\\final5';
 
 
 module.exports.Project = {
