@@ -348,6 +348,17 @@ module.exports.buildReverseTask = function() {
             return new Listr(reverseLocales);
         },
     });
+
+    try {
+        _.get(Helper.Project.getConfig(), 'alexaSkill');
+    } catch (err) {
+        buildReverseSubtasks.push({
+            title: 'Initializing Alexa Skill into app.json',
+            task: (ctx) => {
+                return Helper.Project.updatePlatformConfig(Helper.PLATFORM_ALEXASKILL);
+            },
+        });
+    }
     return new Listr(buildReverseSubtasks);
 };
 

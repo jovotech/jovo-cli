@@ -15,7 +15,6 @@ const buildReverseTask = require('./tasks').buildReverseTask;
 const deployTask = require('./tasks').deployTask;
 
 
-
 module.exports = function(vorpal) {
     vorpal
         .command('build')
@@ -80,35 +79,26 @@ module.exports = function(vorpal) {
                             } else {
                                 config.reverse = answers.promptOverwriteReverseBuild;
                             }
-
-                            tasks.add(
-                                {
-                                    title: 'Building language model from alexa model',
-                                    task: (ctx) => buildReverseTask(ctx),
-                                }
-                            );
                         });
                     });
-                } else {
-                    tasks.add(
-                        {
-                            title: 'Building language model from alexa model',
-                            task: (ctx) => buildReverseTask(ctx),
-                        }
-                    );
                 }
             }
 
 
             p.then(() => {
-                    if (!Helper.Project.hasAppJson()) {
+                    if (!Helper.Project.hasAppJson() && !args.options.reverse) {
                         tasks.add(
                             initTask()
                         );
                     }
 
                     if (args.options.reverse) {
-
+                        tasks.add(
+                            {
+                                title: 'Building language model from alexa model',
+                                task: (ctx) => buildReverseTask(ctx),
+                            }
+                        );
                     } else {
                         // build project
                         buildTask(config).forEach((t) => tasks.add(t));
