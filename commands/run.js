@@ -65,7 +65,7 @@ module.exports = function(vorpal) {
                 let user;
 
                 try {
-                    user = Helper.Project.getWebhookUuid();
+                    user = Helper.Project.getOrCreateJovoWebhookId();
                 } catch (err) {
                     console.log('Warning: Please initialize your project: $ jovo init');
                     callback();
@@ -83,10 +83,7 @@ module.exports = function(vorpal) {
                    }
                } catch (err) {
                    if (_.startsWith(err.message, 'Warning:')) {
-                       console.log(err);
-                   } else {
-                       console.log('Warning: Please initialize your project: $ jovo init');
-                       callback();
+                       console.log(err.message);
                    }
                }
 

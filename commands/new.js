@@ -76,6 +76,7 @@ module.exports = function(vorpal) {
                             // exit on cancel
                             callback();
                         } else {
+                            Helper.Project.deleteExistingFolder(args.directory);
                             return Promise.resolve();
                         }
                     });

@@ -37,7 +37,6 @@ const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
 
-
 module.exports.Project = {
 
     /**
@@ -551,22 +550,44 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
                     reject(err);
                 }
             } else if (endpointType === ENDPOINT_JOVOWEBHOOK) {
-                let config;
-                try {
-                    config = this.loadJovoConfig();
-                    if (!_.get(config, 'webhook.uuid')) {
-                        _.set(config, 'webhook.uuid', uuidv4());
-                        this.saveJovoConfig(config);
-                    }
-                    resolve(JOVO_WEBHOOK_URL + '/' + config.webhook.uuid);
-                } catch (error) {
-                    config = {};
-                    _.set(config, 'webhook.uuid', uuidv4());
-                    this.saveJovoConfig(config);
-                    resolve(JOVO_WEBHOOK_URL + '/' + config.webhook.uuid);
-                }
+                let uuid = this.saveJovoWebhookToConfig();
+                resolve(JOVO_WEBHOOK_URL + '/' + uuid);
             }
         });
+    },
+
+    /**
+     * Generates uuid and saves to global Jovo Cli config file
+     * @return {string}
+     */
+    saveJovoWebhookToConfig: function() {
+        let config;
+        try {
+            config = this.loadJovoConfig();
+            if (!_.get(config, 'webhook.uuid')) {
+                _.set(config, 'webhook.uuid', uuidv4());
+                this.saveJovoConfig(config);
+            }
+            return config.webhook.uuid;
+        } catch (error) {
+            config = {};
+            _.set(config, 'webhook.uuid', uuidv4());
+            this.saveJovoConfig(config);
+            return config.webhook.uuid;
+        }
+    },
+
+    /**
+     * Gets or creates Jovo Webhook id
+     * @return {*}
+     */
+    getOrCreateJovoWebhookId: function() {
+        try {
+            let config = this.loadJovoConfig();
+            return config.webhook.uuid;
+        } catch (error) {
+            return this.saveJovoWebhookToConfig();
+        }
     },
 
 
@@ -669,6 +690,10 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
             fs.mkdirSync(this.getUserHome() + path.sep + '.jovo');
         }
         fs.writeFileSync(path.join(this.getUserHome(), '.jovo/config'), JSON.stringify(config, null, '\t'));
+    },
+
+    createJovoWebhookUuid() {
+
     },
 
     getWebhookUuid() {
@@ -794,6 +819,10 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
         }
     },
 
+    deleteExistingFolder: function(dir) {
+        deleteFolderRecursive(process.cwd() + path.sep + dir);
+    }
+
 };
 
 
@@ -830,25 +859,23 @@ function getNgrokUrl(port, callback) {
 
 
 /**
- * Copy file
- * @param {string} source
- * @param {string} target
- * @return {Promise<any>}
+ * Deletes folder recursively
+ * Found here: https://stackoverflow.com/a/32197381
+ * @param {string} p
  */
-function copyFile(source, target) {
-    let rd = fs.createReadStream(source);
-    let wr = fs.createWriteStream(target);
-    return new Promise(function(resolve, reject) {
-        rd.on('error', reject);
-        wr.on('error', reject);
-        wr.on('finish', resolve);
-        rd.pipe(wr);
-    }).catch(function(error) {
-        rd.destroy();
-        wr.end();
-        throw error;
-    });
-}
+const deleteFolderRecursive = function(p) {
+    if ( fs.existsSync(p) ) {
+        fs.readdirSync(p).forEach(function(file, index) {
+            let curPath = p + path.sep + file;
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(p);
+    }
+};
 
 
 module.exports.DEFAULT_LOCALE = DEFAULT_LOCALE;
