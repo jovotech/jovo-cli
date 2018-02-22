@@ -23,6 +23,8 @@ module.exports = function(vorpal) {
             'Platform \n\t\t\t\t <alexaSkill|googleAction>')
         .option('-t, --target <target>',
             'Target of deployment \n\t\t\t\t<info|model|lambda|all> Default: all')
+        .option('--project-id <projectId>',
+            'Project ID of Dialogflow agent')
         .option('\n')
         .option('--ask-profile <askProfile>',
             'Name of use ASK profile \n\t\t\t\tDefault: default')
@@ -40,6 +42,7 @@ module.exports = function(vorpal) {
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: Helper.Project.getPlatform(args.options.platform),
+                projectId: args.options['project-id'],
                 target: args.options.target || Helper.DEFAULT_TARGET,
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };

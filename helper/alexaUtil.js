@@ -175,14 +175,38 @@ module.exports = {
         };
 
         for (let locale of locales) {
-            _.set(skillJson, `manifest.publishingInformation.locales.${locale}`, {
-                'summary': 'Sample Short Description',
-                'examplePhrases': [
-                    'Alexa open hello world',
-                ],
-                'name': skillName,
-                'description': 'Sample Full Description',
-            });
+            if (locale.length === 2) {
+                try {
+                    let appJson = Helper.Project.getConfig();
+
+                    if (!_.get(appJson, `alexaSkill.nlu.lang.${locale}`)) {
+                        throw new Error();
+                    }
+                    let sublocales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
+
+                    for (let sublocale of sublocales) {
+                        _.set(skillJson, `manifest.publishingInformation.locales.${sublocale}`, {
+                            'summary': 'Sample Short Description',
+                            'examplePhrases': [
+                                'Alexa open hello world',
+                            ],
+                            'name': skillName,
+                            'description': 'Sample Full Description',
+                        });
+                    }
+                } catch (error) {
+                    throw new Error('Could not retrieve locales mapping for language ' + locale);
+                }
+            } else {
+                _.set(skillJson, `manifest.publishingInformation.locales.${locale}`, {
+                    'summary': 'Sample Short Description',
+                    'examplePhrases': [
+                        'Alexa open hello world',
+                    ],
+                    'name': skillName,
+                    'description': 'Sample Full Description',
+                });
+            }
         }
 
         return skillJson;
@@ -272,8 +296,8 @@ module.exports = {
                     alexaModel = this.createEmptyModelJson();
                 }
                 let aim = new AlexaInteractionModel(alexaModel);
-                aim.transform(Helper.Project.getModel(locale));
-                aim.save(locale).then(() => resolve());
+                aim.transform(locale);
+                resolve();
             } catch (error) {
                 reject(error);
             }
@@ -702,6 +726,7 @@ module.exports.Ask = {
                         return reject(self.getAskError(stderr));
                     }
                 }
+                console.log(stdout);
                 resolve(stdout);
             });
         });

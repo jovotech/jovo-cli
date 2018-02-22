@@ -4,6 +4,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
 const _ = require('lodash');
+const request = require('request');
+const exec = require('child_process').exec;
+const AdmZip = require('adm-zip');
 
 
 module.exports = {
@@ -254,5 +257,160 @@ module.exports = {
             archive.finalize();
             resolve(zipPath);
         });
+    },
+
+    getAgentFiles: function(config) {
+        return this.v2.exportAgent(config).then((buf) => {
+            let zip = new AdmZip(buf);
+            zip.extractAllTo(this.getPath(), true);
+        });
+    },
+
+    v2: {
+
+        /**
+         * Checks if Gcloud is installed
+         * @return {Promise<any>}
+         */
+        checkGcloud: function() {
+            return new Promise((resolve, reject) => {
+                try {
+                    exec('gcloud -v', function(error, stdout, stderr ) {
+                        if (error) {
+                            if (stderr) {
+                                return reject(new Error('Your Google Cloud SKD isn\'t installed properly'));
+                            }
+                        }
+                        if (!_.startsWith(stdout, 'Google Cloud SDK')) {
+                            return reject(new Error('Your Google Cloud SKD isn\'t installed properly'));
+                        }
+
+                        resolve(stdout);
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        },
+
+
+        /**
+         * Retrieves access token from gcloud cli
+         * @return {Promise<any>}
+         */
+        getAccessToken: function() {
+            return new Promise((resolve, reject) => {
+                try {
+                    exec('gcloud auth print-access-token', function(error, stdout, stderr ) {
+                        if (error) {
+                            if (stderr) {
+                                console.log(stderr);
+                            }
+                        }
+                        resolve(stdout);
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        },
+
+        /**
+         * Exports agent from given project id
+         * @param {*} config
+         * @return {Promise<any>}
+         */
+        exportAgent: function(config) {
+            return new Promise((resolve, reject) => {
+                this.getAccessToken().then((accessToken) => {
+                    const options = {
+                        method: 'POST',
+                        url: `https://dialogflow.googleapis.com/v2beta1/projects/${config.projectId}/agent:export`, // eslint-disable-line
+                        headers: {
+                            Authorization: `Bearer ${accessToken.trim()}`,
+                            accept: 'application/json',
+                        },
+                    };
+                  request(options, function(error, response, body) {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (response.body.error) {
+                            return reject(new Error(response.body.error.message));
+                        }
+                        let buf = Buffer.from(JSON.parse(body).response.agentContent, 'base64');
+
+                        resolve(buf);
+                    });
+                });
+            });
+        },
+
+        /**
+         * Uploads agent (zip) to Dialogflow
+         * @param {*} config
+         * @return {Promise<any>}
+         */
+        restoreAgent: function(config) {
+            return new Promise((resolve, reject) => {
+                this.getAccessToken().then((accessToken) => {
+                    let zipdata = fs.readFileSync(config.pathToZip);
+                    let content = {
+                        agentContent: new Buffer(zipdata).toString('base64'),
+                    };
+
+
+                    const options = {
+                        method: 'POST',
+                        url: `https://dialogflow.googleapis.com/v2beta1/projects/${config.projectId}/agent:restore`, // eslint-disable-line
+                        headers: {
+                            Authorization: `Bearer ${accessToken.trim()}`,
+                            accept: 'application/json',
+                        },
+                        json: content,
+                    };
+                    options.headers['Content-Type'] = 'application/json';
+                    request(options, function(error, response, body) {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (response.body.error) {
+                            return reject(new Error(response.body.error.message));
+                        }
+                        resolve(body);
+                    });
+                });
+            });
+        },
+
+        /**
+         * Starts training of agent for given project id
+         * @param {*} config
+         * @return {Promise<any>}
+         */
+        trainAgent: function(config) {
+            return new Promise((resolve, reject) => {
+                this.getAccessToken().then((accessToken) => {
+                    const options = {
+                        method: 'POST',
+                        url: `https://dialogflow.googleapis.com/v2beta1/projects/${config.projectId}/agent:train`, // eslint-disable-line
+                        headers: {
+                            Authorization: `Bearer ${accessToken.trim()}`,
+                            accept: 'application/json',
+                        },
+                    };
+                    options.headers['Content-Type'] = 'application/json';
+                    request(options, function(error, response, body) {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (response.body.error) {
+                            return reject(new Error(response.body.error.message));
+                        }
+                        resolve(body);
+                    });
+                });
+            });
+        },
     },
 };

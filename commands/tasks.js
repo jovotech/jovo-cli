@@ -63,6 +63,7 @@ module.exports.getTask = function(ctx) {
     if (!fs.existsSync(platformsPath)) {
         fs.mkdirSync(platformsPath);
     }
+
     if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
         let alexaSkillPath = AlexaHelper.getPath();
         if (!fs.existsSync(alexaSkillPath)) {
@@ -142,6 +143,26 @@ Endpoint: ${skillInfo.endpoint}`;
                 },
             },
         ];
+    } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
+        let googleActionPath = GoogleActionUtil.getPath();
+        if (!fs.existsSync(googleActionPath)) {
+            fs.mkdirSync(googleActionPath);
+        }
+
+
+        let dialogflowPath = DialogFlowHelper.getPath();
+        if (!fs.existsSync(dialogflowPath)) {
+            fs.mkdirSync(dialogflowPath);
+        }
+
+        return [
+            {
+                title: 'Getting Dialogflow Agent files and saving to /platforms/googleAction/dialogflow',
+                task: (ctx, task) => {
+                    return DialogFlowHelper.getAgentFiles(ctx);
+                },
+            },
+        ];
     }
 };
 
@@ -213,6 +234,7 @@ module.exports.buildTask = function(ctx) {
                     title: titleInteractionModel,
                     task: (ctx) => {
                         let buildLocalesTasks = [];
+                        // throw new Error(JSON.stringify(ctx.locales))
                         for (let locale of ctx.locales) {
                             buildLocalesTasks.push({
                                 title: locale,
@@ -307,7 +329,7 @@ module.exports.buildTask = function(ctx) {
     return buildPlatformTasks;
 };
 
-module.exports.buildReverseTask = function() {
+module.exports.buildReverseTask = function(ctx) {
     let buildReverseSubtasks = [];
 
     buildReverseSubtasks.push({
@@ -327,38 +349,80 @@ module.exports.buildReverseTask = function() {
         },
     });
 
-    buildReverseSubtasks.push({
-        title: 'Reversing model files',
-        task: (ctx) => {
-            let reverseLocales = [];
-            for (let locale of ctx.locales) {
-                reverseLocales.push({
-                    title: locale,
-                    task: () => {
-                        let alexaModel = AlexaHelper.getModel(locale);
-                        let alexaInteractionModel =
-                            new AlexaHelper.AlexaInteractionModel(alexaModel);
-                        let jovoModel = alexaInteractionModel.reverse(alexaModel);
-                        return Helper.Project.saveModel(
-                            jovoModel,
-                            locale);
-                    },
-                });
-            }
-            return new Listr(reverseLocales);
-        },
-    });
-
-    try {
-        _.get(Helper.Project.getConfig(), 'alexaSkill');
-    } catch (err) {
+    if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
         buildReverseSubtasks.push({
-            title: 'Initializing Alexa Skill into app.json',
+            title: 'Reversing model files',
             task: (ctx) => {
-                return Helper.Project.updatePlatformConfig(Helper.PLATFORM_ALEXASKILL);
+                let reverseLocales = [];
+                for (let locale of ctx.locales) {
+                    reverseLocales.push({
+                        title: locale,
+                        task: () => {
+                            let alexaModel = AlexaHelper.getModel(locale);
+                            let alexaInteractionModel =
+                                new AlexaHelper.AlexaInteractionModel(alexaModel);
+                            let jovoModel = alexaInteractionModel.reverse(alexaModel);
+                            return Helper.Project.saveModel(
+                                jovoModel,
+                                locale);
+                        },
+                    });
+                }
+                return new Listr(reverseLocales);
             },
         });
+
+        try {
+            _.get(Helper.Project.getConfig(), 'alexaSkill');
+        } catch (err) {
+            buildReverseSubtasks.push({
+                title: 'Initializing Alexa Skill into app.json',
+                task: (ctx) => {
+                    return Helper.Project.updatePlatformConfig(Helper.PLATFORM_ALEXASKILL);
+                },
+            });
+        }
+    } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
+        buildReverseSubtasks.push({
+            title: 'Reversing model files',
+            task: (ctx) => {
+                let reverseLocales = [];
+
+                let agentJson = DialogFlowHelper.getAgentJson();
+                let supportedLanguages = agentJson.supportedLanguages;
+
+                if (supportedLanguages.length === 0) {
+                    supportedLanguages.push(agentJson.language);
+                }
+
+
+                for (let locale of supportedLanguages) {
+                    reverseLocales.push({
+                        title: locale,
+                        task: () => {
+                            let jovoModel = require('./../helper/dialogFlowAgent')
+                                .DialogFlowAgent.reverse(locale);
+                            return Helper.Project.saveModel(
+                                jovoModel,
+                                locale);
+                        },
+                    });
+                }
+                return new Listr(reverseLocales);
+            },
+        });
+        try {
+            _.get(Helper.Project.getConfig(), 'googleAction');
+        } catch (err) {
+            buildReverseSubtasks.push({
+                title: 'Initializing GoogleAction into app.json',
+                task: (ctx) => {
+                    return Helper.Project.updatePlatformConfig(Helper.PLATFORM_ALEXASKILL);
+                },
+            });
+        }
     }
+
     return new Listr(buildReverseSubtasks);
 };
 
@@ -398,7 +462,15 @@ module.exports.deployTask = function(ctx) {
                                     ctx.skillId = skillId;
                                     ctx.newSkill = true;
                                     return AlexaHelper.setAlexaSkillId(skillId);
-                                }).then(() => getSkillStatus(ctx));
+                                }).then(() => getSkillStatus(ctx)).then(() => {
+                                    let info = 'Info: ';
+                                    let skillInfo = AlexaHelper.getSkillInformation();
+                                    info += `Skill Name: ${skillInfo.name}
+Skill ID: ${skillInfo.skillId}
+Invocation Name: ${skillInfo.invocationName}
+Endpoint: ${skillInfo.endpoint}`;
+                                    task.skip(info);
+                                });
                             });
                         },
                     }, {
@@ -428,7 +500,9 @@ Endpoint: ${skillInfo.endpoint}`;
                         task: (ctx) => {
                             let deployLocaleTasks = [];
 
-                            for (let locale of ctx.locales) {
+
+                            // TODO: what to do with --locale <locale>
+                            for (let locale of AlexaHelper.getLocales()) {
                                 deployLocaleTasks.push({
                                     title: locale,
                                     task: (ctx) => {
@@ -465,7 +539,7 @@ Endpoint: ${skillInfo.endpoint}`;
                         },
                     },
                     {
-                        title: 'Enabling skill',
+                        title: 'Enabling skill for testing',
                         enabled: (ctx) => !_.isUndefined(ctx.newSkill),
                         task: (ctx) => {
                             return AlexaHelper.Ask.askApiEnableSkill(ctx);
@@ -492,10 +566,24 @@ Endpoint: ${skillInfo.endpoint}`;
                                 }
                                 info += '\n';
                                 info += `Fulfillment Endpoint: ${Helper.Project.getConfig().endpoint}`; // eslint-disable-line
-                                info += '\n';
-                                info += `-> Use the Dialogflow Agent import feature at https://console.dialogflow.com `; // eslint-disable-line
                                 task.skip(info);
                             });
+                        },
+                    },
+                    {
+                        title: `Uploading and restoring agent for project ${highlight(ctx.projectId)}`, // eslint-disable-line
+                        enabled: (ctx) => ctx.projectId,
+                        task: (ctx, task) => {
+                            ctx.pathToZip = GoogleActionUtil.getPath() + '/dialogflow_agent.zip';
+                            return DialogFlowHelper.v2.checkGcloud()
+                                .then(() => DialogFlowHelper.v2.restoreAgent(ctx));
+                        },
+                    },
+                    {
+                        title: 'Training started',
+                        enabled: (ctx) => ctx.projectId,
+                        task: (ctx, task) => {
+                            return DialogFlowHelper.v2.trainAgent(ctx);
                         },
                     },
                 ]);

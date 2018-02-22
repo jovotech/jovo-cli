@@ -5,6 +5,30 @@ const DialogFlowUtil = require('./dialogflowUtil');
 const BUILTIN_PREFIX = '@sys.';
 const pathSep = require('path').sep;
 
+const DEFAULT_INTENT = {
+    'auto': true,
+    'contexts': [],
+    'responses': [
+        {
+            'resetContexts': false,
+            'affectedContexts': [],
+            'parameters': [],
+            'defaultResponsePlatforms': {},
+            'speech': [],
+        },
+    ],
+    'priority': 500000,
+    'webhookUsed': true,
+    'webhookForSlotFilling': false,
+    'fallbackIntent': false,
+    'events': [],
+};
+
+const DEFAULT_ENTITY = {
+    'isOverridable': true,
+    'isEnum': false,
+    'automatedExpansion': false,
+};
 /**
  * Class DialogFlowAgent
  */
@@ -18,6 +42,197 @@ class DialogFlowAgent {
         this.config = config;
     }
 
+    /**
+     * Skips default intent properties
+     * @param {*} jovoIntent
+     * @param {*} dialogFlowIntent
+     * @return {*}
+     */
+    static skipDefaultIntentProps(jovoIntent, dialogFlowIntent) {
+        if (_.get(dialogFlowIntent, 'auto') !== _.get(DEFAULT_INTENT, 'auto')) {
+            _.set(jovoIntent, 'dialogflow.auto', _.get(dialogFlowIntent, 'auto'));
+        }
+
+        if (_.difference(_.get(dialogFlowIntent, 'contexts'), _.get(DEFAULT_INTENT, 'contexts')).length > 0) {
+            _.set(jovoIntent, 'dialogflow.contexts', _.get(dialogFlowIntent, 'contexts'));
+        }
+        if (_.get(dialogFlowIntent, 'priority') !== _.get(DEFAULT_INTENT, 'priority')) {
+            _.set(jovoIntent, 'dialogflow.priority', _.get(dialogFlowIntent, 'priority'));
+        }
+        if (_.get(dialogFlowIntent, 'webhookUsed') !== _.get(DEFAULT_INTENT, 'webhookUsed')) {
+            _.set(jovoIntent, 'dialogflow.webhookUsed', _.get(dialogFlowIntent, 'webhookUsed'));
+        }
+        if (_.get(dialogFlowIntent, 'webhookForSlotFilling') !== _.get(DEFAULT_INTENT, 'webhookForSlotFilling')) {
+            _.set(jovoIntent, 'dialogflow.webhookForSlotFilling', _.get(dialogFlowIntent, 'webhookForSlotFilling'));
+        }
+        if (_.get(dialogFlowIntent, 'fallbackIntent') !== _.get(DEFAULT_INTENT, 'fallbackIntent')) {
+            _.set(jovoIntent, 'dialogflow.fallbackIntent', _.get(dialogFlowIntent, 'fallbackIntent'));
+        }
+        if (_.difference(_.get(dialogFlowIntent, 'events'), _.get(DEFAULT_INTENT, 'events')).length > 0) {
+            _.set(jovoIntent, 'dialogflow.events', _.get(dialogFlowIntent, 'events'));
+        }
+
+        return jovoIntent;
+    }
+
+    /**
+     * Skips default entity properties
+     * @param {*} jovoInput
+     * @param {*} dialogflowEntity
+     * @return {*}
+     */
+    static skipDefaultEntityProps(jovoInput, dialogflowEntity) {
+        if (_.get(dialogflowEntity, 'isOverridable') !== _.get(DEFAULT_ENTITY, 'isOverridable')) {
+            _.set(jovoInput, 'dialogflow.isOverridable', _.get(dialogflowEntity, 'isOverridable'));
+        }
+        if (_.get(dialogflowEntity, 'isEnum') !== _.get(DEFAULT_ENTITY, 'isEnum')) {
+            _.set(jovoInput, 'dialogflow.isEnum', _.get(dialogflowEntity, 'isEnum'));
+        }
+        if (_.get(dialogflowEntity, 'automatedExpansion') !== _.get(DEFAULT_ENTITY, 'automatedExpansion')) {
+            _.set(jovoInput, 'dialogflow.automatedExpansion', _.get(dialogflowEntity, 'automatedExpansion'));
+        }
+        return jovoInput;
+    }
+
+    /**
+     * Transforms Dialogflow data into a Jovo model
+     * @param {string} locale
+     * @return {{}}
+     */
+    static reverse(locale) {
+        let jovoModel = {};
+        jovoModel.invocation = '';
+        jovoModel.intents = [];
+        jovoModel.inputTypes = [];
+        let intentFiles = fs.readdirSync(DialogFlowUtil.getIntentsFolderPath());
+
+
+        // iterate through intent files
+        for (let file of intentFiles) {
+            // skip usersays files
+            if (file.indexOf('usersays') > -1) {
+                continue;
+            }
+            let dialogFlowIntent = require(DialogFlowUtil.getIntentsFolderPath() + pathSep + file);
+
+
+            let jovoIntent = {
+                name: dialogFlowIntent.name,
+                phrases: [],
+            };
+            // skip default intent properties
+            DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
+
+            // is fallback intent?
+            if (dialogFlowIntent.fallbackIntent === true) {
+                DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
+                let fallbackIntent = jovoIntent.dialogflow;
+                fallbackIntent.name = dialogFlowIntent.name;
+                _.set(jovoModel, 'dialogflow.intents', [fallbackIntent]);
+                continue;
+            }
+
+            // is welcome intent?
+            if (_.get(dialogFlowIntent, 'events[0].name') === 'WELCOME') {
+                DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
+                let welcomeIntent = jovoIntent.dialogflow;
+                welcomeIntent.name = dialogFlowIntent.name;
+
+                if (!_.get(jovoModel, 'dialogflow.intents')) {
+                    _.set(jovoModel, 'dialogflow.intents', [welcomeIntent]);
+                } else {
+                    jovoModel.dialogflow.intents.push(welcomeIntent);
+                }
+                continue;
+            }
+
+            let inputs = [];
+            for (let response of dialogFlowIntent.responses) {
+                for (let parameter of response.parameters) {
+                    let input = {
+                        name: parameter.name,
+                    };
+                    if (_.startsWith(parameter.dataType, '@sys.')) {
+                        input.type = {
+                            dialogflow: parameter.dataType,
+                        };
+                    } else {
+                        input.type = parameter.dataType.substr(1);
+                    }
+                    inputs.push(input);
+                }
+            }
+
+            if (inputs.length > 0) {
+                jovoIntent.inputs = inputs;
+            }
+
+            // iterate through usersays intent files and generate sample phrases
+            let userSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + pathSep + dialogFlowIntent.name + '_usersays_' + locale + '.json';
+            if (fs.existsSync(userSaysFilePath)) {
+                let userSays = require(userSaysFilePath);
+                for (let us of userSays) {
+                    let phrase = '';
+                    for (let data of us.data) {
+                        phrase += data.userDefined ? '{' + data.text + '}' : data.text;
+                    }
+                    jovoIntent.phrases.push(phrase);
+                }
+            }
+
+            jovoModel.intents.push(jovoIntent);
+        }
+        if (fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
+            let entitiesFiles = fs.readdirSync(DialogFlowUtil.getEntitiesFolderPath());
+            // iterate through entity files
+            for (let file of entitiesFiles) {
+                // skip entries files
+                if (file.indexOf('entries') > -1) {
+                    continue;
+                }
+                let dialogFlowEntity = require(
+                    DialogFlowUtil.getEntitiesFolderPath() + pathSep + file
+                );
+                let jovoInput = {
+                    name: dialogFlowEntity.name,
+                };
+                // skip default intent properties
+                DialogFlowAgent.skipDefaultEntityProps(jovoInput, dialogFlowEntity);
+                // iterate through usersays intent files and generate sample phrases
+                let entriesFilePath = DialogFlowUtil.getEntitiesFolderPath() + pathSep + dialogFlowEntity.name + '_entries_' + locale + '.json';
+                if (fs.existsSync(entriesFilePath)) {
+                    let values = [];
+                    let entries = require(entriesFilePath);
+
+                    for (let entry of entries) {
+                        let value = {
+                            value: entry.value,
+                            synonyms: [],
+                        };
+                        for (let synonym of entry.synonyms) {
+                            if (synonym === entry.value) {
+                                continue;
+                            }
+                            value.synonyms.push(synonym);
+                        }
+                        values.push(value);
+                    }
+                    if (values.length > 0) {
+                        jovoInput.values = values;
+                    }
+                }
+
+
+                jovoModel.inputTypes.push(jovoInput);
+            }
+        }
+
+        if (jovoModel.inputTypes.length === 0) {
+            delete jovoModel.inputTypes;
+        }
+
+        return jovoModel;
+    }
 
     /**
      * Creates files (agent, intents, entities)
@@ -110,30 +325,40 @@ class DialogFlowAgent {
                                 isEnum: false,
                                 automatedExpansion: false,
                             };
+
+                            if (matchedInputType.dialogflow) {
+                                dfEntityObj = _.merge(dfEntityObj, matchedInputType.dialogflow);
+                            }
+
                             let entityFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '.json';
                             fs.writeFileSync(entityFilePath,
                                 JSON.stringify(dfEntityObj, null, '\t')
                             );
 
-                            let entityValues = [];
-                            // create dfEntityValueObj
-                            for (let value of matchedInputType.values) {
-                                let dfEntityValueObj = {
-                                    value: value.value,
-                                    synonyms: [value.value],
-                                };
+                            // create entries if matched input type has values
+                            if (matchedInputType.values && matchedInputType.values.length > 0) {
+                                let entityValues = [];
+                                // create dfEntityValueObj
+                                for (let value of matchedInputType.values) {
+                                    let dfEntityValueObj = {
+                                        value: value.value,
+                                        synonyms: [value.value],
+                                    };
 
-                                // save synonyms, if defined
-                                if (value.synonyms) {
-                                    dfEntityValueObj.synonyms = dfEntityValueObj.synonyms.concat(
-                                        value.synonyms);
+                                    // save synonyms, if defined
+                                    if (value.synonyms) {
+                                        dfEntityValueObj.synonyms =
+                                            dfEntityValueObj.synonyms.concat(
+                                            value.synonyms
+                                            );
+                                    }
+                                    entityValues.push(dfEntityValueObj);
                                 }
-                                entityValues.push(dfEntityValueObj);
+                                let entityEntriesFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '_entries_' + outputLocale + '.json';
+                                fs.writeFileSync(entityEntriesFilePath,
+                                    JSON.stringify(entityValues, null, '\t')
+                                );
                             }
-                            let entityEntriesFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '_entries_' + outputLocale + '.json';
-                            fs.writeFileSync(entityEntriesFilePath,
-                                JSON.stringify(entityValues, null, '\t')
-                            );
                         }
                     }
 
@@ -243,15 +468,17 @@ class DialogFlowAgent {
                     count: 0,
                 });
             }
-            let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + outputLocale + '.json';
-            fs.writeFileSync(intentUserSaysFilePath, JSON.stringify(dialogFlowIntentUserSays, null, '\t'));
+            if (dialogFlowIntentUserSays.length > 0) {
+                let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + outputLocale + '.json';
+                fs.writeFileSync(intentUserSaysFilePath, JSON.stringify(dialogFlowIntentUserSays, null, '\t'));
+            }
         }
     }
 }
-
-// let dfa = new DialogFlowAgent({locale: 'en-US'});
-// let model = require('./demo/models/en-US.json');
-// Helper.setProjectPath('demo');
+//
+// let dfa = new DialogFlowAgent({locale: 'en-CA'});
+// let model = require('./../demo/models/en-CA.json');
+// require('./lmHelper').Project.setProjectPath('demo');
 // dfa.transform(model);
 // let aim = new AlexaInteractionModel(alexa);
 //

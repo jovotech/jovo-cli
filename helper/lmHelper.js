@@ -37,6 +37,7 @@ const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
 
+
 module.exports.Project = {
 
     /**
@@ -143,6 +144,9 @@ module.exports.Project = {
             for (let file of files) {
                 if (file.length === 10) {
                     locales.push(file.substr(0, 5));
+                }
+                if (file.length === 7) {
+                    locales.push(file.substr(0, 2));
                 }
             }
             return locales;
@@ -431,11 +435,34 @@ module.exports.Project = {
 
                 if (platform === PLATFORM_ALEXASKILL) {
                     const AlexaSkill = require('./alexaUtil');
+
                     if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
                         let result = _.unionBy(_.get(model, 'alexa.interactionModel.languageModel.intents'), AlexaSkill.getDefaultIntents(), 'name');
                         _.set(model, 'alexa.interactionModel.languageModel.intents', result);
                     } else {
                         _.set(model, 'alexa.interactionModel.languageModel.intents', AlexaSkill.getDefaultIntents());
+                    }
+
+                    for (let jovoIntent of model.intents) {
+                        if (_.get(jovoIntent, 'alexa.name')) {
+                            _.remove(_.get(model, 'alexa.interactionModel.languageModel.intents'), function(currentObject) {
+                                return currentObject.name === jovoIntent.alexa.name;
+                            });
+                        }
+                    }
+
+                    if (_.get(model, 'alexa.interactionModel.languageModel.intents').length === 0) {
+                        delete model.alexa.interactionModel.languageModel.intents;
+
+                        if (_.keys(_.get(model, 'alexa.interactionModel.languageModel')).length === 0) {
+                            delete model.alexa.interactionModel.languageModel;
+                        }
+                        if (_.keys(_.get(model, 'alexa.interactionModel')).length === 0) {
+                            delete model.alexa['interactionModel'];
+                        }
+                        if (_.keys(_.get(model, 'alexa')).length === 0) {
+                            delete model.alexa;
+                        }
                     }
                 } else if (platform === PLATFORM_GOOGLEACTION) {
                     const DialogFlow = require('./dialogflowUtil');

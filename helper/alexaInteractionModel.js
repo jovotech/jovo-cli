@@ -98,11 +98,36 @@ class AlexaInteractionModel {
 
     /**
      * Transforms jovo model to Alexa model
-     * @param {*} model
+     * @param {*} locale
      */
-    transform(model) {
-        this.interactionModel.languageModel.invocationName = model.invocation;
-        this.interactionModel.languageModel.types = [];
+    transform(locale) {
+        let errorPrefix = '/models/'+locale+'.json - ';
+
+        let Helper = require('./lmHelper');
+        let locales = [];
+        if (locale.length === 2) {
+            try {
+                let appJson = Helper.Project.getConfig();
+
+                if (!_.get(appJson, `alexaSkill.nlu.lang.${locale}`)) {
+                    throw new Error();
+                }
+                locales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
+            } catch (error) {
+                throw new Error('Could not retrieve locales mapping for language ' + locale);
+            }
+        } else {
+            locales = [locale];
+        }
+        let model = Helper.Project.getModel(locale);
+        let alexaModel = {};
+
+        _.set(alexaModel, 'interactionModel.languageModel.invocationName', model.invocation);
+        if (alexaModel.interactionModel.languageModel.invocationName.length === 0) {
+            throw new Error(errorPrefix + 'Invocation cannot be empty');
+        }
+
+        alexaModel.interactionModel.languageModel.types = [];
 
         let alexaIntents = [];
         // convert generic intents
@@ -111,6 +136,17 @@ class AlexaInteractionModel {
                 name: intent.name,
                 samples: intent.phrases,
             };
+            if (alexaIntentObj.samples.length === 0) {
+                throw new Error(
+                    errorPrefix + `Intent "${alexaIntentObj.name}" must have at least one sample phrase` // eslint-disable-line
+                );
+            }
+            for (let sample of alexaIntentObj.samples) {
+                if (/\d/.test(sample)) { // has number?
+                    throw new Error(errorPrefix + `Intent "${alexaIntentObj.name}" must not have numbers in sample`); // eslint-disable-line
+                }
+            }
+
             // handle intent inputs
             if (intent.inputs) {
                 alexaIntentObj.slots = [];
@@ -129,34 +165,34 @@ class AlexaInteractionModel {
                                 input.type = input.type.alexa;
                             }
                         } else {
-                            throw new Error('Please add a dialogflow property for input "'+input.name+'"');
+                            throw new Error(errorPrefix + 'Please add an Alexa property for input "'+input.name+'"');
                         }
                     }
 
                     // handle custom input types
                     if (!alexaInputObj.type) {
                         if (!input.type) {
-                            throw new Error('Invalid input type in intent "' + intent.name + '"');
+                            throw new Error(errorPrefix + 'Invalid input type in intent "' + intent.name + '"');
                         }
 
                         alexaInputObj.type = input.type;
 
                         // throw error when no inputTypes object defined
                         if (!model.inputTypes) {
-                            throw new Error('Input type "' + alexaInputObj.type + '" must be defined in inputTypes');
+                            throw new Error(errorPrefix + 'Input type "' + alexaInputObj.type + '" must be defined in inputTypes');
                         }
 
                         // find type in global inputTypes array
                         let matchedInputTypes = model.inputTypes.filter((item) => {
-                           return item.name === alexaInputObj.type;
+                            return item.name === alexaInputObj.type;
                         });
 
                         if (matchedInputTypes.length === 0) {
-                            throw new Error('Input type "' + alexaInputObj.type + '" must be defined in inputTypes');
+                            throw new Error(errorPrefix + 'Input type "' + alexaInputObj.type + '" must be defined in inputTypes');
                         }
 
-                        if (!this.interactionModel.languageModel.types) {
-                            this.interactionModel.languageModel.types = [];
+                        if (!alexaModel.interactionModel.languageModel.types) {
+                            alexaModel.interactionModel.languageModel.types = [];
                         }
 
                         // create alexaTypeObj from matched input types
@@ -165,6 +201,13 @@ class AlexaInteractionModel {
                                 name: matchedInputType.name,
                                 values: [],
                             };
+
+                            if (!matchedInputType.values) {
+                                throw new Error(
+                                    errorPrefix + `Input type "${matchedInputType.name}" must have at leas one value` // eslint-disable-line
+                                );
+                            }
+
                             // create alexaTypeValueObj
                             for (let value of matchedInputType.values) {
                                 let alexaTypeValueObj = {
@@ -172,7 +215,7 @@ class AlexaInteractionModel {
                                     name: {
                                         value: value.value,
                                     },
-                                  };
+                                };
                                 // save synonyms, if defined
                                 if (value.synonyms) {
                                     alexaTypeValueObj.name.synonyms = value.synonyms;
@@ -181,13 +224,13 @@ class AlexaInteractionModel {
                             }
 
                             // skip existing alexa types
-                            let existingAlexaTypes = this.interactionModel.languageModel.types.filter((item) => { // eslint-disable-line
+                            let existingAlexaTypes = alexaModel.interactionModel.languageModel.types.filter((item) => { // eslint-disable-line
                                 return alexaTypeObj.name === item.name;
                             });
 
                             if (existingAlexaTypes.length === 0) {
                                 // add type to interaction model
-                                this.interactionModel.languageModel.types.push(alexaTypeObj);
+                                alexaModel.interactionModel.languageModel.types.push(alexaTypeObj);
                             }
                         }
                     }
@@ -195,27 +238,29 @@ class AlexaInteractionModel {
                 }
             }
 
-            if (_.get(intent, 'alexaSkill')) {
-                _.merge(alexaIntentObj, intent.alexaSkill);
+            if (_.get(intent, 'alexa')) {
+                _.merge(alexaIntentObj, intent.alexa);
             }
 
             alexaIntents.push(alexaIntentObj);
         }
 
         // convert alexa specific intents
-        for (let intent of _.get(model, 'alexa.interactionModel.languageModel.intents')) {
-            alexaIntents.push(intent);
+        if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
+            for (let intent of _.get(model, 'alexa.interactionModel.languageModel.intents')) {
+                alexaIntents.push(intent);
+            }
         }
-        _.set(this, 'interactionModel.languageModel.intents', alexaIntents);
+        _.set(alexaModel, 'interactionModel.languageModel.intents', alexaIntents);
 
         // prompts
         if (_.get(model, 'alexa.interactionModel.prompts')) {
-            _.set(this, 'interactionModel.prompts', _.get(model, 'alexa.interactionModel.prompts'));
+            _.set(alexaModel, 'interactionModel.prompts', _.get(model, 'alexa.interactionModel.prompts'));
         }
 
         // dialog
         if (_.get(model, 'alexa.interactionModel.dialog')) {
-            _.set(this, 'interactionModel.dialog', _.get(model, 'alexa.interactionModel.dialog'));
+            _.set(alexaModel, 'interactionModel.dialog', _.get(model, 'alexa.interactionModel.dialog'));
         }
 
         // types
@@ -224,8 +269,8 @@ class AlexaInteractionModel {
                 let findings = [];
 
                 // skip input types that are already in alexa types
-                if (_.get(this, 'interactionModel.languageModel.types')) {
-                    findings = this.interactionModel.languageModel.types.filter((item) => {
+                if (_.get(alexaModel, 'interactionModel.languageModel.types')) {
+                    findings = alexaModel.interactionModel.languageModel.types.filter((item) => {
                         return inputType.name === item.name;
                     });
                 }
@@ -256,8 +301,14 @@ class AlexaInteractionModel {
                     alexaType.values.push(alexaTypeValue);
                 }
 
-                this.interactionModel.languageModel.types.push(alexaType);
+                alexaModel.interactionModel.languageModel.types.push(alexaType);
             }
+        }
+        for (let targetLocale of locales) {
+            fs.writeFileSync(
+                require('./alexaUtil').getModelPath(targetLocale),
+                JSON.stringify(alexaModel, null, '\t')
+                );
         }
     }
 
@@ -277,7 +328,6 @@ class AlexaInteractionModel {
         });
     }
 }
-
 
 // let alexaModel = require('./demoproject/platforms/alexaSkill/models/en-US.json');
 //

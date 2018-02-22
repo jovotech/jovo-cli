@@ -29,6 +29,8 @@ vorpal
     .option('\n')
     .option('-t, --target <target>',
         'Type of data that is downloaded. \n\t\t\t\t<info|model|all> Default: all')
+    .option('--project-id <projectId>',
+        'Google Cloud Project ID')
     .option('--list-skills',
         'Lists all skills for the given ASK profile')
     .option('-s, --skill-id <skillId>',
@@ -38,7 +40,7 @@ vorpal
 
     .validate(function(args) {
         return Validator.isValidLocale(args.options.locale) &&
-            Validator.isValidPlatformGet(args.platform) &&
+            // Validator.isValidPlatformGet(args.platform) &&
             Validator.isValidDeployTarget(args.options.target) &&
             Validator.isValidAskProfile(args.options['ask-profile']);
     })
@@ -72,9 +74,10 @@ vorpal
         p = p.then(() => {
             _.merge(config, {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: args.options.platform || Helper.Project.getProjectPlatform2(),
+                type: args.platform || Helper.Project.getProjectPlatform2(),
                 target: args.options.target || Helper.TARGET_ALL,
                 skillId: args.options['skill-id'] || config.skillId,
+                projectId: args.options['project-id'],
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             });
             let subp = Promise.resolve();
@@ -87,6 +90,8 @@ vorpal
                         config.skillId = answers.skillId;
                     });
                 }
+            } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
+
             }
 
             getTask(config).forEach((t) => tasks.add(t));

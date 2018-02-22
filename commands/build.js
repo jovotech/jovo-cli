@@ -46,7 +46,7 @@ module.exports = function(vorpal) {
             });
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: Helper.Project.getPlatform(args.options.platform),
+                type: args.options.platform || Helper.Project.getPlatform(args.options.platform),
                 endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                 target: args.options.target || Helper.DEFAULT_TARGET,
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
@@ -67,23 +67,26 @@ module.exports = function(vorpal) {
 
 
             if (args.options.reverse) {
-                // take locales from alexaSkill/models directory
-                config.locales = AlexaHelper.getLocales(args.options.locale);
+                if (config.type === Helper.PLATFORM_ALEXASKILL) {
+                    // take locales from alexaSkill/models directory
+                    config.locales = AlexaHelper.getLocales(args.options.locale);
 
-                if (Helper.Project.hasModelFiles(config.locales)) {
-                    p = p.then(() => {
-                        return Prompts.promptOverwriteReverseBuild().then((answers) => {
-                            if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
-                                // exit on cancel
-                                callback();
-                            } else {
-                                config.reverse = answers.promptOverwriteReverseBuild;
-                            }
+                    if (Helper.Project.hasModelFiles(config.locales)) {
+                        p = p.then(() => {
+                            return Prompts.promptOverwriteReverseBuild().then((answers) => {
+                                if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
+                                    // exit on cancel
+                                    callback();
+                                } else {
+                                    config.reverse = answers.promptOverwriteReverseBuild;
+                                }
+                            });
                         });
-                    });
+                    }
+                } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
+
                 }
             }
-
 
             p.then(() => {
                     if (!Helper.Project.hasAppJson() && !args.options.reverse) {
@@ -95,7 +98,7 @@ module.exports = function(vorpal) {
                     if (args.options.reverse) {
                         tasks.add(
                             {
-                                title: 'Building language model from alexa model',
+                                title: 'Building language model platform model',
                                 task: (ctx) => buildReverseTask(ctx),
                             }
                         );
@@ -114,7 +117,7 @@ module.exports = function(vorpal) {
                     }
                     return tasks.run(config).then(() => {
                     console.log();
-                    console.log('  Installation completed.');
+                    console.log('  Build completed.');
                     console.log();
                 }).catch((err) => {
                     console.error(err);
