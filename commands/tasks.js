@@ -80,6 +80,7 @@ module.exports.getTask = function(ctx) {
                     ctx.info = 'Info: ';
 
                     p = p
+                        .then(() => AlexaHelper.Ask.checkAsk())
                         .then(() => AlexaHelper.Ask.askApiGetSkill(
                             ctx, AlexaHelper.getSkillJsonPath()))
                         .then(() => AlexaHelper.setAlexaSkillId(ctx.skillId))
