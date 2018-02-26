@@ -131,7 +131,7 @@ module.exports = {
                     name: 'Overwrite',
                 }, {
                     value: this.ANSWER_BACKUP,
-                    name: 'Backup old file and procced',
+                    name: 'Backup old file and proceed',
                 }, {
                     value: this.ANSWER_CANCEL,
                     name: 'Cancel',
