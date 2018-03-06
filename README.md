@@ -115,6 +115,7 @@ Name | Description
 :--- | :---
 [`helloworld`](https://github.com/jovotech/jovo-templates/tree/master/01_helloworld) | `Default`. Jovo Sample Voice App with a simple "Hello World!" + asking for the user's name
 [`alexa-audioplayer`](https://github.com/jovotech/jovo-templates/tree/master/02_alexa-audioplayer) | Sample Alexa Audioplayer Skill that plays a longform audio file with the Audioplayer directive
+[`trivia-game`](https://github.com/jovotech/jovo-templates/tree/master/03_trivia-game) | Sample Trivia Voice App
 
 
 #### jovo run
