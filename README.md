@@ -113,8 +113,8 @@ You can find the complete repository on GitHub: [jovotech/jovo-templates](https:
 
 Name | Description 
 :--- | :---
-[`helloworld`](https://github.com/jovotech/jovo-templates/01_helloworld) | `Default`. Jovo Sample Voice App with a simple "Hello World!" + asking for the user's name
-[`alexa-audioplayer`](https://github.com/jovotech/jovo-templates/02_alexa-audioplayer) | Sample Alexa Audioplayer Skill that plays a longform audio file with the Audioplayer directive
+[`helloworld`](https://github.com/jovotech/jovo-templates/tree/master/01_helloworld) | `Default`. Jovo Sample Voice App with a simple "Hello World!" + asking for the user's name
+[`alexa-audioplayer`](https://github.com/jovotech/jovo-templates/tree/master/02_alexa-audioplayer) | Sample Alexa Audioplayer Skill that plays a longform audio file with the Audioplayer directive
 
 
 #### jovo run
