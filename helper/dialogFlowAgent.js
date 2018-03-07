@@ -452,6 +452,13 @@ class DialogFlowAgent {
                     data.push(dataEntityObj);
                 }
 
+                if (pos < phrase.length) {
+                    data.push({
+                        text: phrase.substr(pos),
+                        userDefined: false,
+                    });
+                }
+
                 // if no entities in phrase use full phrase as data object
                 if (data.length === 0) {
                     data = [
@@ -476,9 +483,9 @@ class DialogFlowAgent {
     }
 }
 //
-// let dfa = new DialogFlowAgent({locale: 'en-CA'});
-// let model = require('./../demo/models/en-CA.json');
-// require('./lmHelper').Project.setProjectPath('demo');
+// let dfa = new DialogFlowAgent({locale: 'en-US'});
+// let model = require('./../demo1/models/en-US.json');
+// require('./lmHelper').Project.setProjectPath('demo1');
 // dfa.transform(model);
 // let aim = new AlexaInteractionModel(alexa);
 //
