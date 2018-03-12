@@ -81,6 +81,9 @@ class AlexaInteractionModel {
                     if (typeValue.name.synonyms) {
                         tV.synonyms = typeValue.name.synonyms;
                     }
+                    if (typeValue.id) {
+                        tV.id = typeValue.id;
+                    }
                     values.push(tV);
                 }
                 inputTypes.push({
