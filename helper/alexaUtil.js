@@ -502,8 +502,8 @@ module.exports.Ask = {
         return new Promise((resolve, reject) => {
             exec('ask -v', (error, stdout) => {
                 if (error) {
-                    let msg = 'ASK CLI could not be found or executed on your system\n' +
-                        'Please see: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
+                    let msg = 'Jovo requires ASK CLI\n' +
+                        'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
                     resolve(new Error(msg));
                     return;
                 }
