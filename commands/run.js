@@ -39,7 +39,7 @@ module.exports = function(vorpal) {
                 command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
             }
 
-            let parameters = ['./'+localServerFile, '--ignore db/*'];
+            let parameters = ['./'+localServerFile, '--ignore', 'db/*'];
 
             parameters.push('--webhook');
 
