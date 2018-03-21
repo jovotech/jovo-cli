@@ -37,7 +37,7 @@ describe('new <project>', function() {
     it('should create a project', function(done) {
         this.timeout(50000);
 
-        let child = spawn('node', ['index.js', 'new', folder, '-t', 'helloworldtest'], {
+        let child = spawn('node', ['./index.js', 'new', folder, '-t', 'helloworldtest'], {
         });
         child.stdout.on('data', (data) => {
             if (data.indexOf('Installation completed.') > -1) {
