@@ -6,7 +6,6 @@ install:
 
 node_js:
   - "7"
-  - "6"
 
 notifications:
   email:
