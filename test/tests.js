@@ -36,13 +36,12 @@ before(function(done) {
 describe('new <project>', function() {
     it('should create a project', function(done) {
         this.timeout(50000);
-        const testFolder = process.cwd();
-        const fs = require('fs');
 
-        fs.readdirSync(testFolder).forEach((file) => {
-            console.log(file);
-        })
         let child = spawn('node', ['./index.js', 'new', folder, '-t', 'helloworldtest'], {
+        });
+        child.stderr.on('data', (data) => {
+            console.log(data.toString());
+            done();
         });
         child.stdout.on('data', (data) => {
             if (data.indexOf('Installation completed.') > -1) {
