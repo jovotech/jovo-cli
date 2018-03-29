@@ -49,19 +49,23 @@ class AlexaInteractionModel {
                 let inputs = [];
                 if (intent.slots) {
                     for (let slot of intent.slots) {
+                        let input = {
+                            name: slot.name,
+                        };
                         if (_.startsWith(slot.type, BUILTIN_PREFIX)) {
-                                inputs.push({
-                                name: slot.name,
-                                type: {
-                                    alexa: slot.type,
-                                },
-                            });
+                            input.type = {
+                                alexa: slot.type,
+                            };
                         } else {
-                            inputs.push({
-                                name: slot.name,
-                                type: slot.type,
-                            });
+                            input.type = slot.type;
                         }
+
+                        if (slot.samples) {
+                            input.alexa = {
+                                samples: slot.samples,
+                            };
+                        }
+                        inputs.push(input);
                     }
                     jovoIntent.inputs = inputs;
                 }
@@ -236,6 +240,9 @@ class AlexaInteractionModel {
                                 alexaModel.interactionModel.languageModel.types.push(alexaTypeObj);
                             }
                         }
+                    }
+                    if (_.get(input, 'alexa')) {
+                        _.merge(alexaInputObj, input.alexa);
                     }
                     alexaIntentObj.slots.push(alexaInputObj);
                 }
