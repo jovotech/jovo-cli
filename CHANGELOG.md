@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.0.12 (April 05, 2018)
+* Fixed line separator bug
+
 ## 1.0.11 (April 05, 2018)
 * [#12](https://github.com/jovotech/jovo-cli/pull/12): Added --src parameter to lambda deployment - [@aswetlow](https://github.com/aswetlow)
 * [#12](https://github.com/jovotech/jovo-cli/pull/12): Added chainable get command (jovo get --build --reverse) - [@aswetlow](https://github.com/aswetlow).
