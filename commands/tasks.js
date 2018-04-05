@@ -532,7 +532,6 @@ Endpoint: ${skillInfo.endpoint}`;
                                     return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
                                 }
                                 ctx.lambdaArn = appJson.endpoint;
-                                ctx.lambdaPath = Helper.Project.getProjectPath();
                                 return AlexaHelper.Ask.askLambdaUpload(ctx);
                             } catch (err) {
                                 throw err;
