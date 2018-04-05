@@ -719,7 +719,7 @@ module.exports.Ask = {
     askLambdaUpload: function(config) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask lambda upload -f ' + config.lambdaArn + ' -s ' + config.lambdaPath, {
+            exec('ask lambda upload -f ' + config.lambdaArn + ' -s ' + config.src, {
             }, function(error, stdout, stderr ) {
                 if (error) {
                     if (stderr) {

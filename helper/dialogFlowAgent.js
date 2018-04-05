@@ -349,7 +349,7 @@ class DialogFlowAgent {
                                     if (value.synonyms) {
                                         dfEntityValueObj.synonyms =
                                             dfEntityValueObj.synonyms.concat(
-                                            value.synonyms
+                                                value.synonyms
                                             );
                                     }
                                     entityValues.push(dfEntityValueObj);
@@ -372,37 +372,6 @@ class DialogFlowAgent {
 
             fs.writeFileSync(intentPath, JSON.stringify(dfIntentObj, null, '\t'));
 
-            // dialogflow intents form locale.json
-            if (_.get(model, 'dialogflow.intents')) {
-                for (let modelDialogflowIntent of _.get(model, 'dialogflow.intents')) {
-                    let path = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '.json';
-                    fs.writeFileSync(path, JSON.stringify(modelDialogflowIntent, null, '\t'));
-                    // user says
-                    if (modelDialogflowIntent.userSays) {
-                        let pathUserSays = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '_usersays_'+ outputLocale + '.json';
-                        fs.writeFileSync(pathUserSays, JSON.stringify(modelDialogflowIntent.userSays, null, '\t'));
-                        delete modelDialogflowIntent.userSays;
-                    }
-                }
-            }
-
-            // dialogflow entities form locale.json
-            if (_.get(model, 'dialogflow.entities')) {
-                // create entities folders + files
-                if (!fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
-                    fs.mkdirSync(DialogFlowUtil.getEntitiesFolderPath());
-                }
-                for (let modelDialogflowEntity of _.get(model, 'dialogflow.entities')) {
-                    let path = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '.json';
-                    fs.writeFileSync(path, JSON.stringify(modelDialogflowEntity, null, '\t'));
-                    // entries
-                    if (modelDialogflowEntity.entries) {
-                        let pathEntries = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '_usersays_'+ outputLocale + '.json';
-                        fs.writeFileSync(pathEntries, JSON.stringify(modelDialogflowEntity.entries, null, '\t'));
-                        delete modelDialogflowEntity.entries;
-                    }
-                }
-            }
 
             // handle user says files for intent
 
@@ -478,6 +447,37 @@ class DialogFlowAgent {
             if (dialogFlowIntentUserSays.length > 0) {
                 let intentUserSaysFilePath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '_usersays_' + outputLocale + '.json';
                 fs.writeFileSync(intentUserSaysFilePath, JSON.stringify(dialogFlowIntentUserSays, null, '\t'));
+            }
+        }
+        // dialogflow intents form locale.json
+        if (_.get(model, 'dialogflow.intents')) {
+            for (let modelDialogflowIntent of _.get(model, 'dialogflow.intents')) {
+                let path = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '.json';
+                fs.writeFileSync(path, JSON.stringify(modelDialogflowIntent, null, '\t'));
+                // user says
+                if (modelDialogflowIntent.userSays) {
+                    let pathUserSays = DialogFlowUtil.getIntentsFolderPath() + pathSep + modelDialogflowIntent.name + '_usersays_'+ outputLocale + '.json';
+                    fs.writeFileSync(pathUserSays, JSON.stringify(modelDialogflowIntent.userSays, null, '\t'));
+                    delete modelDialogflowIntent.userSays;
+                }
+            }
+        }
+
+        // dialogflow entities form locale.json
+        if (_.get(model, 'dialogflow.entities')) {
+            // create entities folders + files
+            if (!fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
+                fs.mkdirSync(DialogFlowUtil.getEntitiesFolderPath());
+            }
+            for (let modelDialogflowEntity of _.get(model, 'dialogflow.entities')) {
+                let path = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '.json';
+                fs.writeFileSync(path, JSON.stringify(modelDialogflowEntity, null, '\t'));
+                // entries
+                if (modelDialogflowEntity.entries) {
+                    let pathEntries = DialogFlowUtil.getEntitiesFolderPath() + pathSep + modelDialogflowEntity.name + '_usersays_'+ outputLocale + '.json';
+                    fs.writeFileSync(pathEntries, JSON.stringify(modelDialogflowEntity.entries, null, '\t'));
+                    delete modelDialogflowEntity.entries;
+                }
             }
         }
     }

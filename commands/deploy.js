@@ -23,6 +23,8 @@ module.exports = function(vorpal) {
             'Platform \n\t\t\t\t <alexaSkill|googleAction>')
         .option('-t, --target <target>',
             'Target of deployment \n\t\t\t\t<info|model|lambda|all> Default: all')
+        .option('-s, --src <src>',
+            'Path to source files \n\t\t\t\t Default: <project directory>')
         .option('--project-id <projectId>',
             'Project ID of Dialogflow agent')
         .option('\n')
@@ -44,6 +46,7 @@ module.exports = function(vorpal) {
                 type: Helper.Project.getPlatform(args.options.platform),
                 projectId: args.options['project-id'],
                 target: args.options.target || Helper.DEFAULT_TARGET,
+                src: args.options.src || Helper.Project.getProjectPath(),
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };
             if (config.type.length === 0) {

@@ -224,6 +224,9 @@ module.exports.Project = {
         try {
             return require(this.getModelPath(locale));
         } catch (error) {
+            if (error.code === 'MODULE_NOT_FOUND') {
+                throw new Error('Could not find model file for locale: '  + locale);
+            }
             throw error;
         }
     },
