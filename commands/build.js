@@ -29,6 +29,8 @@ module.exports = function(vorpal) {
             'Builds Jovo language model from Alexa Interaction Model')
         .option('-t, --target <target>',
             'Target of build \n\t\t\t\t<info|model> Default: all')
+        .option('-s, --src <src>',
+            'Path to source files \n\t\t\t\t Default: <project directory>')
         .option('--endpoint <endpoint>',
             'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
         .option('\n')
@@ -49,6 +51,7 @@ module.exports = function(vorpal) {
                 type: args.options.platform || Helper.Project.getPlatform(args.options.platform),
                 endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                 target: args.options.target || Helper.DEFAULT_TARGET,
+                src: args.options.src || Helper.Project.getProjectPath(),
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };
             let p = Promise.resolve();

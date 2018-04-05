@@ -8,6 +8,8 @@ const Helper = require('./../helper/lmHelper');
 const JovoRenderer = require('../utils/jovoRenderer');
 
 const getTask = require('./tasks').getTask;
+const buildReverseTask = require('./tasks').buildReverseTask;
+
 const AlexaHelper = require('./../helper/alexaUtil');
 const chalk = require('chalk');
 const Validator = require('./../utils/validator');
@@ -35,6 +37,10 @@ vorpal
         'Lists all skills for the given ASK profile')
     .option('-s, --skill-id <skillId>',
         'Alexa Skill ID')
+    .option('-b, --build',
+        'Runs build after get. Works only with --reverse')
+    .option('-r, --reverse',
+        'Builds Jovo language model from Alexa Interaction Model')
     .option('--ask-profile <askProfile>',
         'Name of use ASK profile \n\t\t\t\tDefault: default')
 
@@ -94,12 +100,44 @@ vorpal
 
             }
 
+            if (args.options.reverse) {
+                if (config.type === Helper.PLATFORM_ALEXASKILL) {
+                    // take locales from alexaSkill/models directory
+                    config.locales = AlexaHelper.getLocales(args.options.locale);
+
+                    if (Helper.Project.hasModelFiles(config.locales)) {
+                        subp = subp.then(() => {
+                            return Prompts.promptOverwriteReverseBuild().then((answers) => {
+                                if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
+                                    // exit on cancel
+                                    callback();
+                                } else {
+                                    config.reverse = answers.promptOverwriteReverseBuild;
+                                }
+                            });
+                        });
+                    }
+                } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
+
+                }
+            }
+
             getTask(config).forEach((t) => tasks.add(t));
             return subp.then(() => Promise.resolve(config));
         });
 
-
         p.then((config) => {
+            if (args.options.build &&
+                args.options.reverse) {
+                // build project
+                tasks.add(
+                    {
+                        title: 'Building language model platform model',
+                        task: (ctx) => buildReverseTask(ctx),
+                    }
+                );
+            }
+
             return tasks.run(config).then(() => {
                 console.log();
                 console.log('  Get completed.');
