@@ -63,7 +63,6 @@ vorpal
         } catch (error) {
         }
 
-
         if (config.skillId) {
             p = p.then(() => {
                 return Prompts.promptOverwriteProjectAlexaSkill().then((answers) => {
@@ -90,10 +89,16 @@ vorpal
             if (config.type === Helper.PLATFORM_ALEXASKILL) {
                 if (!config.skillId) {
                     // if(args.options['list-skills']) {
-                    subp = subp.then(() => AlexaHelper.Ask.askApiListSkills(config).then((json) => {
-                        return Promise.resolve(prepareSkillList(json));
-                    })).then((choices) => Prompts.promptListForSkillId(choices)).then((answers) => {
+                    subp = subp
+                        .then(() => AlexaHelper.Ask.checkAsk())
+                        .then(() => AlexaHelper.Ask.askApiListSkills(config))
+                        .then((json) => {
+                            return Promise.resolve(prepareSkillList(json));
+                    }).then((choices) => Prompts.promptListForSkillId(choices)).then((answers) => {
                         config.skillId = answers.skillId;
+                    }).catch((error) => {
+                        console.log(error.message);
+                        callback();
                     });
                 }
             } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
