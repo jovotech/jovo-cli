@@ -1,6 +1,10 @@
 # Jovo CLI Changelog
 
-## 1.0.12 (April 05, 2018)
+## 1.0.14 (April 18, 2018)
+* Added more unit tests
+* Fixed minor bugs
+
+## 1.0.12 + 1.0.13 (April 05, 2018)
 * Fixed line separator bug
 
 ## 1.0.11 (April 05, 2018)
