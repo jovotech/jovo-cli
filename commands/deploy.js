@@ -49,7 +49,7 @@ module.exports = function(vorpal) {
                 src: args.options.src || Helper.Project.getProjectPath(),
                 askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
             };
-            if (config.type.length === 0) {
+            if (config.type.length === 0 && config.target !== Helper.TARGET_LAMBDA) {
                 console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
                 callback();
             }

@@ -42,7 +42,7 @@ module.exports = {
      */
     isValidTemplate: function(template) {
         if (template) {
-            let reg = /^[0-9a-zA-Z-_]+$/;
+            let reg = /^[0-9a-zA-Z-/_]+$/;
             if (!reg.test(template)) {
                 console.log('Please use a valid template name.');
                 return false;

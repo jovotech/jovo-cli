@@ -68,9 +68,8 @@ module.exports = function(vorpal) {
                 }
             }
 
-
             if (args.options.reverse) {
-                if (config.type === Helper.PLATFORM_ALEXASKILL) {
+                if (config.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
                     // take locales from alexaSkill/models directory
                     config.locales = AlexaHelper.getLocales(args.options.locale);
 
@@ -86,7 +85,7 @@ module.exports = function(vorpal) {
                             });
                         });
                     }
-                } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
+                } else if (config.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
 
                 }
             }

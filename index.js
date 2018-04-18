@@ -22,6 +22,8 @@ if (process.argv[2] !== 'new' &&
     process.argv[2] !== 'help' &&
     process.argv[2] !== 'deploy' &&
     process.argv[2] !== 'build' &&
+    process.argv[2] !== 'init' &&
+    process.argv[2] !== 'get' &&
     process.argv[2] !== 'run') {
     if (!Helper.Project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
         console.log('To use this command, please go into the directory of a valid Jovo project.');

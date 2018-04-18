@@ -64,7 +64,7 @@ module.exports.getTask = function(ctx) {
         fs.mkdirSync(platformsPath);
     }
 
-    if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
+    if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
         let alexaSkillPath = AlexaHelper.getPath();
         if (!fs.existsSync(alexaSkillPath)) {
             fs.mkdirSync(alexaSkillPath);
@@ -144,7 +144,7 @@ Endpoint: ${skillInfo.endpoint}`;
                 },
             },
         ];
-    } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
+    } else if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION)) {
         let googleActionPath = GoogleActionUtil.getPath();
         if (!fs.existsSync(googleActionPath)) {
             fs.mkdirSync(googleActionPath);
@@ -233,6 +233,7 @@ module.exports.buildTask = function(ctx) {
                     },
                 }, {
                     title: titleInteractionModel,
+                    enabled: () => Helper.Project.hasModelFiles(ctx.locales),
                     task: (ctx) => {
                         let buildLocalesTasks = [];
                         // throw new Error(JSON.stringify(ctx.locales))
@@ -332,7 +333,6 @@ module.exports.buildTask = function(ctx) {
 
 module.exports.buildReverseTask = function(ctx) {
     let buildReverseSubtasks = [];
-
     buildReverseSubtasks.push({
         title: 'Creating backups',
         enabled: (ctx) => ctx.reverse === Prompts.ANSWER_BACKUP,
@@ -350,14 +350,15 @@ module.exports.buildReverseTask = function(ctx) {
         },
     });
 
-    if (ctx.type === Helper.PLATFORM_ALEXASKILL) {
+    if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
         buildReverseSubtasks.push({
             title: 'Reversing model files',
             task: (ctx) => {
                 let reverseLocales = [];
-                for (let locale of ctx.locales) {
+                let locales = AlexaHelper.getLocales(ctx.locales);
+                for (let locale of locales) {
                     reverseLocales.push({
-                        title: locale,
+                        title: locale.toString(),
                         task: () => {
                             let alexaModel = AlexaHelper.getModel(locale);
                             let alexaInteractionModel =
@@ -383,17 +384,19 @@ module.exports.buildReverseTask = function(ctx) {
                 },
             });
         }
-    } else if (ctx.type === Helper.PLATFORM_GOOGLEACTION) {
+    } else if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
         buildReverseSubtasks.push({
             title: 'Reversing model files',
             task: (ctx) => {
                 let reverseLocales = [];
 
                 let agentJson = DialogFlowHelper.getAgentJson();
-                let supportedLanguages = agentJson.supportedLanguages;
+                let supportedLanguages = [];
 
-                if (supportedLanguages.length === 0) {
+                if (!supportedLanguages || supportedLanguages.length === 0) {
                     supportedLanguages.push(agentJson.language);
+                } else {
+                    supportedLanguages = agentJson.supportedLanguages;
                 }
 
 
@@ -439,8 +442,10 @@ module.exports.deployTask = function(ctx) {
         try {
             ctx.skillId = AlexaHelper.getSkillId();
         } catch (error) {
-            console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
-            return [];
+            if (ctx.target !== Helper.TARGET_LAMBDA) {
+                console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+                return [];
+            }
         }
         deployPlatformTasks.push({
             title: 'Deploying Alexa Skill',
@@ -449,7 +454,8 @@ module.exports.deployTask = function(ctx) {
                     {
                         title:
                             `Creating Alexa Skill project for ASK profile ${highlight(ctx.askProfile)}`, // eslint-disable-line
-                        enabled: (ctx) => _.isUndefined(ctx.skillId),
+                        enabled: (ctx) => _.isUndefined(ctx.skillId) &&
+                            ctx.target !== Helper.TARGET_LAMBDA,
                         task: (ctx) => {
                             ctx.target = Helper.TARGET_ALL;
                             return AlexaHelper.Ask.checkAsk().then((err) => {
@@ -522,16 +528,14 @@ Endpoint: ${skillInfo.endpoint}`;
                     {
                         title: 'Uploading to lambda',
                         enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
-                            ctx.target === Helper.TARGET_LAMBDA) && AlexaHelper.isLambdaEndpoint(),
+                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfig().endpoint, 'arn'),
                         task: (ctx) => {
                             try {
                                 let appJson = Helper.Project.getConfig();
-                                let endpoint = AlexaHelper.getSkillJson()
-                                    .manifest.apis.custom.endpoint.uri;
-                                if (!_.startsWith(endpoint, 'arn')) {
+                                ctx.lambdaArn = appJson.endpoint;
+                                if (!_.startsWith(ctx.lambdaArn, 'arn')) {
                                     return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
                                 }
-                                ctx.lambdaArn = appJson.endpoint;
                                 return AlexaHelper.Ask.askLambdaUpload(ctx);
                             } catch (err) {
                                 throw err;

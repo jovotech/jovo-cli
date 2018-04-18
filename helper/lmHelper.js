@@ -33,7 +33,7 @@ const ENDPOINT_NONE = 'none';
 const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 
 
-const REPO_URL = 'http://www.jovo.tech/repo/sample-apps/v1/';
+const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
 
@@ -116,8 +116,7 @@ module.exports.Project = {
      * @return {string}
      */
     getProjectPlatform2: function() {
-        return 'alexaSkill';
-        // return getProjectSkillId() ? 'alexaSkill' : 'none';
+        return PLATFORM_ALEXASKILL;
     },
 
 
@@ -193,6 +192,7 @@ module.exports.Project = {
      */
     getPlatform: function(platform) {
         let projectPlatforms = [];
+
         try {
             if (platform) {
                 return [platform];
@@ -225,7 +225,7 @@ module.exports.Project = {
             return require(this.getModelPath(locale));
         } catch (error) {
             if (error.code === 'MODULE_NOT_FOUND') {
-                throw new Error('Could not find model file for locale: '  + locale);
+                throw new Error('Could not find model file for locale: ' + locale);
             }
             throw error;
         }
@@ -281,6 +281,10 @@ module.exports.Project = {
      * @return {boolean}
      */
     hasModelFiles: function(locales) {
+        if (!locales) {
+            return false;
+        }
+
         for (let locale of locales) {
             try {
                 this.getModel(locale);
@@ -434,7 +438,12 @@ module.exports.Project = {
         return new Promise((resolve, reject) => {
             let p = Promise.resolve();
             for (let locale of this.getLocales()) {
-                let model = this.getModel(locale);
+                let model;
+                try {
+                    model = this.getModel(locale);
+                } catch (e) {
+                    return resolve();
+                }
 
                 if (platform === PLATFORM_ALEXASKILL) {
                     const AlexaSkill = require('./alexaUtil');
@@ -663,9 +672,9 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
      * @param {string} locale
      * @return {Promise<any>}
      */
-    downloadTemplate: function(projectPath, template, locale) {
+        downloadTemplate: function(projectPath, template, locale) {
         return new Promise((resolve, reject) => {
-            let templateName = template + '_' + locale + '.zip';
+            let templateName = template.replace('/', '-') + '_' + locale + '.zip';
             let url = REPO_URL + templateName;
             if (!fs.existsSync(projectPath)) {
                 fs.mkdirSync(projectPath);

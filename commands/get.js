@@ -79,7 +79,7 @@ vorpal
         p = p.then(() => {
             _.merge(config, {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: args.platform || Helper.Project.getProjectPlatform2(),
+                type: args.platform || Helper.Project.getPlatform(args.platform),
                 target: args.options.target || Helper.TARGET_ALL,
                 skillId: args.options['skill-id'] || config.skillId,
                 projectId: args.options['project-id'],
@@ -108,20 +108,23 @@ vorpal
             if (args.options.reverse) {
                 if (config.type === Helper.PLATFORM_ALEXASKILL) {
                     // take locales from alexaSkill/models directory
-                    config.locales = AlexaHelper.getLocales(args.options.locale);
-
-                    if (Helper.Project.hasModelFiles(config.locales)) {
-                        subp = subp.then(() => {
-                            return Prompts.promptOverwriteReverseBuild().then((answers) => {
-                                if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
-                                    // exit on cancel
-                                    callback();
-                                } else {
-                                    config.reverse = answers.promptOverwriteReverseBuild;
-                                }
-                            });
-                        });
-                    }
+                    subp = subp.then(() => {
+                        try {
+                            config.locales = AlexaHelper.getLocales(args.options.locale);
+                        } catch (e) {
+                            config.locales = undefined;
+                        }
+                        if (Helper.Project.hasModelFiles(config.locales)) {
+                                return Prompts.promptOverwriteReverseBuild().then((answers) => {
+                                    if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
+                                        // exit on cancel
+                                        callback();
+                                    } else {
+                                        config.reverse = answers.promptOverwriteReverseBuild;
+                                    }
+                                });
+                        }
+                    });
                 } else if (config.type === Helper.PLATFORM_GOOGLEACTION) {
 
                 }
@@ -150,7 +153,7 @@ vorpal
                 callback();
             }).catch((err) => {
                 console.log();
-                console.error(err.message);
+                console.error(err);
             });
         });
     })

@@ -126,7 +126,12 @@ class AlexaInteractionModel {
         } else {
             locales = [locale];
         }
-        let model = Helper.Project.getModel(locale);
+        let model;
+        try {
+            model = Helper.Project.getModel(locale);
+        } catch (e) {
+            return;
+        }
         let alexaModel = {};
 
         _.set(alexaModel, 'interactionModel.languageModel.invocationName', model.invocation);

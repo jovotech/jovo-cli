@@ -29,6 +29,8 @@ module.exports = function(vorpal) {
             'Fast forward runs --init <platform> --build --deploy')
         .option('--invocation <invocation>',
             'Sets the invocation name (Alexa Skill)')
+        .option('--skip-npminstall',
+            'Skips npm install')
         .option('--ask-profile <askProfile>',
             'Name of use ASK profile \n\t\t\t\tDefault: default')
         .option('--endpoint <endpoint>',
@@ -202,6 +204,7 @@ module.exports = function(vorpal) {
                 // install npm dependencies
                 tasks.add({
                     title: 'Installing npm dependencies',
+                    enabled: () => !args.options['skip-npminstall'],
                     task: () => Helper.Project.runNpmInstall(),
                 });
                 return Promise.resolve(config);

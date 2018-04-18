@@ -37,6 +37,7 @@ module.exports = function(vorpal) {
             let command = 'node';
             if (args.options.watch) {
                 command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
+                console.log(command);
             }
 
             let parameters = ['./'+localServerFile, '--ignore', 'db/*'];
@@ -114,7 +115,7 @@ module.exports = function(vorpal) {
             });
 
             ls.on('close', (code) => {
-                console.log(`${code}`);
+                // console.log(`${code}`);
             });
         });
 };

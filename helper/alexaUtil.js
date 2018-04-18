@@ -504,8 +504,7 @@ module.exports.Ask = {
                 if (error) {
                     let msg = 'Jovo requires ASK CLI\n' +
                         'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
-                    resolve(new Error(msg));
-                    return;
+                    return reject(new Error(msg));
                 }
                 const version = stdout.split('.');
                 if (parseInt(version[0]) >= 1 && parseInt(version[1]) >= 1) {

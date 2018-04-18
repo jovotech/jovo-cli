@@ -147,21 +147,24 @@ class DialogFlowAgent {
             }
 
             let inputs = [];
-            for (let response of dialogFlowIntent.responses) {
-                for (let parameter of response.parameters) {
-                    let input = {
-                        name: parameter.name,
-                    };
-                    if (_.startsWith(parameter.dataType, '@sys.')) {
-                        input.type = {
-                            dialogflow: parameter.dataType,
+            if (dialogFlowIntent.responses) {
+                for (let response of dialogFlowIntent.responses) {
+                    for (let parameter of response.parameters) {
+                        let input = {
+                            name: parameter.name,
                         };
-                    } else {
-                        input.type = parameter.dataType.substr(1);
+                        if (_.startsWith(parameter.dataType, '@sys.')) {
+                            input.type = {
+                                dialogflow: parameter.dataType,
+                            };
+                        } else {
+                            input.type = parameter.dataType.substr(1);
+                        }
+                        inputs.push(input);
                     }
-                    inputs.push(input);
                 }
             }
+
 
             if (inputs.length > 0) {
                 jovoIntent.inputs = inputs;
