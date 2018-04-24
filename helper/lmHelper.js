@@ -674,12 +674,11 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
      */
         downloadTemplate: function(projectPath, template, locale) {
         return new Promise((resolve, reject) => {
-            let templateName = template.replace('/', '-') + '_' + locale + '.zip';
+            let templateName = template + '_' + locale + '.zip';
             let url = REPO_URL + templateName;
             if (!fs.existsSync(projectPath)) {
                 fs.mkdirSync(projectPath);
             }
-
             request(url)
                 .on('response', function(res) {
                     if (res.statusCode === 200) {

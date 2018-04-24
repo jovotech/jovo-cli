@@ -144,6 +144,7 @@ module.exports = function(vorpal) {
                     askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
                 });
                 Helper.Project.setProjectPath(args.directory);
+                config.template = config.template.replace('/', '-');
                 tasks.add({
                     title: `Creating new directory /${chalk.white.bold(config.projectname)}`,
                     task: (ctx, task) => {
