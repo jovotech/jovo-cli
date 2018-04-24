@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.0.15 (April 24, 2018)
+* Downgrade buggy adm-zip dependecy
+
 ## 1.0.14 (April 18, 2018)
 * Added more unit tests
 * Fixed minor bugs
