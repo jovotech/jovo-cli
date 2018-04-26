@@ -28,6 +28,7 @@ module.exports = function(vorpal) {
         .option('-b, --bst-proxy', 'Proxies the HTTP service running at the specified port via bst')
         .option('-n, --ngrok', 'Http tunnel via ngrok. Ngrok instance has to run.')
         .option('-p, --port <port>', 'Port to local development webhook')
+        .option('-i, --inspect [inspectPort]', 'Debugging port')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .action((args, callback) => {
             const port = args.options.port || 3000;
@@ -37,10 +38,17 @@ module.exports = function(vorpal) {
             let command = 'node';
             if (args.options.watch) {
                 command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
-                console.log(command);
             }
 
             let parameters = ['./'+localServerFile, '--ignore', 'db/*'];
+
+            if (args.options.inspect) {
+                let inspectPort = 9229;
+                if (_.isNumber(args.options.inspect)) {
+                    inspectPort = parseInt(args.options.inspect);
+                }
+                parameters.unshift('--inspect=' + inspectPort);
+            }
 
             parameters.push('--webhook');
 
