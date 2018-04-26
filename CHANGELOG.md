@@ -1,5 +1,9 @@
 # Jovo CLI Changelog
 
+
+## 1.0.16 (April 26, 2018)
+* Add node debug feature to ``` jovo run [--inspect] ``` 
+
 ## 1.0.15 (April 24, 2018)
 * Downgrade buggy adm-zip dependecy
 
