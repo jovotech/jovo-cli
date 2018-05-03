@@ -25,6 +25,7 @@
     "lodash": "^4.17.4",
     "nodemon": "^1.12.1",
     "request": "^2.83.0",
+    "resolve-bin": "^0.4.0",
     "socket.io-client": "^2.0.4",
     "uuid": "^3.2.1",
     "vorpal": "^1.12.0"
