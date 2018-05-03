@@ -4,6 +4,7 @@ const BSTProxy = require('bespoken-tools').BSTProxy;
 const fs = require('fs');
 const path = require('path');
 const spawn = require('cross-spawn');
+const resolveBin = require('resolve-bin');
 const http = require('http');
 const io = require('socket.io-client');
 const Helper = require('./../helper/lmHelper');
@@ -37,7 +38,7 @@ module.exports = function(vorpal) {
 
             let command = 'node';
             if (args.options.watch) {
-                command = process.mainModule.paths[0] + path.sep + 'nodemon' + path.sep + 'bin' + path.sep + 'nodemon.js';
+                command = resolveBin.sync('nodemon');
             }
 
             let parameters = ['./'+localServerFile, '--ignore', 'db/*'];
