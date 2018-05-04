@@ -37,7 +37,6 @@ const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/v1/';
 
 let projectPath = process.cwd();
 
-
 module.exports.Project = {
 
     /**
@@ -316,13 +315,23 @@ module.exports.Project = {
 
     /**
      * Returns app.json object
+     * @param {string} stage
      * @return {*}
      */
-    getConfig: function() {
+    getConfig: function(stage) {
         try {
-            return require(this.getConfigPath());
+            let appJsonConfig = require(this.getConfigPath());
+            let stg = stage ? stage : appJsonConfig.defaultStage;
+            if (_.get(appJsonConfig, `stages["${stg}"]`)) {
+                appJsonConfig = _.merge(
+                    appJsonConfig,
+                    _.get(appJsonConfig, `stages["${stg}"]`));
+            }
+            return appJsonConfig;
         } catch (error) {
-            throw error;
+            if (_.get(error, 'constructor.name') === 'SyntaxError') {
+                console.log(error);
+            }
         }
     },
 
@@ -398,11 +407,7 @@ module.exports.Project = {
     updatePlatformConfig: function(platform) {
         return new Promise((resolve, reject) => {
             let config;
-            try {
-                config = this.getConfig();
-            } catch (err) {
-                config = {};
-            }
+            config = this.getConfig() || {};
 
             if (platform === PLATFORM_ALEXASKILL) {
                 if (!config.alexaSkill) {
@@ -629,6 +634,12 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
         }
     },
 
+    getEndpointFromConfig(endpoint) {
+        if (endpoint === '${JOVO_WEBHOOK_URL}') {
+            return JOVO_WEBHOOK_URL + '/' + this.getWebhookUuid();
+        }
+        return endpoint;
+    },
 
     /**
      * Updates endpont to app.json
@@ -721,6 +732,31 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
         } catch (err) {
 
         }
+    },
+
+
+    moveTempJovoConfig(pathToSrc) {
+        return new Promise((resolve, reject) => {
+            let rd = fs.createReadStream(this.getConfigPath());
+            rd.on('error', function(err) {
+                reject(err);
+            });
+            let wr = fs.createWriteStream(pathToSrc + path.sep + 'app.json');
+            wr.on('error', function(err) {
+                reject(err);
+            });
+            wr.on('close', function(ex) {
+                resolve();
+            });
+            rd.pipe(wr);
+        });
+    },
+
+    deleteTempJovoConfig(pathToSrc) {
+        return new Promise((resolve) => {
+            fs.unlinkSync(pathToSrc + path.sep + 'app.json');
+            resolve();
+        });
     },
 
     saveJovoConfig: function(config) {
@@ -859,7 +895,7 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
 
     deleteExistingFolder: function(dir) {
         deleteFolderRecursive(process.cwd() + path.sep + dir);
-    }
+    },
 
 };
 

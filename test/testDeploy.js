@@ -1,6 +1,4 @@
 'use strict';
-const chai = require('chai');
-const assert = chai.assert;
 const exec = require('child_process').exec;
 
 const expect = require('chai').expect;
@@ -149,6 +147,11 @@ after(function(done) {
 });
 
 
+/**
+ * Deletes skill from ASK
+ * @param {string} skillId
+ * @param {function} callback
+ */
 function deleteSkill(skillId, callback) {
     exec('ask api delete-skill --skill-id ' + skillId, {
     }, function(error, stdout, stderr ) {

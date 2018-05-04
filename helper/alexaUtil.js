@@ -284,9 +284,10 @@ module.exports = {
     /**
      * Builds and saves Alexa Skill model from jovo model
      * @param {string} locale
+     * @param {string} stage
      * @return {Promise<any>}
      */
-    buildLanguageModelAlexa: function(locale) {
+    buildLanguageModelAlexa: function(locale, stage) {
         return new Promise((resolve, reject) => {
             try {
                 let alexaModel;
@@ -296,7 +297,7 @@ module.exports = {
                     alexaModel = this.createEmptyModelJson();
                 }
                 let aim = new AlexaInteractionModel(alexaModel);
-                aim.transform(locale);
+                aim.transform(locale, stage);
                 resolve();
             } catch (error) {
                 reject(error);
@@ -306,14 +307,14 @@ module.exports = {
 
     /**
      * Builds and saves Alexa Skill model from jovo model
+     * @param {string} stage
      * @return {Promise<any>}
      */
-    buildSkillAlexa: function() {
+    buildSkillAlexa: function(stage) {
         return new Promise((resolve, reject) => {
             try {
-                let config = Helper.Project.getConfig();
+                let config = Helper.Project.getConfig(stage);
                 let skillJson = this.getSkillJson();
-
                 // endpoint
                 if (_.get(config, 'endpoint')) {
                     // create basic https endpoint from wildcard ssl
@@ -321,13 +322,13 @@ module.exports = {
                         _.set(skillJson, 'manifest.apis.custom', {
                             endpoint: {
                                 sslCertificateType: 'Wildcard',
-                                uri: _.get(config, 'endpoint'),
+                                uri: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint')),
                             },
                         });
                     } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.alexaSkill')) {
                         // get full object
                         _.set(skillJson, 'manifest.apis.custom', {
-                            endpoint: _.get(config, 'endpoint.alexaSkill'),
+                            endpoint: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
                         });
                     }
                 }
@@ -335,12 +336,18 @@ module.exports = {
                     _.merge(skillJson.manifest, config.alexaSkill.manifest);
                 }
 
-                fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), function(err) {
+                fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), (err) => {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve();
+
+                    if (typeof _.get(config, 'alexaSkill.skillId') !== 'undefined') {
+                        this.setAlexaSkillId(_.get(config, 'alexaSkill.skillId'))
+                            .then(() => resolve());
+                    } else {
+                        resolve();
+                    }
                 });
             } catch (err) {
                 return reject(err);
@@ -524,7 +531,7 @@ module.exports.Ask = {
     askApiCreateSkill: function(config, skillJsonPath) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask api create-skill -f ' + skillJsonPath + ' --profile ' + config.askProfile, (error, stdout, stderr) => {
+            exec('ask api create-skill -f "' + skillJsonPath + '" --profile ' + config.askProfile, (error, stdout, stderr) => {
                 if (error) {
                     if (stderr) {
                         return reject(self.getAskError('askApiCreateSkill', stderr));
@@ -566,7 +573,7 @@ module.exports.Ask = {
     askApiUpdateModel: function(config, modelPath, locale) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask api update-model -s ' + config.skillId + ' -f ' + modelPath + ' -l '+ locale + ' --profile ' + config.askProfile, {
+            exec('ask api update-model -s ' + config.skillId + ' -f "' + modelPath + '" -l '+ locale + ' --profile ' + config.askProfile, {
             }, function(error, stdout, stderr ) {
                 if (error) {
                     if (stderr) {
@@ -587,7 +594,7 @@ module.exports.Ask = {
     askApiUpdateSkill: function(config, skillJsonPath) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask api update-skill -s ' + config.skillId + ' -f ' + skillJsonPath + ' --profile ' + config.askProfile, {
+            exec('ask api update-skill -s ' + config.skillId + ' -f "' + skillJsonPath + '" --profile ' + config.askProfile, {
             }, function(error, stdout, stderr ) {
                 if (error) {
                     if (stderr) {
@@ -634,7 +641,7 @@ module.exports.Ask = {
     askApiGetSkill: function(config, skillJsonPath) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask api get-skill -s ' + config.skillId + ' > ' + skillJsonPath + ' --profile ' + config.askProfile, (error, stdout, stderr) => {
+            exec('ask api get-skill -s ' + config.skillId + ' > "' + skillJsonPath + '" --profile ' + config.askProfile, (error, stdout, stderr) => {
                 if (error) {
                     if (stderr) {
                         return reject(self.getAskError('askApiGetSkill', stderr));
@@ -655,7 +662,7 @@ module.exports.Ask = {
     askApiGetModel: function(config, skillJsonPath, locale) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask api get-model -s ' + config.skillId + ' -l ' + locale + ' > ' + skillJsonPath + ' --profile ' + config.askProfile, {
+            exec('ask api get-model -s ' + config.skillId + ' -l ' + locale + ' > "' + skillJsonPath + '" --profile ' + config.askProfile, {
             }, function(error, stdout, stderr ) {
                 if (error) {
                     if (stderr) {
@@ -718,7 +725,7 @@ module.exports.Ask = {
     askLambdaUpload: function(config) {
         let self = this;
         return new Promise((resolve, reject) => {
-            exec('ask lambda upload -f ' + config.lambdaArn + ' -s ' + config.src, {
+            exec('ask lambda upload -f ' + config.lambdaArn + ' -s "' + config.src + '"', {
             }, function(error, stdout, stderr ) {
                 if (error) {
                     if (stderr) {

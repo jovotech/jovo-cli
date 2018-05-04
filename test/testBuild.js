@@ -1,6 +1,4 @@
 'use strict';
-const chai = require('chai');
-const assert = chai.assert;
 const expect = require('chai').expect;
 const tmpTestfolder = 'tmpTestfolderBuild';
 const spawn = require('child_process').spawn;

@@ -1,7 +1,6 @@
 'use strict';
 const chai = require('chai');
 const assert = chai.assert;
-const expect = require('chai').expect;
 const tmpTestfolder = 'tmpTestfolderRun';
 const spawn = require('child_process').spawn;
 const fs = require('fs');
@@ -94,6 +93,26 @@ describe('run', function() {
                 // If proxy haven't run, one is created
                 fullData.indexOf('info: CONFIG      No configuration. Creating one') > -1;
             assert.ok(validation);
+            child.kill();
+            done();
+        }, 8000);
+    });
+    it('jovo run --webhook-standalone', function(done) {
+        this.timeout(200000);
+        const projectName = 'helloworldRun';
+        const projectFolder = tmpTestfolder + path.sep + projectName;
+        let child = spawn('node', ['./../../index.js',
+            'run',
+            '--webhook-standalone'], {
+            cwd: projectFolder,
+        });
+        let fullData = '';
+        child.stdout.on('data', (data) => {
+            fullData += data.toString();
+        });
+
+        setTimeout(() => {
+            assert.ok(fullData.indexOf('Example server listening on port 3000!') === -1);
             child.kill();
             done();
         }, 8000);
