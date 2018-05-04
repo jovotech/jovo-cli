@@ -1,5 +1,11 @@
 # Jovo CLI Changelog
 
+## 1.0.17 (April 26, 2018)
+* Added staging functionality
+* Added `jovo run --webhook-only`. Runs the Jovo Webhook without executing the code. (issue #15)
+* Fixed blanks-in-path bug
+* [#16](https://github.com/jovotech/jovo-cli/pull/16) Fixed --watch nodemon bug [@fgnass](https://github.com/fgnass)
+
 
 ## 1.0.16 (April 26, 2018)
 * Add node debug feature to ``` jovo run [--inspect] ``` 
