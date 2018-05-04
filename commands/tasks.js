@@ -210,7 +210,7 @@ module.exports.buildTask = function(ctx) {
                                             }
                                             return Promise.resolve();
                                         })
-                                        .then(() => AlexaHelper.buildSkillAlexa())
+                                        .then(() => AlexaHelper.buildSkillAlexa(ctx.stage))
                                         .then(() => wait(500));
                                 },
                             },
@@ -225,7 +225,7 @@ module.exports.buildTask = function(ctx) {
                             {
                                 title: 'skill.json',
                                 task: (ctx, task) => {
-                                    return AlexaHelper.buildSkillAlexa()
+                                    return AlexaHelper.buildSkillAlexa(ctx.stage)
                                         .then(() => wait(500));
                                 },
                             },
@@ -241,7 +241,7 @@ module.exports.buildTask = function(ctx) {
                             buildLocalesTasks.push({
                                 title: locale,
                                 task: () => {
-                                    return AlexaHelper.buildLanguageModelAlexa(locale)
+                                    return AlexaHelper.buildLanguageModelAlexa(locale, ctx.stage)
                                         .then(() => wait(500));
                                 },
                             });
@@ -375,7 +375,7 @@ module.exports.buildReverseTask = function(ctx) {
         });
 
         try {
-            _.get(Helper.Project.getConfig(), 'alexaSkill');
+            _.get(Helper.Project.getConfig(ctx.stage), 'alexaSkill');
         } catch (err) {
             buildReverseSubtasks.push({
                 title: 'Initializing Alexa Skill into app.json',
@@ -416,7 +416,7 @@ module.exports.buildReverseTask = function(ctx) {
             },
         });
         try {
-            _.get(Helper.Project.getConfig(), 'googleAction');
+            _.get(Helper.Project.getConfig(ctx.stage), 'googleAction');
         } catch (err) {
             buildReverseSubtasks.push({
                 title: 'Initializing GoogleAction into app.json',
@@ -437,7 +437,6 @@ module.exports.deployTask = function(ctx) {
         fs.mkdirSync(platformsPath);
     }
     let deployPlatformTasks = [];
-
     if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
         try {
             ctx.skillId = AlexaHelper.getSkillId();
@@ -528,15 +527,33 @@ Endpoint: ${skillInfo.endpoint}`;
                     {
                         title: 'Uploading to lambda',
                         enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
-                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfig().endpoint, 'arn'),
+                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfig(ctx.stage).endpoint, 'arn'),
                         task: (ctx) => {
                             try {
-                                let appJson = Helper.Project.getConfig();
+                                let appJson = Helper.Project.getConfig(ctx.stage);
                                 ctx.lambdaArn = appJson.endpoint;
                                 if (!_.startsWith(ctx.lambdaArn, 'arn')) {
                                     return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
                                 }
-                                return AlexaHelper.Ask.askLambdaUpload(ctx);
+
+                                let p = Promise.resolve();
+
+                                // special use case
+                                // copy app.json if src directory is not default and config
+                                // was set in app.json
+                                if (appJson.src && appJson.config) {
+                                    p = p.then(
+                                        () => Helper.Project.moveTempJovoConfig(appJson.src));
+                                }
+
+                                p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
+
+                                if (appJson.src && appJson.config) {
+                                    p = p.then(
+                                        () => Helper.Project.deleteTempJovoConfig(appJson.src));
+                                }
+
+                                return p;
                             } catch (err) {
                                 throw err;
                             }
@@ -569,7 +586,7 @@ Endpoint: ${skillInfo.endpoint}`;
                                     info += `${locale} `;
                                 }
                                 info += '\n';
-                                info += `Fulfillment Endpoint: ${Helper.Project.getConfig().endpoint}`; // eslint-disable-line
+                                info += `Fulfillment Endpoint: ${Helper.Project.getConfig(ctx.stage).endpoint}`; // eslint-disable-line
                                 task.skip(info);
                             });
                         },

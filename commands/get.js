@@ -37,6 +37,8 @@ vorpal
         'Lists all skills for the given ASK profile')
     .option('-s, --skill-id <skillId>',
         'Alexa Skill ID')
+    .option('--stage <stage>',
+        'Takes configuration from <stage>')
     .option('-b, --build',
         'Runs build after get. Works only with --reverse')
     .option('-r, --reverse',
@@ -81,9 +83,10 @@ vorpal
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: args.platform || Helper.Project.getPlatform(args.platform),
                 target: args.options.target || Helper.TARGET_ALL,
-                skillId: args.options['skill-id'] || config.skillId,
+                skillId: args.options['skill-id'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.skillId') || config.skillId,
                 projectId: args.options['project-id'],
-                askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
+                stage: args.options.stage,
+                askProfile: args.options['ask-profile'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.ask-profile') || Helper.DEFAULT_ASK_PROFILE,
             });
             let subp = Promise.resolve();
             if (config.type === Helper.PLATFORM_ALEXASKILL) {
@@ -116,7 +119,8 @@ vorpal
                         }
                         if (Helper.Project.hasModelFiles(config.locales)) {
                                 return Prompts.promptOverwriteReverseBuild().then((answers) => {
-                                    if (answers.promptOverwriteReverseBuild === Prompts.ANSWER_CANCEL) {
+                                    if (answers.promptOverwriteReverseBuild ===
+                                        Prompts.ANSWER_CANCEL) {
                                         // exit on cancel
                                         callback();
                                     } else {

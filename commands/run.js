@@ -29,11 +29,26 @@ module.exports = function(vorpal) {
         .option('-n, --ngrok', 'Http tunnel via ngrok. Ngrok instance has to run.')
         .option('-p, --port <port>', 'Port to local development webhook')
         .option('-i, --inspect [inspectPort]', 'Debugging port')
+        .option('--stage <stage>', 'Takes configuration from <stage>')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
+        .option('--webhook-only', 'Starts the Jovo Webhook proxy without executing the code')
         .action((args, callback) => {
             const port = args.options.port || 3000;
+            if (args.options['webhook-only']) {
+                jovoWebhook(port, args.options.stage);
+                return;
+            }
+            let srcDir = '';
+            // prepend src directory from config
+            if (_.get(Helper.Project.getConfig(args.options.stage), 'src')) {
+                srcDir = _.get(Helper.Project.getConfig(args.options.stage), 'src');
 
-            const localServerFile = args.webhookFile ? args.webhookFile : 'index.js';
+                if (!_.endsWith(path.sep, srcDir )) {
+                    srcDir = srcDir + path.sep;
+                }
+            }
+
+            const localServerFile = args.webhookFile === 'index.js' ? 'index.js' : args.webhookFile;
 
             let command = 'node';
             if (args.options.watch) {
@@ -51,7 +66,6 @@ module.exports = function(vorpal) {
             }
 
             parameters.push('--webhook');
-
 
             if (args.options['bst-proxy']) {
                 const proxy = BSTProxy.http(port);
@@ -71,49 +85,11 @@ module.exports = function(vorpal) {
                 parameters.push('--bst-proxy');
             } else if (args.options.ngrok) {
             } else {
-                let user;
-
-                try {
-                    user = Helper.Project.getOrCreateJovoWebhookId();
-                } catch (err) {
-                    console.log('Warning: Please initialize your project: $ jovo init');
-                    callback();
-                }
-
-               try {
-                   const config = Helper.Project.getConfig();
-
-                   if (!config.endpoint) {
-                       throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
-                   }
-
-                   if (_.startsWith(config.endpoint, 'arn')) {
-                       throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
-                   }
-               } catch (err) {
-                   if (_.startsWith(err.message, 'Warning:')) {
-                       console.log(err.message);
-                   }
-               }
-
-                const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
-                    secure: true,
-                    query: {
-                        user: user,
-                    },
-                });
-                socket.on('connect', function() {
-                    console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + user);
-                });
-                socket.on('request-'+user, (data) => {
-                    post(data.request, port).then((result) => {
-                        socket.emit('response-' + user, result);
-                    });
-                });
+                jovoWebhook(port, args.options.stage);
                 parameters.push('--jovo-webhook');
             }
 
-            const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: process.cwd()});
+            const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: srcDir || process.cwd()});
             ls.on('data', (data) => {
                 console.log(`stdout: ${data}`);
             });
@@ -128,6 +104,58 @@ module.exports = function(vorpal) {
         });
 };
 
+
+/**
+ * Initializes connection to the Jovo Webhook
+ * @param {int} port
+ * @param {string} stage
+ */
+function jovoWebhook(port, stage) {
+    let user;
+
+    try {
+        user = Helper.Project.getOrCreateJovoWebhookId();
+    } catch (err) {
+        console.log('Warning: Please initialize your project: $ jovo init');
+        return;
+    }
+
+    try {
+        const config = Helper.Project.getConfig(stage);
+
+        if (!config.endpoint) {
+            throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
+        }
+
+        if (_.startsWith(config.endpoint, 'arn')) {
+            throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
+        }
+    } catch (err) {
+        if (_.startsWith(err.message, 'Warning:')) {
+            console.log(err.message);
+        }
+    }
+
+    const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
+        secure: true,
+        query: {
+            user: user,
+        },
+    });
+    socket.on('connect', function() {
+        console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + user);
+    });
+    socket.on('request-'+user, (data) => {
+        post(data.request, port).then((result) => {
+            socket.emit('response-' + user, result);
+        }).catch((error) => {
+            console.log();
+            console.log(error.message);
+            console.log();
+            console.log(error);
+        });
+    });
+}
 
 /**
  * Send post requests to local webhook
@@ -167,7 +195,9 @@ function post(requestObj, port) {
             });
         }).on('error', (e) => {
             if (e.code === 'ECONNRESET') {
-                console.log('Timeout error: No response after ' + 5000 + ' milliseconds');
+                e.message = 'Timeout error: No response after ' + 5000 + ' milliseconds';
+            } else if (e.code === 'ECONNREFUSED') {
+                e.message = 'There is no Jovo instance running on ' + opt.hostname;
             }
             reject(e);
         }).on('socket', function(socket) {

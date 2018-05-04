@@ -94,7 +94,7 @@ module.exports = {
     buildDialogFlowAgent: function(ctx) {
         return new Promise((resolve, reject) => {
             try {
-                let config = Helper.Project.getConfig();
+                let config = Helper.Project.getConfig(ctx.stage);
 
                 let agent;
 
@@ -109,12 +109,14 @@ module.exports = {
                     // create basic https endpoint from wildcard ssl
                     if (_.isString(_.get(config, 'endpoint'))) {
                         _.set(agent, 'webhook', {
-                            url: _.get(config, 'endpoint'),
+                            url: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint')),
                             available: true,
                         });
                     } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.googleAction.dialogFlow')) {
-                        // get full object
-                        _.set(agent, 'webhook', _.get(config, 'endpoint'));
+                        _.set(agent, 'webhook', {
+                            url: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.googleAction.dialogFlow')),
+                            available: true,
+                        });
                     }
                 }
 

@@ -6,6 +6,8 @@ const Helper = require('./../helper/lmHelper');
 const JovoRenderer = require('../utils/jovoRenderer');
 const deployTask = require('./tasks').deployTask;
 const Validator = require('../utils/validator');
+const _ = require('lodash');
+
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
@@ -23,6 +25,8 @@ module.exports = function(vorpal) {
             'Platform \n\t\t\t\t <alexaSkill|googleAction>')
         .option('-t, --target <target>',
             'Target of deployment \n\t\t\t\t<info|model|lambda|all> Default: all')
+        .option('--stage <stage>',
+            'Takes configuration from <stage>')
         .option('-s, --src <src>',
             'Path to source files \n\t\t\t\t Default: <project directory>')
         .option('--project-id <projectId>',
@@ -44,10 +48,11 @@ module.exports = function(vorpal) {
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: Helper.Project.getPlatform(args.options.platform),
-                projectId: args.options['project-id'],
+                projectId: args.options['project-id'] || _.get(Helper.Project.getConfig(args.options.stage), 'googleAction.dialogflow.projectId'),
                 target: args.options.target || Helper.DEFAULT_TARGET,
-                src: args.options.src || Helper.Project.getProjectPath(),
-                askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
+                src: args.options.src || _.get(Helper.Project.getConfig(args.options.stage), 'src') || Helper.Project.getProjectPath(),
+                stage: args.options.stage,
+                askProfile: args.options['ask-profile'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.ask-profile') || Helper.DEFAULT_ASK_PROFILE,
             };
             if (config.type.length === 0 && config.target !== Helper.TARGET_LAMBDA) {
                 console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
