@@ -33,6 +33,7 @@ module.exports = function(vorpal) {
         .option('--stage <stage>', 'Takes configuration from <stage>')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .option('--webhook-only', 'Starts the Jovo Webhook proxy without executing the code')
+        .option('-r, --record', '')
         .action((args, callback) => {
             const port = args.options.port || 3000;
             if (args.options['webhook-only']) {
@@ -64,6 +65,10 @@ module.exports = function(vorpal) {
                     inspectPort = parseInt(args.options.inspect);
                 }
                 parameters.unshift('--inspect=' + inspectPort);
+            }
+
+            if(args.options.record) {
+                parameters.push('--record');
             }
 
             parameters.push('--webhook');
