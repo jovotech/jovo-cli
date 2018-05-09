@@ -44,7 +44,11 @@ module.exports = {
     getLocales: function(locale) {
         try {
             if (locale) {
-                return [locale];
+                if (_.isArray(locale)) {
+                    return locale;
+                } else {
+                    return [locale];
+                }
             }
             let files = fs.readdirSync(this.getModelsPath());
 
