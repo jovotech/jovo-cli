@@ -273,6 +273,11 @@ class AlexaInteractionModel {
             _.set(alexaModel, 'interactionModel.prompts', _.get(model, 'alexa.interactionModel.prompts'));
         }
 
+        // types
+        if (_.get(model, 'alexa.interactionModel.languageModel.types')) {
+            _.set(alexaModel, 'interactionModel.languageModel.types', _.get(model, 'alexa.interactionModel.languageModel.types'));
+        }
+
         // dialog
         if (_.get(model, 'alexa.interactionModel.dialog')) {
             _.set(alexaModel, 'interactionModel.dialog', _.get(model, 'alexa.interactionModel.dialog'));
