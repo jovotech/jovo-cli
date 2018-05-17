@@ -139,7 +139,7 @@ function jovoWebhook(port, stage) {
         const config = Helper.Project.getConfig(stage);
 
         if (!Helper.Project.getConfigParameter('endpoint', stage)) {
-            throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
+            // throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
         }
 
         if (_.startsWith(Helper.Project.getConfigParameter('endpoint', stage), 'arn')) {
