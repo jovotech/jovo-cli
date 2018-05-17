@@ -375,7 +375,7 @@ module.exports.buildReverseTask = function(ctx) {
         });
 
         try {
-            _.get(Helper.Project.getConfig(ctx.stage), 'alexaSkill');
+            Helper.Project.getConfigParameter('alexaSkill', ctx.stage);
         } catch (err) {
             buildReverseSubtasks.push({
                 title: 'Initializing Alexa Skill into app.json',
@@ -416,7 +416,7 @@ module.exports.buildReverseTask = function(ctx) {
             },
         });
         try {
-            _.get(Helper.Project.getConfig(ctx.stage), 'googleAction');
+            Helper.Project.getConfigParameter('googleAction', ctx.stage);
         } catch (err) {
             buildReverseSubtasks.push({
                 title: 'Initializing GoogleAction into app.json',
@@ -527,11 +527,11 @@ Endpoint: ${skillInfo.endpoint}`;
                     {
                         title: 'Uploading to lambda',
                         enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
-                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfig(ctx.stage).endpoint, 'arn'),
+                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfigParameter('endpoint', ctx.stage), 'arn'),
                         task: (ctx) => {
                             try {
                                 let appJson = Helper.Project.getConfig(ctx.stage);
-                                ctx.lambdaArn = appJson.endpoint;
+                                ctx.lambdaArn = Helper.Project.getConfigParameter('endpoint', ctx.stage);
                                 if (!_.startsWith(ctx.lambdaArn, 'arn')) {
                                     return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
                                 }
@@ -541,16 +541,16 @@ Endpoint: ${skillInfo.endpoint}`;
                                 // special use case
                                 // copy app.json if src directory is not default and config
                                 // was set in app.json
-                                if (appJson.src && appJson.config) {
+                                if (Helper.Project.getConfig(ctx.stage, 'src') && appJson.config) {
                                     p = p.then(
-                                        () => Helper.Project.moveTempJovoConfig(appJson.src));
+                                        () => Helper.Project.moveTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
                                 p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
 
-                                if (appJson.src && appJson.config) {
+                                if (Helper.Project.getConfig(ctx.stage, 'src') && appJson.config) {
                                     p = p.then(
-                                        () => Helper.Project.deleteTempJovoConfig(appJson.src));
+                                        () => Helper.Project.deleteTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
                                 return p;
@@ -586,7 +586,7 @@ Endpoint: ${skillInfo.endpoint}`;
                                     info += `${locale} `;
                                 }
                                 info += '\n';
-                                info += `Fulfillment Endpoint: ${Helper.Project.getConfig(ctx.stage).endpoint}`; // eslint-disable-line
+                                info += `Fulfillment Endpoint: ${DialogFlowHelper.getAgentJson().webhook.url}`; // eslint-disable-line
                                 task.skip(info);
                             });
                         },

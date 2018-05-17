@@ -345,9 +345,8 @@ module.exports = {
                         reject(err);
                         return;
                     }
-
-                    if (typeof _.get(config, 'alexaSkill.skillId') !== 'undefined') {
-                        this.setAlexaSkillId(_.get(config, 'alexaSkill.skillId'))
+                    if (typeof Helper.Project.getConfigParameter('alexaSkill.skillId', stage) !== 'undefined') {
+                        this.setAlexaSkillId(Helper.Project.getConfigParameter('alexaSkill.skillId', stage))
                             .then(() => resolve());
                     } else {
                         resolve();

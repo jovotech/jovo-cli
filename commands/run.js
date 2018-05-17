@@ -41,16 +41,14 @@ module.exports = function(vorpal) {
             }
             let srcDir = '';
             // prepend src directory from config
-            if (_.get(Helper.Project.getConfig(args.options.stage), 'src')) {
-                srcDir = _.get(Helper.Project.getConfig(args.options.stage), 'src');
-
-                if (!_.endsWith(path.sep, srcDir )) {
+            if (Helper.Project.getConfigParameter('src', args.options.stage)) {
+                srcDir = Helper.Project.getConfigParameter('src', args.options.stage);
+                if (srcDir && !_.endsWith(path.sep, srcDir )) {
                     srcDir = srcDir + path.sep;
                 }
             }
 
             const localServerFile = args.webhookFile === 'index.js' ? 'index.js' : args.webhookFile;
-
             let command = 'node';
             if (args.options.watch) {
                 command = resolveBin.sync('nodemon');
@@ -67,6 +65,17 @@ module.exports = function(vorpal) {
             }
 
             parameters.push('--webhook');
+
+            // add project path to parameters if source path is not project path
+            if (srcDir.length > 0) {
+                parameters.push('--projectDir');
+                parameters.push(process.cwd());
+            }
+
+            if (args.options.stage) {
+                parameters.push('--stage');
+                parameters.push(args.options.stage);
+            }
 
             if (args.options['bst-proxy']) {
                 const proxy = BSTProxy.http(port);
@@ -89,7 +98,6 @@ module.exports = function(vorpal) {
                 jovoWebhook(port, args.options.stage);
                 parameters.push('--jovo-webhook');
             }
-
             const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: srcDir || process.cwd()});
             ls.on('data', (data) => {
                 console.log(`stdout: ${data}`);
@@ -124,11 +132,11 @@ function jovoWebhook(port, stage) {
     try {
         const config = Helper.Project.getConfig(stage);
 
-        if (!config.endpoint) {
+        if (!Helper.Project.getConfigParameter('endpoint', stage)) {
             throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
         }
 
-        if (_.startsWith(config.endpoint, 'arn')) {
+        if (_.startsWith(Helper.Project.getConfigParameter('endpoint', stage), 'arn')) {
             throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
         }
     } catch (err) {

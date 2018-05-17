@@ -54,9 +54,9 @@ module.exports = function(vorpal) {
                 type: args.options.platform || Helper.Project.getPlatform(args.options.platform),
                 endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                 target: args.options.target || Helper.DEFAULT_TARGET,
-                src: args.options.src || _.get(Helper.Project.getConfig(args.options.stage), 'src') || Helper.Project.getProjectPath(),
+                src: args.options.src || Helper.Project.getConfigParameter('src', args.options.stage) || Helper.Project.getProjectPath(),
                 stage: args.options.stage,
-                askProfile: args.options['ask-profile'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.ask-profile') || Helper.DEFAULT_ASK_PROFILE,
+                askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
             };
             let p = Promise.resolve();
             // run init if necessary

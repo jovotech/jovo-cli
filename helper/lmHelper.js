@@ -315,13 +315,27 @@ module.exports.Project = {
 
     /**
      * Returns app.json object
+     * // TODO: optimize me please
      * @param {string} stage
      * @return {*}
      */
     getConfig: function(stage) {
         try {
             let appJsonConfig = require(this.getConfigPath());
-            let stg = stage ? stage : appJsonConfig.defaultStage;
+            let stg = '';
+
+            if (process.env.STAGE) {
+                stg = process.env.STAGE;
+            }
+
+            if (_.get(appJsonConfig, 'defaultStage'))  {
+                stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
+            }
+
+            if (stage) {
+                stg = stage;
+            }
+
             if (_.get(appJsonConfig, `stages["${stg}"]`)) {
                 appJsonConfig = _.merge(
                     appJsonConfig,
@@ -335,6 +349,22 @@ module.exports.Project = {
         }
     },
 
+
+    /**
+     * Returns config parameter for given path
+     * @param {string} path
+     * @param {string} stage
+     * @return {string}
+     */
+    getConfigParameter(path, stage) {
+        let config = this.getConfig(stage);
+
+        if (!_.get(config, path)) {
+            return;
+        }
+
+        return eval('`'+ _.get(config, path) +'`');
+    },
 
     /**
      * Returns true if app.json exists
@@ -516,7 +546,27 @@ module.exports.Project = {
      */
     runNpmInstall: function() {
         return new Promise((resolve, reject) => {
-            exec('npm install', {
+            exec('npm install --save', {
+                    cwd: this.getProjectPath()}
+                ,
+                function(error) {
+                    if (error) {
+                        console.log(error);
+                        reject(error);
+                        return;
+                    }
+                    resolve();
+                });
+        }).then(() => this.runNpmInstallVersion());
+    },
+
+    /**
+     * Installs jovo-framework with --save parameter to update the version in package.json
+     * @return {Promise<any>}
+     */
+    runNpmInstallVersion: function() {
+        return new Promise((resolve, reject) => {
+            exec('npm install jovo-framework --save', {
                     cwd: this.getProjectPath()}
                 ,
                 function(error) {
@@ -638,7 +688,7 @@ Please run <ngrok http 3000> in another tab if you want to create an ngrok link.
         if (endpoint === '${JOVO_WEBHOOK_URL}') {
             return JOVO_WEBHOOK_URL + '/' + this.getWebhookUuid();
         }
-        return endpoint;
+        return eval('`'+ endpoint +'`');
     },
 
     /**

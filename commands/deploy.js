@@ -48,11 +48,11 @@ module.exports = function(vorpal) {
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: Helper.Project.getPlatform(args.options.platform),
-                projectId: args.options['project-id'] || _.get(Helper.Project.getConfig(args.options.stage), 'googleAction.dialogflow.projectId'),
+                projectId: args.options['project-id'] || Helper.Project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
                 target: args.options.target || Helper.DEFAULT_TARGET,
-                src: args.options.src || _.get(Helper.Project.getConfig(args.options.stage), 'src') || Helper.Project.getProjectPath(),
+                src: args.options.src || Helper.Project.getConfigParameter('src', args.options.stage) || Helper.Project.getProjectPath(),
                 stage: args.options.stage,
-                askProfile: args.options['ask-profile'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.ask-profile') || Helper.DEFAULT_ASK_PROFILE,
+                askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
             };
             if (config.type.length === 0 && config.target !== Helper.TARGET_LAMBDA) {
                 console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line

@@ -53,3 +53,4 @@ exports.deleteFolderRecursive = (path) => {
         fs.rmdirSync(path);
     }
 };
+

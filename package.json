@@ -19,6 +19,7 @@
     "archiver": "^2.1.0",
     "bespoken-tools": "^1.1.0",
     "cross-spawn": "^5.1.0",
+    "dotenv": "^5.0.1",
     "fs-extra": "^5.0.0",
     "inquirer": "^5.0.0",
     "listr": "^0.13.0",

@@ -83,10 +83,10 @@ vorpal
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: args.platform || Helper.Project.getPlatform(args.platform),
                 target: args.options.target || Helper.TARGET_ALL,
-                skillId: args.options['skill-id'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.skillId') || config.skillId,
+                skillId: args.options['skill-id'] || Helper.Project.getConfigParameter('alexaSkill.skillId', args.options.stage) || config.skillId,
                 projectId: args.options['project-id'],
                 stage: args.options.stage,
-                askProfile: args.options['ask-profile'] || _.get(Helper.Project.getConfig(args.options.stage), 'alexaSkill.ask-profile') || Helper.DEFAULT_ASK_PROFILE,
+                askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
             });
             let subp = Promise.resolve();
             if (config.type === Helper.PLATFORM_ALEXASKILL) {

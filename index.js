@@ -2,6 +2,7 @@
 
 const vorpal = require('vorpal')();
 const Helper = require('./helper/lmHelper');
+require('dotenv').config();
 
 if (parseInt(process.version.substr(1, 2)) < 6) {
     console.error('Please use node version >= 6');

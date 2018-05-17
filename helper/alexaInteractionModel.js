@@ -107,19 +107,18 @@ class AlexaInteractionModel {
      * Transforms jovo model to Alexa model
      * @param {*} locale
      */
-    transform(locale) {
+    transform(locale, stage) {
         let errorPrefix = '/models/'+locale+'.json - ';
 
         let Helper = require('./lmHelper');
         let locales = [];
         if (locale.length === 2) {
             try {
-                let appJson = Helper.Project.getConfig();
 
-                if (!_.get(appJson, `alexaSkill.nlu.lang.${locale}`)) {
+                if (!Helper.Project.getConfig(stage, `alexaSkill.nlu.lang.${locale}`)) {
                     throw new Error();
                 }
-                locales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
+                locales = Helper.Project.getConfig(stage, `alexaSkill.nlu.lang.${locale}`);
             } catch (error) {
                 throw new Error('Could not retrieve locales mapping for language ' + locale);
             }
