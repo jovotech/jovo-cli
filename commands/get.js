@@ -84,7 +84,7 @@ vorpal
                 type: args.platform || Helper.Project.getPlatform(args.platform),
                 target: args.options.target || Helper.TARGET_ALL,
                 skillId: args.options['skill-id'] || Helper.Project.getConfigParameter('alexaSkill.skillId', args.options.stage) || config.skillId,
-                projectId: args.options['project-id'],
+                projectId: args.options['project-id'] || Helper.Project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
                 stage: args.options.stage,
                 askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
             });

@@ -453,7 +453,6 @@ module.exports.Project = {
                         googleAction: {
                             nlu: {
                                 name: 'dialogflow',
-                                version: 1,
                             },
                         },
                     });

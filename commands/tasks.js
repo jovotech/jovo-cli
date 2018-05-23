@@ -144,7 +144,7 @@ Endpoint: ${skillInfo.endpoint}`;
                 },
             },
         ];
-    } else if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION)) {
+    } else if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
         let googleActionPath = GoogleActionUtil.getPath();
         if (!fs.existsSync(googleActionPath)) {
             fs.mkdirSync(googleActionPath);
@@ -160,7 +160,20 @@ Endpoint: ${skillInfo.endpoint}`;
             {
                 title: 'Getting Dialogflow Agent files and saving to /platforms/googleAction/dialogflow',
                 task: (ctx, task) => {
-                    return DialogFlowHelper.getAgentFiles(ctx);
+                    let keyFile = Helper.Project.getConfigParameter('googleAction.dialogflow.keyFile', ctx.stage);
+                    let p = Promise.resolve();
+                    if (keyFile) {
+                        if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
+                            throw new Error(
+                                `Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+                        }
+                        ctx.keyFile = process.cwd() + pathSep + keyFile;
+                        p = p.then(() => DialogFlowHelper.v2.activateServiceAccount(ctx));
+                    }
+
+
+                    p = p.then(() => DialogFlowHelper.getAgentFiles(ctx));
+                    return p;
                 },
             },
         ];
@@ -541,14 +554,14 @@ Endpoint: ${skillInfo.endpoint}`;
                                 // special use case
                                 // copy app.json if src directory is not default and config
                                 // was set in app.json
-                                if (Helper.Project.getConfig(ctx.stage, 'src') && appJson.config) {
+                                if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
                                     p = p.then(
                                         () => Helper.Project.moveTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
                                 p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
 
-                                if (Helper.Project.getConfig(ctx.stage, 'src') && appJson.config) {
+                                if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
                                     p = p.then(
                                         () => Helper.Project.deleteTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
@@ -596,8 +609,21 @@ Endpoint: ${skillInfo.endpoint}`;
                         enabled: (ctx) => ctx.projectId,
                         task: (ctx, task) => {
                             ctx.pathToZip = GoogleActionUtil.getPath() + '/dialogflow_agent.zip';
-                            return DialogFlowHelper.v2.checkGcloud()
+
+                            let keyFile = Helper.Project.getConfigParameter('googleAction.dialogflow.keyFile', ctx.stage);
+                            let p = Promise.resolve();
+                            if (keyFile) {
+                                if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
+                                    throw new Error(
+                                        `Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+                                }
+                                ctx.keyFile = process.cwd() + pathSep + keyFile;
+                                p = p.then(() => DialogFlowHelper.v2.activateServiceAccount(ctx));
+                            }
+
+                            p = p.then(() => DialogFlowHelper.v2.checkGcloud())
                                 .then(() => DialogFlowHelper.v2.restoreAgent(ctx));
+                            return p;
                         },
                     },
                     {
