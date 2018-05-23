@@ -410,7 +410,7 @@ module.exports = {
             info.name += locales[locale].name + ' (' +locale+ ') ';
         }
         info.skillId = this.getSkillId();
-        info.endpoint = skillJson.manifest.apis.custom.endpoint.uri;
+        info.endpoint = _.get(skillJson, 'manifest.apis.custom.endpoint.uri', '');
         return info;
     },
 
@@ -712,7 +712,7 @@ module.exports.Ask = {
                     if (stderr && stderr.indexOf('AccountLinking is not present for given skillId') > 0) {
                         resolve();
                     } else if (stderr) {
-                        return reject(self.getAskError(stderr));
+                        return reject(self.getAskError('askApiGetAccountLinking', stderr));
                     }
                 }
                 resolve(stdout);
@@ -730,9 +730,9 @@ module.exports.Ask = {
         return new Promise((resolve, reject) => {
             exec('ask lambda upload -f ' + config.lambdaArn + ' -s "' + config.src + '"', {
             }, function(error, stdout, stderr ) {
-                if (error) {
+                if (error || stderr) {
                     if (stderr) {
-                        return reject(self.getAskError(stderr));
+                        return reject(self.getAskError('askLambdaUpload', stderr));
                     }
                 }
                 console.log(stdout);

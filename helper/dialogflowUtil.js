@@ -297,6 +297,27 @@ module.exports = {
 
 
         /**
+         * Activate gcloud service account
+         * @param {*} config
+         * @return {Promise<any>}
+         */
+        activateServiceAccount: function(config) {
+            return new Promise((resolve, reject) => {
+                try {
+                    exec('gcloud auth activate-service-account --key-file=' + config.keyFile, function(error, stdout, stderr ) {
+                        if (error) {
+                            if (stderr || error) {
+                                return reject(new Error('Could not activate your service account: ' + stderr));
+                            }
+                        }
+                        resolve();
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        },
+        /**
          * Retrieves access token from gcloud cli
          * @return {Promise<any>}
          */

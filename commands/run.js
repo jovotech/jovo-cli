@@ -160,6 +160,10 @@ function jovoWebhook(port, stage) {
     socket.on('connect', function() {
         console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + user);
     });
+    socket.on('connect_error', function(error) {
+        console.log('Sorry, there seems to be an issue with the connection!');
+        console.log(error);
+    });
     socket.on('request-'+user, (data) => {
         post(data.request, port).then((result) => {
             socket.emit('response-' + user, result);
