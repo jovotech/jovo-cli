@@ -1,9 +1,15 @@
 # Jovo CLI Changelog
 
+## 1.1.2 (May 23, 2018)
+* [#26](https://github.com/jovotech/jovo-cli/pull/26) Fixed pass projectId when running `build --deploy` [@fgnass](https://github.com/fgnass)
+* [#27](https://github.com/jovotech/jovo-cli/pull/27) Added activate service account + project id in app.json [@aswetlow](https://github.com/aswetlow)
+
+## 1.1.1 (May 18, 2018)
+* Bugfix
+
 ## 1.1.0 (May 17, 2018)
 * Fixed several bugs
 * Combined x.x.x changes to 1.1
-
 
 ## 1.0.17 (May 04, 2018)
 * Added staging functionality
