@@ -1,5 +1,12 @@
 # Jovo CLI Changelog
 
+
+## 1.1.3 (May 29, 2018)
+* Fixed src path bug (issue #28)
+* Fixed empty uri bug (issue #25)
+* Fixed error logging bug (issue #22)
+
+
 ## 1.1.2 (May 23, 2018)
 * [#26](https://github.com/jovotech/jovo-cli/pull/26) Fixed pass projectId when running `build --deploy` [@fgnass](https://github.com/fgnass)
 * [#27](https://github.com/jovotech/jovo-cli/pull/27) Added activate service account + project id in app.json [@aswetlow](https://github.com/aswetlow)
