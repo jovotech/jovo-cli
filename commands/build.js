@@ -49,6 +49,14 @@ module.exports = function(vorpal) {
                 renderer: JovoRenderer,
                 collapse: false,
             });
+            try {
+                Helper.Project.getConfig(args.options.stage);
+            } catch (e) {
+                console.log('\n\n Could not load app.json. \n\n');
+                callback();
+                return;
+            }
+
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
                 type: args.options.platform || Helper.Project.getPlatform(args.options.platform),

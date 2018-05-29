@@ -36,6 +36,15 @@ module.exports = function(vorpal) {
         .option('-r, --record <name>', 'Can be used to record requests and responses of your Jovo app for testing purposes.')
         .action((args, callback) => {
             const port = args.options.port || 3000;
+
+            try {
+                Helper.Project.getConfig(args.options.stage);
+            } catch (e) {
+                console.log('\n\n Could not load app.json. \n\n');
+                callback();
+                return;
+            }
+
             if (args.options['webhook-only']) {
                 jovoWebhook(port, args.options.stage);
                 return;
@@ -136,8 +145,6 @@ function jovoWebhook(port, stage) {
     }
 
     try {
-        const config = Helper.Project.getConfig(stage);
-
         if (!Helper.Project.getConfigParameter('endpoint', stage)) {
             // throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
         }

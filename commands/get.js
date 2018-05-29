@@ -58,7 +58,13 @@ vorpal
             renderer: JovoRenderer,
             collapse: false,
         });
-
+        try {
+            Helper.Project.getConfig(args.options.stage);
+        } catch (e) {
+            console.log('\n\n Could not load app.json. \n\n');
+            callback();
+            return;
+        }
         let config = {};
         try {
             config.skillId = AlexaHelper.getSkillId();

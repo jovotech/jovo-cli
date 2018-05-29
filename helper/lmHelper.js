@@ -345,6 +345,7 @@ module.exports.Project = {
         } catch (error) {
             if (_.get(error, 'constructor.name') === 'SyntaxError') {
                 console.log(error);
+                throw error;
             }
         }
     },
@@ -362,8 +363,9 @@ module.exports.Project = {
         if (!_.get(config, path)) {
             return;
         }
+        let val = _.get(config, path).replace(/\\/g, '\\\\');
 
-        return eval('`'+ _.get(config, path) +'`');
+        return eval('`'+ val +'`');
     },
 
     /**
