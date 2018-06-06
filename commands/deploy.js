@@ -6,7 +6,6 @@ const Helper = require('./../helper/lmHelper');
 const JovoRenderer = require('../utils/jovoRenderer');
 const deployTask = require('./tasks').deployTask;
 const Validator = require('../utils/validator');
-const _ = require('lodash');
 
 
 process.on('unhandledRejection', (reason, p) => {

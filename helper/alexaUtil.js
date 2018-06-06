@@ -335,6 +335,33 @@ module.exports = {
                             endpoint: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
                         });
                     }
+                } else {
+                    let globalConfig = Helper.Project.getConfig();
+                    let stageConfig = _.get(Helper.Project.getConfig(), `stages.${stage}`);
+                    let arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
+                        _.get(globalConfig, 'alexaSkill.endpoint');
+
+                    if (!arn) {
+                        arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
+                            _.get(stageConfig, 'host.lambda.arn') ||
+                            _.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
+                            _.get(globalConfig, 'host.lambda.arn');
+                    }
+
+                    if (arn) {
+                        if (_.startsWith(arn, 'arn')) {
+                            _.set(skillJson, 'manifest.apis.custom', {
+                                endpoint: arn,
+                            });
+                        } else {
+                            _.set(skillJson, 'manifest.apis.custom', {
+                                endpoint: {
+                                    sslCertificateType: 'Wildcard',
+                                    uri: arn,
+                                },
+                            });
+                        }
+                    }
                 }
                 if (_.get(config, 'alexaSkill.manifest')) {
                     _.merge(skillJson.manifest, config.alexaSkill.manifest);
