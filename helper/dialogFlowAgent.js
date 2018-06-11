@@ -177,7 +177,17 @@ class DialogFlowAgent {
                 for (let us of userSays) {
                     let phrase = '';
                     for (let data of us.data) {
-                        phrase += data.userDefined ? '{' + data.text + '}' : data.text;
+                        phrase += data.userDefined ? '{' + data.alias + '}' : data.text;
+                        // add sample text to input type
+                        if (data.text !== data.alias) {
+                            if (jovoIntent.inputs) {
+                                for (const input of jovoIntent.inputs) {
+                                    if (input.name === data.alias) {
+                                        input.text = data.text;
+                                    }
+                                }
+                            }
+                        }
                     }
                     jovoIntent.phrases.push(phrase);
                 }
@@ -401,6 +411,7 @@ class DialogFlowAgent {
                         userDefined: false,
                     };
 
+
                     // skip empty text on entity index = 0
                     if (text.length > 0) {
                         data.push(dataTextObj);
@@ -410,6 +421,16 @@ class DialogFlowAgent {
                         text: entity,
                         userDefined: true,
                     };
+
+                    // add enityt sample text if available
+                    if (intent.inputs) {
+                        for (const input of intent.inputs) {
+                            if (input.name === entity && input.text) {
+                                dataEntityObj.text = input.text;
+                            }
+                        }
+                    }
+
 
                     // create entity object based on parameters objects
                     if (_.get(dfIntentObj, 'responses[0].parameters')) {

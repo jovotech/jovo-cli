@@ -450,6 +450,8 @@ module.exports.deployTask = function(ctx) {
         fs.mkdirSync(platformsPath);
     }
     let deployPlatformTasks = [];
+    let globalConfig = Helper.Project.getConfig();
+    let stageConfig = _.get(Helper.Project.getConfig(), `stages.${ctx.stage}`);
     if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
         try {
             ctx.skillId = AlexaHelper.getSkillId();
@@ -458,6 +460,19 @@ module.exports.deployTask = function(ctx) {
                 console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
                 return [];
             }
+        }
+
+        let arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
+            _.get(stageConfig, 'host.lambda.arn') ||
+            _.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
+            _.get(globalConfig, 'host.lambda.arn');
+
+        if (!arn) {
+            arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
+            _.get(stageConfig, 'endpoint') ||
+            _.get(globalConfig, 'alexaSkill.endpoint') ||
+            _.get(globalConfig, 'endpoint');
+            arn = _.startsWith(arn, 'arn') ? arn : undefined;
         }
         deployPlatformTasks.push({
             title: 'Deploying Alexa Skill',
@@ -539,15 +554,13 @@ Endpoint: ${skillInfo.endpoint}`;
                     },
                     {
                         title: 'Uploading to lambda',
-                        enabled: (ctx) => !ctx.newSkill && (ctx.target === Helper.TARGET_ALL ||
-                            ctx.target === Helper.TARGET_LAMBDA) && _.startsWith(Helper.Project.getConfigParameter('endpoint', ctx.stage), 'arn'),
-                        task: (ctx) => {
+                        enabled: (ctx) => !ctx.newSkill &&
+                            (ctx.target === Helper.TARGET_ALL ||ctx.target === Helper.TARGET_LAMBDA) &&
+                            _.isUndefined(arn) === false,
+                        task: (ctx, task) => {
                             try {
                                 let appJson = Helper.Project.getConfig(ctx.stage);
-                                ctx.lambdaArn = Helper.Project.getConfigParameter('endpoint', ctx.stage);
-                                if (!_.startsWith(ctx.lambdaArn, 'arn')) {
-                                    return Promise.reject(new Error('Please add a valid lambda arn to app.json'));
-                                }
+                                ctx.lambdaArn = arn;
 
                                 let p = Promise.resolve();
 
@@ -559,13 +572,24 @@ Endpoint: ${skillInfo.endpoint}`;
                                         () => Helper.Project.moveTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
-                                p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
+                                p = p.then(() => AlexaHelper.Ask.checkAsk()).then((err) => {
+                                    if (err) {
+                                        return Promise.reject(err);
+                                    }
+                                    return AlexaHelper.Ask.askLambdaUpload(ctx);
+                                });
 
                                 if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
                                     p = p.then(
                                         () => Helper.Project.deleteTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
+                                p = p.then(() => {
+                                    let info = 'Info: ';
+
+                                    info += `Deployed to lambda function: ${arn}`;
+                                    task.skip(info);
+                                });
                                 return p;
                             } catch (err) {
                                 throw err;
@@ -584,6 +608,19 @@ Endpoint: ${skillInfo.endpoint}`;
         });
     }
     if (ctx.type.indexOf(Helper.PLATFORM_GOOGLEACTION) > -1) {
+        let arn = _.get(stageConfig, 'googleAction.host.lambda.arn') ||
+            _.get(stageConfig, 'host.lambda.arn') ||
+            _.get(globalConfig, 'googleAction.host.lambda.arn') ||
+            _.get(globalConfig, 'host.lambda.arn');
+
+        if (!arn) {
+            arn = _.get(stageConfig, 'googleAction.endpoint') ||
+                _.get(stageConfig, 'endpoint') ||
+                _.get(globalConfig, 'googleAction.endpoint') ||
+                _.get(globalConfig, 'endpoint');
+            arn = _.startsWith(arn, 'arn') ? arn : undefined;
+        }
+
         deployPlatformTasks.push({
             title: 'Deploying Google Action',
             task: (ctx, task) => {
@@ -631,6 +668,44 @@ Endpoint: ${skillInfo.endpoint}`;
                         enabled: (ctx) => ctx.projectId,
                         task: (ctx, task) => {
                             return DialogFlowHelper.v2.trainAgent(ctx);
+                        },
+                    },
+                    {
+                        title: 'Uploading to lambda', // needs to be refactored
+                        enabled: (ctx) => (ctx.target === Helper.TARGET_ALL || ctx.target === Helper.TARGET_LAMBDA) &&
+                            _.isUndefined(arn) === false,
+                        task: (ctx, task) => {
+                            try {
+                                let appJson = Helper.Project.getConfig(ctx.stage);
+                                ctx.lambdaArn = arn;
+
+                                let p = Promise.resolve();
+
+                                // special use case
+                                // copy app.json if src directory is not default and config
+                                // was set in app.json
+                                if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
+                                    p = p.then(
+                                        () => Helper.Project.moveTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
+                                }
+
+                                p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
+
+                                if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
+                                    p = p.then(
+                                        () => Helper.Project.deleteTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
+                                }
+
+                                p = p.then(() => {
+                                    let info = 'Info: ';
+
+                                    info += `Deployed to lambda function: ${arn}`;
+                                    task.skip(info);
+                                });
+                                return p;
+                            } catch (err) {
+                                throw err;
+                            }
                         },
                     },
                 ]);

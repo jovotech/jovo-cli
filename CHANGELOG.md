@@ -1,5 +1,7 @@
 # Jovo CLI Changelog
 
+## 1.1.4 (June 08, 2018)
+* Fixed entity name in build --reverse (DialogFlow) (issue #31)
 
 ## 1.1.3 (May 29, 2018)
 * Fixed src path bug (issue #28)

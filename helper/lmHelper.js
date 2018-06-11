@@ -314,6 +314,27 @@ module.exports.Project = {
     },
 
     /**
+     * Returns config parameter for given path
+     * @param {string} path
+     * @param {string} stage
+     * @return {string}
+     */
+    getConfigParameter(path, stage) {
+        let config = this.getConfig(stage);
+
+        if (!_.get(config, path)) {
+            return;
+        }
+        let val = _.get(config, path);
+        if (typeof val === 'string') {
+            val = val.replace(/\\/g, '\\\\');
+        }
+
+        return eval('`'+ val +'`');
+    },
+
+
+    /**
      * Returns app.json object
      * // TODO: optimize me please
      * @param {string} stage
@@ -328,7 +349,7 @@ module.exports.Project = {
                 stg = process.env.STAGE;
             }
 
-            if (_.get(appJsonConfig, 'defaultStage'))  {
+            if (_.get(appJsonConfig, 'defaultStage')) {
                 stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
             }
 
@@ -348,24 +369,6 @@ module.exports.Project = {
                 throw error;
             }
         }
-    },
-
-
-    /**
-     * Returns config parameter for given path
-     * @param {string} path
-     * @param {string} stage
-     * @return {string}
-     */
-    getConfigParameter(path, stage) {
-        let config = this.getConfig(stage);
-
-        if (!_.get(config, path)) {
-            return;
-        }
-        let val = _.get(config, path).replace(/\\/g, '\\\\');
-
-        return eval('`'+ val +'`');
     },
 
     /**
