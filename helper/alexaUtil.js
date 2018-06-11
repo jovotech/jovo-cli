@@ -318,50 +318,25 @@ module.exports = {
         return new Promise((resolve, reject) => {
             try {
                 let config = Helper.Project.getConfig(stage);
+                let globalConfig = Helper.Project.getConfig();
                 let skillJson = this.getSkillJson();
                 // endpoint
-                if (_.get(config, 'endpoint')) {
+                let endpoint =
+                    _.get(config, 'alexaSkill.endpoint') ||
+                    _.get(config, 'endpoint');
+                    _.get(globalConfig, 'endpoint');
+
+                if (_.isString(endpoint)) {
                     // create basic https endpoint from wildcard ssl
-                    if (_.isString(_.get(config, 'endpoint'))) {
-                        _.set(skillJson, 'manifest.apis.custom', {
-                            endpoint: {
-                                sslCertificateType: 'Wildcard',
-                                uri: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint')),
-                            },
-                        });
-                    } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.alexaSkill')) {
-                        // get full object
-                        _.set(skillJson, 'manifest.apis.custom', {
-                            endpoint: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
-                        });
-                    }
-                } else {
-                    let globalConfig = Helper.Project.getConfig();
-                    let stageConfig = _.get(Helper.Project.getConfig(), `stages.${stage}`);
-                    let arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
-                        _.get(globalConfig, 'alexaSkill.endpoint');
-
-                    if (!arn) {
-                        arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
-                            _.get(stageConfig, 'host.lambda.arn') ||
-                            _.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
-                            _.get(globalConfig, 'host.lambda.arn');
-                    }
-
-                    if (arn) {
-                        if (_.startsWith(arn, 'arn')) {
-                            _.set(skillJson, 'manifest.apis.custom', {
-                                endpoint: arn,
-                            });
-                        } else {
-                            _.set(skillJson, 'manifest.apis.custom', {
-                                endpoint: {
-                                    sslCertificateType: 'Wildcard',
-                                    uri: arn,
-                                },
-                            });
-                        }
-                    }
+                    endpoint = {
+                        sslCertificateType: 'Wildcard',
+                        uri: endpoint,
+                    };
+                }
+                if (endpoint) {
+                    _.set(skillJson, 'manifest.apis.custom.endpoint',
+                        _.mapValues(endpoint, Helper.Project.getEndpointFromConfig)
+                    );
                 }
                 if (_.get(config, 'alexaSkill.manifest')) {
                     _.merge(skillJson.manifest, config.alexaSkill.manifest);
