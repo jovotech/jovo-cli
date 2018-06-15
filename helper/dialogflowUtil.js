@@ -361,9 +361,19 @@ module.exports = {
                         if (response.body.error) {
                             return reject(new Error(response.body.error.message));
                         }
-                        let buf = Buffer.from(JSON.parse(body).response.agentContent, 'base64');
 
-                        resolve(buf);
+                        try {
+                            let res = JSON.parse(body);
+
+                            if (res.error) {
+                                return reject(new Error(res.error.message))
+                            }
+                            let buf = Buffer.from(res.response.agentContent, 'base64');
+
+                            resolve(buf);
+                        } catch (e) {
+                            return reject(new Error(`Can't parse response object`));
+                        }
                     });
                 });
             });
