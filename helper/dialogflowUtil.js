@@ -107,17 +107,18 @@ module.exports = {
                 // endpoint
                 if (_.get(config, 'endpoint')) {
                     // create basic https endpoint from wildcard ssl
+                    let url = '';
                     if (_.isString(_.get(config, 'endpoint'))) {
-                        _.set(agent, 'webhook', {
-                            url: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint')),
-                            available: true,
-                        });
+                        url = Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint'));
                     } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.googleAction.dialogFlow')) {
-                        _.set(agent, 'webhook', {
-                            url: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.googleAction.dialogFlow')),
-                            available: true,
-                        });
+                        url = Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.googleAction.dialogFlow'));
                     }
+                    _.merge(agent, {
+                        'webhook': {
+                            url: url,
+                            available: true,
+                        },
+                    });
                 }
 
 
