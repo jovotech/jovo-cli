@@ -1,5 +1,10 @@
 # Jovo CLI Changelog
 
+## 1.1.5 (June 15, 2018)
+* Fixed 'Unable to modify Default Fallback & Default Welcome intents' (issue #37)
+* Fixed 'Dialogflow's headers are lost while importing to jovo' (issue #36)
+
+
 ## 1.1.4 (June 08, 2018)
 * Fixed entity name in build --reverse (DialogFlow) (issue #31)
 
