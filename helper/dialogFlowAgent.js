@@ -18,7 +18,7 @@ const DEFAULT_INTENT = {
         },
     ],
     'priority': 500000,
-    'webhookUsed': true,
+    'webhookUsed': false,
     'webhookForSlotFilling': false,
     'fallbackIntent': false,
     'events': [],
@@ -49,6 +49,8 @@ class DialogFlowAgent {
      * @return {*}
      */
     static skipDefaultIntentProps(jovoIntent, dialogFlowIntent) {
+
+
         if (_.get(dialogFlowIntent, 'auto') !== _.get(DEFAULT_INTENT, 'auto')) {
             _.set(jovoIntent, 'dialogflow.auto', _.get(dialogFlowIntent, 'auto'));
         }
@@ -72,6 +74,27 @@ class DialogFlowAgent {
             _.set(jovoIntent, 'dialogflow.events', _.get(dialogFlowIntent, 'events'));
         }
 
+        // skip parameters object in responses. it's handled somewhere else
+        if (!_.isEqual(_.get(dialogFlowIntent, 'responses'), _.get(DEFAULT_INTENT, 'responses'))) {
+            if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].resetContexts'), _.get(DEFAULT_INTENT, 'responses[0].resetContexts'))) {
+                _.set(jovoIntent, 'dialogflow.responses[0].resetContexts', _.get(dialogFlowIntent, 'responses[0].resetContexts'));
+            }
+
+            if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].affectedContexts'), _.get(DEFAULT_INTENT, 'responses[0].affectedContexts'))) {
+                _.set(jovoIntent, 'dialogflow.responses[0].affectedContexts', _.get(dialogFlowIntent, 'responses[0].affectedContexts'));
+            }
+
+            if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].defaultResponsePlatforms'), _.get(DEFAULT_INTENT, 'responses[0].defaultResponsePlatforms'))) {
+                _.set(jovoIntent, 'dialogflow.responses[0].defaultResponsePlatforms', _.get(dialogFlowIntent, 'responses[0].defaultResponsePlatforms'));
+            }
+
+            if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].messages'), _.get(DEFAULT_INTENT, 'responses[0].messages'))) {
+                _.set(jovoIntent, 'dialogflow.responses[0].messages', _.get(dialogFlowIntent, 'responses[0].messages'));
+            }
+            if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].speech'), _.get(DEFAULT_INTENT, 'responses[0].speech'))) {
+                _.set(jovoIntent, 'dialogflow.responses[0].speech', _.get(dialogFlowIntent, 'responses[0].speech'));
+            }
+        }
         return jovoIntent;
     }
 
