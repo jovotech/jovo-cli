@@ -114,17 +114,18 @@ class AlexaInteractionModel {
         let locales = [];
         if (locale.length === 2) {
             try {
-
-                if (!Helper.Project.getConfig(stage, `alexaSkill.nlu.lang.${locale}`)) {
+                if (!Helper.Project.getConfigParameter(`alexaSkill.nlu.lang.${locale}`, stage)) {
                     throw new Error();
                 }
-                locales = Helper.Project.getConfig(stage, `alexaSkill.nlu.lang.${locale}`);
+                locales = Helper.Project.getConfigParameter(`alexaSkill.nlu.lang.${locale}`, stage);
             } catch (error) {
                 throw new Error('Could not retrieve locales mapping for language ' + locale);
             }
         } else {
             locales = [locale];
         }
+
+
         let model;
         try {
             model = Helper.Project.getModel(locale);
@@ -147,11 +148,11 @@ class AlexaInteractionModel {
                 name: intent.name,
                 samples: intent.phrases,
             };
-            if (alexaIntentObj.samples.length === 0) {
-                throw new Error(
-                    errorPrefix + `Intent "${alexaIntentObj.name}" must have at least one sample phrase` // eslint-disable-line
-                );
-            }
+            // if (alexaIntentObj.samples.length === 0) {
+            //     throw new Error(
+            //         errorPrefix + `Intent "${alexaIntentObj.name}" must have at least one sample phrase` // eslint-disable-line
+            //     );
+            // }
             for (let sample of alexaIntentObj.samples) {
                 if (/\d/.test(sample)) { // has number?
                     throw new Error(errorPrefix + `Intent "${alexaIntentObj.name}" must not have numbers in sample`); // eslint-disable-line
@@ -323,6 +324,7 @@ class AlexaInteractionModel {
                 alexaModel.interactionModel.languageModel.types.push(alexaType);
             }
         }
+
         for (let targetLocale of locales) {
             fs.writeFileSync(
                 require('./alexaUtil').getModelPath(targetLocale),
