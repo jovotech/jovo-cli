@@ -107,8 +107,5 @@ module.exports = function(vorpal) {
                     console.error(err.message);
                 });
             });
-        })
-        .help((args) => {
-
         });
 };
