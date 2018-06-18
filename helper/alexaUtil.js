@@ -756,7 +756,7 @@ module.exports.Ask = {
         let self = this;
         config.src = config.src.replace(/\\/g, '\\\\');
         return new Promise((resolve, reject) => {
-            exec(`ask lambda upload -f ${config.lambdaArn} -s "${config.src}"`, {
+            exec(`ask lambda upload -f ${config.lambdaArn} -s "${config.src}" -p ${config.askProfile}`, {
             }, function(error, stdout, stderr ) {
                 if (error || stderr) {
                     if (stderr) {
