@@ -177,10 +177,9 @@ function jovoWebhook(port, stage) {
         post(data.request, port).then((result) => {
             socket.emit('response-' + user, result);
         }).catch((error) => {
-            console.log();
-            console.log(error.message);
-            console.log();
-            console.log(error);
+            console.log('Local server did not return a valid JSON response:');
+            console.log(error.rawData);
+            socket.emit('response-' + user, null);
         });
     });
 }
@@ -214,12 +213,11 @@ function post(requestObj, port) {
                 let parsedData;
                 try {
                     parsedData = JSON.parse(rawData);
+                    resolve(parsedData);
                 } catch (e) {
-                    reject(new Error('Something went wrong'));
-                    return;
+                    e.rawData = rawData;
+                    reject(e);
                 }
-
-                resolve(parsedData);
             });
         }).on('error', (e) => {
             if (e.code === 'ECONNRESET') {
