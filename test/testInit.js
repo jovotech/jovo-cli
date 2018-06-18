@@ -61,7 +61,7 @@ describe('init', function() {
                         childInit.kill();
                         expect(fs.existsSync(projectFolder + path.sep + 'app.json')).to.equal(true);
                         let appJson = JSON.parse(fs.readFileSync(projectFolder + path.sep + 'app.json'));
-                        expect(appJson.alexaSkill.nlu)
+                        expect(appJson.alexaSkill.nlu.name)
                             .to.equal('alexa');
                         expect(appJson.endpoint.substr(0, 27))
                             .to.equal('https://webhook.jovo.cloud/');
