@@ -34,9 +34,7 @@ const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 
 
 const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/v1/';
-
 let projectPath = process.cwd();
-
 module.exports.Project = {
 
     /**
@@ -328,6 +326,8 @@ module.exports.Project = {
         let val = _.get(config, path);
         if (typeof val === 'string') {
             val = val.replace(/\\/g, '\\\\');
+        } else if (_.isArray(val) || _.isObject(val)) {
+            return val;
         }
 
         return eval('`'+ val +'`');
@@ -343,19 +343,8 @@ module.exports.Project = {
     getConfig: function(stage) {
         try {
             let appJsonConfig = require(this.getConfigPath());
-            let stg = '';
+            let stg = this.getStage(stage);
 
-            if (process.env.STAGE) {
-                stg = process.env.STAGE;
-            }
-
-            if (_.get(appJsonConfig, 'defaultStage')) {
-                stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
-            }
-
-            if (stage) {
-                stg = stage;
-            }
 
             if (_.get(appJsonConfig, `stages["${stg}"]`)) {
                 appJsonConfig = _.merge(
@@ -369,6 +358,23 @@ module.exports.Project = {
                 throw error;
             }
         }
+    },
+
+    getStage: function(stage) {
+        let appJsonConfig = require(this.getConfigPath());
+        let stg = '';
+        if (process.env.STAGE) {
+            stg = process.env.STAGE;
+        }
+
+        if (_.get(appJsonConfig, 'defaultStage')) {
+            stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
+        }
+
+        if (stage) {
+            stg = stage;
+        }
+        return stg;
     },
 
     /**
@@ -448,7 +454,9 @@ module.exports.Project = {
                 if (!config.alexaSkill) {
                     _.extend(config, {
                         alexaSkill: {
-                            nlu: 'alexa',
+                            nlu: {
+                                name: 'alexa',
+                            },
                         },
                     });
                 }

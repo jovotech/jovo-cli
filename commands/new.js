@@ -141,7 +141,12 @@ module.exports = function(vorpal) {
                     template: args.options.template || Helper.DEFAULT_TEMPLATE,
                     invocation: args.options.invocation,
                     endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
-                    askProfile: args.options['ask-profile'] || Helper.DEFAULT_ASK_PROFILE,
+                    askProfile: args.options['ask-profile'] ||
+                        Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) ||
+                        Helper.Project.getConfigParameter('alexaSkill.askProfile', args.options.stage) ||
+                        Helper.Project.getConfigParameter('host.lambda.ask-Profile', args.options.stage) ||
+                        Helper.Project.getConfigParameter('host.lambda.askProfile', args.options.stage) ||
+                        Helper.DEFAULT_ASK_PROFILE,
                 });
                 Helper.Project.setProjectPath(args.directory);
                 config.template = config.template.replace('/', '-');

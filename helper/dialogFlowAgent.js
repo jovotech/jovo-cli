@@ -49,8 +49,6 @@ class DialogFlowAgent {
      * @return {*}
      */
     static skipDefaultIntentProps(jovoIntent, dialogFlowIntent) {
-
-
         if (_.get(dialogFlowIntent, 'auto') !== _.get(DEFAULT_INTENT, 'auto')) {
             _.set(jovoIntent, 'dialogflow.auto', _.get(dialogFlowIntent, 'auto'));
         }

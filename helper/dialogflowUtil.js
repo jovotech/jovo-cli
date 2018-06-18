@@ -105,14 +105,17 @@ module.exports = {
                 }
 
                 // endpoint
-                if (_.get(config, 'endpoint')) {
-                    // create basic https endpoint from wildcard ssl
-                    let url = '';
-                    if (_.isString(_.get(config, 'endpoint'))) {
-                        url = Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint'));
-                    } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.googleAction.dialogFlow')) {
-                        url = Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.googleAction.dialogFlow'));
-                    }
+                let url = null;
+                    let globalConfig = Helper.Project.getConfig();
+                    let stageConfig = _.get(Helper.Project.getConfig(), `stages.${ctx.stage}`);
+                    url = _.get(stageConfig, 'googleAction.dialogflow.endpoint') ||
+                        _.get(stageConfig, 'endpoint.googleAction.dialogflow') ||
+                        _.get(stageConfig, 'endpoint') ||
+                        _.get(globalConfig, 'googleAction.dialogflow.endpoint') ||
+                        _.get(globalConfig, 'endpoint.googleAction.dialogflow') ||
+                        _.get(globalConfig, 'endpoint');
+                    url = Helper.Project.getEndpointFromConfig(url);
+                if (url) {
                     _.merge(agent, {
                         'webhook': {
                             url: url,
@@ -120,7 +123,6 @@ module.exports = {
                         },
                     });
                 }
-
 
                 // setup languages
                 if (ctx.locales.length === 1) {
@@ -367,7 +369,7 @@ module.exports = {
                             let res = JSON.parse(body);
 
                             if (res.error) {
-                                return reject(new Error(res.error.message))
+                                return reject(new Error(res.error.message));
                             }
                             let buf = Buffer.from(res.response.agentContent, 'base64');
 
