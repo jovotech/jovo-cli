@@ -16,6 +16,7 @@ const Validator = require('./../utils/validator');
 const Prompts = require('./../utils/prompts');
 
 if (process.argv.indexOf('get') > 0 &&
+    process.argv.indexOf('help') < 0 &&
     (_.get(process, 'argv[3]') !== Helper.PLATFORM_ALEXASKILL &&
         _.get(process, 'argv[3]') !== Helper.PLATFORM_GOOGLEACTION)) {
     process.argv.splice(3, 0, Helper.Project.getProjectPlatform2());
@@ -166,9 +167,6 @@ vorpal
                 console.error(err);
             });
         });
-    })
-    .help((args) => {
-
     });
 };
 

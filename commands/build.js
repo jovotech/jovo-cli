@@ -143,8 +143,5 @@ module.exports = function(vorpal) {
                     console.error(err);
                 });
             });
-        })
-        .help((args) => {
-
         });
 };

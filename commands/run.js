@@ -18,7 +18,9 @@ function getUserHome() {
     return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
-if (process.argv.indexOf('run') > 0 && (process.argv.length === 3 || process.argv[3].indexOf('.js') === -1)) {
+if (process.argv.indexOf('run') > 0 &&
+    process.argv.indexOf('help') < 0 &&
+    (process.argv.length === 3 || process.argv[3].indexOf('.js') === -1)) {
     process.argv.splice(3, 0, 'index.js');
 }
 
