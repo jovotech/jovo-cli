@@ -69,8 +69,5 @@ module.exports = function(vorpal) {
                 console.log();
                 console.error(err.message);
             });
-        })
-        .help((args) => {
-
         });
 };
