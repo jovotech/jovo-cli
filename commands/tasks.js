@@ -462,18 +462,13 @@ module.exports.deployTask = function(ctx) {
             }
         }
 
-        let arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
-            _.get(stageConfig, 'host.lambda.arn') ||
-            _.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
-            _.get(globalConfig, 'host.lambda.arn');
-
-        if (!arn) {
-            arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
-            _.get(stageConfig, 'endpoint') ||
-            _.get(globalConfig, 'alexaSkill.endpoint') ||
+        let endpoint =
+            _.get(stageConfig, 'alexaSkill.endpoint') ||
+            _.get(stageConfig, 'endpoint');
             _.get(globalConfig, 'endpoint');
-            arn = _.startsWith(arn, 'arn') ? arn : undefined;
-        }
+
+        let arn = _.startsWith(endpoint.uri, 'arn') ? endpoint.uri : undefined;
+
         deployPlatformTasks.push({
             title: 'Deploying Alexa Skill',
             task: (ctx, task) => {
