@@ -351,7 +351,9 @@ module.exports = {
                     if (arn) {
                         if (_.startsWith(arn, 'arn')) {
                             _.set(skillJson, 'manifest.apis.custom', {
-                                endpoint: arn,
+                                endpoint: {
+                                    uri: arn,
+                                },
                             });
                         } else {
                             _.set(skillJson, 'manifest.apis.custom', {
