@@ -1,5 +1,9 @@
 # Jovo CLI Changelog
 
+## 1.1.6 (June 20, 2018)
+* Fixed endpoint uri bug
+* Added --timeout <timeout> to `jovo run`
+
 ## 1.1.5 (June 15, 2018)
 * Fixed 'Unable to modify Default Fallback & Default Welcome intents' (issue #37)
 * Fixed 'Dialogflow's headers are lost while importing to jovo' (issue #36)
