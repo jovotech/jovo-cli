@@ -11,7 +11,7 @@ if (parseInt(process.version.substr(1, 2)) < 6) {
 const versionArg = ['-v', '-V', '--version'];
 
 
-// jovo (no arguments)
+// jovo  (no arguments)
 if (process.argv.length === 2) {
    process.argv.push('help');
 }
