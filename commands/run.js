@@ -35,6 +35,7 @@ module.exports = function(vorpal) {
         .option('--stage <stage>', 'Takes configuration from <stage>')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .option('--webhook-only', 'Starts the Jovo Webhook proxy without executing the code')
+        .option('--timeout <timeout>', 'Sets timeout in milliseconds')
         .option('-r, --record <name>', 'Can be used to record requests and responses of your Jovo app for testing purposes.')
         .action((args, callback) => {
             const port = args.options.port || 3000;
@@ -112,7 +113,12 @@ module.exports = function(vorpal) {
                 parameters.push('--bst-proxy');
             } else if (args.options.ngrok) {
             } else {
-                jovoWebhook(port, args.options.stage);
+                let timeout = args.options.timeout || 5000;
+
+                jovoWebhook({
+                    port: port,
+                    timeout: timeout,
+                }, args.options.stage);
                 parameters.push('--jovo-webhook');
             }
             const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: srcDir || process.cwd()});
@@ -133,14 +139,14 @@ module.exports = function(vorpal) {
 
 /**
  * Initializes connection to the Jovo Webhook
- * @param {int} port
+ * @param {*} options
  * @param {string} stage
  */
-function jovoWebhook(port, stage) {
-    let user;
+function jovoWebhook(options, stage) {
+    let id;
 
     try {
-        user = Helper.Project.getOrCreateJovoWebhookId();
+        id = Helper.Project.getOrCreateJovoWebhookId();
     } catch (err) {
         console.log('Warning: Please initialize your project: $ jovo init');
         return;
@@ -163,23 +169,23 @@ function jovoWebhook(port, stage) {
     const socket = io.connect(Helper.JOVO_WEBHOOK_URL, {
         secure: true,
         query: {
-            user: user,
+            id: id,
         },
     });
     socket.on('connect', function() {
-        console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + user);
+        console.log('This is your webhook url: ' + Helper.JOVO_WEBHOOK_URL + '/' + id);
     });
     socket.on('connect_error', function(error) {
         console.log('Sorry, there seems to be an issue with the connection!');
         console.log(error);
     });
-    socket.on('request-'+user, (data) => {
-        post(data.request, port).then((result) => {
-            socket.emit('response-' + user, result);
+    socket.on('request-' + id, (data) => {
+        post(data.request, options).then((result) => {
+            socket.emit('response-' + id, result);
         }).catch((error) => {
             console.log('Local server did not return a valid JSON response:');
             console.log(error.rawData);
-            socket.emit('response-' + user, null);
+            socket.emit('response-' + id, null);
         });
     });
 }
@@ -187,14 +193,14 @@ function jovoWebhook(port, stage) {
 /**
  * Send post requests to local webhook
  * @param {*} requestObj
- * @param {Number} port
+ * @param {*} options
  * @return {Promise<any>}
  */
-function post(requestObj, port) {
+function post(requestObj, options) {
     return new Promise((resolve, reject) => {
         let opt = {
             hostname: 'localhost',
-            port: port,
+            port: options.port,
             path: '/webhook',
             method: 'POST',
             headers: {
@@ -221,13 +227,13 @@ function post(requestObj, port) {
             });
         }).on('error', (e) => {
             if (e.code === 'ECONNRESET') {
-                e.message = 'Timeout error: No response after ' + 5000 + ' milliseconds';
+                e.message = 'Timeout error: No response after ' + options.timeout + ' milliseconds';
             } else if (e.code === 'ECONNREFUSED') {
                 e.message = 'There is no Jovo instance running on ' + opt.hostname;
             }
             reject(e);
         }).on('socket', function(socket) {
-            socket.setTimeout(5000);
+            socket.setTimeout(options.timeout);
             socket.on('timeout', function() {
                 req.abort();
             });
