@@ -1,5 +1,9 @@
 # Jovo CLI Changelog
 
+## 1.1.7 (June 26, 2018)
+* Added --disable-jovo-debugger argument to `jovo run`
+* Fixed empty phrases in Dialogflow intents
+
 ## 1.1.6 (June 20, 2018)
 * Fixed endpoint uri bug
 * Added --timeout <timeout> to `jovo run`
