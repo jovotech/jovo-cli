@@ -412,8 +412,9 @@ class DialogFlowAgent {
             let dialogFlowIntentUserSays = [];
             let re = /{(.*?)}/g;
 
+            let phrases = intent.phrases || [];
             // iterate through phrases and intent user says data objects
-            for (let phrase of intent.phrases) {
+            for (let phrase of phrases) {
                 let m;
                 let data = [];
                 let pos = 0;
