@@ -35,6 +35,7 @@ module.exports = function(vorpal) {
         .option('--stage <stage>', 'Takes configuration from <stage>')
         .option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
         .option('--webhook-only', 'Starts the Jovo Webhook proxy without executing the code')
+        .option('--disable-jovo-debugger', 'Disables Jovo Debugger (web version)')
         .option('--timeout <timeout>', 'Sets timeout in milliseconds')
         .option('-r, --record <name>', 'Can be used to record requests and responses of your Jovo app for testing purposes.')
         .action((args, callback) => {
@@ -93,6 +94,10 @@ module.exports = function(vorpal) {
             if (args.options.stage) {
                 parameters.push('--stage');
                 parameters.push(args.options.stage);
+            }
+
+            if (args.options['disable-jovo-debugger']) {
+                parameters.push('--disable-jovo-debugger');
             }
 
             if (args.options['bst-proxy']) {
