@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.1.8 (June 27, 2018)
+* Fixed empty skillId bug
+
 ## 1.1.7 (June 26, 2018)
 * Added --disable-jovo-debugger argument to `jovo run`
 * Fixed empty phrases in Dialogflow intents
