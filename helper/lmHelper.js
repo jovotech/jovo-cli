@@ -320,7 +320,7 @@ module.exports.Project = {
     getConfigParameter(path, stage) {
         let config = this.getConfig(stage);
 
-        if (!_.get(config, path)) {
+        if (typeof _.get(config, path) === 'undefined') {
             return;
         }
         let val = _.get(config, path);
