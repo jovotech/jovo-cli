@@ -185,7 +185,11 @@ function jovoWebhook(options, stage) {
         console.log(error);
     });
     socket.on('request-' + id, (data) => {
-        post(data.request, options).then((result) => {
+        console.log('headers');
+        console.log(data.headers);
+
+
+        post(data.request, data.headers, options).then((result) => {
             socket.emit('response-' + id, result);
         }).catch((error) => {
             console.log('Local server did not return a valid JSON response:');
@@ -198,20 +202,28 @@ function jovoWebhook(options, stage) {
 /**
  * Send post requests to local webhook
  * @param {*} requestObj
+ * @param {*} headers
  * @param {*} options
  * @return {Promise<any>}
  */
-function post(requestObj, options) {
+function post(requestObj, headers, options) {
     return new Promise((resolve, reject) => {
+        const defaultHeaders = {
+            'content-type': 'application/json',
+        };
+        headers = _.merge(defaultHeaders, headers);
+        delete headers['host'];
+        delete headers['content-length'];
+
         let opt = {
             hostname: 'localhost',
             port: options.port,
             path: '/webhook',
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
+
         };
+
         let postData = JSON.stringify(requestObj);
 
         let req = http.request(opt, (res) => {
