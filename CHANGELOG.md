@@ -1,5 +1,10 @@
 # Jovo CLI Changelog
 
+## 1.1.9 (June 29, 2018)
+* Added 'Allow app.json to override interactonModel' issue #42
+* Fixed 'Interfaces node gets clobbered from skill.json after jovo build with stages' issue #43
+* Fixed 'Jovo webhook strips useful headers like `authorization`' issue #45
+
 ## 1.1.8 (June 27, 2018)
 * Fixed empty skillId bug
 
