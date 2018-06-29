@@ -330,7 +330,7 @@ module.exports = {
                     } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.alexaSkill')) {
                         // get full object
                         _.set(skillJson, 'manifest.apis.custom.endpoint',
-                            Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
+                            Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill'))
                         );
                     }
                 } else {
