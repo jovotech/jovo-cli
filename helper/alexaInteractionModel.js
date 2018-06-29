@@ -106,6 +106,7 @@ class AlexaInteractionModel {
     /**
      * Transforms jovo model to Alexa model
      * @param {*} locale
+     * @param {String} stage
      */
     transform(locale, stage) {
         let errorPrefix = '/models/'+locale+'.json - ';
@@ -132,6 +133,26 @@ class AlexaInteractionModel {
         } catch (e) {
             return;
         }
+
+        const concatArrays = function customizer(objValue, srcValue) {
+            if (_.isArray(objValue)) {
+                return objValue.concat(srcValue);
+            }
+        };
+
+        if (Helper.Project.getConfigParameter(`languageModel.${locale}`, stage)) {
+            model = _.mergeWith(
+                model,
+                Helper.Project.getConfigParameter(`languageModel.${locale}`, stage),
+                concatArrays);
+        }
+        if (Helper.Project.getConfigParameter(`alexaSkill.languageModel.${locale}`, stage)) {
+            model = _.mergeWith(
+                model,
+                Helper.Project.getConfigParameter(`alexaSkill.languageModel.${locale}`, stage),
+                concatArrays);
+        }
+
         let alexaModel = {};
 
         _.set(alexaModel, 'interactionModel.languageModel.invocationName', model.invocation);
@@ -350,22 +371,4 @@ class AlexaInteractionModel {
     }
 }
 
-// let alexaModel = require('./demoproject/platforms/alexaSkill/models/en-US.json');
-//
-// let aim = new AlexaInteractionModel(alexaModel);
-//
-// let model = require('./demoproject/models/en-US.json');
-// // aim.validateSlots(model);
-// aim.transform(model);
-//
-// aim.save('en-US', function() {
-//     console.log('done');
-// });
-
-//
-// let jovoModel = new JovoModel();
-// jovoModel.fromAlexa(require('./../demo/platforms/alexaSkill/models/de-DE'))
-//
-// console.log(JSON.stringify(jovoModel, null, '\t'));
-//
 module.exports.AlexaInteractionModel = AlexaInteractionModel;

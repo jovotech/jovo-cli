@@ -270,13 +270,16 @@ class DialogFlowAgent {
 
     /**
      * Creates files (agent, intents, entities)
-     * @param {*} model jovoModel
+     * @param {*} locale
+     * @param {String} stage
      */
-    transform(model) {
+    transform(locale, stage) {
+        this.config.locale = locale;
         // create dialog flow folder
         if (!fs.existsSync(DialogFlowUtil.getPath())) {
             fs.mkdirSync(DialogFlowUtil.getPath());
         }
+        let Helper = require('./lmHelper');
 
         if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
             fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
@@ -292,6 +295,31 @@ class DialogFlowAgent {
         }
         // throw Error(outputLocale);
 
+        let model;
+        try {
+            model = Helper.Project.getModel(locale);
+        } catch (e) {
+            return;
+        }
+
+        const concatArrays = function customizer(objValue, srcValue) {
+            if (_.isArray(objValue)) {
+                return objValue.concat(srcValue);
+            }
+        };
+
+        if (Helper.Project.getConfigParameter(`languageModel.${locale}`, stage)) {
+            model = _.mergeWith(
+                model,
+                Helper.Project.getConfigParameter(`languageModel.${locale}`, stage),
+                concatArrays);
+        }
+        if (Helper.Project.getConfigParameter(`googleAction.dialogflow.languageModel.${locale}`, stage)) {
+            model = _.mergeWith(
+                model,
+                Helper.Project.getConfigParameter(`googleAction.dialogflow.languageModel.${locale}`, stage),
+                concatArrays);
+        }
 
         for (let intent of model.intents) {
             let intentPath = DialogFlowUtil.getIntentsFolderPath() + intent.name + '.json';

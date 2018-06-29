@@ -329,7 +329,7 @@ module.exports.buildTask = function(ctx) {
                                 title: locale,
                                 task: () => {
                                     return DialogFlowHelper
-                                        .buildLanguageModelDialogFlow(locale)
+                                        .buildLanguageModelDialogFlow(locale, ctx.stage)
                                         .then(() => wait(500));
                                 },
                             });

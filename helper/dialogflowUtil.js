@@ -203,15 +203,16 @@ module.exports = {
     /**
      * Builds Dialog Flow language model files from Jovo model
      * @param {string} locale
+     * @param {string} stage
      * @return {Promise<any>}
      */
-    buildLanguageModelDialogFlow: function(locale) {
+    buildLanguageModelDialogFlow: function(locale, stage) {
         return new Promise((resolve, reject) => {
             try {
                 const DialogFlowAgent = require('./dialogFlowAgent').DialogFlowAgent;
 
                 let dfa = new DialogFlowAgent({locale: locale});
-                dfa.transform(Helper.Project.getModel(locale));
+                dfa.transform(locale, stage);
                 resolve();
             } catch (err) {
                 reject(err);
