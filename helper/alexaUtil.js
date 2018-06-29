@@ -323,17 +323,15 @@ module.exports = {
                 if (_.get(config, 'endpoint')) {
                     // create basic https endpoint from wildcard ssl
                     if (_.isString(_.get(config, 'endpoint'))) {
-                        _.set(skillJson, 'manifest.apis.custom', {
-                            endpoint: {
+                        _.set(skillJson, 'manifest.apis.custom.endpoint', {
                                 sslCertificateType: 'Wildcard',
                                 uri: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint')),
-                            },
                         });
                     } else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.alexaSkill')) {
                         // get full object
-                        _.set(skillJson, 'manifest.apis.custom', {
-                            endpoint: Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
-                        });
+                        _.set(skillJson, 'manifest.apis.custom.endpoint',
+                            Helper.Project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
+                        );
                     }
                 } else {
                     let globalConfig = Helper.Project.getConfig();
@@ -350,17 +348,13 @@ module.exports = {
 
                     if (arn) {
                         if (_.startsWith(arn, 'arn')) {
-                            _.set(skillJson, 'manifest.apis.custom', {
-                                endpoint: {
+                            _.set(skillJson, 'manifest.apis.custom.endpoint', {
                                     uri: arn,
-                                },
                             });
                         } else {
-                            _.set(skillJson, 'manifest.apis.custom', {
-                                endpoint: {
+                            _.set(skillJson, 'manifest.apis.custom.endpoint', {
                                     sslCertificateType: 'Wildcard',
                                     uri: arn,
-                                },
                             });
                         }
                     }
