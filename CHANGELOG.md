@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.1.10 (July 04, 2018)
+* Switched to AWS-SDK Lambda upload
+
 ## 1.1.9 (June 29, 2018)
 * Added 'Allow app.json to override interactonModel' issue #42
 * Fixed 'Interfaces node gets clobbered from skill.json after jovo build with stages' issue #43

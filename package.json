@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "jovo command line tool (beta)",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "adm-zip": "0.4.7",
     "archiver": "^2.1.0",
+    "aws-sdk": "^2.268.1",
     "bespoken-tools": "^1.1.0",
     "cross-spawn": "^5.1.0",
     "dotenv": "^5.0.1",
