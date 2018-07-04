@@ -576,7 +576,7 @@ Endpoint: ${skillInfo.endpoint}`;
                                     if (err) {
                                         return Promise.reject(err);
                                     }
-                                    return AlexaHelper.Ask.askLambdaUpload(ctx);
+                                    return AlexaHelper.AWS.awsLambdaUpload(ctx);
                                 });
 
                                 if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
@@ -689,7 +689,7 @@ Endpoint: ${skillInfo.endpoint}`;
                                         () => Helper.Project.moveTempJovoConfig(Helper.Project.getConfigParameter('src', ctx.stage)));
                                 }
 
-                                p = p.then(() =>AlexaHelper.Ask.askLambdaUpload(ctx));
+                                p = p.then(() =>AlexaHelper.AWS.awsLambdaUpload(ctx));
 
                                 if (Helper.Project.getConfigParameter('src', ctx.stage) && appJson.config) {
                                     p = p.then(

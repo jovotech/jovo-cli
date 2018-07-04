@@ -5,8 +5,8 @@ const AlexaInteractionModel = require('./alexaInteractionModel').AlexaInteractio
 const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
-
-
+const archiver = require('archiver');
+const AWS = require('aws-sdk');
 module.exports = {
 
     /**
@@ -745,6 +745,7 @@ module.exports.Ask = {
 
     /**
      * Saves account linking information to file
+     * @deprecated
      * @param {*} config
      * @return {Promise<any>}
      */
@@ -785,6 +786,129 @@ module.exports.Ask = {
         return new Error(stderr);
     },
 };
+
+module.exports.AWS = {
+    awsLambdaUpload: function(config) {
+        config.src = config.src.replace(/\\/g, '\\\\');
+        return new Promise((resolve, reject) => {
+            let awsProfile = 'default';
+
+            if (config.askProfile) {
+                awsProfile = this.getAWSCredentialsFromAskProfile(config.askProfile);
+            }
+
+            if (config.awsProfile) {
+                awsProfile = config.awsProfile;
+            }
+
+            AWS.config.credentials = new AWS.SharedIniFileCredentials({profile: awsProfile});
+
+            let region = config.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
+            AWS.config.region = region[0];
+
+            const lambda = new AWS.Lambda(config.awsConfig || {});
+            let pathToZip = config.src + '/lambda.zip';
+            return this.zipSrcFolder(pathToZip, config.src).then(() => {
+                return this.lambdaUpdateFunction(
+                    lambda,
+                    pathToZip,
+                    config.lambdaArn,
+                    config.lambdaConfig || {}
+                    );
+            }).then((data) => {
+                return this.deleteLambdaZip(pathToZip);
+            }).then(() => {
+                resolve();
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    },
+
+    lambdaUpdateFunction(lambda, pathToZip, lambdaArn, lambdaParams) {
+        return new Promise((resolve, reject) => {
+            let zipdata = fs.readFileSync(pathToZip);
+
+            let params = {
+                FunctionName: lambdaArn,
+                ZipFile: new Buffer(zipdata),
+            };
+
+            params = _.merge(params, lambdaParams);
+
+            lambda.updateFunctionCode(params, function(err, data) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
+    },
+
+    deleteLambdaZip(pathToZip) {
+        return new Promise((resolve, reject) => {
+            fs.unlink(pathToZip, function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
+    zipSrcFolder(pathToZip, src) {
+        return new Promise((resolve, reject) => {
+            const output = fs.createWriteStream(pathToZip);
+            const archive = archiver('zip', {
+                zlib: {
+                    level: 9,
+                },
+            });
+
+            output.on('close', function() {
+                resolve(pathToZip);
+            });
+
+            archive.on('error', function(err) {
+                reject(err);
+            });
+
+            archive.pipe(output);
+
+            // append files from a glob pattern
+            archive.glob('**/*', {
+                cwd: src,
+                ignore: pathToZip,
+            });
+
+            archive.finalize();
+        });
+    },
+
+    getAWSCredentialsFromAskProfile: function(askProfile) {
+        let askCliConfig = path.join(getUserHome(), '.ask', 'cli_config');
+        try {
+            let data = fs.readFileSync(askCliConfig);
+            let askProfiles = JSON.parse(data).profiles;
+
+            for (const profileKey of Object.keys(askProfiles)) {
+                let profile = askProfiles[profileKey];
+                if (profileKey === askProfile && _.get(profile, 'aws_profile')) {
+                    return _.get(profile, 'aws_profile');
+                }
+            }
+        } catch (e) {
+            throw e;
+        }
+
+        // console.log(JSON.parse(data));
+    },
+};
+
+function getUserHome() {
+    return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+}
 
 module.exports.AlexaInteractionModel = require('./alexaInteractionModel').AlexaInteractionModel;
 
