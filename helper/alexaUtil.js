@@ -807,7 +807,7 @@ module.exports.AWS = {
             AWS.config.region = region[0];
 
             const lambda = new AWS.Lambda(config.awsConfig || {});
-            let pathToZip = config.src + '/lambda.zip';
+            let pathToZip = config.src + '/lambdaUpload.zip';
             return this.zipSrcFolder(pathToZip, config.src).then(() => {
                 return this.lambdaUpdateFunction(
                     lambda,
@@ -875,11 +875,10 @@ module.exports.AWS = {
             });
 
             archive.pipe(output);
-
             // append files from a glob pattern
             archive.glob('**/*', {
                 cwd: src,
-                ignore: pathToZip,
+                ignore: 'lambdaUpload.zip',
             });
 
             archive.finalize();
@@ -902,7 +901,6 @@ module.exports.AWS = {
             throw e;
         }
 
-        // console.log(JSON.parse(data));
     },
 };
 
