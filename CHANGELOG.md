@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.1.11 (July 05, 2018)
+* Removed debugging logs
+
 ## 1.1.10 (July 04, 2018)
 * Switched to AWS-SDK Lambda upload
 
