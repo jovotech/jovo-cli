@@ -185,9 +185,6 @@ function jovoWebhook(options, stage) {
         console.log(error);
     });
     socket.on('request-' + id, (data) => {
-        console.log('headers');
-        console.log(data.headers);
-
 
         post(data.request, data.headers, options).then((result) => {
             socket.emit('response-' + id, result);
