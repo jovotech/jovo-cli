@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.1.12 (July 09, 2018)
+* Fixed staging bug
+
 ## 1.1.11 (July 05, 2018)
 * Removed debugging logs
 
