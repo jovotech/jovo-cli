@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 const BUILTIN_PREFIX = 'AMAZON.';
+const utils = require('./../utils/utils');
 
 /**
  * Class AlexaInteractionModel
@@ -110,7 +111,6 @@ class AlexaInteractionModel {
      */
     transform(locale, stage) {
         let errorPrefix = '/models/'+locale+'.json - ';
-
         let Helper = require('./lmHelper');
         let locales = [];
         if (locale.length === 2) {

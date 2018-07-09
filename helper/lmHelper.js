@@ -6,6 +6,7 @@ const _ = require('lodash');
 const request = require('request');
 const AdmZip = require('adm-zip');
 const uuidv4 = require('uuid/v4');
+const utils = require('./../utils/utils');
 
 const DEFAULT_LOCALE = 'en-US';
 const DEFAULT_PLATFORM = 'none';
@@ -187,14 +188,14 @@ module.exports.Project = {
      * @param {Array<string>} platform
      * @return {*}
      */
-    getPlatform: function(platform) {
+    getPlatform: function(platform, stage) {
         let projectPlatforms = [];
 
         try {
             if (platform) {
                 return [platform];
             }
-            let config = this.getConfig();
+            let config = this.getConfig(stage);
             if (config.alexaSkill) {
                 projectPlatforms.push(PLATFORM_ALEXASKILL);
             }
@@ -319,7 +320,6 @@ module.exports.Project = {
      */
     getConfigParameter(path, stage) {
         let config = this.getConfig(stage);
-
         if (typeof _.get(config, path) === 'undefined') {
             return;
         }

@@ -54,3 +54,15 @@ exports.deleteFolderRecursive = (path) => {
     }
 };
 
+exports.log = (msg) => {
+    let data = '';
+    try {
+        data = fs.readFileSync('debug.log', "utf8");
+    } catch (e) {
+        console.log(e);
+    }
+
+    data += '\n' + msg;
+    fs.writeFileSync('debug.log', data);
+
+};

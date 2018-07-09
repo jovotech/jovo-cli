@@ -59,7 +59,7 @@ module.exports = function(vorpal) {
 
             let config = {
                 locales: Helper.Project.getLocales(args.options.locale),
-                type: args.options.platform || Helper.Project.getPlatform(args.options.platform),
+                type: args.options.platform || Helper.Project.getPlatform(args.options.platform, args.options.stage),
                 projectId: args.options['project-id'] || Helper.Project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
                 endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                 target: args.options.target || Helper.DEFAULT_TARGET,
