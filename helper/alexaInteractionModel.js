@@ -169,10 +169,8 @@ class AlexaInteractionModel {
         }
 
         if(/\d/.test(alexaModel.interactionModel.languageModel.invocationName)){
-            throw new Error(errorPrefix + 'Invocation name may only contain alphabetic characters, apostrophes, periods and spaces.')
+            throw new Error(errorPrefix + 'Invocation name may only contain alphabetic characters, apostrophes, periods and spaces.');
         }
-
-
 
         alexaModel.interactionModel.languageModel.types = [];
 
