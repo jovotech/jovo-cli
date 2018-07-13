@@ -1,5 +1,10 @@
 # Jovo CLI Changelog
 
+## 1.1.13 (July 09, 2018)
+* Added Amazon built in slots extendability
+* Fixed Google Action `build --reverse` for multiple locales
+* Fixed another staging bug
+
 ## 1.1.12 (July 09, 2018)
 * Fixed staging bug
 
