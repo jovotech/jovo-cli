@@ -156,8 +156,9 @@ class AlexaInteractionModel {
         let alexaModel = {};
 
         _.set(alexaModel, 'interactionModel.languageModel.invocationName', model.invocation);
-        if (alexaModel.interactionModel.languageModel.invocationName.length === 0) {
-            throw new Error(errorPrefix + 'Invocation cannot be empty');
+        if (alexaModel.interactionModel.languageModel.invocationName.length < 2 ||
+            alexaModel.interactionModel.language.invocationName.length > 50) {
+            throw new Error(errorPrefix + 'Invocation name must be between 2 and 50 characters.');
         }
 
         alexaModel.interactionModel.languageModel.types = [];
