@@ -3,6 +3,7 @@ const _ = require('lodash');
 const fs = require('fs');
 const DialogFlowUtil = require('./dialogflowUtil');
 const BUILTIN_PREFIX = '@sys.';
+const utils = require('./../utils/utils');
 const pathSep = require('path').sep;
 
 const DEFAULT_INTENT = {
@@ -46,9 +47,10 @@ class DialogFlowAgent {
      * Skips default intent properties
      * @param {*} jovoIntent
      * @param {*} dialogFlowIntent
+     * @param {string} locale
      * @return {*}
      */
-    static skipDefaultIntentProps(jovoIntent, dialogFlowIntent) {
+    static skipDefaultIntentProps(jovoIntent, dialogFlowIntent, locale) {
         if (_.get(dialogFlowIntent, 'auto') !== _.get(DEFAULT_INTENT, 'auto')) {
             _.set(jovoIntent, 'dialogflow.auto', _.get(dialogFlowIntent, 'auto'));
         }
@@ -87,7 +89,20 @@ class DialogFlowAgent {
             }
 
             if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].messages'), _.get(DEFAULT_INTENT, 'responses[0].messages'))) {
-                _.set(jovoIntent, 'dialogflow.responses[0].messages', _.get(dialogFlowIntent, 'responses[0].messages'));
+
+                for (const message of _.get(dialogFlowIntent, 'responses[0].messages')) {
+                    utils.log(dialogFlowIntent.name + '--- ' + _.get(message, 'lang') + '=== ' + locale);
+                    if (_.get(message, 'lang') === locale) {
+                        let jovoIntentDialogFlowMessages = _.get(jovoIntent, 'dialogflow.responses[0].messages', []);
+
+                        if (message.speech.length > 0) {
+                            jovoIntentDialogFlowMessages.push(message);
+                            utils.log(jovoIntentDialogFlowMessages);
+                            _.set(jovoIntent, 'dialogflow.responses[0].messages', jovoIntentDialogFlowMessages);
+                        }
+
+                    }
+                }
             }
             if (!_.isEqual(_.get(dialogFlowIntent, 'responses[0].speech'), _.get(DEFAULT_INTENT, 'responses[0].speech'))) {
                 _.set(jovoIntent, 'dialogflow.responses[0].speech', _.get(dialogFlowIntent, 'responses[0].speech'));
@@ -142,11 +157,10 @@ class DialogFlowAgent {
                 phrases: [],
             };
             // skip default intent properties
-            DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
+            DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent, locale);
 
             // is fallback intent?
             if (dialogFlowIntent.fallbackIntent === true) {
-                DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
                 let fallbackIntent = jovoIntent.dialogflow;
                 fallbackIntent.name = dialogFlowIntent.name;
                 _.set(jovoModel, 'dialogflow.intents', [fallbackIntent]);
@@ -155,7 +169,6 @@ class DialogFlowAgent {
 
             // is welcome intent?
             if (_.get(dialogFlowIntent, 'events[0].name') === 'WELCOME') {
-                DialogFlowAgent.skipDefaultIntentProps(jovoIntent, dialogFlowIntent);
                 let welcomeIntent = jovoIntent.dialogflow;
                 welcomeIntent.name = dialogFlowIntent.name;
 
@@ -174,14 +187,16 @@ class DialogFlowAgent {
                         let input = {
                             name: parameter.name,
                         };
-                        if (_.startsWith(parameter.dataType, '@sys.')) {
-                            input.type = {
-                                dialogflow: parameter.dataType,
-                            };
-                        } else {
-                            input.type = parameter.dataType.substr(1);
+                        if (parameter.dataType) {
+                            if (_.startsWith(parameter.dataType, '@sys.')) {
+                                input.type = {
+                                    dialogflow: parameter.dataType,
+                                };
+                            } else {
+                                input.type = parameter.dataType.substr(1);
+                            }
+                            inputs.push(input);
                         }
-                        inputs.push(input);
                     }
                 }
             }
@@ -198,7 +213,7 @@ class DialogFlowAgent {
                 for (let us of userSays) {
                     let phrase = '';
                     for (let data of us.data) {
-                        phrase += data.userDefined ? '{' + data.alias + '}' : data.text;
+                        phrase += data.alias ? '{' + data.alias + '}' : data.text;
                         // add sample text to input type
                         if (data.text !== data.alias) {
                             if (jovoIntent.inputs) {
@@ -382,7 +397,7 @@ class DialogFlowAgent {
                         // create alexaTypeObj from matched input types
                         for (let matchedInputType of matchedInputTypes) {
                             let dfEntityObj = {
-                                name: matchedInputType.name,
+                                name: matchedInputType.dialogflow || matchedInputType.name,
                                 isOverridable: true,
                                 isEnum: false,
                                 automatedExpansion: false,
@@ -556,19 +571,5 @@ class DialogFlowAgent {
         }
     }
 }
-//
-// let dfa = new DialogFlowAgent({locale: 'en-US'});
-// let model = require('./../demo1/models/en-US.json');
-// require('./lmHelper').Project.setProjectPath('demo1');
-// dfa.transform(model);
-// let aim = new AlexaInteractionModel(alexa);
-//
-// let model = require('./bla5/models/en-US.json');
-// aim.transform(model);
-//
-// aim.save(function() {
-//     console.log('done');
-// });
-
 
 module.exports.DialogFlowAgent = DialogFlowAgent;

@@ -231,7 +231,7 @@ class AlexaInteractionModel {
                         // create alexaTypeObj from matched input types
                         for (let matchedInputType of matchedInputTypes) {
                             let alexaTypeObj = {
-                                name: matchedInputType.name,
+                                name: matchedInputType.alexa || matchedInputType.name,
                                 values: [],
                             };
 
