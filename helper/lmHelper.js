@@ -342,9 +342,8 @@ module.exports.Project = {
      */
     getConfig: function(stage) {
         try {
-            let appJsonConfig = require(this.getConfigPath());
-            let stg = this.getStage(stage);
-
+            let appJsonConfig = _.cloneDeep(JSON.parse(fs.readFileSync(this.getConfigPath())));
+            let stg = stage;
 
             if (_.get(appJsonConfig, `stages["${stg}"]`)) {
                 appJsonConfig = _.merge(
@@ -361,16 +360,21 @@ module.exports.Project = {
     },
 
     getStage: function(stage) {
-        let appJsonConfig = require(this.getConfigPath());
         let stg = '';
         if (process.env.STAGE) {
             stg = process.env.STAGE;
         }
-
-        if (_.get(appJsonConfig, 'defaultStage')) {
-            stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
+        try {
+            let appJsonConfig = _.cloneDeep(JSON.parse(fs.readFileSync(this.getConfigPath())));
+            if (_.get(appJsonConfig, 'defaultStage')) {
+                stg = eval('`'+ _.get(appJsonConfig, 'defaultStage') +'`');
+            }
+        } catch (error) {
+            if (_.get(error, 'constructor.name') === 'SyntaxError') {
+                console.log(error);
+                throw error;
+            }
         }
-
         if (stage) {
             stg = stage;
         }
