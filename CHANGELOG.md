@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.1.14 (July 13, 2018)
+* Added validation for Amazon Alexa Invocation Name requirements
+
 ## 1.1.13 (July 09, 2018)
 * Added Amazon built in slots extendability
 * Fixed Google Action `build --reverse` for multiple locales
@@ -63,7 +66,7 @@
 
 
 ## 1.0.16 (April 26, 2018)
-* Add node debug feature to ``` jovo run [--inspect] ``` 
+* Add node debug feature to ``` jovo run [--inspect] ```
 
 ## 1.0.15 (April 24, 2018)
 * Downgrade buggy adm-zip dependecy
