@@ -404,15 +404,11 @@ module.exports.buildReverseTask = function(ctx) {
                 let reverseLocales = [];
 
                 let agentJson = DialogFlowHelper.getAgentJson();
-                let supportedLanguages = [];
+                let supportedLanguages = [agentJson.language];
 
-                if (!supportedLanguages || supportedLanguages.length === 0) {
-                    supportedLanguages.push(agentJson.language);
-                } else {
-                    supportedLanguages = agentJson.supportedLanguages;
+                if (agentJson.supportedLanguages) {
+                    supportedLanguages = supportedLanguages.concat(agentJson.supportedLanguages);
                 }
-
-
                 for (let locale of supportedLanguages) {
                     reverseLocales.push({
                         title: locale,
