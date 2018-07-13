@@ -64,7 +64,7 @@ module.exports = function(vorpal) {
                 endpoint: args.options.endpoint || Helper.DEFAULT_ENDPOINT,
                 target: args.options.target || Helper.DEFAULT_TARGET,
                 src: args.options.src || Helper.Project.getConfigParameter('src', args.options.stage) || Helper.Project.getProjectPath(),
-                stage: args.options.stage,
+                stage: Helper.Project.getStage(args.options.stage),
                 askProfile: args.options['ask-profile'] ||
                     Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) ||
                     Helper.Project.getConfigParameter('alexaSkill.askProfile', args.options.stage) ||

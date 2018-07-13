@@ -41,8 +41,11 @@ module.exports = function(vorpal) {
         .action((args, callback) => {
             const port = args.options.port || 3000;
 
+            const stage = Helper.Project.getStage(args.options.stage);
+
+
             try {
-                Helper.Project.getConfig(args.options.stage);
+                Helper.Project.getConfig(stage);
             } catch (e) {
                 console.log('\n\n Could not load app.json. \n\n');
                 callback();
@@ -50,13 +53,13 @@ module.exports = function(vorpal) {
             }
 
             if (args.options['webhook-only']) {
-                jovoWebhook(port, args.options.stage);
+                jovoWebhook(port, stage);
                 return;
             }
             let srcDir = '';
             // prepend src directory from config
-            if (Helper.Project.getConfigParameter('src', args.options.stage)) {
-                srcDir = Helper.Project.getConfigParameter('src', args.options.stage);
+            if (Helper.Project.getConfigParameter('src', stage)) {
+                srcDir = Helper.Project.getConfigParameter('src', stage);
                 if (srcDir && !_.endsWith(path.sep, srcDir )) {
                     srcDir = srcDir + path.sep;
                 }
@@ -91,9 +94,9 @@ module.exports = function(vorpal) {
                 parameters.push(process.cwd());
             }
 
-            if (args.options.stage) {
+            if (stage) {
                 parameters.push('--stage');
-                parameters.push(args.options.stage);
+                parameters.push(stage);
             }
 
             if (args.options['disable-jovo-debugger']) {
@@ -123,7 +126,7 @@ module.exports = function(vorpal) {
                 jovoWebhook({
                     port: port,
                     timeout: timeout,
-                }, args.options.stage);
+                }, stage);
                 parameters.push('--jovo-webhook');
             }
             const ls = spawn(command, parameters, {windowsVerbatimArguments: true, stdio: 'inherit', cwd: srcDir || process.cwd()});

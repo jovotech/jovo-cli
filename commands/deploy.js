@@ -50,7 +50,7 @@ module.exports = function(vorpal) {
                 projectId: args.options['project-id'] || Helper.Project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
                 target: args.options.target || Helper.DEFAULT_TARGET,
                 src: args.options.src || Helper.Project.getConfigParameter('src', args.options.stage) || Helper.Project.getProjectPath(),
-                stage: args.options.stage,
+                stage: Helper.Project.getStage(args.options.stage),
                 askProfile: args.options['ask-profile'] ||
                     Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) ||
                     Helper.Project.getConfigParameter('alexaSkill.askProfile', args.options.stage) ||
