@@ -162,7 +162,7 @@ class AlexaInteractionModel {
             throw new Error(errorPrefix + 'Invocation cannot be empty');
         }
         if (alexaModel.interactionModel.languageModel.invocationName.length < 2 ||
-            alexaModel.interactionModel.language.invocationName.length > 50) {
+            alexaModel.interactionModel.languageModel.invocationName.length > 50) {
             throw new Error(errorPrefix + 'Invocation name must be between 2 and 50 characters.');
         }
 
