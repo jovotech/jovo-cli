@@ -189,11 +189,11 @@ module.exports.buildTask = function(ctx) {
 
     let buildPlatformTasks = [];
     if (ctx.type.indexOf(Helper.PLATFORM_ALEXASKILL) > -1) {
-        let title = 'Creating /platforms/alexaSkill';
+        let title = 'Creating /platforms/alexaSkill ' + printStage(ctx.stage);
         let hasAlexaSkill = Helper.Project.hasAlexaSkill();
 
         if (hasAlexaSkill) {
-            title = 'Updating /platforms/alexaSkill';
+            title = 'Updating /platforms/alexaSkill ' + printStage(ctx.stage);
         }
 
         buildPlatformTasks.push({
@@ -275,12 +275,12 @@ module.exports.buildTask = function(ctx) {
             fs.mkdirSync(dialogFlowPath);
         }
         let hasGoogleActionDialogflow = Helper.Project.hasGoogleActionDialogFlow();
-        let title = 'Creating /platforms/googleAction/dialogflow';
+        let title = 'Creating /platforms/googleAction/dialogflow ' + printStage(ctx.stage);
         let titleAgentJson = 'Creating Dialogflow Agent';
         let titleInteractionModel = 'Creating Language Model based on Jovo Language Model in ' + highlight('/models');
 
         if (hasGoogleActionDialogflow) {
-            title = 'Updating /platforms/googleAction/dialogflow';
+            title = 'Updating /platforms/googleAction/dialogflow ' + printStage(ctx.stage);
             titleAgentJson = 'Updating Dialogflow Agent';
             titleInteractionModel = 'Updating Dialogflow Language Model based on Jovo Language Model in ' + highlight('/models');
         }
@@ -471,7 +471,7 @@ module.exports.deployTask = function(ctx) {
             arn = _.startsWith(arn, 'arn') ? arn : undefined;
         }
         deployPlatformTasks.push({
-            title: 'Deploying Alexa Skill',
+            title: 'Deploying Alexa Skill ' + printStage(ctx.stage),
             task: (ctx, task) => {
                 return new Listr([
                     {
@@ -618,7 +618,7 @@ Endpoint: ${skillInfo.endpoint}`;
         }
 
         deployPlatformTasks.push({
-            title: 'Deploying Google Action',
+            title: 'Deploying Google Action ' + printStage(ctx.stage),
             task: (ctx, task) => {
                 return new Listr([
                     {
@@ -710,6 +710,15 @@ Endpoint: ${skillInfo.endpoint}`;
     }
     return deployPlatformTasks;
 };
+
+/**
+ * Print stage helper
+ * @param {string} stage
+ * @return {string}
+ */
+function printStage(stage) {
+    return stage ? `(stage: ${highlight(stage)})` : ``;
+}
 
 /**
  * Asks for model status every 5 seconds
