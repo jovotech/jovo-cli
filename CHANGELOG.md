@@ -1,9 +1,9 @@
 # Jovo CLI Changelog
 
-## 1.1.14 (July 13, 2018)
-* Added validation for Amazon Alexa Invocation Name requirements
+## 1.1.14 (July 16, 2018)
+* [#48](https://github.com/jovotech/jovo-cli/pull/48) Added validation for Amazon Alexa Invocation Name requirements [@KristaTheCoder](https://github.com/KristaTheCoder)
 
-## 1.1.13 (July 09, 2018)
+## 1.1.13 (July 13, 2018)
 * Added Amazon built in slots extendability
 * Fixed Google Action `build --reverse` for multiple locales
 * Fixed another staging bug
