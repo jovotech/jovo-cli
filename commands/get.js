@@ -93,7 +93,7 @@ vorpal
                 skillId: args.options['skill-id'] || Helper.Project.getConfigParameter('alexaSkill.skillId', args.options.stage) || config.skillId,
                 projectId: args.options['project-id'] || Helper.Project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
                 stage: Helper.Project.getStage(args.options.stage),
-                askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.ask-profile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
+                askProfile: args.options['ask-profile'] || Helper.Project.getConfigParameter('alexaSkill.askProfile', args.options.stage) || Helper.DEFAULT_ASK_PROFILE,
             });
 
             let subp = Promise.resolve();
