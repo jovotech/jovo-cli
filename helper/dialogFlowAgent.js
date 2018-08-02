@@ -439,6 +439,11 @@ class DialogFlowAgent {
                         }
                     }
 
+                    // merges dialogflow specific data
+                    if (input.dialogflow) {
+                        parameterObj = _.merge(parameterObj, input.dialogflow);
+                    }
+
                     dfIntentObj.responses[0].parameters.push(parameterObj);
                 }
             }
