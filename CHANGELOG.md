@@ -1,5 +1,9 @@
 # Jovo CLI Changelog
 
+## 1.1.15 (August 02, 2018)
+* Added language model testing `jovo run --model-test`
+* Added update notifier
+
 ## 1.1.14 (July 16, 2018)
 * [#48](https://github.com/jovotech/jovo-cli/pull/48) Added validation for Amazon Alexa Invocation Name requirements [@KristaTheCoder](https://github.com/KristaTheCoder)
 

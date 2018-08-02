@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "jovo command line tool (beta)",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "request": "^2.83.0",
     "resolve-bin": "^0.4.0",
     "socket.io-client": "^2.0.4",
+    "update-notifier": "^2.5.0",
     "uuid": "^3.2.1",
     "vorpal": "^1.12.0"
   },
