@@ -1,6 +1,6 @@
 # Jovo CLI Changelog
 
-## 1.1.15 (August 02, 2018)
+## 1.2.0 (August 02, 2018)
 * Added language model testing `jovo run --model-test`
 * Added update notifier
 
