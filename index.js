@@ -3,6 +3,8 @@
 const vorpal = require('vorpal')();
 const Helper = require('./helper/lmHelper');
 require('dotenv').config();
+const updateNotifier = require('update-notifier');
+const pkg = require('./package.json');
 
 if (parseInt(process.version.substr(1, 2)) < 6) {
     console.error('Please use node version >= 6');
@@ -10,6 +12,7 @@ if (parseInt(process.version.substr(1, 2)) < 6) {
 }
 const versionArg = ['-v', '-V', '--version'];
 
+updateNotifier({pkg}).notify();
 
 // jovo  (no arguments)
 if (process.argv.length === 2) {
