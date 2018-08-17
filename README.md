@@ -81,7 +81,7 @@ These are the basic commands that help you develop Jovo voice apps faster, witho
 
 #### jovo new
 
-![jovo new command](https://www.jovo.tech/img/docs/jovo-new.png "jovo new command")
+![jovo new command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-new.png "jovo new command")
 
 You can create a Jovo project into a new directory with the following command:
 
@@ -120,7 +120,7 @@ Name | Description
 
 #### jovo run
 
-![jovo run command](https://www.jovo.tech/img/docs/jovo-run.png "jovo run command")
+![jovo run command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-run.png "jovo run command")
 
 You can use the `jovo run` command to start the development server in your `index.js` file, and then add the [Jovo Webhook](../03_app-configuration/02_server/webhook#jovo-webhook) as an endpoint to the respective developer consoles.
 
@@ -173,7 +173,7 @@ $ jovo run --bst-proxy
 
 The result should look like this:
 
-![Jovo and bst proxy](https://www.jovo.tech/img/docs/terminal-bst-proxy-1.jpg)
+![Jovo and bst proxy](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/terminal-bst-proxy-1.jpg)
 
 The URL also comes with logging and analytics capabilities for prototyping and testing.
 
@@ -199,7 +199,7 @@ See the following tutorials for alternative ways to create language models on th
 
 #### jovo init
 
-![jovo init command](https://www.jovo.tech/img/docs/jovo-init.png "jovo init command")
+![jovo init command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-init.png "jovo init command")
 
 `jovo init` is the command to initialize a voice platform project to use with the Jovo Framework. This will create or update a file `app.json` with all the information needed to later [`build`](#jovo-build) the language models.
 
@@ -241,7 +241,7 @@ The default `endpoint` uri is automatically generated and provides a simple solu
 
 #### jovo build
 
-![jovo build command](https://www.jovo.tech/img/docs/jovo-build.png "jovo build command")
+![jovo build command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-build.png "jovo build command")
 
 `jovo build` is the command to create and update the platform specific interaction models using the Jovo model. Using the files in the `/models` folder and converting them into files in the `/platforms` folder.
 
@@ -266,12 +266,12 @@ $ jovo build [-p | --platform <alexaSkill | googleAction>] [-l | --locale <de-DE
 
 `--reverse`, `-r`: In this reverse process, you can create a [Jovo Language Model](../03_app-configuration/01_models) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](#jovo-get). Currently only works with Amazon Alexa: `jovo build -p alexaSkill --reverse`:
 
-![jovo build reverse converter](https://www.jovo.tech/img/docs/jovo-build-reverse.png "jovo build reverse command")
+![jovo build reverse converter](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-build-reverse.png "jovo build reverse command")
 
 
 #### jovo get
 
-![jovo get command](https://www.jovo.tech/img/docs/jovo-get.png "jovo get command")
+![jovo get command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-get.png "jovo get command")
 
 `jovo get` will import an existing Alexa Skill (Skill Information and Interaction Model) into the `/platforms` folder. Dialogflow API v1 does not support importing agents, this is why this command is currently limited to Amazon Alexa.
 
@@ -303,11 +303,11 @@ $ jovo get alexaSkill [-s | --skill-id <skill ID>] [--list-skills] [-l | --local
 
 #### jovo deploy
 
-![jovo deploy command](https://www.jovo.tech/img/docs/jovo-deploy.png "jovo deploy command")
+![jovo deploy command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/jovo-deploy.png "jovo deploy command")
 
 `jovo deploy` is used to upload the platform folders to their respective developer site. Since the Dialogflow API v1 does not support programmatic agent creation, the deploy command will create `zip` file, which you can then import into Dialogflow:
 
-![jovo deploy command](https://www.jovo.tech/img/docs/folder-structure-googleAction-agent-zip.png "jovo deploy command")
+![jovo deploy command](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/folder-structure-googleAction-agent-zip.png "jovo deploy command")
 
 To deploy to the Amazon developer console, you have to set up [ASK CLI](https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html) first.
 
