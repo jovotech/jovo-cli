@@ -397,14 +397,18 @@ class DialogFlowAgent {
                         // create alexaTypeObj from matched input types
                         for (let matchedInputType of matchedInputTypes) {
                             let dfEntityObj = {
-                                name: matchedInputType.dialogflow || matchedInputType.name,
+                                name: matchedInputType.name,
                                 isOverridable: true,
                                 isEnum: false,
                                 automatedExpansion: false,
                             };
 
                             if (matchedInputType.dialogflow) {
-                                dfEntityObj = _.merge(dfEntityObj, matchedInputType.dialogflow);
+                                if (typeof matchedInputType.dialogflow === 'string') {
+                                    dfEntityObj.name = matchedInputType.dialogflow;
+                                } else {
+                                    dfEntityObj = _.merge(dfEntityObj, matchedInputType.dialogflow);
+                                }
                             }
 
                             let entityFilePath = DialogFlowUtil.getEntitiesFolderPath() + matchedInputType.name + '.json';
