@@ -284,11 +284,11 @@ module.exports = {
                     exec('gcloud -v', function(error, stdout, stderr ) {
                         if (error) {
                             if (stderr) {
-                                return reject(new Error('Your Google Cloud SKD isn\'t installed properly'));
+                                return reject(new Error('Your Google Cloud SDK isn\'t installed properly'));
                             }
                         }
                         if (!_.startsWith(stdout, 'Google Cloud SDK')) {
-                            return reject(new Error('Your Google Cloud SKD isn\'t installed properly'));
+                            return reject(new Error('Your Google Cloud SDK isn\'t installed properly'));
                         }
 
                         resolve(stdout);
