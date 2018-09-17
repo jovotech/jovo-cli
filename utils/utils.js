@@ -59,7 +59,6 @@ exports.log = (msg) => {
     try {
         data = fs.readFileSync('debug.log', 'utf8');
     } catch (e) {
-        console.log(e);
     }
 
     if (typeof msg !== 'string') {
@@ -69,5 +68,4 @@ exports.log = (msg) => {
 
     data += '\n' + msg;
     fs.writeFileSync('debug.log', data);
-
 };
