@@ -293,7 +293,7 @@ describe('build', function() {
                 childBuild.stdout.on('data', (data) => {
                     if (data.indexOf('Build completed.') > -1) {
                         childBuild.kill();
-                        expect(fs.existsSync(projectFolder + path.sep + 'models' + path.sep + 'en-us.json')).to.equal(true);
+                        expect(fs.existsSync(projectFolder + path.sep + 'models' + path.sep + 'en-US.json')).to.equal(true);
                         let modelJson = JSON.parse(
                             fs.readFileSync(
                                 projectFolder + path.sep +
