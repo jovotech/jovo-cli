@@ -126,34 +126,59 @@ module.exports = {
 
                 // setup languages
                 if (ctx.locales.length === 1) {
-                    _.set(agent, 'language', ctx.locales[0].substr(0, 2));
+                    _.set(agent, 'language', ctx.locales[0]);
                     delete agent.supportedLanguages;
-                } else {
-                    let primLanguages = {};
-                    let supportedLanguages = {};
-                    for (let locale of ctx.locales) {
-                        primLanguages[locale.substr(0, 2)] = '';
-                        supportedLanguages[locale.toLowerCase()] = '';
+                } else if (ctx.locales.length > 1) {
+                    let primaryLanguage = ctx.locales[0];
+                    let supportedLanguages = [];
 
-                        let findings = ctx.locales.filter((loc) => {
-                            return locale.substr(0, 2) === loc.substr(0, 2);
-                        });
-                        if (findings.length === 1) {
-                            delete supportedLanguages[locale.toLowerCase()];
-                            supportedLanguages[locale.toLowerCase().substr(0, 2)] = '';
-                        }
-                    }
-                    if (Object.keys(primLanguages) === 1) {
-                        _.set(agent, 'language', Object.keys(primLanguages)[0]);
-                    } else {
-                        if (Object.keys(primLanguages).indexOf('en')) {
-                            _.set(agent, 'language', 'en');
-                        } else {
-                            _.set(agent, 'language', Object.keys(primLanguages)[0]);
-                        }
+                    ctx.locales.forEach((loc) => {
+                       if (loc.length === 2) {
+                           primaryLanguage = loc;
+                       }
+                    });
 
-                        agent.supportedLanguages = Object.keys(supportedLanguages);
-                    }
+                    // set primary language from app.json (if defined)
+                    primaryLanguage = _.get(stageConfig, 'googleAction.dialogflow.primaryLanguage') ||
+                        _.get(globalConfig, 'googleAction.dialogflow.primaryLanguage') ||
+                        primaryLanguage;
+
+                    // add supportedLanguages without primaryLanguage
+                    ctx.locales.forEach((loc) => {
+                       if (loc !== primaryLanguage) {
+                           supportedLanguages.push(loc.toLowerCase());
+                       }
+                    });
+
+                    _.set(agent, 'language', primaryLanguage.toLowerCase());
+                    _.set(agent, 'supportedLanguages', supportedLanguages);
+
+
+                    // let primLanguages = {};
+                    // let supportedLanguages = {};
+                    // for (let locale of ctx.locales) {
+                    //     primLanguages[locale.substr(0, 2)] = '';
+                    //     supportedLanguages[locale.toLowerCase()] = '';
+                    //
+                    //     let findings = ctx.locales.filter((loc) => {
+                    //         return locale.substr(0, 2) === loc.substr(0, 2);
+                    //     });
+                    //     if (findings.length === 1) {
+                    //         delete supportedLanguages[locale.toLowerCase()];
+                    //         supportedLanguages[locale.toLowerCase().substr(0, 2)] = '';
+                    //     }
+                    // }
+                    // if (Object.keys(primLanguages) === 1) {
+                    //     _.set(agent, 'language', Object.keys(primLanguages)[0]);
+                    // } else {
+                    //     if (Object.keys(primLanguages).indexOf('en')) {
+                    //         _.set(agent, 'language', 'en');
+                    //     } else {
+                    //         _.set(agent, 'language', Object.keys(primLanguages)[0]);
+                    //     }
+                    //
+                    //     agent.supportedLanguages = Object.keys(supportedLanguages);
+                    // }
                 }
 
                 if (_.get(config, 'googleAction.dialogflow.agent')) {

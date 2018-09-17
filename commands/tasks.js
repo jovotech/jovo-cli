@@ -410,6 +410,12 @@ module.exports.buildReverseTask = function(ctx) {
                     supportedLanguages = supportedLanguages.concat(agentJson.supportedLanguages);
                 }
                 for (let locale of supportedLanguages) {
+
+                    // transform en-us to en-US
+                    if (locale.length === 5) {
+                        locale = locale.substr(0, 2) + '-' + locale.substr(3).toUpperCase();
+                    }
+
                     reverseLocales.push({
                         title: locale,
                         task: () => {

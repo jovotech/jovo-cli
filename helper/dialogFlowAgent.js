@@ -183,7 +183,7 @@ class DialogFlowAgent {
             let inputs = [];
             if (dialogFlowIntent.responses) {
                 for (let response of dialogFlowIntent.responses) {
-                    for (let parameter of response.parameters) {
+                    for (let parameter of _.get(response, 'parameters', [])) {
                         let input = {
                             name: parameter.name,
                         };
@@ -300,15 +300,7 @@ class DialogFlowAgent {
             fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
         }
 
-        // take primary language from locales
-        let primLanguage = require('./lmHelper').Project.getLocales().filter((lang) => {
-            return this.config.locale.substr(0, 2) === lang.substr(0, 2);
-        });
-        let outputLocale = this.config.locale.toLowerCase();
-        if (primLanguage.length === 1) {
-            outputLocale = this.config.locale.substr(0, 2);
-        }
-        // throw Error(outputLocale);
+        let outputLocale = locale.toLowerCase();
 
         let model;
         try {
@@ -329,10 +321,12 @@ class DialogFlowAgent {
                 Helper.Project.getConfigParameter(`languageModel.${locale}`, stage),
                 concatArrays);
         }
-        if (Helper.Project.getConfigParameter(`googleAction.dialogflow.languageModel.${locale}`, stage)) {
+        if (Helper.Project.getConfigParameter(
+            `googleAction.dialogflow.languageModel.${locale}`, stage)) {
             model = _.mergeWith(
                 model,
-                Helper.Project.getConfigParameter(`googleAction.dialogflow.languageModel.${locale}`, stage),
+                Helper.Project.getConfigParameter(
+                    `googleAction.dialogflow.languageModel.${locale}`, stage),
                 concatArrays);
         }
 
