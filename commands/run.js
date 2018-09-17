@@ -9,7 +9,7 @@ const http = require('http');
 const io = require('socket.io-client');
 const Helper = require('./../helper/lmHelper');
 const _ = require('lodash');
-
+const querystring = require('querystring');
 /**
  * Returns path to home directory
  * @return {string}
@@ -42,6 +42,7 @@ module.exports = function(vorpal) {
         .option('-r, --record <name>', 'Can be used to record requests and responses of your Jovo app for testing purposes.')
         .action((args, callback) => {
             const port = args.options.port || 3000;
+            let timeout = args.options.timeout || 5000;
 
             const stage = Helper.Project.getStage(args.options.stage);
 
@@ -55,7 +56,10 @@ module.exports = function(vorpal) {
             }
 
             if (args.options['webhook-only']) {
-                jovoWebhook(port, stage);
+                jovoWebhook({
+                    port: port,
+                    timeout: timeout,
+                }, stage);
                 return;
             }
             let srcDir = '';
@@ -127,8 +131,6 @@ module.exports = function(vorpal) {
                 parameters.push('--bst-proxy');
             } else if (args.options.ngrok) {
             } else {
-                let timeout = args.options.timeout || 5000;
-
                 jovoWebhook({
                     port: port,
                     timeout: timeout,
@@ -194,7 +196,7 @@ function jovoWebhook(options, stage) {
         console.log(error);
     });
     socket.on('request-' + id, (data) => {
-        post(data.request, data.headers, options).then((result) => {
+        post(data.request, data.headers, data.params, options).then((result) => {
             socket.emit('response-' + id, result);
         }).catch((error) => {
             console.log('Local server did not return a valid JSON response:');
@@ -208,10 +210,11 @@ function jovoWebhook(options, stage) {
  * Send post requests to local webhook
  * @param {*} requestObj
  * @param {*} headers
+ * @param (*} params
  * @param {*} options
  * @return {Promise<any>}
  */
-function post(requestObj, headers, options) {
+function post(requestObj, headers, params, options) {
     return new Promise((resolve, reject) => {
         const defaultHeaders = {
             'content-type': 'application/json',
@@ -219,11 +222,11 @@ function post(requestObj, headers, options) {
         headers = _.merge(defaultHeaders, headers);
         delete headers['host'];
         delete headers['content-length'];
-
+        const queryParams = querystring.stringify(params);
         let opt = {
             hostname: 'localhost',
             port: options.port,
-            path: '/webhook',
+            path: '/webhook?'+ queryParams,
             method: 'POST',
             headers: headers,
 
