@@ -180,11 +180,6 @@ class AlexaInteractionModel {
                 name: intent.name,
                 samples: intent.phrases,
             };
-            // if (alexaIntentObj.samples.length === 0) {
-            //     throw new Error(
-            //         errorPrefix + `Intent "${alexaIntentObj.name}" must have at least one sample phrase` // eslint-disable-line
-            //     );
-            // }
             for (let sample of alexaIntentObj.samples) {
                 if (/\d/.test(sample)) { // has number?
                     throw new Error(errorPrefix + `Intent "${alexaIntentObj.name}" must not have numbers in sample`); // eslint-disable-line
@@ -286,7 +281,7 @@ class AlexaInteractionModel {
             }
 
             if (_.get(intent, 'alexa')) {
-                _.merge(alexaIntentObj, intent.alexa);
+                _.assign(alexaIntentObj, intent.alexa);
             }
 
             alexaIntents.push(alexaIntentObj);
