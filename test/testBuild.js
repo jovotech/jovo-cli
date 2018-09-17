@@ -279,7 +279,7 @@ describe('build', function() {
             if (data.indexOf('Installation completed.') > -1) {
                 child.kill();
 
-                fs.unlinkSync(projectFolder + path.sep + 'models' + path.sep + 'en-US.json');
+                fs.unlinkSync(projectFolder + path.sep + 'models' + path.sep + 'en-us.json');
                 let childBuild = spawn('node', ['./../../index.js',
                     'build',
                     '--reverse'], {
