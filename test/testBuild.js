@@ -184,7 +184,7 @@ describe('build', function() {
                                 'googleAction' + path.sep +
                                 'dialogflow' + path.sep +
                                 'intents' + path.sep +
-                                'HelloWorldIntent_usersays_en.json'))
+                                'HelloWorldIntent_usersays_en-us.json'))
                             .to.equal(true);
 
                         expect(
@@ -202,7 +202,7 @@ describe('build', function() {
                                 'googleAction' + path.sep +
                                 'dialogflow' + path.sep +
                                 'intents' + path.sep +
-                                'MyNameIsIntent_usersays_en.json'))
+                                'MyNameIsIntent_usersays_en-us.json'))
                             .to.equal(true);
                         done();
                     }
@@ -293,12 +293,12 @@ describe('build', function() {
                 childBuild.stdout.on('data', (data) => {
                     if (data.indexOf('Build completed.') > -1) {
                         childBuild.kill();
-                        expect(fs.existsSync(projectFolder + path.sep + 'models' + path.sep + 'en.json')).to.equal(true);
+                        expect(fs.existsSync(projectFolder + path.sep + 'models' + path.sep + 'en-us.json')).to.equal(true);
                         let modelJson = JSON.parse(
                             fs.readFileSync(
                                 projectFolder + path.sep +
                                 'models' + path.sep +
-                                'en.json'));
+                                'en-us.json'));
                         expect(modelJson.invocation.length === 0)
                             .to.equal(true);
                         done();
