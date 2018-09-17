@@ -1,5 +1,11 @@
 # Jovo CLI Changelog
 
+
+## 1.2.2 (September 17, 2018)
+* Fixed supported languages in agent.json bug issue #54
+* Fixed platform specific intent properties (Alexa)
+
+
 ## 1.2.1 (August 17, 2018)
 * Fixed Dialogflow input type bug issue  [#237](https://github.com/jovotech/jovo-framework-nodejs/issues/237) 
 
