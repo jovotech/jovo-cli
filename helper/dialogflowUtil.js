@@ -152,33 +152,6 @@ module.exports = {
 
                     _.set(agent, 'language', primaryLanguage.toLowerCase());
                     _.set(agent, 'supportedLanguages', supportedLanguages);
-
-
-                    // let primLanguages = {};
-                    // let supportedLanguages = {};
-                    // for (let locale of ctx.locales) {
-                    //     primLanguages[locale.substr(0, 2)] = '';
-                    //     supportedLanguages[locale.toLowerCase()] = '';
-                    //
-                    //     let findings = ctx.locales.filter((loc) => {
-                    //         return locale.substr(0, 2) === loc.substr(0, 2);
-                    //     });
-                    //     if (findings.length === 1) {
-                    //         delete supportedLanguages[locale.toLowerCase()];
-                    //         supportedLanguages[locale.toLowerCase().substr(0, 2)] = '';
-                    //     }
-                    // }
-                    // if (Object.keys(primLanguages) === 1) {
-                    //     _.set(agent, 'language', Object.keys(primLanguages)[0]);
-                    // } else {
-                    //     if (Object.keys(primLanguages).indexOf('en')) {
-                    //         _.set(agent, 'language', 'en');
-                    //     } else {
-                    //         _.set(agent, 'language', Object.keys(primLanguages)[0]);
-                    //     }
-                    //
-                    //     agent.supportedLanguages = Object.keys(supportedLanguages);
-                    // }
                 }
 
                 if (_.get(config, 'googleAction.dialogflow.agent')) {
