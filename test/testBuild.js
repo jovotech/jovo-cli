@@ -298,7 +298,7 @@ describe('build', function() {
                             fs.readFileSync(
                                 projectFolder + path.sep +
                                 'models' + path.sep +
-                                'en-us.json'));
+                                'en-US.json'));
                         expect(modelJson.invocation.length === 0)
                             .to.equal(true);
                         done();
