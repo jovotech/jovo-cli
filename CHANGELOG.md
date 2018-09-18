@@ -1,6 +1,9 @@
 # Jovo CLI Changelog
 
 
+## 1.2.3 (September 18, 2018)
+* Fixed invalid characters in Dialogflow entity synonyms issue #55
+
 ## 1.2.2 (September 17, 2018)
 * Fixed supported languages in agent.json bug issue #54
 * Fixed platform specific intent properties (Alexa)
