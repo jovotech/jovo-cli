@@ -419,14 +419,13 @@ class DialogFlowAgent {
 
                                     let dfEntityValueObj = {
                                         value: value.value,
-                                        synonyms: [value.value.replace(/[^0-9a-zA-Z_ ]/gi, '')],
+                                        synonyms: [value.value.replace(/[^0-9a-zA-Z-_ ]/gi, '')],
                                     };
 
                                     // save synonyms, if defined
                                     if (value.synonyms) {
-
                                         for (let i = 0; i < value.synonyms.length; i++) {
-                                            value.synonyms[i] = value.synonyms[i].replace(/[^0-9a-zA-Z_ ]/gi, '');
+                                            value.synonyms[i] = value.synonyms[i].replace(/[^0-9a-zA-Z-_ ]/gi, '');
                                         }
 
                                         dfEntityValueObj.synonyms =
