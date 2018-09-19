@@ -1,5 +1,7 @@
 # Jovo CLI Changelog
 
+## 1.2.4 (September 19, 2018)
+* Fixed primary language bug in Dialogflow Agent
 
 ## 1.2.3 (September 18, 2018)
 * Fixed invalid characters in Dialogflow entity synonyms issue #55
