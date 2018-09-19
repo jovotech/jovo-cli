@@ -126,17 +126,24 @@ module.exports = {
 
                 // setup languages
                 if (ctx.locales.length === 1) {
-                    _.set(agent, 'language', ctx.locales[0]);
+                    // get primary language from locale
+                    let primaryLanguage = ctx.locales[0].substring(0, 2);
+
+                    // some locales work without primary language
+                    if (['pt-BR', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0]) > -1) {
+                        primaryLanguage = ctx.locales[0];
+                    }
+                    _.set(agent, 'language', primaryLanguage);
                     delete agent.supportedLanguages;
                 } else if (ctx.locales.length > 1) {
-                    let primaryLanguage = ctx.locales[0];
-                    let supportedLanguages = [];
+                    // get primary language from locale
+                    let primaryLanguage = ctx.locales[0].substring(0, 2);
 
-                    ctx.locales.forEach((loc) => {
-                       if (loc.length === 2) {
-                           primaryLanguage = loc;
-                       }
-                    });
+                    // some locales work without primary language
+                    if (['pt-BR', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0]) > -1) {
+                        primaryLanguage = ctx.locales[0];
+                    }
+                    let supportedLanguages = [];
 
                     // set primary language from app.json (if defined)
                     primaryLanguage = _.get(stageConfig, 'googleAction.dialogflow.primaryLanguage') ||
