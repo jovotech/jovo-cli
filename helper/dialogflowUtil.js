@@ -130,7 +130,7 @@ module.exports = {
                     let primaryLanguage = ctx.locales[0].substring(0, 2);
 
                     // some locales work without primary language
-                    if (['pt-BR', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0]) > -1) {
+                    if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0].toLowerCase()) > -1) {
                         primaryLanguage = ctx.locales[0];
                     }
                     _.set(agent, 'language', primaryLanguage);
@@ -140,7 +140,7 @@ module.exports = {
                     let primaryLanguage = ctx.locales[0].substring(0, 2);
 
                     // some locales work without primary language
-                    if (['pt-BR', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0]) > -1) {
+                    if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0].toLowerCase()) > -1) {
                         primaryLanguage = ctx.locales[0];
                     }
                     let supportedLanguages = [];

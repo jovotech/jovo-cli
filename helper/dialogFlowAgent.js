@@ -299,8 +299,17 @@ class DialogFlowAgent {
         if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
             fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
         }
-
         let outputLocale = locale.toLowerCase();
+        if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(outputLocale) > -1) {
+            outputLocale = locale.toLowerCase();
+        } else {
+            let primLanguage = require('./lmHelper').Project.getLocales().filter((lang) => {
+                return locale.substr(0, 2) === lang.substr(0, 2);
+            });
+            if (primLanguage.length === 1) {
+                outputLocale = this.config.locale.substr(0, 2);
+            }
+        }
 
         let model;
         try {
@@ -415,8 +424,6 @@ class DialogFlowAgent {
                                 let entityValues = [];
                                 // create dfEntityValueObj
                                 for (let value of matchedInputType.values) {
-
-
                                     let dfEntityValueObj = {
                                         value: value.value,
                                         synonyms: [value.value.replace(/[^0-9a-zA-Z-_ ]/gi, '')],

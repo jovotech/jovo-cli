@@ -325,14 +325,14 @@ module.exports.buildTask = function(ctx) {
                             });
                         }
                         for (let locale of ctx.locales) {
-                            buildLocalesTasks.push({
-                                title: locale,
-                                task: () => {
-                                    return DialogFlowHelper
-                                        .buildLanguageModelDialogFlow(locale, ctx.stage)
-                                        .then(() => wait(500));
-                                },
-                            });
+                        buildLocalesTasks.push({
+                            title: locale,
+                            task: () => {
+                                return DialogFlowHelper
+                                    .buildLanguageModelDialogFlow(locale, ctx.stage)
+                                    .then(() => wait(500));
+                            },
+                        });
                         }
                         return new Listr(buildLocalesTasks);
                     },

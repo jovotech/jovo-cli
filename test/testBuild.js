@@ -184,7 +184,7 @@ describe('build', function() {
                                 'googleAction' + path.sep +
                                 'dialogflow' + path.sep +
                                 'intents' + path.sep +
-                                'HelloWorldIntent_usersays_en-us.json'))
+                                'HelloWorldIntent_usersays_en.json'))
                             .to.equal(true);
 
                         expect(
@@ -202,7 +202,7 @@ describe('build', function() {
                                 'googleAction' + path.sep +
                                 'dialogflow' + path.sep +
                                 'intents' + path.sep +
-                                'MyNameIsIntent_usersays_en-us.json'))
+                                'MyNameIsIntent_usersays_en.json'))
                             .to.equal(true);
                         done();
                     }
