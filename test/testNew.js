@@ -327,7 +327,7 @@ describe('new', function() {
                         'googleAction' + path.sep +
                         'dialogflow' + path.sep +
                         'intents' + path.sep +
-                        'HelloWorldIntent_usersays_en-us.json'))
+                        'HelloWorldIntent_usersays_en.json'))
                     .to.equal(true);
 
                 expect(
@@ -345,7 +345,7 @@ describe('new', function() {
                         'googleAction' + path.sep +
                         'dialogflow' + path.sep +
                         'intents' + path.sep +
-                        'MyNameIsIntent_usersays_en-us.json'))
+                        'MyNameIsIntent_usersays_en.json'))
                     .to.equal(true);
 
                 deleteFolderRecursive(projectFolder);
@@ -379,7 +379,7 @@ describe('new', function() {
                         'googleAction' + path.sep +
                         'dialogflow' + path.sep +
                         'intents' + path.sep +
-                        'HelloWorldIntent_usersays_de-de.json'))
+                        'HelloWorldIntent_usersays_de.json'))
                     .to.equal(true);
 
                 expect(
@@ -388,7 +388,7 @@ describe('new', function() {
                         'googleAction' + path.sep +
                         'dialogflow' + path.sep +
                         'intents' + path.sep +
-                        'MyNameIsIntent_usersays_de-de.json'))
+                        'MyNameIsIntent_usersays_de.json'))
                     .to.equal(true);
                 deleteFolderRecursive(projectFolder);
                 done();
