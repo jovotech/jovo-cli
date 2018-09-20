@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.2.5 (September 20, 2018)
+* Fixed primary language bug in Dialogflow Agent Part II
+
 ## 1.2.4 (September 19, 2018)
 * Fixed primary language bug in Dialogflow Agent
 
