@@ -243,7 +243,7 @@ class AlexaInteractionModel {
 
                             if (!matchedInputType.values) {
                                 throw new Error(
-                                    errorPrefix + `Input type "${matchedInputType.name}" must have at leas one value` // eslint-disable-line
+                                    errorPrefix + `Input type "${matchedInputType.name}" must have at least one value` // eslint-disable-line
                                 );
                             }
 
