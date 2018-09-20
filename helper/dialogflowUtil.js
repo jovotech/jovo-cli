@@ -136,8 +136,18 @@ module.exports = {
                     _.set(agent, 'language', primaryLanguage);
                     delete agent.supportedLanguages;
                 } else if (ctx.locales.length > 1) {
+
                     // get primary language from locale
                     let primaryLanguage = ctx.locales[0].substring(0, 2);
+
+                    // get preferred primary language
+                    let prLanguages = ctx.locales.filter((locale) => {
+                        return locale.length === 2;
+                    });
+                    if (prLanguages.length === 1) {
+                        primaryLanguage = prLanguages[0];
+                    }
+
 
                     // some locales work without primary language
                     if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(ctx.locales[0].toLowerCase()) > -1) {
