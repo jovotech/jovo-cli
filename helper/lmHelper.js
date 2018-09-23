@@ -137,16 +137,8 @@ module.exports.Project = {
             if (files.length === 0) {
                 return [DEFAULT_LOCALE];
             }
-            let locales = [];
-            for (let file of files) {
-                if (file.length === 10) {
-                    locales.push(file.substr(0, 5));
-                }
-                if (file.length === 7) {
-                    locales.push(file.substr(0, 2));
-                }
-            }
-            return locales;
+
+            return files.map((file) => path.parse(file).name);
         } catch (err) {
             throw err;
         }
@@ -263,7 +255,13 @@ module.exports.Project = {
                 fs.mkdirSync(this.getModelsPath());
             }
 
-            fs.writeFile(this.getModelPath(locale), JSON.stringify(model, null, '\t'), function(err) {
+            const modelPath = this.getModelPath(locale) + '.json';
+
+            if (!fs.existsSync(modelPath)) {
+                console.log('Warning: Model file not found, if you changed it to a JS file is not possible to change this model anymore. If you want to, please turn it back to a JSON file. Saving into ' + locale + '.json.');
+            }
+
+            fs.writeFile(modelPath, JSON.stringify(model, null, '\t'), function(err) {
                 if (err) {
                     reject(err);
                     return;
@@ -301,7 +299,7 @@ module.exports.Project = {
      */
     getModelPath: function(locale) {
         // /models/{locale}.json
-        return this.getModelsPath() + path.sep + locale + '.json';
+        return path.join(this.getModelsPath(), locale);
     },
 
     /**
