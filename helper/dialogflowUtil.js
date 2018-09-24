@@ -323,7 +323,7 @@ module.exports = {
         activateServiceAccount: function(config) {
             return new Promise((resolve, reject) => {
                 try {
-                    exec('gcloud auth activate-service-account --key-file=' + config.keyFile, function(error, stdout, stderr ) {
+                    exec('gcloud auth activate-service-account --key-file="' + config.keyFile + '"', function(error, stdout, stderr ) {
                         if (error) {
                             if (stderr || error) {
                                 return reject(new Error('Could not activate your service account: ' + stderr));
