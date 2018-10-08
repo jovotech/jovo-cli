@@ -1,7 +1,9 @@
 # Jovo CLI Changelog
 
 ## 1.2.6 (October 08, 2018)
-* Updated vulnerable `lodash` and `adm-zip` dependencies
+* Updated vulnerable `lodash` and `adm-zip` dependencies [@wahidshafique](https://github.com/wahidshafique)
+* [#58](https://github.com/jovotech/jovo-cli/pull/58) Added quotes around the keyfile [#237](https://github.com/jovotech/jovo-framework-nodejs/issues/237) 
+
 
 ## 1.2.5 (September 20, 2018)
 * Fixed primary language bug in Dialogflow Agent Part II
