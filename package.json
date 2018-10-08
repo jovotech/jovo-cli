@@ -15,7 +15,7 @@
   "author": "jovotech",
   "license": "Apache-2.0",
   "dependencies": {
-    "adm-zip": "0.4.7",
+    "adm-zip": "^0.4.11",
     "archiver": "^2.1.0",
     "aws-sdk": "^2.268.1",
     "bespoken-tools": "^1.1.0",
@@ -24,7 +24,7 @@
     "fs-extra": "^5.0.0",
     "inquirer": "^5.0.0",
     "listr": "^0.13.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "nodemon": "^1.12.1",
     "request": "^2.83.0",
     "resolve-bin": "^0.4.0",
