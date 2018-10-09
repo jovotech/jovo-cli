@@ -146,7 +146,7 @@ vorpal
             return subp.then(() => Promise.resolve(config));
         });
 
-        p.then((config) => {
+        return p.then((config) => {
             if (args.options.build &&
                 args.options.reverse) {
                 // build project
@@ -161,7 +161,6 @@ vorpal
             return tasks.run(config).then(() => {
                 console.log();
                 console.log('  Get completed.');
-                console.log();
                 callback();
             }).catch((err) => {
                 console.log();

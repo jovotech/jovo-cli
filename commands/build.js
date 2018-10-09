@@ -108,37 +108,36 @@ module.exports = function(vorpal) {
                 }
             }
 
-            p.then(() => {
-                    if (!Helper.Project.hasAppJson() && !args.options.reverse) {
-                        tasks.add(
-                            initTask()
-                        );
-                    }
+            return p.then(() => {
+                if (!Helper.Project.hasAppJson() && !args.options.reverse) {
+                    tasks.add(
+                        initTask()
+                    );
+                }
 
-                    if (args.options.reverse) {
-                        tasks.add(
-                            {
-                                title: 'Building language model platform model',
-                                task: (ctx) => buildReverseTask(ctx),
-                            }
-                        );
-                    } else {
-                        // build project
-                        buildTask(config).forEach((t) => tasks.add(t));
-                        // deploy project
-                        if (args.options.deploy) {
-                            tasks.add({
-                                title: 'Deploying',
-                                task: (ctx) => {
-                                    return new Listr(deployTask(ctx));
-                                },
-                            });
+                if (args.options.reverse) {
+                    tasks.add(
+                        {
+                            title: 'Building language model platform model',
+                            task: (ctx) => buildReverseTask(ctx),
                         }
+                    );
+                } else {
+                    // build project
+                    buildTask(config).forEach((t) => tasks.add(t));
+                    // deploy project
+                    if (args.options.deploy) {
+                        tasks.add({
+                            title: 'Deploying',
+                            task: (ctx) => {
+                                return new Listr(deployTask(ctx));
+                            },
+                        });
                     }
-                    return tasks.run(config).then(() => {
+                }
+                return tasks.run(config).then(() => {
                     console.log();
                     console.log('  Build completed.');
-                    console.log();
                 }).catch((err) => {
                     console.error(err);
                 });

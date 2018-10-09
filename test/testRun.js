@@ -1,7 +1,9 @@
 'use strict';
 const chai = require('chai');
 const assert = chai.assert;
+const expect = chai.expect;
 const tmpTestfolder = 'tmpTestfolderRun';
+const execFile = require('child_process').execFile;
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const path = require('path');
@@ -26,35 +28,29 @@ let deleteFolderRecursive = function(path) {
     }
 };
 
-before(function(done) {
-    this.timeout(5000);
-    deleteFolderRecursive(tmpTestfolder);
-    if (!fs.existsSync(tmpTestfolder)) {
-        fs.mkdirSync(tmpTestfolder);
-    }
-    done();
-});
-
-
 describe('run', function() {
+    before(function(done) {
+        this.timeout(5000);
+        deleteFolderRecursive(tmpTestfolder);
+        if (!fs.existsSync(tmpTestfolder)) {
+            fs.mkdirSync(tmpTestfolder);
+        }
+        done();
+    });
+
     it('jovo new <project>\n      jovo run', function(done) {
         this.timeout(200000);
         const projectName = 'helloworldRun';
 
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js',
+        execFile('node', ['./../index.js',
             'new', projectName,
             '-t', 'helloworldtest',
             ], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
+
                 let childRun = spawn('node', ['./../../index.js',
                     'run'], {
                     cwd: projectFolder,
@@ -69,7 +65,7 @@ describe('run', function() {
                     }
                 });
             }
-        });
+        );
     });
 
     it('jovo run --bst-proxy', function(done) {
@@ -87,13 +83,13 @@ describe('run', function() {
         });
 
         setTimeout(() => {
+            child.kill();
             const validation =
                 // If proxy has already being run a configuration exists
                 fullData.indexOf('Example server listening on port 3000!') > -1 ||
                 // If proxy haven't run, one is created
                 fullData.indexOf('info: CONFIG      No configuration. Creating one') > -1;
             assert.ok(validation);
-            child.kill();
             done();
         }, 8000);
     });
@@ -112,17 +108,17 @@ describe('run', function() {
         });
 
         setTimeout(() => {
-            assert.ok(fullData.indexOf('Example server listening on port 3000!') === -1);
             child.kill();
+            expect(fullData).to.contain('Example server listening on port 3000!');
             done();
         }, 8000);
     });
-});
 
-after(function(done) {
-    this.timeout(5000);
-    setTimeout(function() {
-        deleteFolderRecursive(tmpTestfolder);
-        done();
-    }, 2000);
+    after(function(done) {
+        this.timeout(10000);
+        setTimeout(function() {
+            deleteFolderRecursive(tmpTestfolder);
+            done();
+        }, 2000);
+    });
 });

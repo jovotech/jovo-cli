@@ -64,11 +64,10 @@ module.exports = function(vorpal) {
             }
 
             deployTask(config).forEach((t) => tasks.add(t));
-            tasks.run(config).then(() => {
+            return tasks.run(config).then(() => {
                 if (tasks.tasks.length > 0) {
                     console.log();
                     console.log('  Deployment completed.');
-                    console.log();
                 }
             }).catch((err) => {
                 console.log();
