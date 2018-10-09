@@ -111,7 +111,7 @@ describe('run', function() {
             child.kill();
             expect(fullData).to.contain('Example server listening on port 3000!');
             done();
-        }, 8000);
+        }, 10000);
     });
 
     after(function(done) {
