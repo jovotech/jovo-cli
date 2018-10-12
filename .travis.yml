@@ -1,11 +1,10 @@
 language: node_js
 install:
-  - "npm install mocha -g"
-  - "npm install chai"
-  - "npm install"
+  - "npm ci"
 
 node_js:
-  - "7"
+  - "8"
+  - "10"
 
 notifications:
   email:
