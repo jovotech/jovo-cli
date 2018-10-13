@@ -1,7 +1,7 @@
 'use strict';
 const expect = require('chai').expect;
 const tmpTestfolder = 'tmpTestfolderInit';
-const spawn = require('child_process').spawn;
+const execFile = require('child_process').execFile;
 const fs = require('fs');
 const path = require('path');
 
@@ -25,40 +25,34 @@ let deleteFolderRecursive = function(path) {
     }
 };
 
-before(function(done) {
-    this.timeout(5000);
-    deleteFolderRecursive(tmpTestfolder);
-    if (!fs.existsSync(tmpTestfolder)) {
-        fs.mkdirSync(tmpTestfolder);
-    }
-    done();
-});
-
 
 describe('init', function() {
+    before(function(done) {
+        this.timeout(5000);
+        deleteFolderRecursive(tmpTestfolder);
+        if (!fs.existsSync(tmpTestfolder)) {
+            fs.mkdirSync(tmpTestfolder);
+        }
+        done();
+    });
+
     it('jovo new <project>\n      jovo init alexaSkill', function(done) {
         this.timeout(12000);
         const projectName = 'helloworld';
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js', 'new', projectName,
+        execFile('node', ['./../index.js', 'new', projectName,
             '-t', 'helloworldtest',
             '--skip-npminstall'], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
-                let childInit = spawn('node', ['./../../index.js',
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
+
+                execFile('node', ['./../../index.js',
                     'init', 'alexaSkill'], {
-                    cwd: projectFolder,
-                });
-                childInit.stdout.on('data', (data) => {
-                    if (data.indexOf('Initialization completed.') > -1) {
-                        childInit.kill();
+                        cwd: projectFolder,
+                    }, (errorInit, stdoutInit, stderrInit) => {
+                        expect(stdoutInit).to.contain('Initialization completed.');
+
                         expect(fs.existsSync(projectFolder + path.sep + 'app.json')).to.equal(true);
                         let appJson = JSON.parse(fs.readFileSync(projectFolder + path.sep + 'app.json'));
                         expect(appJson.alexaSkill.nlu.name)
@@ -67,33 +61,27 @@ describe('init', function() {
                             .to.equal('https://webhook.jovo.cloud/');
                         done();
                     }
-                });
+                );
             }
-        });
+        );
     });
     it('jovo new <project>\n      jovo init googleAction', function(done) {
         this.timeout(12000);
         const projectName = 'helloworld2';
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js', 'new', projectName,
+        execFile('node', ['./../index.js', 'new', projectName,
             '-t', 'helloworldtest',
             '--skip-npminstall'], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
-                let childInit = spawn('node', ['./../../index.js',
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
+
+                execFile('node', ['./../../index.js',
                     'init', 'googleAction'], {
-                    cwd: projectFolder,
-                });
-                childInit.stdout.on('data', (data) => {
-                    if (data.indexOf('Initialization completed.') > -1) {
-                        childInit.kill();
+                        cwd: projectFolder,
+                    }, (errorInit, stdoutInit, stderrInit) => {
+                        expect(stdoutInit).to.contain('Initialization completed.');
+
                         expect(fs.existsSync(projectFolder + path.sep + 'app.json')).to.equal(true);
                         let appJson = JSON.parse(fs.readFileSync(projectFolder + path.sep + 'app.json'));
                         expect(appJson.googleAction.nlu.name)
@@ -102,34 +90,28 @@ describe('init', function() {
                             .to.equal('https://webhook.jovo.cloud/');
                         done();
                     }
-                });
+                );
             }
-        });
+        );
     });
     it('jovo new <project>\n      jovo init alexaSkill --build', function(done) {
         this.timeout(12000);
         const projectName = 'helloworldInitBuildAlexa';
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js', 'new', projectName,
+        execFile('node', ['./../index.js', 'new', projectName,
             '-t', 'helloworldtest',
             '--skip-npminstall'], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
-                let childInit = spawn('node', ['./../../index.js',
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
+
+                execFile('node', ['./../../index.js',
                     'init', 'alexaSkill',
                     '--build'], {
-                    cwd: projectFolder,
-                });
-                childInit.stdout.on('data', (data) => {
-                    if (data.indexOf('Initialization completed.') > -1) {
-                        childInit.kill();
+                        cwd: projectFolder,
+                    }, (errorInit, stdoutInit, stderrInit) => {
+                        expect(stdoutInit).to.contain('Initialization completed.');
+
                         expect(fs.existsSync(projectFolder + path.sep + 'platforms'))
                             .to.equal(true);
                         expect(fs.existsSync(projectFolder + path.sep + 'platforms' + path.sep + 'alexaSkill'))
@@ -152,34 +134,28 @@ describe('init', function() {
                             .to.equal('my test app');
                         done();
                     }
-                });
+                );
             }
-        });
+        );
     });
     it('jovo new <project>\n      jovo init googleAction --build', function(done) {
-        this.timeout(12000);
+        this.timeout(15000);
         const projectName = 'helloworldInitBuildGoogleAction';
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js', 'new', projectName,
+        execFile('node', ['./../index.js', 'new', projectName,
             '-t', 'helloworldtest',
             '--skip-npminstall'], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
-                let childInit = spawn('node', ['./../../index.js',
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
+
+                execFile('node', ['./../../index.js',
                     'init', 'googleAction',
                     '--build'], {
-                    cwd: projectFolder,
-                });
-                childInit.stdout.on('data', (data) => {
-                    if (data.indexOf('Initialization completed.') > -1) {
-                        childInit.kill();
+                        cwd: projectFolder,
+                    }, (errorInit, stdoutInit, stderrInit) => {
+                        expect(stdoutInit).to.contain('Initialization completed.');
+
                         expect(
                             fs.existsSync(projectFolder + path.sep +
                                 'platforms'))
@@ -276,17 +252,16 @@ describe('init', function() {
                             .to.equal(true);
                         done();
                     }
-                });
+                );
             }
-        });
+        );
     });
-});
 
-
-after(function(done) {
-    this.timeout(5000);
-    setTimeout(function() {
-        deleteFolderRecursive(tmpTestfolder);
-        done();
-    }, 2000);
+    after(function(done) {
+        this.timeout(5000);
+        setTimeout(function() {
+            deleteFolderRecursive(tmpTestfolder);
+            done();
+        }, 2000);
+    });
 });

@@ -78,7 +78,7 @@ module.exports = function(vorpal) {
                 });
             }
 
-            p.then(() => {
+            return p.then(() => {
                 tasks.add(
                     initTask()
                 );
@@ -103,10 +103,9 @@ module.exports = function(vorpal) {
                     });
                 }
 
-                tasks.run(config).then(() => {
+                return tasks.run(config).then(() => {
                     console.log();
                     console.log('  Initialization completed.');
-                    console.log();
                 }).catch((err) => {
                     console.log();
                     console.error(err.message);

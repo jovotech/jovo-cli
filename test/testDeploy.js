@@ -1,9 +1,9 @@
 'use strict';
 const exec = require('child_process').exec;
+const execFile = require('child_process').execFile;
 
 const expect = require('chai').expect;
 const tmpTestfolder = 'tmpTestfolderDeploy';
-const spawn = require('child_process').spawn;
 const fs = require('fs');
 const path = require('path');
 
@@ -34,17 +34,17 @@ let deleteFolderRecursive = function(path) {
     }
 };
 
-before(function(done) {
-    this.timeout(5000);
-    deleteFolderRecursive(tmpTestfolder);
-    if (!fs.existsSync(tmpTestfolder)) {
-        fs.mkdirSync(tmpTestfolder);
-    }
-    done();
-});
-
 
 describe('deploy', function() {
+    before(function(done) {
+        this.timeout(5000);
+        deleteFolderRecursive(tmpTestfolder);
+        if (!fs.existsSync(tmpTestfolder)) {
+            fs.mkdirSync(tmpTestfolder);
+        }
+        done();
+    });
+
     it('jovo new <project> --init alexaSkill --build\n      jovo deploy', function(done) {
         this.timeout(200000);
         if (!askProfile) {
@@ -53,30 +53,23 @@ describe('deploy', function() {
         } else {
             const projectName = 'jovo-cli-unit-test';
             const projectFolder = tmpTestfolder + path.sep + projectName;
-            let child = spawn('node', ['./../index.js', 'new', projectName,
+            execFile('node', ['./../index.js', 'new', projectName,
                 '-t', 'helloworldtest',
                 '--init', 'alexaSkill',
                 '--build',
                 '--skip-npminstall'], {
-                cwd: tmpTestfolder,
-            });
-            child.stderr.on('data', (data) => {
-                console.log(data.toString());
-                done();
-            });
-            child.stdout.on('data', (data) => {
-                if (data.indexOf('Installation completed.') > -1) {
-                    child.kill();
+                    cwd: tmpTestfolder,
+                }, (error, stdout, stderr) => {
+                    expect(stdout).to.contain('Installation completed.');
 
-                    let childDeploy = spawn('node', ['./../../index.js',
+                    execFile('node', ['./../../index.js',
                         'deploy',
                         '--ask-profile', askProfile,
                         ], {
-                        cwd: projectFolder,
-                    });
-                    childDeploy.stdout.on('data', (data) => {
-                        if (data.indexOf('Deployment completed.') > -1) {
-                            childDeploy.kill();
+                            cwd: projectFolder,
+                        }, (errorDeploy, stdoutDeploy, stderrDeploy) => {
+                            expect(stdoutDeploy).to.contain('Deployment completed.');
+
                             let askConfig = JSON.parse(
                                 fs.readFileSync(
                                     projectFolder + path.sep +
@@ -90,9 +83,9 @@ describe('deploy', function() {
                                 done();
                             });
                         }
-                    });
+                    );
                 }
-            });
+            );
         }
     });
 
@@ -100,50 +93,41 @@ describe('deploy', function() {
         this.timeout(200000);
         const projectName = 'helloworldDeployGoogleAction';
         const projectFolder = tmpTestfolder + path.sep + projectName;
-        let child = spawn('node', ['./../index.js', 'new', projectName,
+        execFile('node', ['./../index.js', 'new', projectName,
             '-t', 'helloworldtest',
             '--init', 'googleAction',
             '--build',
             '--skip-npminstall'], {
-            cwd: tmpTestfolder,
-        });
-        child.stderr.on('data', (data) => {
-            console.log(data.toString());
-            done();
-        });
-        child.stdout.on('data', (data) => {
-            if (data.indexOf('Installation completed.') > -1) {
-                child.kill();
+                cwd: tmpTestfolder,
+            }, (error, stdout, stderr) => {
+                expect(stdout).to.contain('Installation completed.');
 
-                let childDeploy = spawn('node', ['./../../index.js',
+                execFile('node', ['./../../index.js',
                     'deploy',
                 ], {
                     cwd: projectFolder,
-                });
-                childDeploy.stdout.on('data', (data) => {
-                    if (data.indexOf('Deployment completed.') > -1) {
-                        childDeploy.kill();
-                        expect(
-                            fs.existsSync(
-                                projectFolder + path.sep +
-                                'platforms' + path.sep +
-                                'googleAction' + path.sep +
-                                'dialogflow_agent.zip')).to.equal(true);
-                        done();
-                    }
+                }, (errorDeploy, stdoutDeploy, stderrDeploy) => {
+                    expect(stdoutDeploy).to.contain('Deployment completed.');
+
+                    expect(
+                        fs.existsSync(
+                            projectFolder + path.sep +
+                            'platforms' + path.sep +
+                            'googleAction' + path.sep +
+                            'dialogflow_agent.zip')).to.equal(true);
+                    done();
                 });
             }
-        });
+        );
     });
-});
 
-
-after(function(done) {
-    this.timeout(5000);
-    setTimeout(function() {
-        deleteFolderRecursive(tmpTestfolder);
-        done();
-    }, 2000);
+    after(function(done) {
+        this.timeout(5000);
+        setTimeout(function() {
+            deleteFolderRecursive(tmpTestfolder);
+            done();
+        }, 2000);
+    });
 });
 
 

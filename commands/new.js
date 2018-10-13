@@ -216,11 +216,10 @@ module.exports = function(vorpal) {
                 return Promise.resolve(config);
             });
 
-            p.then((config) => {
+            return p.then((config) => {
                 return tasks.run(config).then(() => {
                     console.log();
                     console.log('  Installation completed.');
-                    console.log();
                 }).catch((err) => {
                     console.error(err);
                 });
