@@ -1,8 +1,16 @@
 # Jovo CLI Changelog
 
+
+## 1.2.7 (October 19, 2018)
+* [#66](https://github.com/jovotech/jovo-cli/pull/66) Fixed accents bug in synonyms [@niji-mderrien](https://github.com/niji-mderrien)
+* [#65](https://github.com/jovotech/jovo-cli/pull/65) Speeding up Travis build and switching from Node 7 to 8/10 [@IGx89](https://github.com/IGx89)
+* [#64](https://github.com/jovotech/jovo-cli/pull/64) Addressed issue where vorpal actions weren't signaling done [@IGx89](https://github.com/IGx89)
+
+
+
 ## 1.2.6 (October 08, 2018)
-* Updated vulnerable `lodash` and `adm-zip` dependencies [@wahidshafique](https://github.com/wahidshafique)
-* [#58](https://github.com/jovotech/jovo-cli/pull/58) Added quotes around the keyfile [#237](https://github.com/jovotech/jovo-framework-nodejs/issues/237) 
+* Updated vulnerable `lodash` and `adm-zip` dependencies
+* [#58](https://github.com/jovotech/jovo-cli/pull/58) Added quotes around the keyfile [@wahidshafique](https://github.com/wahidshafique)
 
 
 ## 1.2.5 (September 20, 2018)
