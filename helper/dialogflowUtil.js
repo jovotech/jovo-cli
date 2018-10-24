@@ -247,7 +247,9 @@ module.exports = {
                 zlib: {level: 9}, // Sets the compression level.
             });
 
+            // listen for all archive data to be written, resolving promise once that occurs
             output.on('close', function() {
+                resolve(zipPath);
             });
 
             output.on('end', function() {
@@ -275,8 +277,9 @@ module.exports = {
             if (fs.existsSync(this.getEntitiesFolderPath())) {
                 archive.directory(this.getEntitiesFolderPath(), 'entities');
             }
+
+            // signal that we are done appending files and the final output can be written
             archive.finalize();
-            resolve(zipPath);
         });
     },
 
