@@ -109,12 +109,14 @@ describe('deploy', function() {
                 }, (errorDeploy, stdoutDeploy, stderrDeploy) => {
                     expect(stdoutDeploy).to.contain('Deployment completed.');
 
-                    expect(
-                        fs.existsSync(
-                            projectFolder + path.sep +
+                    const dialogflowAgentZipPath = projectFolder + path.sep +
                             'platforms' + path.sep +
                             'googleAction' + path.sep +
-                            'dialogflow_agent.zip')).to.equal(true);
+                        'dialogflow_agent.zip';
+
+                    expect(fs.existsSync(dialogflowAgentZipPath), 'Dialogflow agent zip should exist').to.equal(true);
+                    expect(fs.statSync(dialogflowAgentZipPath).size, 'Dialogflow agent zip should not be empty').to.not.equal(0);
+
                     done();
                 });
             }
