@@ -1,5 +1,7 @@
 # Jovo CLI Changelog
 
+## 1.2.8 (October 25, 2018)
+* [#68](https://github.com/jovotech/jovo-cli/pull/68) Fix for issue #67, Dialogflow deploys creating empty zip file [@IGx89](https://github.com/IGx89)
 
 ## 1.2.7 (October 19, 2018)
 * [#66](https://github.com/jovotech/jovo-cli/pull/66) Fixed accents bug in synonyms [@niji-mderrien](https://github.com/niji-mderrien)
