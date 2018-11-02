@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.2.9 (November 2, 2018)
+* Improved error handling
+
 ## 1.2.8 (October 25, 2018)
 * [#68](https://github.com/jovotech/jovo-cli/pull/68) Fix for issue #67, Dialogflow deploys creating empty zip file [@IGx89](https://github.com/IGx89)
 
@@ -7,8 +10,6 @@
 * [#66](https://github.com/jovotech/jovo-cli/pull/66) Fixed accents bug in synonyms [@niji-mderrien](https://github.com/niji-mderrien)
 * [#65](https://github.com/jovotech/jovo-cli/pull/65) Speeding up Travis build and switching from Node 7 to 8/10 [@IGx89](https://github.com/IGx89)
 * [#64](https://github.com/jovotech/jovo-cli/pull/64) Addressed issue where vorpal actions weren't signaling done [@IGx89](https://github.com/IGx89)
-
-
 
 ## 1.2.6 (October 08, 2018)
 * Updated vulnerable `lodash` and `adm-zip` dependencies
