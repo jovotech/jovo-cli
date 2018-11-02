@@ -755,9 +755,14 @@ function getSkillStatus(config) {
         if (_.get(status, `manifest.lastUpdateRequest.status`) === 'IN_PROGRESS') {
             return getSkillStatus(config);
         } else if (_.get(status, `manifest.lastUpdateRequest.status`) === 'SUCCEEDED') {
-            Promise.resolve();
+            return Promise.resolve();
         } else {
-            Promise.reject();
+            if (_.get(status, `manifest.lastUpdateRequest.status`) === 'FAILED' &&
+            _.get(status, `manifest.lastUpdateRequest.errors[0].message`)) {
+                return Promise.reject(
+                    new Error(_.get(status, `manifest.lastUpdateRequest.errors[0].message`))
+                );
+            }
         }
     });
 }

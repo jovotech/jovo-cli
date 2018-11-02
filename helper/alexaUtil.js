@@ -778,12 +778,24 @@ module.exports.Ask = {
         if (stderr.indexOf(badRequest) > -1) {
             try {
                 let json = stderr.substring(stderr.indexOf(badRequest) + badRequest.length + 4);
-                return new Error(method + ':' + JSON.parse(json).message);
+
+                const parsedMessage = JSON.parse(json);
+
+                let customError = parsedMessage.message;
+
+                if (parsedMessage.violations) {
+                    parsedMessage.violations.forEach((violation) => {
+                        customError += `\n  ${violation.message}`;
+                    });
+                }
+
+
+                return new Error(method + ':' + customError);
             } catch (error) {
                 return new Error(method + stderr);
             }
         }
-        return new Error(stderr);
+        return new Error('bla');
     },
 };
 
