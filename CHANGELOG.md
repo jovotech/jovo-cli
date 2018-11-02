@@ -1,5 +1,8 @@
 # Jovo CLI Changelog
 
+## 1.2.10 (November 2, 2018)
+* Fixed error object
+
 ## 1.2.9 (November 2, 2018)
 * Improved error handling
 
