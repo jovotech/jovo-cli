@@ -795,7 +795,7 @@ module.exports.Ask = {
                 return new Error(method + stderr);
             }
         }
-        return new Error('bla');
+        return new Error(stderr);
     },
 };
 
