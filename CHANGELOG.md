@@ -1,5 +1,9 @@
 # Jovo CLI Changelog
 
+## 1.2.11 (November 27, 2018)
+* Updated vulnerable dependecies
+
+
 ## 1.2.10 (November 2, 2018)
 * Fixed error object
 
