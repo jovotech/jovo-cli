@@ -23,19 +23,20 @@ beforeAll((done) => {
 }, 5000);
 
 
-describe('deploy', () => {
-	it('jovo new <project> --init alexaSkill --build\n      jovo deploy', (done) => {
+describe('deploy v1', () => {
+	it('jovo new <project> --init alexaSkill --build --v1\n      jovo deploy', (done) => {
 		if (!askProfile) {
 			console.log('Skipping because no ask profile found');
 			done();
 		} else {
-			const projectName = 'jovo-cli-unit-test';
+			const projectName = 'jovo-cli-unit-test_v1';
 			const projectFolder = path.join(tmpTestfolder, projectName);
 			const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 				'-t', 'helloworldtest',
 				'--init', 'alexaSkill',
 				'--build',
-				'--skip-npminstall'], {
+				'--skip-npminstall',
+				'--v1'], {
 					cwd: tmpTestfolder,
 				});
 			child.stderr.on('data', (data) => {
@@ -75,14 +76,15 @@ describe('deploy', () => {
 		}
 	}, 200000);
 
-	it('jovo new <project> --init googleAction --build\n      jovo deploy', (done) => {
-		const projectName = 'helloworldDeployGoogleAction';
+	it('jovo new <project> --init googleAction --build --v1\n      jovo deploy', (done) => {
+		const projectName = 'helloworldDeployGoogleAction_v1';
 		const projectFolder = path.join(tmpTestfolder, projectName);
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
 			'--init', 'googleAction',
 			'--build',
-			'--skip-npminstall'], {
+			'--skip-npminstall',
+			'--v1'], {
 				cwd: tmpTestfolder,
 			});
 		child.stderr.on('data', (data) => {

@@ -82,44 +82,38 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 	}
 
 
-	upload(ctx: JovoTaskContextLambda): Promise<void> {
+	async upload(ctx: JovoTaskContextLambda): Promise<void> {
 		ctx.src = ctx.src.replace(/\\/g, '\\\\');
-		return new Promise((resolve, reject) => {
-			let awsProfile = 'default';
+		let awsProfile = 'default';
 
-			if (ctx.askProfile) {
-				awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
-			}
+		if (ctx.askProfile) {
+			awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+		}
 
-			if (ctx.awsProfile) {
-				awsProfile = ctx.awsProfile;
-			}
+		if (ctx.awsProfile) {
+			awsProfile = ctx.awsProfile;
+		}
 
-			AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
+		AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
 
-			const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
-			if (!region) {
-				return reject(new Error(`No region foun in "${ctx.lambdaArn}"!`));
-			}
-			AWS.config.region = region[0];
+		const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
+		if (!region) {
+			return Promise.reject(new Error(`No region foun in "${ctx.lambdaArn}"!`));
+		}
+		AWS.config.region = region[0];
 
-			const lambda = new AWS.Lambda(ctx.awsConfig || {});
-			const pathToZip = ctx.src + '/lambdaUpload.zip';
-			return this.zipSrcFolder(pathToZip, ctx.src).then(() => {
-				return this.updateFunction(
-					lambda,
-					pathToZip,
-					ctx.lambdaArn,
-					ctx.lambdaConfig || {}
-				);
-			}).then((data) => {
-				return this.deleteLambdaZip(pathToZip);
-			}).then(() => {
-				resolve();
-			}).catch((err) => {
-				reject(err);
-			});
-		});
+		const lambda = new AWS.Lambda(ctx.awsConfig || {});
+		const pathToZip = ctx.src + '/lambdaUpload.zip';
+		await this.zipSrcFolder(pathToZip, ctx.src);
+
+		await this.updateFunction(
+			lambda,
+			pathToZip,
+			ctx.lambdaArn,
+			ctx.lambdaConfig || {}
+		);
+
+		return this.deleteLambdaZip(pathToZip);
 	}
 
 
@@ -165,7 +159,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 	}
 
 
-	deleteLambdaZip(pathToZip: string) {
+	deleteLambdaZip(pathToZip: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			fs.unlink(pathToZip, (err) => {
 				if (err) {
@@ -178,7 +172,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 	}
 
 
-	zipSrcFolder(pathToZip: string, src: string) {
+	zipSrcFolder(pathToZip: string, src: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const output = fs.createWriteStream(pathToZip);
 			const archive = archiver('zip', {
@@ -188,7 +182,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 			});
 
 			output.on('close', () => {
-				resolve(pathToZip);
+				resolve();
 			});
 
 			archive.on('error', (err) => {
