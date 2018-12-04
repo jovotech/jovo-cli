@@ -1,0 +1,20 @@
+import { AskSkillList, JovoTaskContextAlexa } from '.';
+import * as inquirer from 'inquirer';
+export declare const DEFAULT_ASK_PROFILE = "default";
+export declare function getAskError(method: string, stderr: string): Error;
+export declare function checkAsk(): Promise<void>;
+export declare function prepareSkillList(askSkill: AskSkillList): {
+    name: string;
+    value: string;
+}[];
+export declare function askApiCreateSkill(config: JovoTaskContextAlexa, skillJsonPath: string): Promise<string>;
+export declare function askApiListSkills(config: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]>;
+export declare function askApiUpdateModel(config: JovoTaskContextAlexa, modelPath: string, locale: string): Promise<void>;
+export declare function askApiUpdateSkill(config: JovoTaskContextAlexa, skillJsonPath: string): Promise<void>;
+export declare function askApiGetSkillStatus(config: JovoTaskContextAlexa): Promise<object>;
+export declare function askApiGetSkill(config: JovoTaskContextAlexa, skillJsonPath: string): Promise<void>;
+export declare function askApiGetModel(config: JovoTaskContextAlexa, skillJsonPath: string, locale: string): Promise<void>;
+export declare function askApiEnableSkill(config: JovoTaskContextAlexa): Promise<void>;
+export declare function askApiGetAccountLinking(config: JovoTaskContextAlexa): Promise<string>;
+export declare function getModelStatus(config: JovoTaskContextAlexa): Promise<void>;
+export declare function getSkillStatus(config: JovoTaskContextAlexa): Promise<void>;
