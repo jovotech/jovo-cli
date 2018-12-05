@@ -101,9 +101,8 @@ module.exports = (vorpal: Vorpal) => {
 
 
 			// Check if the src folder got overwritten
-			const projectFolder = project.getConfigParameter('src', stage);
-			if (projectFolder) {
-				checkFolders.push(projectFolder);
+			if (srcDir) {
+				checkFolders.push(srcDir);
 			}
 
 			if (project.frameworkVersion === 2) {
@@ -114,22 +113,22 @@ module.exports = (vorpal: Vorpal) => {
 			// Check always in the current folder
 			checkFolders.push('./');
 
-			let executeFilePath = undefined;
+			let projectFolder = undefined;
 			for (let i = 0; i < checkFolders.length; i++) {
 				try {
-					await accessAsync(checkFolders[i] + localServerFile);
+					await accessAsync(path.join(checkFolders[i], localServerFile));
 					// If we are still here the file exists
-					executeFilePath = checkFolders[i] + localServerFile;
+					projectFolder = checkFolders[i];
 					break;
 				} catch(e) {}
 			}
 
-			if (executeFilePath === undefined) {
+			if (projectFolder === undefined) {
 				console.error('Could not find a project to run.');
 				return Promise.resolve();
 			}
 
-			const parameters = [executeFilePath, '--ignore', 'db/*', '--ignore', 'test/*'];
+			const parameters = [localServerFile, '--ignore', 'db/*', '--ignore', 'test/*'];
 
 			if (args.options.record) {
 				parameters.push('--record');
@@ -190,7 +189,7 @@ module.exports = (vorpal: Vorpal) => {
 				parameters.push('--jovo-webhook');
 			}
 
-			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, stdio: 'inherit', cwd: srcDir || process.cwd() });
+			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, stdio: 'inherit', cwd: projectFolder });
 
 			// Ensure our child process is terminated upon exit. This is needed in the situation
 			// where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
