@@ -3,6 +3,7 @@ import {
 	ENDPOINT_JOVOWEBHOOK,
 	ENDPOINT_NONE,
 	TARGET_ALL,
+	TARGET_ZIP,
 	TARGET_INFO,
 	TARGET_MODEL,
 } from 'jovo-cli-core';
@@ -87,9 +88,10 @@ export function isValidDeployTarget(target: string): boolean {
 
 		if (target !== TARGET_ALL &&
 			target !== TARGET_MODEL &&
+			target !== TARGET_ZIP &&
 			target !== TARGET_INFO &&
 			!availableDeployTargets.includes(target)) {
-			console.log(`Please use a valid target: (model|info|all|${availableDeployTargets.join('|')})`);
+			console.log(`Please use a valid target: (${TARGET_MODEL}|${TARGET_INFO}|${TARGET_ZIP}|${TARGET_ALL}|${availableDeployTargets.join('|')})`);
 			return false;
 		}
 	}

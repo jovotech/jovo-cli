@@ -1,5 +1,4 @@
 import * as AWS from 'aws-sdk';
-import * as archiver from 'archiver';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -58,7 +57,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 						}
 
 						p = p.then(() => this.checkAsk()).then(() => {
-							return this.upload(ctx);
+							return this.upload(ctx, project);
 						});
 
 						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
@@ -82,7 +81,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 	}
 
 
-	async upload(ctx: JovoTaskContextLambda): Promise<void> {
+	async upload(ctx: JovoTaskContextLambda, project: Project): Promise<void> {
 		ctx.src = ctx.src.replace(/\\/g, '\\\\');
 		let awsProfile = 'default';
 
@@ -103,8 +102,8 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 		AWS.config.region = region[0];
 
 		const lambda = new AWS.Lambda(ctx.awsConfig || {});
-		const pathToZip = ctx.src + '/lambdaUpload.zip';
-		await this.zipSrcFolder(pathToZip, ctx.src);
+
+		const pathToZip = await project.zipSrcFolder(ctx);
 
 		await this.updateFunction(
 			lambda,
@@ -168,35 +167,6 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 					resolve();
 				}
 			});
-		});
-	}
-
-
-	zipSrcFolder(pathToZip: string, src: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const output = fs.createWriteStream(pathToZip);
-			const archive = archiver('zip', {
-				zlib: {
-					level: 9,
-				},
-			});
-
-			output.on('close', () => {
-				resolve();
-			});
-
-			archive.on('error', (err) => {
-				reject(err);
-			});
-
-			archive.pipe(output);
-			// append files from a glob pattern
-			archive.glob('**/*', {
-				cwd: src,
-				ignore: 'lambdaUpload.zip',
-			});
-
-			archive.finalize();
 		});
 	}
 

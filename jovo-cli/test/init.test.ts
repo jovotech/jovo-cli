@@ -21,7 +21,7 @@ beforeAll((done) => {
 
 describe('init v1', () => {
 	it('jovo new <project> --v1\n      jovo init alexaSkill', (done) => {
-		const projectName = 'helloworld';
+		const projectName = 'helloworld_v1';
 		const projectFolder = tmpTestfolder + path.sep + projectName;
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
@@ -56,7 +56,7 @@ describe('init v1', () => {
 		});
 	}, 12000);
 	it('jovo new <project> --v1\n      jovo init googleAction', (done) => {
-		const projectName = 'helloworld2';
+		const projectName = 'helloworld2_v1';
 		const projectFolder = tmpTestfolder + path.sep + projectName;
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
@@ -91,7 +91,7 @@ describe('init v1', () => {
 		});
 	}, 12000);
 	it('jovo new <project> --v1\n      jovo init alexaSkill --build', (done) => {
-		const projectName = 'helloworldInitBuildAlexa';
+		const projectName = 'helloworldInitBuildAlexa_v1';
 		const projectFolder = tmpTestfolder + path.sep + projectName;
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
@@ -141,7 +141,7 @@ describe('init v1', () => {
 		});
 	}, 12000);
 	it('jovo new <project> --v1\n      jovo init googleAction --build', (done) => {
-		const projectName = 'helloworldInitBuildGoogleAction';
+		const projectName = 'helloworldInitBuildGoogleAction_v1';
 		const projectFolder = path.join(tmpTestfolder, projectName);
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
@@ -268,8 +268,8 @@ describe('init v1', () => {
 
 
 describe('init v2', () => {
-	it.only('jovo new <project>\n      jovo init alexaSkill', (done) => {
-		const projectName = 'helloworld';
+	it('jovo new <project>\n      jovo init alexaSkill', (done) => {
+		const projectName = 'helloworld_v2';
 		const projectFolder = tmpTestfolder + path.sep + projectName;
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',

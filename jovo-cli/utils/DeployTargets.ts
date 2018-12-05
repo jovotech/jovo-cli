@@ -1,5 +1,13 @@
-import { JovoCliDeploy } from 'jovo-cli-core';
 import { JovoCliDeployLambda } from 'jovo-cli-deploy-lambda';
+import {
+	JovoCliDeploy,
+	TARGET_ALL,
+	TARGET_ZIP,
+	TARGET_INFO,
+	TARGET_MODEL,
+	DEFAULT_TARGET,
+} from 'jovo-cli-core';
+import * as DeployTargets from '../utils/DeployTargets';
 
 // Keeps the Deploy singletons
 const instances: { [key: string]: JovoCliDeploy } = {};
@@ -26,6 +34,15 @@ function createDeployInstance(name: string): JovoCliDeploy {
 	}
 
 	throw (new Error(`The deploy target "${name}" is not supported!`));
+}
+
+
+/**
+ * Returns the deploy target example text
+ */
+export function getDeployExampleText(): string {
+	const availableDeployTargets = DeployTargets.getAllAvailable();
+	return `<${TARGET_MODEL}|${TARGET_INFO}|${TARGET_ZIP}|${TARGET_ALL}|${availableDeployTargets.join('|')}> Default: ${DEFAULT_TARGET}`;
 }
 
 

@@ -46,7 +46,7 @@ module.exports = (vorpal: Vorpal) => {
 		.option('-p, --platform <platform>',
 			`Platform \n\t\t\t\t <${Platforms.getAllAvailable().join('|')}>`)
 		.option('-t, --target <target>',
-			`Target of deployment \n\t\t\t\t<info|model|all|${availableDeployTargets.join('|')}> Default: all`)
+			`Target of deployment \n\t\t\t\t${DeployTargets.getDeployExampleText()}`)
 		.option('--stage <stage>',
 			'Takes configuration from <stage>')
 		.option('-s, --src <src>',

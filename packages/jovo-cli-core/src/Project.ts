@@ -12,6 +12,7 @@ const unlinkAsync = promisify(fs.unlink);
 
 import { join as pathJoin, sep as pathSep } from 'path';
 import * as AdmZip from 'adm-zip';
+import * as archiver from 'archiver';
 import * as request from 'request';
 import { exec } from 'child_process';
 // TODO: Import only what is needed from lodash!
@@ -19,8 +20,8 @@ import * as _ from 'lodash';
 import * as uuidv4 from 'uuid/v4';
 import * as Utils from './Utils';
 
-import { AppFile, JovoCliPlatform, JovoConfig, JovoModel, PackageVersion } from './';
-import { DEFAULT_LOCALE, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
+import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, PackageVersion } from './';
+import { DEFAULT_LOCALE, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
 
 
 export class Project {
@@ -385,6 +386,67 @@ export class Project {
      */
 	getProjectPath(): string {
 		return this.projectPath + pathSep;
+	}
+
+
+
+	/**
+	 * Zips the src folder
+	 *
+	 * @param {JovoTaskContext} ctx Context with information about src to zip
+	 * @returns {Promise<string>}
+	 * @memberof Project
+	 */
+	async zipSrcFolder(ctx: JovoTaskContext): Promise<string> {
+
+		const sourceFolder = ctx.src || this.getProjectPath();
+
+		const pathToZip = pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
+
+		return new Promise<string>((resolve, reject) => {
+
+			if (this.frameworkVersion === 1) {
+				// v1 projects have their code here
+				const output = fs.createWriteStream(pathToZip);
+				const archive = archiver('zip', {
+					zlib: {
+						level: 9,
+					},
+				});
+
+				output.on('close', () => {
+					resolve(pathToZip);
+				});
+
+				archive.on('error', (err) => {
+					reject(err);
+				});
+
+				archive.pipe(output);
+				// append files from a glob pattern
+				archive.glob('**/*', {
+					cwd: ctx.src,
+					ignore: DEPLOY_ZIP_FILE_NAME,
+				});
+
+				archive.finalize();
+			} else {
+				// v2 projects get zipped via build script in package.json
+
+				exec('npm run build', {
+						cwd: sourceFolder
+					},
+					(error) => {
+						if (error) {
+							reject(error);
+							return;
+						}
+						resolve(pathToZip);
+					}
+				);
+			}
+		});
+
 	}
 
 

@@ -6,6 +6,7 @@ import { Args } from "vorpal";
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import * as Listr from 'listr';
 import * as Platforms from '../utils/Platforms';
+import * as DeployTargets from '../utils/DeployTargets';
 import {
 	ANSWER_CANCEL,
 	promptOverwriteProjectFiles,
@@ -44,7 +45,7 @@ module.exports = (vorpal: Vorpal) => {
 			'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: all locales')
 		.option('\n')
 		.option('-t, --target <target>',
-			'Type of data that is downloaded. \n\t\t\t\t<info|model|all> Default: all')
+			`Type of data that is downloaded. \n\t\t\t\t${DeployTargets.getDeployExampleText()}`)
 		.option('--stage <stage>',
 			'Takes configuration from <stage>')
 		.option('-b, --build',

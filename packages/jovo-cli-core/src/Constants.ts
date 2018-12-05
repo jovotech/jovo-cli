@@ -4,7 +4,10 @@ export const DEFAULT_TEMPLATE = 'helloworld';
 export const DEFAULT_TARGET = 'all';
 export const DEFAULT_ENDPOINT = 'jovo-webhook';
 
+export const DEPLOY_ZIP_FILE_NAME = 'deployment-package.zip';
+
 export const TARGET_ALL = 'all';
+export const TARGET_ZIP = 'zip';
 export const TARGET_INFO = 'info';
 export const TARGET_MODEL = 'model';
 

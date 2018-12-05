@@ -33,6 +33,7 @@
     },
     "dependencies": {
         "adm-zip": "^0.4.11",
+        "archiver": "^3.0.0",
         "listr": "^0.14.2"
     },
     "jest": {

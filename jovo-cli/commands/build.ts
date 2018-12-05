@@ -5,6 +5,7 @@ import Vorpal = require('vorpal');
 import { Args } from "vorpal";
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import * as Listr from 'listr';
+import * as DeployTargets from '../utils/DeployTargets';
 import { ListrOptionsExtended } from '../src';
 import * as Platforms from '../utils/Platforms';
 import {
@@ -46,7 +47,7 @@ module.exports = (vorpal: Vorpal) => {
 		.option('-r, --reverse',
 			'Builds Jovo language model from platfrom specific language model')
 		.option('-t, --target <target>',
-			'Target of build \n\t\t\t\t<info|model> Default: all')
+			`Target of build \n\t\t\t\t${DeployTargets.getDeployExampleText()}`)
 		.option('-s, --src <src>',
 			'Path to source files \n\t\t\t\t Default: <project directory>')
 		.option('--stage <stage>',

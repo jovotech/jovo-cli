@@ -8,6 +8,7 @@ import { JovoCliRenderer } from '../utils/JovoRenderer';
 import * as Listr from 'listr';
 import * as Platforms from '../utils/Platforms';
 import { promptForPlatform } from '../utils/Prompts';
+import * as DeployTargets from '../utils/DeployTargets';
 import { ListrOptionsExtended } from '../src';
 import {
 	buildTask,
@@ -47,7 +48,7 @@ module.exports = (vorpal: Vorpal) => {
 		.option('-l, --locale <locale>',
 			'Locale of the language model.\n\t\t\t\t<en-US|de-DE|etc> Default: en-US')
 		.option('-t, --target <target>',
-			'Target of build and deployment \n\t\t\t\t<info|model|all> Default: all')
+			`Target of build and deployment \n\t\t\t\t${DeployTargets.getDeployExampleText()}`)
 		.option('--endpoint <endpoint>',
 			'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
 		.option('\n');
