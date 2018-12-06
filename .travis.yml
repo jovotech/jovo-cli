@@ -7,8 +7,10 @@ install:
   - "npm run test"
 
 node_js:
-  - "8"
   - "10"
+  - "9"
+  - "8"
+
 
 notifications:
   email:
@@ -16,3 +18,4 @@ notifications:
       - team@jovo.tech
     on_success: never
     on_failure: always
+

@@ -6,8 +6,8 @@
 	"types": "dist/src/index.d.ts",
 	"scripts": {
 		"build": "tsc",
-		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
-		"tsc": "node_modules/.bin/tsc",
+		"tslint": "tslint -p tsconfig.json -c tslint.json",
+		"tsc": "tsc",
 		"test": "jest"
 	},
 	"files": [
