@@ -1,6 +1,6 @@
 {
     "name": "jovo-cli-deploy-lambda",
-    "version": "2.0.0",
+    "version": "2.0.1-alpha.0",
     "description": "Lamdbda specific deploy CLI code",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
@@ -18,12 +18,12 @@
     "devDependencies": {
         "@types/archiver": "^2.1.2",
         "@types/es6-promise": "^3.3.0",
-		"@types/jest": "^23.3.5",
+        "@types/jest": "^23.3.5",
         "@types/listr": "^0.13.0",
         "@types/lodash": "^4.14.118",
         "@types/node": "^10.10.1",
         "jest": "^23.6.0",
-		"ts-jest": "^23.10.4",
+        "ts-jest": "^23.10.4",
         "tslint": "^5.11.0",
         "typescript": "^3.0.3"
     },
