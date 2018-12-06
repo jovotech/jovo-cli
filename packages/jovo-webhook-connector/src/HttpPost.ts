@@ -1,7 +1,6 @@
 import * as http from 'http';
 import * as querystring from 'querystring';
 import { merge } from 'lodash';
-import { Promise } from 'es6-promise';
 
 
 
