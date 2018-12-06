@@ -1,13 +1,13 @@
 {
 	"name": "jovo-cli-platform-google",
-	"version": "0.1.0",
+	"version": "2.0.0",
 	"description": "Google specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
 		"build": "tsc",
 		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
-		"tsc": "node_modules/.bin/tsc --watch",
+		"tsc": "node_modules/.bin/tsc",
 		"test": "jest"
 	},
 	"files": [

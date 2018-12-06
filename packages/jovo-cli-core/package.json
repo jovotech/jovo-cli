@@ -1,13 +1,13 @@
 {
     "name": "jovo-cli-core",
-    "version": "0.1.0",
+    "version": "2.0.0",
     "description": "Jovo CLI core components",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
     "scripts": {
         "build": "tsc",
         "tslint": "tslint -p tsconfig.json -c tslint.json",
-        "tsc": "tsc --watch",
+        "tsc": "tsc",
         "test": "jest"
     },
     "files": [
