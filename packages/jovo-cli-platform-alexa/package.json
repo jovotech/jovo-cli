@@ -8,6 +8,7 @@
 		"build": "tsc",
 		"tslint": "tslint -p tsconfig.json -c tslint.json",
 		"tsc": "tsc",
+		"tscw": "tsc --watch",
 		"test": "jest"
 	},
 	"files": [

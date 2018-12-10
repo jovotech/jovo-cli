@@ -12,7 +12,8 @@
 		"eslint-fix": "eslint --fix  index.js commands/ helper/ utils/ test/",
 		"build": "tsc",
 		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
-		"tsc": "node_modules/.bin/tsc"
+		"tsc": "node_modules/.bin/tsc",
+		"tscw": "tsc --watch"
 	},
 	"bin": {
 		"jovo": "./dist/index.js"
