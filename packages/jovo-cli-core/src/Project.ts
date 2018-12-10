@@ -434,7 +434,7 @@ export class Project {
 			} else {
 				// v2 projects get zipped via build script in package.json
 
-				exec('npm run build', {
+				exec('npm run bundle', {
 						cwd: sourceFolder
 					},
 					(error) => {
