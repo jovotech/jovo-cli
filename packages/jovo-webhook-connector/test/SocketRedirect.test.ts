@@ -47,10 +47,7 @@ beforeAll((done) => {
 	httpServerBackendAddr = httpServerBackend.listen().address() as AddressInfo;
 
 	console.log('Created Mock Backend - Wait to be ready');
-	setTimeout(() => {
-		console.log('Created Mock Backend - Ready');
-		done();
-	}, 5000);
+	done();
 });
 
 
@@ -142,6 +139,7 @@ describe('webhook tests', () => {
 			},
 		];
 
+		let port = 8080;
 		webhookTests.forEach((webhookTest) => {
 			test(webhookTest.description, (done) => {
 
@@ -169,8 +167,8 @@ describe('webhook tests', () => {
 					res.write(JSON.stringify({ success: true }));
 					res.end();
 
-				}).listen();
-				const httpServerLocalAddr = httpServerLocal.listen().address();
+				}).listen(port++);
+				const httpServerLocalAddr = httpServerLocal.listen(port).address();
 
 				// Configure to send received socket data to above created http server
 				const socketRedirectOptions = {
