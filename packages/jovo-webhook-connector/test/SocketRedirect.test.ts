@@ -18,6 +18,8 @@ let ioServer: ioBackend.Server;
  * Mock the backend which forwards http data to socket
  */
 beforeAll((done) => {
+	console.log('Starting Mock Backend');
+
 	httpServerIo = http.createServer().listen();
 	httpServerIoAddr = httpServerIo.listen().address() as AddressInfo;
 	ioServer = ioBackend(httpServerIo);
@@ -43,7 +45,12 @@ beforeAll((done) => {
 	}).listen();
 
 	httpServerBackendAddr = httpServerBackend.listen().address() as AddressInfo;
-	done();
+
+	console.log('Created Mock Backend - Wait to be ready');
+	setTimeout(() => {
+		console.log('Created Mock Backend - Ready');
+		done();
+	}, 5000);
 });
 
 
@@ -51,6 +58,8 @@ beforeAll((done) => {
  *  Cleanup Servers
  */
 afterAll((done) => {
+	console.log('Stop Mock Backend');
+
 	httpServerBackend.close();
 	ioServer.close();
 	done();
