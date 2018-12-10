@@ -31,7 +31,8 @@
         "aws-sdk": "^2.344.0",
         "jovo-cli-core": "^2.0.1-alpha.4",
         "listr": "^0.14.2",
-        "lodash": "^4.17.11"
+        "lodash": "^4.17.11",
+        "proxy-agent": "^3.0.3"
     },
     "jest": {
         "transform": {

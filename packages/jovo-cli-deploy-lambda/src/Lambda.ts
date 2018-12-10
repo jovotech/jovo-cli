@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { ListrTask } from 'listr';
 import { exec } from 'child_process';
+const proxyAgent = require('proxy-agent');
 
 import { JovoCliDeploy, Utils, Project } from 'jovo-cli-core';
 import { JovoTaskContextLambda } from '.';
@@ -100,6 +101,19 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 			return Promise.reject(new Error(`No region foun in "${ctx.lambdaArn}"!`));
 		}
 		AWS.config.region = region[0];
+
+		const proxyServer = process.env.http_proxy ||
+			process.env.HTTP_PROXY ||
+			process.env.https_proxy ||
+			process.env.HTTPS_PROXY;
+
+		if (proxyServer) {
+			AWS.config.update({
+				httpOptions: {
+					agent: proxyAgent(proxyServer)
+				}
+			});
+		}
 
 		const lambda = new AWS.Lambda(ctx.awsConfig || {});
 
