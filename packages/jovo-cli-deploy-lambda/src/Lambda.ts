@@ -38,6 +38,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 		}
 
 		return [
+			project.deployTaskZipProjectSource(ctx),
 			{
 				title: 'Uploading to lambda',
 				enabled: (ctx) => !ctx.newSkill &&

@@ -19,6 +19,7 @@ import { exec } from 'child_process';
 import * as _ from 'lodash';
 import * as uuidv4 from 'uuid/v4';
 import * as Utils from './Utils';
+import { ListrTask, ListrTaskWrapper } from 'listr';
 
 import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, PackageVersion } from './';
 import { DEFAULT_LOCALE, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
@@ -447,6 +448,24 @@ export class Project {
 			}
 		});
 
+	}
+
+
+	/**
+	 * Zips the source folder of the project
+	 */
+	deployTaskZipProjectSource(ctx: JovoTaskContext): ListrTask {
+		return {
+			title: 'Zip Project ' + Utils.printStage(ctx.stage),
+			task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
+				const pathToZip = await this.zipSrcFolder(ctx);
+				const info = `Zip path: ${pathToZip}`;
+
+				task.skip(info);
+
+				return Promise.resolve();
+			}
+		};
 	}
 
 

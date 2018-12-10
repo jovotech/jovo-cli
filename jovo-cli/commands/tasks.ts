@@ -7,7 +7,6 @@ import {
 	getProject,
 	JovoCliDeploy,
 	JovoTaskContext,
-	Utils,
 	ENDPOINT_NONE,
 	TARGET_ALL,
 	TARGET_INFO,
@@ -16,7 +15,6 @@ import {
 	JovoCliPlatform,
 } from 'jovo-cli-core';
 import * as DeployTargets from '../utils/DeployTargets';
-import { isNullOrUndefined } from 'util';
 const jsonlint = require("jsonlint");
 
 
@@ -211,7 +209,7 @@ export function deployTask(ctx: JovoTaskContext): Listr.ListrTask[] {
 
 	if (ctx.target === TARGET_ZIP) {
 		// Only create a zip of the project-src folder
-		return deployTaskZipProjectSource(ctx);
+		return [project.deployTaskZipProjectSource(ctx)];
 	}
 
 	if (ctx.target && ![TARGET_ZIP, TARGET_INFO, TARGET_MODEL].includes(ctx.target)) {
@@ -233,25 +231,4 @@ export function deployTask(ctx: JovoTaskContext): Listr.ListrTask[] {
 	});
 
 	return deployPlatformTasks;
-}
-
-
-/**
- * Zips the source folder of the project
- */
-export function deployTaskZipProjectSource(ctx: JovoTaskContext): Listr.ListrTask[] {
-	const returnTasks: Listr.ListrTask[] = [];
-
-	returnTasks.push({
-		title: 'Zip Project ' + Utils.printStage(ctx.stage),
-		task: async (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
-			const pathToZip = await project.zipSrcFolder(ctx);
-			const info = `Zip path: ${pathToZip}`;
-
-			task.skip(info);
-
-			return Promise.resolve();
-		}
-	});
-	return returnTasks;
 }
