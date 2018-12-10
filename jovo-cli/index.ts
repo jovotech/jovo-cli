@@ -44,7 +44,7 @@ if (process.argv[2] !== 'new' &&
 if (process.argv.length <= 2) {
 } else if (process.argv.length === 3 &&
     (versionArg.indexOf(process.argv[2]) > -1)) {
-    console.log('Jovo CLI Version: ' + require('./package').version);
+    console.log('Jovo CLI Version: ' + require('../package').version);
 } else {
     vorpal
         .use(require('./commands/new.js'))
