@@ -4,11 +4,10 @@ import Vorpal = require('vorpal');
 const vorpal = new Vorpal();
 require('dotenv').config();
 import * as updateNotifier from 'update-notifier';
-
+import { getProject } from 'jovo-cli-core';
+const project = getProject();
 
 const pkg = require('../package.json');
-
-const project = require('jovo-cli-core').getProject();
 
 
 if (parseInt(process.version.substr(1, 2), 10) < 6) {
@@ -22,6 +21,8 @@ updateNotifier({pkg}).notify();
 // jovo  (no arguments)
 if (process.argv.length === 2) {
    process.argv.push('help');
+} else if (process.argv[2] === '--help') {
+	process.argv[2] = 'help';
 }
 
 

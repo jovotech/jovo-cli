@@ -461,6 +461,17 @@ export class Project {
 	}
 
 
+	/**
+	 * Checks if working directory is in a project
+	 * @return {boolean}
+	 */
+	isInProjectDirectory(): boolean {
+		return fs.existsSync(this.getProjectPath() + 'index.js') &&
+			fs.existsSync(this.getProjectPath() + 'package.json') &&
+			fs.existsSync(this.getProjectPath() + 'app' + pathSep);
+	}
+
+
     /**
      * Gets endpoint uri
      * @param {string} endpointType type of end
