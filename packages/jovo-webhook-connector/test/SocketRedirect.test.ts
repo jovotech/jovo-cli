@@ -1,16 +1,15 @@
 import * as http from 'http';
 import * as url from 'url';
 import * as ioBackend from 'socket.io';
-import { AddressInfo } from "net";
 
 import { open as openConnector, close as closeConnector} from '../src';
 
+const WEBSERVER_PORT = 4100;
+const SOCKET_IO_PORT = 4000;
 const REQUEST_ID = '123456789';
 
 let httpServerIo: http.Server;
-let httpServerIoAddr: AddressInfo;
 let httpServerBackend: http.Server;
-let httpServerBackendAddr: AddressInfo;
 let ioServer: ioBackend.Server;
 
 
@@ -18,8 +17,8 @@ let ioServer: ioBackend.Server;
  * Mock the backend which forwards http data to socket
  */
 beforeAll((done) => {
-	httpServerIo = http.createServer().listen();
-	httpServerIoAddr = httpServerIo.address() as AddressInfo;
+	httpServerIo = http.createServer().listen(SOCKET_IO_PORT);
+
 	ioServer = ioBackend(httpServerIo);
 
 	httpServerBackend = http.createServer((req, res) => {
@@ -40,9 +39,7 @@ beforeAll((done) => {
 		res.writeHead(200, { 'Content-Type': 'application/json' });
 		res.write(JSON.stringify({ success: true }));
 		res.end();
-	}).listen();
-
-	httpServerBackendAddr = httpServerBackend.address() as AddressInfo;
+	}).listen(WEBSERVER_PORT);
 	done();
 });
 
@@ -175,7 +172,7 @@ describe('webhook tests', () => {
 				};
 
 				// Create the socket connection which will forward the data
-				openConnector(REQUEST_ID, `http://[${httpServerIoAddr.address}]:${httpServerIoAddr.port}`, socketRedirectOptions);
+				openConnector(REQUEST_ID, `http://localhost:${SOCKET_IO_PORT}`, socketRedirectOptions);
 
 				// Make request to trigger socket message to be send to local http server
 				setTimeout(() => {
@@ -191,8 +188,8 @@ describe('webhook tests', () => {
 					}
 
 					const opt = {
-						hostname: httpServerBackendAddr.address,
-						port: httpServerBackendAddr.port,
+						hostname: 'localhost',
+						port: WEBSERVER_PORT,
 						path: `/webhook?${queryString}`,
 						method: 'POST',
 						headers: {
