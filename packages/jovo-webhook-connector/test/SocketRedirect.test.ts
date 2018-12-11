@@ -158,16 +158,14 @@ describe('webhook tests', () => {
 					res.write(JSON.stringify({ success: true }));
 					res.end();
 
-				}).listen(port++);
-				const httpServerLocalAddr = httpServerLocal.address();
+				}).listen(++port);
 
 				// Configure to send received socket data to above created http server
 				const socketRedirectOptions = {
 					post: {
 						// @ts-ignore
-						hostname: httpServerLocalAddr.address,
-						// @ts-ignore
-						port: httpServerLocalAddr.port,
+						hostname: 'localhost',
+						port: port.toString(),
 					}
 				};
 
