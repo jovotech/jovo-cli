@@ -18,10 +18,8 @@ let ioServer: ioBackend.Server;
  * Mock the backend which forwards http data to socket
  */
 beforeAll((done) => {
-	console.log('Starting Mock Backend');
-
 	httpServerIo = http.createServer().listen();
-	httpServerIoAddr = httpServerIo.listen().address() as AddressInfo;
+	httpServerIoAddr = httpServerIo.address() as AddressInfo;
 	ioServer = ioBackend(httpServerIo);
 
 	httpServerBackend = http.createServer((req, res) => {
@@ -44,9 +42,7 @@ beforeAll((done) => {
 		res.end();
 	}).listen();
 
-	httpServerBackendAddr = httpServerBackend.listen().address() as AddressInfo;
-
-	console.log('Created Mock Backend - Wait to be ready');
+	httpServerBackendAddr = httpServerBackend.address() as AddressInfo;
 	done();
 });
 
@@ -55,8 +51,6 @@ beforeAll((done) => {
  *  Cleanup Servers
  */
 afterAll((done) => {
-	console.log('Stop Mock Backend');
-
 	httpServerBackend.close();
 	ioServer.close();
 	done();
@@ -168,7 +162,7 @@ describe('webhook tests', () => {
 					res.end();
 
 				}).listen(port++);
-				const httpServerLocalAddr = httpServerLocal.listen(port).address();
+				const httpServerLocalAddr = httpServerLocal.address();
 
 				// Configure to send received socket data to above created http server
 				const socketRedirectOptions = {
@@ -190,7 +184,6 @@ describe('webhook tests', () => {
 					// @ts-ignore
 					for (key in webhookTest.data.query) {
 						// @ts-ignore
-
 						if (webhookTest.data.query.hasOwnProperty(key)) {
 							// @ts-ignore
 							queryString += `${encodeURIComponent(key)}=${encodeURIComponent(webhookTest.data.query[key])}&`;
