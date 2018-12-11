@@ -263,7 +263,7 @@ describe('deploy v2', () => {
 				});
 			}
 		});
-	}, 20000);
+	}, 200000);
 
 	it('jovo new <project> --init googleAction --build\n      jovo deploy', (done) => {
 		const projectName = 'helloworldDeployGoogleAction_v2';
