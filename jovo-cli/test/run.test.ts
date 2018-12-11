@@ -216,6 +216,7 @@ describe('run v2', () => {
 			});
 		let fullData = '';
 		child.stdout.on('data', (data) => {
+			console.log(data.toString());
 			fullData += data.toString();
 		});
 		child.stderr.on('data', (data) => {

@@ -83,7 +83,6 @@ describe('deploy v1', () => {
 			'-t', 'helloworldtest',
 			'--init', 'alexaSkill',
 			'--build',
-			'--skip-npminstall',
 			'--v1'], {
 				cwd: tmpTestfolder,
 			});
@@ -103,11 +102,10 @@ describe('deploy v1', () => {
 						cwd: projectFolder,
 					});
 				childDeploy.stdout.on('data', (data) => {
-					console.log(data.toString());
 					if (data.indexOf('Deployment completed.') > -1) {
 						childDeploy.kill();
 
-						const zipFilePath = path.join(projectFolder, 'deployment-package.zip');
+						const zipFilePath = path.join(projectFolder, 'bundle.zip');
 
 						// zip should exist
 						expect(fs.existsSync(zipFilePath)).toBe(true);
@@ -226,8 +224,7 @@ describe('deploy v2', () => {
 		const projectFolder = path.join(tmpTestfolder, projectName);
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
-			'--skip-npminstall'], {
+			'--build', 'alexaSkill'], {
 				cwd: tmpTestfolder,
 			});
 		child.stderr.on('data', (data) => {
@@ -257,7 +254,7 @@ describe('deploy v2', () => {
 						expect(fs.existsSync(path.join(projectFolder, 'dist', 'node_modules'))).toBe(true);
 
 						// zip should exist and is not empty
-						const zipFilePath = path.join(projectFolder, 'deployment-package.zip');
+						const zipFilePath = path.join(projectFolder, 'bundle.zip');
 						expect(fs.existsSync(zipFilePath)).toBe(true);
 						expect(fs.statSync(zipFilePath).size).not.toBe(0);
 
@@ -273,8 +270,7 @@ describe('deploy v2', () => {
 		const projectFolder = path.join(tmpTestfolder, projectName);
 		const child = spawn('node', ['./../dist/index.js', 'new', projectName,
 			'-t', 'helloworldtest',
-			'--build', 'googleAction',
-			'--skip-npminstall'], {
+			'--build', 'googleAction'], {
 				cwd: tmpTestfolder,
 			});
 		child.stderr.on('data', (data) => {
