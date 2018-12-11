@@ -17,6 +17,8 @@ import {
 import * as DeployTargets from '../utils/DeployTargets';
 const jsonlint = require("jsonlint");
 
+const { promisify } = require('util');
+const existsAsync = promisify(fs.exists);
 
 const highlight = require('chalk').white.bold;
 const project = getProject();
@@ -129,9 +131,15 @@ export function buildTask(ctx: JovoTaskContext) {
 			title: locale,
 			task: async (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
 				try {
-					modelFileContent = await project.getModelFileContent(locale);
+					modelFileContent = await project.getModelFileJsonContent(locale);
 				} catch (error) {
 					if (error.code === 'ENOENT') {
+						// Before failing check if model file is JavaScript module
+						if (await existsAsync(project.getModelPath(locale, 'js'))) {
+							// File is JavaScript not json
+							return task.skip('Model file is JavaScript not JSON so check got skipped.');
+						}
+
 						return Promise.reject(new Error(`Language model file could not be found. Expected location: "${error.path}"`));
 					}
 

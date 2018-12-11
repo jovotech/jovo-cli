@@ -3,14 +3,16 @@
 const { promisify } = require('util');
 
 import * as fs from 'fs';
+const copyFileAsync = promisify(fs.copyFile);
 const renameAsync = promisify(fs.rename);
 const readFileAsync = promisify(fs.readFile);
 const readdirAsync = promisify(fs.readdir);
 const existsAsync = promisify(fs.exists);
 const mkdirAsync = promisify(fs.mkdir);
 const unlinkAsync = promisify(fs.unlink);
+const writeFileAsync = promisify(fs.writeFile);
 
-import { join as pathJoin, sep as pathSep } from 'path';
+import { join as pathJoin, sep as pathSep, parse as pathParse } from 'path';
 import * as AdmZip from 'adm-zip';
 import * as archiver from 'archiver';
 import * as request from 'request';
@@ -283,16 +285,7 @@ export class Project {
 			return [DEFAULT_LOCALE];
 		}
 
-		const locales: string[] = [];
-		files.forEach((file) => {
-			if (file.length === 10) {
-				locales.push(file.substr(0, 5));
-			} else if (file.length === 7) {
-				locales.push(file.substr(0, 2));
-			}
-		});
-
-		return locales;
+		return files.map((file) => pathParse(file).name);
 	}
 
 
@@ -304,8 +297,8 @@ export class Project {
 	 * @returns {Promise<string>}
 	 * @memberof Project
 	 */
-	async getModelFileContent(locale: string): Promise<string> {
-		const fileContent = await readFileAsync(this.getModelPath(locale));
+	async getModelFileJsonContent(locale: string): Promise<string> {
+		const fileContent = await readFileAsync(this.getModelPath(locale, 'json'));
 		return fileContent.toString();
 	}
 
@@ -337,21 +330,25 @@ export class Project {
      * @returns {Promise<void>}
      * @memberof Project
      */
-	backupModel(locale: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const todayDate = new Date();
-			const todayString = todayDate.toISOString().substring(0, 10);
-			let target = this.getModelPath(locale).substr(0, this.getModelPath(locale).length - 5);
-			target = target + todayString + '.json';
-			// copyFile(this.getModelPath(locale), target);
-			fs.writeFile(target, JSON.stringify(this.getModel(locale), null, '\t'), (err) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		});
+	async backupModel(locale: string): Promise<void> {
+
+		// Check if model file is json or JavaScript
+		let modelFilePath = this.getModelPath(locale, 'json');
+		if (!await existsAsync(modelFilePath)) {
+			modelFilePath = this.getModelPath(locale, 'js');
+			if (!await existsAsync(modelFilePath)) {
+				throw new Error('Model file to backup could not be found');
+			}
+		}
+
+		const todayDate = new Date();
+		const todayString = todayDate.toISOString().substring(0, 10);
+		let target = this.getModelPath(locale);
+		target = target + todayString + '.json';
+
+		const destinationFile = pathJoin(target + todayString + pathParse(modelFilePath).ext);
+
+		return copyFileAsync(modelFilePath, destinationFile);
 	}
 
 
@@ -362,9 +359,14 @@ export class Project {
      * @returns {string}
      * @memberof Project
      */
-	getModelPath(locale: string): string {
-		// /models/{locale}.json
-		return pathJoin(this.getModelsPath(), locale + '.json');
+	getModelPath(locale: string, fileExtension?: string): string {
+		const basePath = pathJoin(this.getModelsPath(), locale);
+
+		if (fileExtension) {
+			return basePath + '.' + fileExtension;
+		}
+
+		return basePath;
 	}
 
 
@@ -699,9 +701,15 @@ export class Project {
 		let locale;
 		for (locale of this.getLocales()) {
 			let model: JovoModel;
+
 			try {
 				model = this.getModel(locale);
 			} catch (e) {
+				if (await existsAsync(this.getModelPath(locale, 'js'))) {
+					// File is JavaScript not json
+					throw (new Error('Model file is JavaScript not JSON so platform defaults could not be set!'));
+				}
+
 				throw (new Error('Could not get model!'));
 			}
 
@@ -821,20 +829,22 @@ export class Project {
      * @returns {Promise<void>}
      * @memberof Project
      */
-	saveModel(model: JovoModel, locale: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			if (!fs.existsSync(this.getModelsPath())) {
-				fs.mkdirSync(this.getModelsPath());
-			}
+	async saveModel(model: JovoModel, locale: string): Promise<void> {
+		if (!existsAsync(this.getModelsPath())) {
+			await mkdirAsync(this.getModelsPath());
+		}
 
-			fs.writeFile(this.getModelPath(locale), JSON.stringify(model, null, '\t'), (err) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		});
+		// Check if model file is json or JavaScript
+		const modelFilePath = this.getModelPath(locale, 'json');
+
+		if (!await existsAsync(modelFilePath)) {
+			if (await existsAsync(this.getModelPath(locale, 'js'))) {
+				throw new Error('Model file is JS instead of JSON. So automatic changes can not be applied. To make that possible again change back to .json!');
+			}
+		}
+
+		await writeFileAsync(modelFilePath, JSON.stringify(model, null, '\t'));
+		return;
 	}
 
 

@@ -72,6 +72,7 @@ module.exports = (vorpal: Vorpal) => {
 		})
 		.action(async (args: Args) => {
 			DEBUG = args.options.debug ? true : false;
+			let answers;
 
 			await project.init();
 
@@ -105,23 +106,18 @@ module.exports = (vorpal: Vorpal) => {
 				debug: DEBUG,
 				frameworkVersion: project.frameworkVersion,
 			};
-			let p = Promise.resolve();
 
 			// run init if necessary
 			if (!project.hasConfigFile()) {
 				if (project.frameworkVersion === 1) {
 					if (config.types && config.types.length === 0) {
-						p = p.then(() => {
-							return promptForInit().then((answers) => {
-								config.types = [answers.platform];
-								console.log();
-								console.log();
-							});
-						});
+						answers = await promptForInit();
+						config.types = [answers.platform];
 					}
 				} else {
 					console.error(`The "${project.getConfigPath()}" file is missing or invalid!`);
-					return Promise.resolve();
+					return;
+					// return Promise.resolve();
 				}
 			}
 
@@ -129,79 +125,68 @@ module.exports = (vorpal: Vorpal) => {
 				// If more than one type is set and reverse selected ask the user
 				// for a platform as a reverse build can only be done from one
 				// as further ones would overwrite previous ones.
-				p = p.then(() => {
-					return promptForInit().then((answers) => {
-						config.types = [answers.platform];
-						console.log();
-						console.log();
-					});
-				});
+				answers = await promptForInit();
+				config.types = [answers.platform];
 			}
 
-			p.then(() => {
-				config.types.forEach((type: string) => {
-					const platform = Platforms.get(type);
+			for (const type of config.types) {
+				const platform = Platforms.get(type);
 
-					// Apply platform specific config values
-					_.merge(config, platform.getPlatformConfigValues(project, args));
-					if (args.options.reverse) {
-
-						const platform = Platforms.get(type);
-						config.locales = platform.getLocales(args.options.locale);
-
-						if (project.hasModelFiles(config.locales)) {
-							p = p.then(() => {
-								return promptOverwriteReverseBuild().then((answers) => {
-									if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-										// exit on cancel
-										p = Promise.resolve();
-									} else {
-										config.reverse = answers.promptOverwriteReverseBuild;
-									}
-								});
-							});
-						}
-					}
-				});
-			});
-
-
-			return p.then(() => {
-				if (!project.hasConfigFile() && !args.options.reverse) {
-					tasks.add(
-						initTask()
-					);
-				}
-
+				// Apply platform specific config values
+				_.merge(config, platform.getPlatformConfigValues(project, args));
 				if (args.options.reverse) {
-					tasks.add(
-						{
-							title: 'Building language model platform model',
-							task: (ctx) => buildReverseTask(ctx),
+
+					const platform = Platforms.get(type);
+					config.locales = platform.getLocales(args.options.locale);
+
+					if (project.hasModelFiles(config.locales)) {
+						answers = await promptOverwriteReverseBuild();
+
+						if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
+							// exit on cancel
+							return;
+						} else {
+							config.reverse = answers.promptOverwriteReverseBuild;
 						}
-					);
-				} else {
-					// build project
-					buildTask(config).forEach((t) => tasks.add(t));
-					// deploy project
-					if (args.options.deploy) {
-						tasks.add({
-							title: 'Deploying',
-							task: (ctx) => {
-								return new Listr(deployTask(ctx));
-							},
-						});
 					}
 				}
-				return tasks.run(config).then(() => {
-					console.log();
-					console.log('  Build completed.');
-					console.log();
-				}).catch((err) => {
-					if (DEBUG === true) {
-						console.error(err);
+			}
+
+
+			if (!project.hasConfigFile() && !args.options.reverse) {
+				tasks.add(
+					initTask()
+				);
+			}
+
+			if (args.options.reverse) {
+				tasks.add(
+					{
+						title: 'Building language model platform model',
+						task: (ctx) => buildReverseTask(ctx),
 					}
-				});
+				);
+			} else {
+				// build project
+				buildTask(config).forEach((t) => tasks.add(t));
+				// deploy project
+				if (args.options.deploy) {
+					tasks.add({
+						title: 'Deploying',
+						task: (ctx) => {
+							return new Listr(deployTask(ctx));
+						},
+					});
+				}
+			}
+			return tasks.run(config).then(() => {
+				console.log();
+				console.log('  Build completed.');
+				console.log();
+			}).catch((err) => {
+				if (DEBUG === true) {
+					console.error(err);
+				}
 			});
 		});
 };
