@@ -19,7 +19,7 @@
 		"index.ts",
 		"src/**/*",
 		"commands/**/*",
-		"utils/**/*",
+		"utils/**/*"
 	],
 	"exclude": [
 		"dist/**/*",
