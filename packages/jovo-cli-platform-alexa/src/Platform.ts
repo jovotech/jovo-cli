@@ -333,7 +333,12 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 									title: locale,
 									task: () => {
 										return this.buildLanguageModelAlexa(locale, ctx.stage)
-											.then(() => Utils.wait(500));
+											.then(() => {
+													// Refresh the model data else it uses the old previously cached one
+													this.getModel(locale, true);
+													return Utils.wait(500);
+												}
+											);
 									},
 								});
 							}
@@ -739,14 +744,23 @@ Endpoint: ${skillInfo.endpoint}`;
 		}
 	}
 
-    /**
-     * Returns Alexa model object
-     * @param {string} locale
-     * @return {*}
-     */
-	getModel(locale: string) {
+
+	/**
+	 * Returns Alexa model object
+	 *
+	 * @param {string} locale The locale to load
+	 * @param {boolean} [refresh] If the file cache should be refreshed
+	 * @returns
+	 * @memberof JovoCliPlatformAlexa
+	 */
+	getModel(locale: string, refresh?: boolean) {
 		try {
-			return require(this.getModelPath(locale));
+			const path = this.getModelPath(locale);
+			if (refresh === true) {
+				// Delete the cache so that it gets read new from disk
+				delete require.cache[path];
+			}
+			return require(path);
 		} catch (error) {
 			throw error;
 		}
@@ -1001,7 +1015,6 @@ Endpoint: ${skillInfo.endpoint}`;
      */
 	getSkillInformation() {
 		const skillJson = this.getSkillJson();
-
 		const info = {
 			name: '',
 			invocationName: '',
