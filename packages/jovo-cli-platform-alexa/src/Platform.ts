@@ -937,16 +937,11 @@ Endpoint: ${skillInfo.endpoint}`;
 						);
 					}
 				} else {
-					const globalConfig = project.getConfig();
-					const stageConfig = _.get(project.getConfig(), `stages.${stage}`);
-					let arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
-						_.get(globalConfig, 'alexaSkill.endpoint');
+					let arn = _.get(config, 'alexaSkill.endpoint');
 
 					if (!arn) {
-						arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
-							_.get(stageConfig, 'host.lambda.arn') ||
-							_.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
-							_.get(globalConfig, 'host.lambda.arn');
+						arn = _.get(config, 'alexaSkill.host.lambda.arn') ||
+							_.get(config, 'host.lambda.arn');
 					}
 
 					if (arn) {

@@ -114,7 +114,7 @@ export class Project {
 	/**
 	 * Returns the content of the config file
 	 */
-	getConfigContent(stage?: string): AppFile {
+	getConfigContent(): AppFile {
 		let appJsonConfig;
 		if (this.frameworkVersion === 1) {
 			// Is JSON file
@@ -138,7 +138,11 @@ export class Project {
 		try {
 			appJsonConfig = this.getConfigContent();
 
-			const stg = stage;
+			let stg = stage;
+
+			if (stg === undefined && _.get(appJsonConfig, 'defaultStage')) {
+				stg = _.get(appJsonConfig, 'defaultStage');
+			}
 
 			if (_.get(appJsonConfig, `stages["${stg}"]`)) {
 				appJsonConfig = _.merge(

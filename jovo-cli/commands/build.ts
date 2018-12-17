@@ -85,6 +85,9 @@ module.exports = (vorpal: Vorpal) => {
 				project.getConfig(args.options.stage);
 			} catch (e) {
 				console.log(`\n\n Could not load ${project.getConfigFileName()}. \n\n`);
+				if (DEBUG === true) {
+					console.error(e);
+				}
 				return Promise.resolve();
 			}
 

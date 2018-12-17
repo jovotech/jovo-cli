@@ -408,21 +408,16 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 */
 	getDeployTasks(ctx: JovoTaskContextGoogle, targets: JovoCliDeploy[]): ListrTask[] {
 
-		const globalConfig = project.getConfig();
-		const stageConfig = _.get(project.getConfig(), `stages.${ctx.stage}`);
+		const config = project.getConfig(ctx.stage);
 
 		const returnTasks: ListrTask[] = [];
 
-		let arn = _.get(stageConfig, 'googleAction.host.lambda.arn') ||
-			_.get(stageConfig, 'host.lambda.arn') ||
-			_.get(globalConfig, 'googleAction.host.lambda.arn') ||
-			_.get(globalConfig, 'host.lambda.arn');
+		let arn = _.get(config, 'googleAction.host.lambda.arn') ||
+			_.get(config, 'host.lambda.arn');
 
 		if (!arn) {
-			arn = _.get(stageConfig, 'googleAction.endpoint') ||
-				_.get(stageConfig, 'endpoint') ||
-				_.get(globalConfig, 'googleAction.endpoint') ||
-				_.get(globalConfig, 'endpoint');
+			arn = _.get(config, 'googleAction.endpoint') ||
+				_.get(config, 'endpoint');
 			arn = _.startsWith(arn, 'arn') ? arn : undefined;
 		}
 

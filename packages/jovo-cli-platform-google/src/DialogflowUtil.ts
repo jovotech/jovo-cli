@@ -109,14 +109,11 @@ export function buildDialogFlowAgent(ctx: JovoTaskContextGoogle) {
 
 			// endpoint
 			let url = null;
-			const globalConfig = project.getConfig();
-			const stageConfig = _.get(project.getConfig(), `stages.${ctx.stage}`);
-			url = _.get(stageConfig, 'googleAction.dialogflow.endpoint') ||
-				_.get(stageConfig, 'endpoint.googleAction.dialogflow') ||
-				_.get(stageConfig, 'endpoint') ||
-				_.get(globalConfig, 'googleAction.dialogflow.endpoint') ||
-				_.get(globalConfig, 'endpoint.googleAction.dialogflow') ||
-				_.get(globalConfig, 'endpoint');
+			url = _.get(config, 'googleAction.dialogflow.endpoint') ||
+				_.get(config, 'endpoint.googleAction.dialogflow') ||
+				_.get(config, 'endpoint');
+
+
 			url = project.getEndpointFromConfig(url);
 			if (url) {
 				_.merge(agent, {
@@ -161,8 +158,7 @@ export function buildDialogFlowAgent(ctx: JovoTaskContextGoogle) {
 				const supportedLanguages: string[] = [];
 
 				// set primary language from app.json (if defined)
-				primaryLanguage = _.get(stageConfig, 'googleAction.dialogflow.primaryLanguage') ||
-					_.get(globalConfig, 'googleAction.dialogflow.primaryLanguage') ||
+				primaryLanguage = _.get(config, 'googleAction.dialogflow.primaryLanguage') ||
 					primaryLanguage;
 
 				// add supportedLanguages without primaryLanguage

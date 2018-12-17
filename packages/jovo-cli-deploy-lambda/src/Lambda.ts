@@ -21,19 +21,14 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 	execute(ctx: JovoTaskContextLambda, project: Project): ListrTask[] {
 
-		const globalConfig = project.getConfig();
-		const stageConfig = _.get(project.getConfig(), `stages.${ctx.stage}`);
+		const config = project.getConfig(ctx.stage);
 
-		let arn = _.get(stageConfig, 'alexaSkill.host.lambda.arn') ||
-			_.get(stageConfig, 'host.lambda.arn') ||
-			_.get(globalConfig, 'alexaSkill.host.lambda.arn') ||
-			_.get(globalConfig, 'host.lambda.arn');
+		let arn = _.get(config, 'alexaSkill.host.lambda.arn') ||
+			_.get(config, 'host.lambda.arn');
 
 		if (!arn) {
-			arn = _.get(stageConfig, 'alexaSkill.endpoint') ||
-				_.get(stageConfig, 'endpoint') ||
-				_.get(globalConfig, 'alexaSkill.endpoint') ||
-				_.get(globalConfig, 'endpoint');
+			arn = _.get(config, 'alexaSkill.endpoint') ||
+				_.get(config, 'endpoint');
 			arn = _.startsWith(arn, 'arn') ? arn : undefined;
 		}
 
