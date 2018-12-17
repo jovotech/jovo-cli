@@ -133,7 +133,7 @@ module.exports = (vorpal: Vorpal) => {
 				const platform = Platforms.get(type);
 
 				// Apply platform specific config values
-				_.merge(config, platform.getPlatformConfigValues(project, args));
+				_.merge(config, platform.getPlatformConfigValues(project, args.options));
 				if (args.options.reverse) {
 
 					const platform = Platforms.get(type);

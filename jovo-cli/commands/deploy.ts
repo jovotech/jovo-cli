@@ -97,7 +97,7 @@ module.exports = (vorpal: Vorpal) => {
 			config.types.forEach((type: string) => {
 				const platform = Platforms.get(type);
 				_.merge(config, platform.getPlatformConfigIds(project, args.options));
-				_.merge(config, platform.getPlatformConfigValues(project, args));
+				_.merge(config, platform.getPlatformConfigValues(project, args.options));
 			});
 
 			deployTask(config).forEach((t) => tasks.add(t));

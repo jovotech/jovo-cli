@@ -212,7 +212,7 @@ module.exports = (vorpal: Vorpal) => {
 				// Apply platform specific config values
 				config.types.forEach((type: string) => {
 					const platform = Platforms.get(type);
-					_.merge(config, platform.getPlatformConfigValues(project, args));
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
 				});
 
 				project.setProjectPath(args.directory);

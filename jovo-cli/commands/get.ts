@@ -124,7 +124,7 @@ module.exports = (vorpal: Vorpal) => {
 				p = p.then(() => {
 					_.merge(config, platformConfigIds);
 					// Apply platform specific config values
-					_.merge(config, platform.getPlatformConfigValues(project, args));
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
 					_.merge(config, {
 						locales: project.getLocales(args.options.locale),
 						target: args.options.target || TARGET_ALL,
