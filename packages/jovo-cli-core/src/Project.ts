@@ -769,6 +769,52 @@ export class Project {
 
 
 	/**
+	 * Returns if the project is a typescript project
+	 *
+	 * @returns
+	 * @memberof Project
+	 */
+	async isTypeScriptProject(): Promise<boolean> {
+		const packagePath = pathJoin(this.getProjectPath(), 'package.json');
+		const content = await readFileAsync(packagePath);
+		const packageFile = JSON.parse(content);
+
+		if (packageFile.hasOwnProperty('devDependencies') && packageFile.devDependencies.hasOwnProperty('typescript')) {
+			return true;
+		}
+
+		return false;
+	}
+
+
+
+	/**
+	 * Compile the TypeScript code of project to JavaScript
+	 *
+	 * @param {string} [sourceFolder] Optional source folder, by default uses project path
+	 * @returns {Promise<void>}
+	 * @memberof Project
+	 */
+	async compileTypeScriptProject(sourceFolder?: string): Promise<void> {
+		sourceFolder = sourceFolder || this.getProjectPath();
+
+		return new Promise((resolve, reject) => {
+			exec('npm run tsc', {
+				cwd: sourceFolder
+			},
+				(error) => {
+					if (error) {
+						reject(error);
+						return;
+					}
+					resolve();
+				}
+			);
+		});
+	}
+
+
+	/**
 	 * Returns the JOVO Framework version
 	 *
 	 * @returns {Promise<PackageVersion>}

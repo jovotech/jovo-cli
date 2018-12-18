@@ -46,6 +46,7 @@ module.exports = (vorpal: Vorpal) => {
 		.option('--stage <stage>', 'Takes configuration from <stage>')
 		.option('-w, --watch', 'Uses nodemon to watch files. Restarts immediately on file change.')
 		.option('--webhook-only', 'Starts the Jovo Webhook proxy without executing the code')
+		.option('--tsc', 'Compile TypeScript first before execution')
 		.option('--disable-jovo-debugger', 'Disables Jovo Debugger (web version)')
 		.option('--model-test', 'Activates the language model test')
 		.option('--timeout <timeout>', 'Sets timeout in milliseconds')
@@ -105,9 +106,20 @@ module.exports = (vorpal: Vorpal) => {
 				checkFolders.push(srcDir);
 			}
 
+			if (args.options.tsc) {
+				console.log('Start compiling TypeScript...');
+				await project.compileTypeScriptProject(srcDir);
+				console.log('TypeScript compiling finished.\n');
+			}
+
 			if (project.frameworkVersion === 2) {
-				// In v2 look by default also in src subfolder
-				checkFolders.push('./src/');
+				if (await project.isTypeScriptProject()) {
+					// If it is a typescript project look in "dist" folder
+					checkFolders.push('./dist/');
+				} else {
+					// In regular projects in "src" folder
+					checkFolders.push('./src/');
+				}
 			}
 
 			// Check always in the current folder
