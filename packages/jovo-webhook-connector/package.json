@@ -1,0 +1,55 @@
+{
+	"name": "jovo-webhook-connector",
+	"version": "2.0.2-beta.0",
+	"description": "Establishes connection between localhost and Jovo Cloud Webhook",
+	"main": "dist/src/index",
+	"types": "dist/src/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"tslint": "tslint -p tsconfig.json -c tslint.json",
+		"tsc": "tsc",
+		"tscw": "tsc --watch",
+		"test": "jest"
+	},
+	"files": [
+		"dist"
+	],
+	"author": "jovotech",
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"@types/es6-promise": "^3.3.0",
+		"@types/jest": "^23.3.5",
+		"@types/lodash.merge": "^4.6.4",
+		"@types/node": "^10.10.1",
+		"@types/socket.io": "^1.4.38",
+		"@types/socket.io-client": "^1.4.32",
+		"jest": "^23.6.0",
+		"socket.io": "^2.1.1",
+		"ts-jest": "^23.10.4",
+		"tslint": "^5.11.0",
+		"typescript": "^3.0.3"
+	},
+	"dependencies": {
+		"lodash.merge": "^4.6.1",
+		"querystring": "^0.2.0",
+		"request": "^2.88.0",
+		"socket.io-client": "^2.1.1"
+	},
+	"jest": {
+		"transform": {
+			"^.+\\.tsx?$": "ts-jest"
+		},
+		"testURL": "http://localhost/",
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+		"testPathIgnorePatterns": [
+			"/dist/",
+			"/node_modules/"
+		],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json"
+		]
+	}
+}

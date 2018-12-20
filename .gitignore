@@ -46,8 +46,12 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.vscode
 .idea
 debug
 node_modules
 npm-debug.log
 out
+dist
+
+packages/*/package-lock.json

@@ -1,0 +1,7 @@
+{
+    "packages": [
+        "jovo-cli",
+        "packages/*"
+    ],
+    "version": "independent"
+}
