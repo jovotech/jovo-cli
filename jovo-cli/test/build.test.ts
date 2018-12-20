@@ -502,7 +502,7 @@ describe('build v2', () => {
 	}, 12000);
 
 	it('jovo build fails if model JSON is invalid', (done) => {
-		const projectName = 'helloworld_v2';
+		const projectName = 'helloworld_invalid_model_json_v2';
 		const projectFolder = path.join(tmpTestfolder, projectName);
 
 		execFile('node', ['./../dist/index.js', 'new', projectName,
