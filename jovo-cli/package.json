@@ -32,7 +32,6 @@
 		"jovo-cli-platform-alexa": "^2.0.2-beta.0",
 		"jovo-cli-platform-google": "^2.0.2-beta.0",
 		"jovo-webhook-connector": "^2.0.2-beta.0",
-		"jsonlint": "^1.6.3",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"nodemon": "^1.18.7",
@@ -83,6 +82,7 @@
 		"transform": {
 			"^.+\\.tsx?$": "ts-jest"
 		},
+		"testEnvironment": "node",
 		"testURL": "http://localhost/",
 		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
 		"testPathIgnorePatterns": [

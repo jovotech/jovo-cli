@@ -15,7 +15,6 @@ import {
 	JovoCliPlatform,
 } from 'jovo-cli-core';
 import * as DeployTargets from '../utils/DeployTargets';
-const jsonlint = require("jsonlint");
 
 const { promisify } = require('util');
 const existsAsync = promisify(fs.exists);
@@ -140,19 +139,14 @@ export function buildTask(ctx: JovoTaskContext) {
 							return task.skip('Model file is JavaScript not JSON so check got skipped.');
 						}
 
-						return Promise.reject(new Error(`Language model file could not be found. Expected location: "${error.path}"`));
+						throw new Error(`Language model file could not be found. Expected location: "${error.path}"`);
 					}
 
 					throw (error);
 				}
 
-				try {
-					jsonlint.parse(modelFileContent);
-				} catch (error) {
-					return Promise.reject(new Error(error.message));
-				}
-
-				return Promise.resolve();
+				// ensure the model JSON is valid -- this will throw if it isn't
+				JSON.parse(modelFileContent);
 			}
 		});
 	});
