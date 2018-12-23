@@ -121,7 +121,18 @@ export class Project {
 			appJsonConfig = _.cloneDeep(JSON.parse(fs.readFileSync(this.getConfigPath()).toString()));
 		} else {
 			// Is JavaScript file
+
+			// Add JOVO_WEBHOOK_URL as global variable that it does not cause an error when
+			// used with backtick
+
+			// @ts-ignore
+			global.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL + '/' + this.getWebhookUuid();
+
 			appJsonConfig = _.cloneDeep(require(this.getConfigPath()));
+
+			// Remove the global variable again
+			// @ts-ignore
+			delete global.JOVO_WEBHOOK_URL;
 		}
 
 		return appJsonConfig;
