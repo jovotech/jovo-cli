@@ -571,7 +571,16 @@ export class Project {
 
 
 	getStage(stage: string): string {
+		if (stage) {
+			// If a stage is given always use it no matter what is defined
+			// in environment or config
+			return stage;
+		}
+
 		let stg = '';
+		if (process.env.NODE_ENV) {
+			stg = process.env.NODE_ENV;
+		}
 		if (process.env.STAGE) {
 			stg = process.env.STAGE;
 		}
@@ -586,9 +595,7 @@ export class Project {
 				throw error;
 			}
 		}
-		if (stage) {
-			stg = stage;
-		}
+
 		return stg;
 	}
 
