@@ -246,12 +246,12 @@ describe('deploy v2', () => {
 						childDeploy.kill();
 
 						// Check if all the files in the dist folder exist
-						expect(fs.existsSync(path.join(projectFolder, 'dist'))).toBe(true);
-						expect(fs.existsSync(path.join(projectFolder, 'dist', 'app.js'))).toBe(true);
-						expect(fs.existsSync(path.join(projectFolder, 'dist', 'config.js'))).toBe(true);
-						expect(fs.existsSync(path.join(projectFolder, 'dist', 'index.js'))).toBe(true);
-						expect(fs.existsSync(path.join(projectFolder, 'dist', 'package.json'))).toBe(true);
-						expect(fs.existsSync(path.join(projectFolder, 'dist', 'node_modules'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle', 'app.js'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle', 'config.js'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle', 'index.js'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle', 'package.json'))).toBe(true);
+						expect(fs.existsSync(path.join(projectFolder, 'bundle', 'node_modules'))).toBe(true);
 
 						// zip should exist and is not empty
 						const zipFilePath = path.join(projectFolder, 'bundle.zip');

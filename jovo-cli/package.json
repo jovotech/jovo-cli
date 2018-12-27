@@ -87,7 +87,8 @@
 		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
 		"testPathIgnorePatterns": [
 			"/dist/",
-			"/node_modules/"
+			"/node_modules/",
+			"/tmpTestfolder*/"
 		],
 		"moduleFileExtensions": [
 			"ts",
