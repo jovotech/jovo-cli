@@ -84,6 +84,9 @@ class AlexaInteractionModel {
 			}
 		}
 
+		_.set(jovoModel, 'intents', jovoIntents);
+
+
 		if (_.get(this, 'interactionModel.languageModel.types')) {
 			// input types
 			const inputTypes: InputType[] = [];
@@ -112,7 +115,6 @@ class AlexaInteractionModel {
 		}
 
 		_.set(jovoModel, 'alexa.interactionModel.languageModel.intents', alexaIntents);
-		_.set(jovoModel, 'intents', jovoIntents);
 		return jovoModel;
 	}
 
