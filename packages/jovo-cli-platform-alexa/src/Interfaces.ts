@@ -1,4 +1,4 @@
-import { AppFile, IntentInput, InputType, JovoTaskContext, JovoModel } from 'jovo-cli-core';
+import { AppFile, IntentInput, JovoTaskContext, JovoModel } from 'jovo-cli-core';
 
 
 export interface AlexaLMInputObject {
@@ -45,22 +45,12 @@ export interface AlexaLMTypeObject {
 export interface AlexaModel {
 	interactionModel: {
 		languageModel: {
-			invocationName: string;
+			invocationName?: string;
 			intents?: AlexaLMIntent[];
 			types?: AlexaLMTypeObject[]
 		}
 	};
 }
-
-
-// export interface InputTypeAlexa extends InputType {
-// 	// alexa?: AlexaModel;
-// }
-
-// export interface IntentAlexa extends Intent {
-// 	alexa?: AlexaModel;
-// }
-
 
 export interface JovoTaskContextAlexa extends JovoTaskContext {
 	askProfile: string;

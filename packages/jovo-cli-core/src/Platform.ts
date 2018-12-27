@@ -188,6 +188,30 @@ export class JovoCliPlatform {
 	}
 
 
+	/**
+	 * Validate the platform specific properties on model
+	 *
+	 * @param {JovoModel} model The model to validate
+	 * @memberof JovoCliPlatform
+	 */
+	validateModel(model: JovoModel): void {
+		// @ts-ignore
+		throw new Error(`Method "validateModel" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	}
+
+
+	/**
+	 * Returns the validator to check if the platform specific properties are valid
+	 *
+	 * @returns {tv4.JsonSchema}
+	 * @memberof JovoCliPlatform
+	 */
+	getModelValidator(): tv4.JsonSchema {
+		// @ts-ignore
+		throw new Error(`Method "getModelValidator" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	}
+
+
 	// END: Methods which need to get implemented by platfrom modules
 
 

@@ -178,17 +178,19 @@ class AlexaInteractionModel {
 		_.set(alexaModel, 'interactionModel.languageModel.invocationName', model.invocation);
 
 		// handle invocation name requirements
-		if (alexaModel.interactionModel.languageModel.invocationName.length < 2 ||
-			alexaModel.interactionModel.languageModel.invocationName.length > 50) {
-			throw new Error(errorPrefix + 'Invocation name must be between 2 and 50 characters.');
-		}
+		if (alexaModel.interactionModel.languageModel.invocationName) {
+			if (alexaModel.interactionModel.languageModel.invocationName.length < 2 ||
+				alexaModel.interactionModel.languageModel.invocationName.length > 50) {
+				throw new Error(errorPrefix + 'Invocation name must be between 2 and 50 characters.');
+			}
 
-		if (/[A-Z]/.test(alexaModel.interactionModel.languageModel.invocationName)) {
-			throw new Error(errorPrefix + 'Invocation name cannot contain upper case characters.');
-		}
+			if (/[A-Z]/.test(alexaModel.interactionModel.languageModel.invocationName)) {
+				throw new Error(errorPrefix + 'Invocation name cannot contain upper case characters.');
+			}
 
-		if (/\d/.test(alexaModel.interactionModel.languageModel.invocationName)) {
-			throw new Error(errorPrefix + 'Invocation name may only contain alphabetic characters, apostrophes, periods and spaces.');
+			if (/\d/.test(alexaModel.interactionModel.languageModel.invocationName)) {
+				throw new Error(errorPrefix + 'Invocation name may only contain alphabetic characters, apostrophes, periods and spaces.');
+			}
 		}
 
 		alexaModel.interactionModel.languageModel.types = [];

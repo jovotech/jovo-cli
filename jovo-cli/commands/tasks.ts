@@ -8,6 +8,7 @@ import {
 	getProject,
 	JovoCliDeploy,
 	JovoTaskContext,
+	Validators,
 	ENDPOINT_NONE,
 	TARGET_ALL,
 	TARGET_INFO,
@@ -147,10 +148,21 @@ export function buildTask(ctx: JovoTaskContext) {
 					throw (error);
 				}
 
+				// Do basic JSON-validation
 				try {
 					jsonlint.parse(modelFileContent);
 				} catch (error) {
 					return Promise.reject(new Error(error.message));
+				}
+
+				// Validate if the content is valid
+				project.validateModel(locale, Validators.JovoModel);
+
+				// Validate also content of platform specific properties
+				let platform;
+				for (const type of ctx.types) {
+					platform = Platforms.get(type);
+					project.validateModel(locale, platform.getModelValidator());
 				}
 
 				return Promise.resolve();

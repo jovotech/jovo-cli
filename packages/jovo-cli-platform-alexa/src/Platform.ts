@@ -8,10 +8,12 @@ import Vorpal = require('vorpal');
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ask from './Ask';
-import { AppFile, ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
+import { ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, ModelValidationError, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 import { AlexaLMTypeValue, AlexaLMIntent, AppFileAlexa, JovoModelAlexa, JovoTaskContextAlexa } from '.';
+
+import * as JovoModelAlexaValidator from '../validators/JovoModelAlexa.json';
 
 
 const highlight = require('chalk').white.bold;
@@ -87,7 +89,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	/**
 	 * Returns existing projects of user
 	 *
-	 * @param {AppFile} config Configuration file
+	 * @param {JovoTaskContextAlexa} config Configuration file
 	 * @returns {Promise<object>}
 	 * @memberof JovoCliPlatform
 	 */
@@ -189,9 +191,9 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	/**
 	 * Add Alexa to configuration file
 	 *
-	 * @param {AppFile} config
+	 * @param {AppFileAlexa} config
 	 * @returns {AppFile}
-	 * @memberof JovoCliPlatform
+	 * @memberof JovoCliPlatformAlexa
 	 */
 	addPlatfromToConfig(config: AppFileAlexa): AppFileAlexa {
 		if (!config.alexaSkill) {
@@ -207,6 +209,16 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 		return config;
 	}
 
+
+	/**
+	 * Returns the validator to check if the platform specific properties are valid
+	 *
+	 * @returns {tv4.JsonSchema}
+	 * @memberof JovoCliPlatformAlexa
+	 */
+	getModelValidator(): tv4.JsonSchema {
+		return JovoModelAlexaValidator;
+	}
 
 
 	/**
