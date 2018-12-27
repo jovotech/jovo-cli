@@ -6,13 +6,14 @@ import { ListrTask } from 'listr';
 import { exec } from 'child_process';
 const proxyAgent = require('proxy-agent');
 
-import { JovoCliDeploy, Utils, Project } from 'jovo-cli-core';
+import { JovoCliDeploy, Utils, Project, TARGET_ZIP } from 'jovo-cli-core';
 import { JovoTaskContextLambda } from '.';
 
 
 export class JovoCliDeployLambda extends JovoCliDeploy {
 
 	static TARGET_KEY = 'lambda';
+	static PRE_DEPLOY_TASKS = [ TARGET_ZIP ];
 
 	constructor() {
 		super();
@@ -33,7 +34,6 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 		}
 
 		return [
-			project.deployTaskZipProjectSource(ctx),
 			{
 				title: 'Uploading to lambda',
 				enabled: (ctx) => !ctx.newSkill &&
