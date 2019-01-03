@@ -37,7 +37,7 @@ module.exports = (vorpal: Vorpal) => {
 	const vorpalInstance = vorpal
 		.command('update')
 		// @ts-ignore
-		.description('Update the CLI to latest version.');
+		.description('Updates the Jovo modules in project to latest versions.');
 
 	addBaseCliOptions(vorpalInstance);
 
