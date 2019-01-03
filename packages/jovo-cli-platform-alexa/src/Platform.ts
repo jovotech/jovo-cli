@@ -8,10 +8,12 @@ import Vorpal = require('vorpal');
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ask from './Ask';
-import { AppFile, ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
+import { ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, ModelValidationError, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 import { AlexaLMTypeValue, AlexaLMIntent, AppFileAlexa, JovoModelAlexa, JovoTaskContextAlexa } from '.';
+
+import * as JovoModelAlexaValidator from '../validators/JovoModelAlexa.json';
 
 
 const highlight = require('chalk').white.bold;
@@ -87,7 +89,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	/**
 	 * Returns existing projects of user
 	 *
-	 * @param {AppFile} config Configuration file
+	 * @param {JovoTaskContextAlexa} config Configuration file
 	 * @returns {Promise<object>}
 	 * @memberof JovoCliPlatform
 	 */
@@ -189,9 +191,9 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	/**
 	 * Add Alexa to configuration file
 	 *
-	 * @param {AppFile} config
+	 * @param {AppFileAlexa} config
 	 * @returns {AppFile}
-	 * @memberof JovoCliPlatform
+	 * @memberof JovoCliPlatformAlexa
 	 */
 	addPlatfromToConfig(config: AppFileAlexa): AppFileAlexa {
 		if (!config.alexaSkill) {
@@ -207,6 +209,16 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 		return config;
 	}
 
+
+	/**
+	 * Returns the validator to check if the platform specific properties are valid
+	 *
+	 * @returns {tv4.JsonSchema}
+	 * @memberof JovoCliPlatformAlexa
+	 */
+	getModelValidator(): tv4.JsonSchema {
+		return JovoModelAlexaValidator;
+	}
 
 
 	/**
@@ -327,19 +339,36 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 						enabled: () => project.hasModelFiles(ctx.locales),
 						task: (ctx) => {
 							const buildLocalesTasks: ListrTask[] = [];
-							// throw new Error(JSON.stringify(ctx.locales))
-							for (const locale of ctx.locales) {
-								buildLocalesTasks.push({
-									title: locale,
-									task: () => {
-										return this.buildLanguageModelAlexa(locale, ctx.stage)
-											.then(() => {
+							let buildLocales: string[];
+							let sublocales: string[];
+
+							for (const mainLocale of ctx.locales) {
+								buildLocales = [];
+
+								if (mainLocale.length === 2) {
+									sublocales = this.getSubLocales(mainLocale);
+									if (sublocales) {
+										buildLocales.push.apply(buildLocales, sublocales);
+									}
+								}
+
+								if (buildLocales.length === 0) {
+									buildLocales.push(mainLocale);
+								}
+
+								buildLocales.forEach((locale) => {
+									buildLocalesTasks.push({
+										title: locale,
+										task: () => {
+											return this.buildLanguageModelAlexa(mainLocale, ctx.stage)
+												.then(() => {
 													// Refresh the model data else it uses the old previously cached one
 													this.getModel(locale, true);
 													return Utils.wait(500);
 												}
-											);
-									},
+												);
+										},
+									});
 								});
 							}
 							return new listr(buildLocalesTasks);
@@ -577,17 +606,35 @@ Endpoint: ${skillInfo.endpoint}`;
 						task: (ctx: JovoTaskContextAlexa) => {
 							const deployLocaleTasks: ListrTask[] = [];
 
-							for (const locale of this.getLocales(ctx.locales)) {
-								deployLocaleTasks.push({
-									title: locale,
-									task: (ctx: JovoTaskContextAlexa) => {
-										const config = _.cloneDeep(ctx);
-										config.locales = [locale];
-										return ask.askApiUpdateModel(
-											config,
-											this.getModelPath(locale),
-											locale).then(() => ask.getModelStatus(config));
-									},
+
+							let deployLocales: string[];
+							let sublocales: string[];
+							for (const mainLocale of this.getLocales(ctx.locales)) {
+								deployLocales = [];
+
+								if (mainLocale.length === 2) {
+									sublocales = this.getSubLocales(mainLocale);
+									if (sublocales) {
+										deployLocales.push.apply(deployLocales, sublocales);
+									}
+								}
+
+								if (deployLocales.length === 0) {
+									deployLocales.push(mainLocale);
+								}
+
+								deployLocales.forEach((locale) => {
+									deployLocaleTasks.push({
+										title: locale,
+										task: (ctx: JovoTaskContextAlexa) => {
+											const config = _.cloneDeep(ctx);
+											config.locales = [locale];
+											return ask.askApiUpdateModel(
+												config,
+												this.getModelPath(locale),
+												locale).then(() => ask.getModelStatus(config));
+										},
+									});
 								});
 							}
 							return new listr(deployLocaleTasks);
@@ -767,6 +814,26 @@ Endpoint: ${skillInfo.endpoint}`;
 	}
 
 
+	/**
+	 * Returns the defined sub locales for the given locale
+	 *
+	 * @param {string} locale The locale to return sub locals for
+	 * @returns {string[]}
+	 * @memberof JovoCliPlatformAlexa
+	 */
+	getSubLocales(locale: string): string[] {
+		const appJson = project.getConfig();
+
+		const sublocales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
+
+		if (!sublocales) {
+			return [];
+		}
+
+		return sublocales;
+	}
+
+
     /**
      * Creates empty skill.json
      * @param {string} skillName
@@ -795,12 +862,11 @@ Endpoint: ${skillInfo.endpoint}`;
 			for (const locale of locales) {
 				if (locale.length === 2) {
 					try {
-						const appJson = project.getConfig();
+						const sublocales = this.getSubLocales(locale);
 
-						if (!_.get(appJson, `alexaSkill.nlu.lang.${locale}`)) {
+						if (!sublocales) {
 							throw new Error();
 						}
-						const sublocales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
 
 						for (const sublocale of sublocales) {
 							_.set(skillJson, `manifest.publishingInformation.locales.${sublocale}`, {

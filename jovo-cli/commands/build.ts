@@ -187,8 +187,16 @@ module.exports = (vorpal: Vorpal) => {
 				console.log('  Build completed.');
 				console.log();
 			}).catch((err) => {
+				if (err.show) {
+					err.show();
+				} else {
+					console.error(err.message);
+				}
+
 				if (DEBUG === true) {
-					console.error(err);
+					if (err.context) {
+						console.error(err.context);
+					}
 				}
 			});
 		});

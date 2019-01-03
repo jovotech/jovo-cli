@@ -22,8 +22,9 @@ import * as _ from 'lodash';
 import * as uuidv4 from 'uuid/v4';
 import * as Utils from './Utils';
 import { ListrTask, ListrTaskWrapper } from 'listr';
+import * as tv4 from 'tv4';
 
-import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, PackageVersion } from './';
+import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, ModelValidationError, PackageVersion } from './';
 import { DEFAULT_LOCALE, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
 
 
@@ -121,7 +122,18 @@ export class Project {
 			appJsonConfig = _.cloneDeep(JSON.parse(fs.readFileSync(this.getConfigPath()).toString()));
 		} else {
 			// Is JavaScript file
+
+			// Add JOVO_WEBHOOK_URL as global variable that it does not cause an error when
+			// used with backtick
+
+			// @ts-ignore
+			global.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL + '/' + this.getOrCreateJovoWebhookId();
+
 			appJsonConfig = _.cloneDeep(require(this.getConfigPath()));
+
+			// Remove the global variable again
+			// @ts-ignore
+			delete global.JOVO_WEBHOOK_URL;
 		}
 
 		return appJsonConfig;
@@ -490,7 +502,35 @@ export class Project {
 	 * Checks if working directory is in a project
 	 * @return {boolean}
 	 */
-	isInProjectDirectory(): boolean {
+	async isInProjectDirectory(): Promise<boolean> {
+		const projectPath = this.getProjectPath();
+
+		if (!await existsAsync(projectPath + 'package.json')) {
+			return false;
+		}
+
+		let packageVersion;
+		try {
+			packageVersion = await this.getJovoFrameworkVersion();
+		} catch (e) {
+			return false;
+		}
+
+		if (packageVersion.major === 1) {
+			if (!await existsAsync(pathJoin(projectPath + 'index.js')) || !await existsAsync(pathJoin(projectPath, 'app') + pathSep)) {
+				return false;
+			}
+		} else {
+			if (!await existsAsync(pathJoin(projectPath, 'src') + pathSep)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	isInProjectDirectoryOld(): boolean {
+
+
 		return fs.existsSync(this.getProjectPath() + 'index.js') &&
 			fs.existsSync(this.getProjectPath() + 'package.json') &&
 			fs.existsSync(this.getProjectPath() + 'app' + pathSep);
@@ -560,7 +600,16 @@ export class Project {
 
 
 	getStage(stage: string): string {
+		if (stage) {
+			// If a stage is given always use it no matter what is defined
+			// in environment or config
+			return stage;
+		}
+
 		let stg = '';
+		if (process.env.NODE_ENV) {
+			stg = process.env.NODE_ENV;
+		}
 		if (process.env.STAGE) {
 			stg = process.env.STAGE;
 		}
@@ -575,9 +624,7 @@ export class Project {
 				throw error;
 			}
 		}
-		if (stage) {
-			stg = stage;
-		}
+
 		return stg;
 	}
 
@@ -618,7 +665,7 @@ export class Project {
 		try {
 			data = fs.readFileSync(pathJoin(Utils.getUserHome(), '.jovo/config'));
 		} catch (err) {
-
+			throw new Error(`The ".jovo/config" file is missing!`);
 		}
 		return JSON.parse(data.toString());
 	}
@@ -930,120 +977,27 @@ export class Project {
 	}
 
 
+	/**
+	 * Validates jovo model
+	 * @param {*} locale
+	 */
+	validateModel(locale: string, validator: tv4.JsonSchema): void {
+		let model: JovoModel;
+		try {
+			model = this.getModel(locale);
+		} catch (error) {
+			if (error.code === 'MODULE_NOT_FOUND') {
+				throw new Error(`Could not find model file for locale "${locale}"`);
+			}
+			throw error;
+		}
 
+		const valid = tv4.validate(model, validator);
 
-	// DOES NOT GET USED ANYWHERE
-	// /**
-	//  * Validates jovo model
-	//  * @param {*} locale
-	//  */
-	// validateModel(locale) {
-	//     let model;
-	//     try {
-	//         model = this.getModel(locale);
-	//     } catch (error) {
-	//         if (error.code === 'MODULE_NOT_FOUND') {
-	//             throw new Error('Could not find model file for locale "' + locale + '"');
-	//         }
-	//         throw error;
-	//     }
-
-	//     for (let intent of model.intents) {
-	//         if (!intent.name) {
-	//             throw new Error(`Intents must have "name"`);
-	//         }
-	//         if (!_.isString(intent.name)) {
-	//             throw new Error(`"name" must be type of string`);
-	//         }
-	//         if (!intent.phrases) {
-	//             throw new Error(`Intents must have "phrases"`);
-	//         }
-	//         if (!_.isArray(intent.phrases)) {
-	//             throw new Error(`"phrases" must be type of array`);
-	//         }
-
-	//         for (let phrase of intent.phrases) {
-	//             let re = /{(.*?)}/g;
-	//             let m;
-	//             while (m = re.exec(phrase)) {
-	//                 if (!intent.inputs) {
-	//                     if (!_.isArray(intent.inputs)) {
-	//                         throw new Error(`${m[1]} has to be defined in inputs array`);
-	//                     }
-	//                 }
-	//                 let inputs = intent.inputs.filter((item) => {
-	//                     if (!item.name) {
-	//                         throw new Error(`Input in intent ${intent.name} must have "name"`);
-	//                     }
-	//                     if (!_.isString(item.name)) {
-	//                         throw new Error(`Input name in intent ${intent.name} must of type string`); // eslint-disable-line
-	//                     }
-	//                     if (!item.type) {
-	//                         throw new Error(`Input in intent ${intent.name} must have "type"`);
-	//                     }
-	//                     if (_.isObject(item.type)) {
-	//                         if (!item.type.alexa && !item.type.dialogflow) {
-	//                             throw new Error(`Add alexa or/and dialogflow to input ${item.name}`); // eslint-disable-line
-	//                         }
-	//                     }
-
-	//                     return item.name === m[1];
-	//                 });
-	//                 if (inputs.length === 0) {
-	//                     throw new Error(`Intent ${intent.name}:
-	//                     Every parameter in curly brackets has to be in the slots array.`);
-	//                 }
-	//             }
-	//         }
-	//     }
-	//     if (model.alexa) {
-	//         if (Object.keys(model.alexa).length !== 1) {
-	//             throw new Error(`alexa must have only one object (interactionModel)`);
-	//         }
-	//         if (!model.alexa.interactionModel) {
-	//             throw new Error(`alexa must have interactionModel object`);
-	//         }
-	//     }
-
-	//     if (model.inputTypes) {
-	//         if (!_.isArray(model.inputTypes)) {
-	//             throw new Error('inputTypes must be of type array');
-	//         }
-	//         for (const inputType of model.inputTypes) {
-	//             if (!inputType.name) {
-	//                 throw new Error(`Input types must have "name"`);
-	//             }
-	//             if (!_.isString(inputType.name)) {
-	//                 throw new Error(`"name" must be type of string`);
-	//             }
-	//             if (!inputType.values) {
-	//                 throw new Error(`Input types must have "values"`);
-	//             }
-	//             if (!_.isArray(inputType.values)) {
-	//                 throw new Error(`"values" must be type of array`);
-	//             }
-	//             for (const value of inputType.values) {
-	//                 if (!value.value) {
-	//                     throw new Error(`Input "${inputType.name}" values must have object with value`); // eslint-disable-line
-	//                 }
-	//                 if (!_.isString(value.value)) {
-	//                     throw new Error(`"value" must be type of string`);
-	//                 }
-	//                 if (value.synonyms) {
-	//                     if (!_.isArray(value.synonyms)) {
-	//                         throw new Error(`"synonyms" must be type of array`);
-	//                     }
-	//                     for (const synonym of value.synonyms) {
-	//                         if (!_.isString(synonym)) {
-	//                             throw new Error(`"synonym" must be type of string`);
-	//                         }
-	//                     }
-	//                 }
-	//             }
-	//         }
-	//     }
-	// }
-
+		if (valid === false) {
+			throw new ModelValidationError(tv4.error.message, locale, tv4.error.dataPath);
+		}
+	}
 
 
     /**

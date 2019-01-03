@@ -1,3 +1,4 @@
+
 import * as _ from 'lodash';
 import * as fs from 'fs';
 import * as Listr from 'listr';
@@ -7,6 +8,7 @@ import {
 	getProject,
 	JovoCliDeploy,
 	JovoTaskContext,
+	Validators,
 	ENDPOINT_NONE,
 	TARGET_ALL,
 	TARGET_INFO,
@@ -146,10 +148,21 @@ export function buildTask(ctx: JovoTaskContext) {
 					throw (error);
 				}
 
+				// Do basic JSON-validation
 				try {
 					jsonlint.parse(modelFileContent);
 				} catch (error) {
 					return Promise.reject(new Error(error.message));
+				}
+
+				// Validate if the content is valid
+				project.validateModel(locale, Validators.JovoModel);
+
+				// Validate also content of platform specific properties
+				let platform;
+				for (const type of ctx.types) {
+					platform = Platforms.get(type);
+					project.validateModel(locale, platform.getModelValidator());
 				}
 
 				return Promise.resolve();
@@ -227,11 +240,23 @@ export function deployTask(ctx: JovoTaskContext): Listr.ListrTask[] {
 			targetNames = [ctx.target];
 		}
 	}
+
+	let target;
+	let preDeployTasks: string[] = [];
 	targetNames.forEach((targetName) => {
-		targets.push(DeployTargets.get(targetName));
+		target = DeployTargets.get(targetName);
+		preDeployTasks = _.union(preDeployTasks, target.getPreDeployTasks());
+		targets.push(target);
 	});
 
 	const deployPlatformTasks: Listr.ListrTask[] = [];
+
+	preDeployTasks.forEach((targetName) => {
+		if (targetName === TARGET_ZIP) {
+			deployPlatformTasks.push(project.deployTaskZipProjectSource(ctx));
+		}
+	});
+
 	let platform;
 	ctx.types.forEach((type:string) => {
 		platform = Platforms.get(type);

@@ -5,7 +5,7 @@
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
-		"build": "tsc",
+		"build": "gulp && tsc",
 		"tslint": "tslint -p tsconfig.json -c tslint.json",
 		"tsc": "tsc",
 		"tscw": "tsc --watch",
@@ -26,11 +26,14 @@
 		"@types/lodash": "^4.14.118",
 		"@types/node": "^10.10.1",
 		"@types/request": "^2.48.1",
+		"@types/tv4": "^1.2.29",
 		"@types/vorpal": "^1.11.0",
+		"gulp": "^3.9.1",
 		"jest": "^23.6.0",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
-		"typescript": "^3.0.3"
+		"typescript": "^3.0.3",
+		"typescript-json-schema": "^0.34.0"
 	},
 	"dependencies": {
 		"adm-zip": "^0.4.11",

@@ -1,4 +1,4 @@
-import { AppFile, Intent, JovoTaskContext } from 'jovo-cli-core';
+import { AppFile, Intent, JovoModel, JovoTaskContext } from 'jovo-cli-core';
 
 export interface JovoTaskContextGoogle extends JovoTaskContext {
 	pathToZip: string;
@@ -43,7 +43,13 @@ export interface DialogFlowLMInputObject {
 	name: string;
 	auto: boolean;
 	webhookUsed: boolean;
+	fallbackIntent?: boolean;
 	responses?: DialogFlowResponse[];
+	events?: [
+		{
+			name: string;
+		}
+	];
 }
 
 
@@ -58,4 +64,14 @@ export interface AppFileDialogFlow extends AppFile {
 			name: string;
 		}
 	};
+}
+
+export interface DialogFlowModel {
+	intents?: [
+		DialogFlowLMInputObject
+	];
+}
+
+export interface JovoModelDialogFlow extends JovoModel {
+	dialogflow?: DialogFlowModel;
 }

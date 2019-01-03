@@ -18,6 +18,9 @@ import { AppFileDialogFlow } from './';
 import { AppFile, ArgOptions, InputType, IntentInput, JovoCliDeploy, JovoCliPlatform, JovoModel, Project, Utils } from 'jovo-cli-core';
 import { DialogFlowLMInputParameterObject, DialogFlowLMInputObject, DialogFlowLMIntent, DialogFlowLMIntentData, DialogFlowLMEntity, IntentDialogFlow, JovoTaskContextGoogle } from './';
 
+import * as JovoModelDialogFlowValidator from '../validators/JovoModelDialogFlow.json';
+
+
 const project = require('jovo-cli-core').getProject();
 
 
@@ -104,6 +107,17 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 */
 	getPlatformConfigValues(project: Project, argOptions: ArgOptions): object {
 		return {};
+	}
+
+
+	/**
+	 * Returns the validator to check if the platform specific properties are valid
+	 *
+	 * @returns {tv4.JsonSchema}
+	 * @memberof JovoCliPlatformGoogle
+	 */
+	getModelValidator(): tv4.JsonSchema {
+		return JovoModelDialogFlowValidator;
 	}
 
 
