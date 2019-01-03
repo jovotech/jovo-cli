@@ -127,7 +127,7 @@ export class Project {
 			// used with backtick
 
 			// @ts-ignore
-			global.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL + '/' + this.getWebhookUuid();
+			global.JOVO_WEBHOOK_URL = JOVO_WEBHOOK_URL + '/' + this.getOrCreateJovoWebhookId();
 
 			appJsonConfig = _.cloneDeep(require(this.getConfigPath()));
 
@@ -637,7 +637,7 @@ export class Project {
 		try {
 			data = fs.readFileSync(pathJoin(Utils.getUserHome(), '.jovo/config'));
 		} catch (err) {
-
+			throw new Error(`The ".jovo/config" file is missing!`);
 		}
 		return JSON.parse(data.toString());
 	}
