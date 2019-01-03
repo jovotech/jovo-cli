@@ -502,7 +502,35 @@ export class Project {
 	 * Checks if working directory is in a project
 	 * @return {boolean}
 	 */
-	isInProjectDirectory(): boolean {
+	async isInProjectDirectory(): Promise<boolean> {
+		const projectPath = this.getProjectPath();
+
+		if (!await existsAsync(projectPath + 'package.json')) {
+			return false;
+		}
+
+		let packageVersion;
+		try {
+			packageVersion = await this.getJovoFrameworkVersion();
+		} catch (e) {
+			return false;
+		}
+
+		if (packageVersion.major === 1) {
+			if (!await existsAsync(pathJoin(projectPath + 'index.js')) || !await existsAsync(pathJoin(projectPath, 'app') + pathSep)) {
+				return false;
+			}
+		} else {
+			if (!await existsAsync(pathJoin(projectPath, 'src') + pathSep)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+	isInProjectDirectoryOld(): boolean {
+
+
 		return fs.existsSync(this.getProjectPath() + 'index.js') &&
 			fs.existsSync(this.getProjectPath() + 'package.json') &&
 			fs.existsSync(this.getProjectPath() + 'app' + pathSep);
