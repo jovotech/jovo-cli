@@ -32,8 +32,6 @@ export async function runJovoCommand(command: string, parameters: string[], cwd:
 			reject(new Error(data.toString()));
 		});
 		child.stdout.on('data', (data) => {
-			console.log('data: ' + data.toString());
-
 			if (data.toString().indexOf(waitText) > -1) {
 				child.kill();
 				resolve(data.toString());
