@@ -10,7 +10,6 @@ import { deleteFolderRecursive } from '../utils/Utils';
 import { runJovoCommand } from './Helpers';
 
 const exec = childProcess.exec;
-const spawn = childProcess.spawn;
 
 const askProfile: string = (process.env && process.env.ASK_PROFILE) as string | '';
 
