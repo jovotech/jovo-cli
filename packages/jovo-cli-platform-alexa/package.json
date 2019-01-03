@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli-platform-alexa",
-	"version": "2.0.3",
+	"version": "2.0.4",
 	"description": "Alexa specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -35,7 +35,7 @@
 	"dependencies": {
 		"aws-sdk": "^2.344.0",
 		"chalk": "^2.4.1",
-		"jovo-cli-core": "^2.0.3",
+		"jovo-cli-core": "^2.0.4",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"vorpal": "^1.12.0"
