@@ -1,13 +1,10 @@
 const tmpTestfolder = 'tmpTestfolderNew';
 
 import 'jest';
-import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { deleteFolderRecursive } from '../utils/Utils';
 import { runJovoCommand } from './Helpers';
-
-const spawn = childProcess.spawn;
 
 beforeAll((done) => {
 	deleteFolderRecursive(tmpTestfolder);

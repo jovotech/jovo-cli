@@ -33,7 +33,7 @@ async function start () {
 		versionArg.indexOf(process.argv[2]) === -1) {
 
 		if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-			console.log('To use this command, please go into the directory of a valid Jovo project.');
+			console.error('To use this command, please go into the directory of a valid Jovo project.');
 			process.exit(1);
 		}
 	}
