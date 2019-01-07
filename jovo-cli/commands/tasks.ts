@@ -155,6 +155,11 @@ export function buildTask(ctx: JovoTaskContext) {
 					return Promise.reject(new Error(error.message));
 				}
 
+				if (ctx.ignoreTasks && ctx.ignoreTasks.includes('model-validation')) {
+					// Do not validate the model file
+					return Promise.resolve();
+				}
+
 				// Validate if the content is valid
 				project.validateModel(locale, Validators.JovoModel);
 

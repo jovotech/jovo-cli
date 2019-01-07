@@ -56,6 +56,8 @@ module.exports = (vorpal: Vorpal) => {
 			'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
 		.option('--overwrite',
 			'Forces overwrite of existing project for reverse build')
+		.option('--ignore <task>',
+			'Task which should be ignored \n\t\t\t\t<model-validation|none> - Default: none')
 		.option('\n');
 
 	// Add additional CLI base options and the ones of platforms
@@ -110,6 +112,7 @@ module.exports = (vorpal: Vorpal) => {
 				stage: project.getStage(args.options.stage),
 				debug: DEBUG,
 				frameworkVersion: project.frameworkVersion,
+				ignoreTasks: (args.options.ignore || '').split(',').map((item: string) => item.trim() ),
 			};
 
 			// run init if necessary
