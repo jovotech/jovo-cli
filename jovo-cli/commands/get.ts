@@ -52,6 +52,8 @@ module.exports = (vorpal: Vorpal) => {
 			'Runs build after get. Works only with --reverse')
 		.option('-r, --reverse',
 			'Builds Jovo language model from platfrom specific language model')
+		.option('--overwrite',
+			'Forces overwrite of existing project')
 		.option('\n');
 
 	// Add additional CLI base options and the ones of platforms
@@ -106,7 +108,7 @@ module.exports = (vorpal: Vorpal) => {
 				// because it gets used to check if data already exists and if it should be overwritten
 				let platformConfigIds = platform.getPlatformConfigIds(project, {});
 
-				if (Object.keys(platformConfigIds).length) {
+				if (!args.options.overwrite && Object.keys(platformConfigIds).length) {
 					p = p.then(() => {
 						return promptOverwriteProjectFiles().then((answers) => {
 							if (answers.overwrite === ANSWER_CANCEL) {
@@ -154,7 +156,9 @@ module.exports = (vorpal: Vorpal) => {
 							} catch (e) {
 								config.locales = undefined;
 							}
-							if (project.hasModelFiles(config.locales)) {
+							if (args.options.overwrite) {
+								config.reverse = true;
+							} else if (project.hasModelFiles(config.locales)) {
 								return promptOverwriteReverseBuild().then((answers) => {
 									if (answers.promptOverwriteReverseBuild ===
 										ANSWER_CANCEL) {

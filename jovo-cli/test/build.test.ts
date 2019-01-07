@@ -168,7 +168,7 @@ describe('build v1', () => {
 			.toBe(true);
 	}, 12000);
 
-	it('jovo new <project> --init alexaSkill --build --v1 \n      jovo build --reverse', async () => {
+	it('jovo new <project> --init alexaSkill --build --v1 \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_alexaSkill_v1';
 
 		// Create new project
@@ -183,11 +183,8 @@ describe('build v1', () => {
 
 		const projectFolder = path.join(tmpTestfolder, projectName);
 
-		// Delete model file to avoid having to select if it should be overwritten
-		fs.unlinkSync(path.join(projectFolder, 'models', 'en-US.json'));
-
 		// Build project
-		await runJovoCommand('build', ['--reverse'], projectFolder, 'Build completed.');
+		await runJovoCommand('build', ['--reverse', '--overwrite'], projectFolder, 'Build completed.');
 
 		// Tests
 		expect(fs.existsSync(path.join(projectFolder, 'models', 'en-US.json'))).toBe(true);
@@ -200,7 +197,7 @@ describe('build v1', () => {
 			.toBe('my test app');
 	}, 12000);
 
-	it('jovo new <project> --init googleAction --build --v1 \n      jovo build --reverse', async () => {
+	it('jovo new <project> --init googleAction --build --v1 \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_googleAction_v1';
 
 		// Create new project
@@ -215,11 +212,8 @@ describe('build v1', () => {
 
 		const projectFolder = path.join(tmpTestfolder, projectName);
 
-		// Delete model file to avoid having to select if it should be overwritten
-		fs.unlinkSync(path.join(projectFolder, 'models', 'en-US.json'));
-
 		// Build project
-		await runJovoCommand('build', ['--reverse'], projectFolder, 'Build completed.');
+		await runJovoCommand('build', ['--reverse', '--overwrite'], projectFolder, 'Build completed.');
 
 		// Tests
 		expect(fs.existsSync(path.join(projectFolder, 'models', 'en.json'))).toBe(true);
@@ -385,7 +379,7 @@ describe('build v2', () => {
 			.toBe(true);
 	}, 12000);
 
-	it('jovo new <project> --init alexaSkill --build \n      jovo build --reverse', async () => {
+	it('jovo new <project> --init alexaSkill --build \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_alexaSkill_v2';
 
 		// Create new project
@@ -398,11 +392,8 @@ describe('build v2', () => {
 
 		const projectFolder = path.join(tmpTestfolder, projectName);
 
-		// Delete model file to avoid having to select if it should be overwritten
-		fs.unlinkSync(path.join(projectFolder, 'models', 'en-US.json'));
-
 		// Build project
-		await runJovoCommand('build', ['--platform', 'alexaSkill', '--reverse'], projectFolder, 'Build completed.');
+		await runJovoCommand('build', ['--platform', 'alexaSkill', '--reverse', '--overwrite'], projectFolder, 'Build completed.');
 
 		// Tests
 		expect(fs.existsSync(path.join(projectFolder, 'models', 'en-US.json'))).toBe(true);
@@ -415,7 +406,7 @@ describe('build v2', () => {
 			.toBe('my test app');
 	}, 12000);
 
-	it('jovo new <project> --init googleAction --build \n      jovo build --reverse', async () => {
+	it('jovo new <project> --init googleAction --build \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_googleAction_v2';
 
 		// Create new project
@@ -428,11 +419,8 @@ describe('build v2', () => {
 
 		const projectFolder = path.join(tmpTestfolder, projectName);
 
-		// Delete model file to avoid having to select if it should be overwritten
-		fs.unlinkSync(path.join(projectFolder, 'models', 'en-US.json'));
-
 		// Build project
-		await runJovoCommand('build', ['--platform', 'googleAction', '--reverse'], projectFolder, 'Build completed.');
+		await runJovoCommand('build', ['--platform', 'googleAction', '--reverse', '--overwrite'], projectFolder, 'Build completed.');
 
 		// Tests
 		expect(fs.existsSync(path.join(projectFolder, 'models', 'en.json'))).toBe(true);

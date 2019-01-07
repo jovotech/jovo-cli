@@ -54,6 +54,8 @@ module.exports = (vorpal: Vorpal) => {
 			'Takes configuration from <stage>')
 		.option('--endpoint <endpoint>',
 			'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
+		.option('--overwrite',
+			'Forces overwrite of existing project for reverse build')
 		.option('\n');
 
 	// Add additional CLI base options and the ones of platforms
@@ -114,7 +116,7 @@ module.exports = (vorpal: Vorpal) => {
 			if (!project.hasConfigFile()) {
 				if (project.frameworkVersion === 1) {
 					if (config.types && config.types.length === 0) {
-						answers = await promptForInit();
+						answers = await promptForInit('To use this command, please first initialize at least one platform with jovo init. You can also choose one here:');
 						config.types = [answers.platform];
 					}
 				} else {
@@ -128,7 +130,7 @@ module.exports = (vorpal: Vorpal) => {
 				// If more than one type is set and reverse selected ask the user
 				// for a platform as a reverse build can only be done from one
 				// as further ones would overwrite previous ones.
-				answers = await promptForInit();
+				answers = await promptForInit('Please select the platform you want to reverse build from:');
 				config.types = [answers.platform];
 			}
 
@@ -141,8 +143,9 @@ module.exports = (vorpal: Vorpal) => {
 
 					const platform = Platforms.get(type);
 					config.locales = platform.getLocales(args.options.locale);
-
-					if (project.hasModelFiles(config.locales)) {
+					if (args.options.overwrite) {
+						config.reverse = true;
+					} else if (project.hasModelFiles(config.locales)) {
 						answers = await promptOverwriteReverseBuild();
 
 						if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {

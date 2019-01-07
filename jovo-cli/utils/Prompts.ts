@@ -33,12 +33,12 @@ export function promptForPlatform(): Promise<inquirer.Answers> {
  * Asks for platform
  * @return {Promise}
  */
-export function promptForInit(): Promise<inquirer.Answers> {
+export function promptForInit(message: string): Promise<inquirer.Answers> {
 	const questions = [
 		{
 			type: 'list',
 			name: 'platform',
-			message: 'To use this command, please first initialize at least one platform with jovo init. You can also choose one here:',
+			message,
 			choices: [{
 				value: 'alexaSkill',
 				name: 'Alexa Skill (alexaSkill)',
