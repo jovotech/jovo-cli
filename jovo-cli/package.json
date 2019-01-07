@@ -36,7 +36,6 @@
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"nodemon": "^1.18.7",
-		"request": "^2.88.0",
 		"resolve-bin": "^0.4.0",
 		"update-notifier": "^2.5.0",
 		"vorpal": "^1.12.0"

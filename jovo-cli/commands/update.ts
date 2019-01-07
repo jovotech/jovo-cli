@@ -4,14 +4,13 @@ import * as _ from 'lodash';
 import Vorpal = require('vorpal');
 import { Args } from 'vorpal';
 import { exec } from 'child_process';
-import * as request from 'request';
 
 const { promisify } = require('util');
 
 import * as fs from 'fs';
 const readFileAsync = promisify(fs.readFile);
 
-import { join as pathJoin, sep as pathSep, parse as pathParse } from 'path';
+import { join as pathJoin } from 'path';
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import * as Listr from 'listr';
 import { ListrOptionsExtended } from '../src';
@@ -52,18 +51,6 @@ module.exports = (vorpal: Vorpal) => {
 			} as ListrOptionsExtended);
 
 			await project.init();
-
-			// Start to get the changelog but do not wait till ready that we can directly start with the update in the meantime
-			const changeLogUrl = 'https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md';
-			const changeLogPromise = new Promise((resolve, reject) => {
-				request(changeLogUrl, (error, response, body) => {
-					if (error) {
-						return reject(new Error(error.message));
-					}
-
-					return resolve(body);
-				});
-			});
 
 
 			let oupdateOutput = '';
@@ -107,13 +94,16 @@ module.exports = (vorpal: Vorpal) => {
 			.then(async() => {
 				console.log();
 				console.log('  Update completed.');
-				console.log('\n\n\n');
-				console.log('Update output: ');
-				console.log('-------------------');
-				console.log(oupdateOutput);
-				console.log('\n\n\n');
-				const changelog = await changeLogPromise;
-				console.log(changelog);
+				console.log('\n\n');
+				console.log('  Update output: ');
+				console.log('  -------------------');
+				if (!oupdateOutput) {
+					console.log('  Everything is up to date!');
+				} else {
+					console.log(oupdateOutput);
+				}
+				console.log('\n\n');
+				console.log('  Changelog: https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md');
 			})
 			.catch((err) => {
 				if (DEBUG === true) {
