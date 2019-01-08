@@ -75,7 +75,7 @@ module.exports = (vorpal: Vorpal) => {
 			await project.init();
 
 			if (project.frameworkVersion !== 1) {
-				console.error('The "init" command got deprecated and is only available for Jovo Framework v1 projects.');
+				console.error('The "init" command got deprecated for v2 projects as it is no longer needed.');
 				return Promise.resolve();
 			}
 

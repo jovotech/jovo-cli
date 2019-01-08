@@ -4,14 +4,7 @@ import * as _ from 'lodash';
 import Vorpal = require('vorpal');
 import { Args } from 'vorpal';
 import { exec } from 'child_process';
-import * as request from 'request';
 
-const { promisify } = require('util');
-
-import * as fs from 'fs';
-const readFileAsync = promisify(fs.readFile);
-
-import { join as pathJoin, sep as pathSep, parse as pathParse } from 'path';
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import * as Listr from 'listr';
 import { ListrOptionsExtended } from '../src';
@@ -21,7 +14,8 @@ const project = require('jovo-cli-core').getProject();
 
 
 import {
-	addBaseCliOptions
+	addBaseCliOptions,
+	getPackages,
 } from '../utils/Utils';
 
 
@@ -53,42 +47,19 @@ module.exports = (vorpal: Vorpal) => {
 
 			await project.init();
 
-			// Start to get the changelog but do not wait till ready that we can directly start with the update in the meantime
-			const changeLogUrl = 'https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md';
-			const changeLogPromise = new Promise((resolve, reject) => {
-				request(changeLogUrl, (error, response, body) => {
-					if (error) {
-						return reject(new Error(error.message));
-					}
 
-					return resolve(body);
-				});
-			});
-
-
-			let oupdateOutput = '';
+			let npmUpdateOutput = '';
 			tasks.add({
 				// @ts-ignore
 				title: `Updating JOVO packages`,
 				task: async (ctx, task) => {
-					// Find all the jovo-packages in the project to update
-					const projectPath = project.getProjectPath();
-					const packagePath = pathJoin(projectPath, 'package.json');
-					const content = await readFileAsync(packagePath);
-					const packageFile = JSON.parse(content);
+					const jovoPackages = await getPackages(/^jovo\-/);
 
-					const jovoPackages: string[] = [];
-					Object.keys(packageFile.dependencies).forEach((packageName) => {
-						if (packageName.indexOf('jovo-') === 0) {
-							jovoPackages.push(packageName);
-						}
-					});
+					const updateCommand = 'npm --depth 99 update ' + Object.keys(jovoPackages).join(' ');
 
-					const updateCommand = 'npm --depth 99 update ' + jovoPackages.join(' ');
-
-					oupdateOutput = await new Promise((resolve, reject) => {
+					npmUpdateOutput = await new Promise<string>((resolve, reject) => {
 						exec(updateCommand, {
-							cwd: projectPath,
+							cwd: project.getProjectPath(),
 						},
 							(error, stdout) => {
 								if (error) {
@@ -97,7 +68,7 @@ module.exports = (vorpal: Vorpal) => {
 									return;
 								}
 
-								resolve(stdout);
+								resolve(stdout as string);
 							});
 					});
 				},
@@ -107,13 +78,16 @@ module.exports = (vorpal: Vorpal) => {
 			.then(async() => {
 				console.log();
 				console.log('  Update completed.');
-				console.log('\n\n\n');
+				console.log('\n\n');
 				console.log('Update output: ');
 				console.log('-------------------');
-				console.log(oupdateOutput);
-				console.log('\n\n\n');
-				const changelog = await changeLogPromise;
-				console.log(changelog);
+				if (!npmUpdateOutput) {
+					console.log('Everything is up to date!');
+				} else {
+					console.log(npmUpdateOutput);
+				}
+				console.log('\n\n');
+				console.log('Changelog: https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md');
 			})
 			.catch((err) => {
 				if (DEBUG === true) {

@@ -5,6 +5,8 @@ const vorpal = new Vorpal();
 require('dotenv').config();
 import * as updateNotifier from 'update-notifier';
 import { getProject } from 'jovo-cli-core';
+import { getPackages } from './utils/Utils';
+
 const project = getProject();
 
 const pkg = require('../package.json');
@@ -33,16 +35,27 @@ async function start () {
 		versionArg.indexOf(process.argv[2]) === -1) {
 
 		if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-			console.log('To use this command, please go into the directory of a valid Jovo project.');
+			console.error('To use this command, please go into the directory of a valid Jovo project.');
 			process.exit(1);
 		}
 	}
 
-
 	if (process.argv.length <= 2) {
 	} else if (process.argv.length === 3 &&
 		(versionArg.indexOf(process.argv[2]) > -1)) {
-		console.log('Jovo CLI Version: ' + require('../package').version);
+		console.log('\nJovo CLI Version: ' + require('../package').version);
+
+		if (await project.isInProjectDirectory()) {
+			const packages = await getPackages(/^jovo\-/);
+			if (Object.keys(packages).length) {
+				console.log('\nJovo packages of current project:');
+				for (const packageName of Object.keys(packages)) {
+					console.log(`  ${packageName}: ${packages[packageName]}`);
+				}
+			}
+
+		}
+		console.log();
 	} else {
 		vorpal
 			.use(require('./commands/new.js'))

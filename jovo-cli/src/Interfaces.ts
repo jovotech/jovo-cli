@@ -19,3 +19,7 @@ export interface ListrTaskHelper {
 	isSkipped(): boolean;
 	subtasks: ListrTaskHelper[];
 }
+
+export interface PackageVersions {
+	[key: string]: string;
+}

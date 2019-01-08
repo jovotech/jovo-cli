@@ -17,7 +17,7 @@ import {
 	JovoCliPlatform,
 } from 'jovo-cli-core';
 import * as DeployTargets from '../utils/DeployTargets';
-const jsonlint = require("jsonlint");
+const parseJson = require('parse-json');
 
 const { promisify } = require('util');
 const existsAsync = promisify(fs.exists);
@@ -150,9 +150,14 @@ export function buildTask(ctx: JovoTaskContext) {
 
 				// Do basic JSON-validation
 				try {
-					jsonlint.parse(modelFileContent);
+					parseJson(modelFileContent);
 				} catch (error) {
-					return Promise.reject(new Error(error.message));
+					return Promise.reject(new Error(`Model-File is not valid JSON: ${error.message}`));
+				}
+
+				if (ctx.ignoreTasks && ctx.ignoreTasks.includes('model-validation')) {
+					// Do not validate the model file
+					return Promise.resolve();
 				}
 
 				// Validate if the content is valid
