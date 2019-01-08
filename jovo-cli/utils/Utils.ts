@@ -90,7 +90,7 @@ export function addBaseCliOptions(vorpalInstance: Vorpal.Command): void {
  * @param {RegExp} [packageRegex] Regex to use to filter packages
  * @returns {PackageVersions}
  */
-export async function getPackages(packageRegex?: RegExp): PackageVersions {
+export async function getPackages(packageRegex?: RegExp): Promise<PackageVersions> {
 	const projectPath = project.getProjectPath();
 	const packagePath = pathJoin(projectPath, 'package-lock.json');
 	let content;
