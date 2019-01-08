@@ -80,6 +80,7 @@ export interface JovoTaskContext {
 	reverse?: boolean;
 	debug?: boolean;
 	frameworkVersion?: number;
+	ignoreTasks?: string[];
 }
 
 export interface JovoConfig {
