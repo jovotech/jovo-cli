@@ -19,6 +19,8 @@ import {
 	JOVO_WEBHOOK_URL,
 } from 'jovo-cli-core';
 
+const opn = require('opn');
+
 const { promisify } = require('util');
 
 const accessAsync = promisify(fs.access);
@@ -246,4 +248,31 @@ function jovoWebhook(options: object, stage: string) {
 
 	// Open socket redirect from server to localhost
 	JovoWebhookConnector.open(id, JOVO_WEBHOOK_URL, { post: options });
+
+	const debuggerUrl = `${JOVO_WEBHOOK_URL}/${id}`;
+	if (Boolean(process.stdout.isTTY)) {
+		if (process.stdin.setRawMode) {
+			setTimeout(() => {
+				console.log('\nTo open Jovo Debugger in your browser, enter .\n');
+			}, 2500);
+
+			process.stdin.setRawMode(true);
+			process.stdin.resume();
+			process.stdin.setEncoding('utf8');
+			process.stdin.on("data", async (key) => {
+				if (key === '.') {
+					try {
+						await opn(debuggerUrl);
+					} catch (e) {
+						console.log('\nCould not open browser. Please open debugger manually by visiting this url:');
+						console.log(debuggerUrl);
+					}
+				}
+			});
+		} else {
+			setTimeout(() => {
+				console.log(`\nTo open Jovo Debugger open this url in your browser:\n${debuggerUrl}\n`);
+			}, 2500);
+		}
+	}
 }
