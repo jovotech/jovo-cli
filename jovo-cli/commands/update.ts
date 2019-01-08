@@ -48,7 +48,7 @@ module.exports = (vorpal: Vorpal) => {
 			await project.init();
 
 
-			let oupdateOutput = '';
+			let npmUpdateOutput = '';
 			tasks.add({
 				// @ts-ignore
 				title: `Updating JOVO packages`,
@@ -57,7 +57,7 @@ module.exports = (vorpal: Vorpal) => {
 
 					const updateCommand = 'npm --depth 99 update ' + Object.keys(jovoPackages).join(' ');
 
-					oupdateOutput = await new Promise((resolve, reject) => {
+					npmUpdateOutput = await new Promise<string>((resolve, reject) => {
 						exec(updateCommand, {
 							cwd: project.getProjectPath(),
 						},
@@ -68,7 +68,7 @@ module.exports = (vorpal: Vorpal) => {
 									return;
 								}
 
-								resolve(stdout);
+								resolve(stdout as string);
 							});
 					});
 				},
@@ -81,10 +81,10 @@ module.exports = (vorpal: Vorpal) => {
 				console.log('\n\n');
 				console.log('Update output: ');
 				console.log('-------------------');
-				if (!oupdateOutput) {
+				if (!npmUpdateOutput) {
 					console.log('Everything is up to date!');
 				} else {
-					console.log(oupdateOutput);
+					console.log(npmUpdateOutput);
 				}
 				console.log('\n\n');
 				console.log('Changelog: https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md');
