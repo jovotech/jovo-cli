@@ -1,11 +1,18 @@
 import * as chalk from 'chalk';
 import * as fs from 'fs';
-import * as path from 'path';
+import { join as pathJoin } from 'path';
 import * as logSymbols from 'log-symbols';
 import * as figures from 'figures';
 import * as elegantSpinner from 'elegant-spinner';
-import { ListrTaskHelper, ListrOptionsExtended }from '../src';
+import { ListrTaskHelper, ListrOptionsExtended, PackageVersions }from '../src';
 import Vorpal = require('vorpal');
+
+const { promisify } = require('util');
+
+const readFileAsync = promisify(fs.readFile);
+
+const project = require('jovo-cli-core').getProject();
+
 
 /**
  * From Listr utils
@@ -50,7 +57,7 @@ export function getSymbol(task: ListrTaskHelper, options: ListrOptionsExtended){
 export function deleteFolderRecursive(filepath: string) {
 	if (fs.existsSync(filepath)) {
 		fs.readdirSync(filepath).forEach((file, index) => {
-			const curPath = path.join(filepath, file);
+			const curPath = pathJoin(filepath, file);
 			if (fs.lstatSync(curPath).isDirectory()) { // recurse
 				exports.deleteFolderRecursive(curPath);
 			} else { // delete file
@@ -72,4 +79,37 @@ export function addBaseCliOptions(vorpalInstance: Vorpal.Command): void {
 	vorpalInstance
 	.option('--debug',
 		'Displays additional debugging informatoin');
+}
+
+
+
+/**
+ * Returns the packages with their versions from the package-lock file
+ *
+ * @export
+ * @param {RegExp} [packageRegex] Regex to use to filter packages
+ * @returns {PackageVersions}
+ */
+export async function getPackages(packageRegex?: RegExp): PackageVersions {
+	const projectPath = project.getProjectPath();
+	const packagePath = pathJoin(projectPath, 'package-lock.json');
+	let content;
+	try {
+		content = await readFileAsync(packagePath);
+	} catch (e) {
+		// Could not read file
+		return {};
+	}
+	const packageFile = JSON.parse(content);
+
+	const packages: PackageVersions = {};
+	Object.keys(packageFile.dependencies).forEach((packageName) => {
+		if (packageRegex && !packageName.match(packageRegex)) {
+			return;
+		}
+
+		packages[packageName] = packageFile.dependencies[packageName].version;
+	});
+
+	return packages;
 }
