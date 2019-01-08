@@ -8,6 +8,7 @@ import * as JovoWebhookConnector from 'jovo-webhook-connector';
 import * as path from 'path';
 const resolveBin = require('resolve-bin');
 import * as spawn from 'cross-spawn';
+import { ChildProcess } from 'child_process';
 import { BSTProxy } from 'bespoken-tools';
 import * as Platforms from '../utils/Platforms';
 import {
@@ -83,7 +84,7 @@ module.exports = (vorpal: Vorpal) => {
 					port,
 					timeout,
 				}, stage);
-				return;
+				return new Promise(() => { });
 			}
 			let srcDir;
 			// prepend src directory from config
@@ -178,6 +179,11 @@ module.exports = (vorpal: Vorpal) => {
 				parameters.push('--model-test');
 			}
 
+			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, cwd: projectFolder });
+
+			// Output everything the child process prints
+			ls.stdout.pipe(process.stdout);
+
 			if (args.options['bst-proxy']) {
 				const proxy = BSTProxy.http(port);
 
@@ -199,11 +205,9 @@ module.exports = (vorpal: Vorpal) => {
 				jovoWebhook({
 					port,
 					timeout,
-				}, stage);
+				}, stage, ls);
 				parameters.push('--jovo-webhook');
 			}
-
-			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, stdio: 'inherit', cwd: projectFolder });
 
 			// Ensure our child process is terminated upon exit. This is needed in the situation
 			// where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
@@ -222,7 +226,7 @@ module.exports = (vorpal: Vorpal) => {
  * @param {*} options
  * @param {string} stage
  */
-function jovoWebhook(options: object, stage: string) {
+function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess) {
 	let id;
 
 	try {
@@ -259,13 +263,30 @@ function jovoWebhook(options: object, stage: string) {
 			process.stdin.setRawMode(true);
 			process.stdin.resume();
 			process.stdin.setEncoding('utf8');
+			let inputText = '';
 			process.stdin.on("data", async (key) => {
 				if (key === '.') {
+					// When dot gets pressed open try to open the debugger in browser
 					try {
 						await opn(debuggerUrl);
 					} catch (e) {
 						console.log('\nCould not open browser. Please open debugger manually by visiting this url:');
 						console.log(debuggerUrl);
+					}
+					inputText = '';
+				} else {
+					// When anything else got pressed, record it and send it on enter into the child process
+					if (key.charCodeAt(0) === 13) {
+						// send to child process and print in terminal
+						if (childProcess) {
+							childProcess.stdin.write(inputText + '\n');
+						}
+						process.stdout.write('\n');
+						inputText = '';
+					} else {
+						// record it and write into terminal
+						inputText += key;
+						process.stdout.write(key);
 					}
 				}
 			});
