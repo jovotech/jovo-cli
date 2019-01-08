@@ -179,11 +179,6 @@ module.exports = (vorpal: Vorpal) => {
 				parameters.push('--model-test');
 			}
 
-			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, cwd: projectFolder });
-
-			// Output everything the child process prints
-			ls.stdout.pipe(process.stdout);
-
 			if (args.options['bst-proxy']) {
 				const proxy = BSTProxy.http(port);
 
@@ -202,12 +197,20 @@ module.exports = (vorpal: Vorpal) => {
 				});
 				parameters.push('--bst-proxy');
 			} else {
+				parameters.push('--jovo-webhook');
+			}
+
+			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, cwd: projectFolder });
+
+			if (!args.options['bst-proxy']) {
 				jovoWebhook({
 					port,
 					timeout,
 				}, stage, ls);
-				parameters.push('--jovo-webhook');
 			}
+
+			// Output everything the child process prints
+			ls.stdout.pipe(process.stdout);
 
 			// Ensure our child process is terminated upon exit. This is needed in the situation
 			// where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
