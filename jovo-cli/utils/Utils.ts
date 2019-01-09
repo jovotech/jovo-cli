@@ -78,7 +78,7 @@ export function deleteFolderRecursive(filepath: string) {
 export function addBaseCliOptions(vorpalInstance: Vorpal.Command): void {
 	vorpalInstance
 	.option('--debug',
-		'Displays additional debugging informatoin');
+		'Displays additional debugging information');
 }
 
 
