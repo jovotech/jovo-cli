@@ -211,6 +211,7 @@ module.exports = (vorpal: Vorpal) => {
 
 			// Output everything the child process prints
 			ls.stdout.pipe(process.stdout);
+			ls.stderr.pipe(process.stderr);
 
 			// Ensure our child process is terminated upon exit. This is needed in the situation
 			// where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
