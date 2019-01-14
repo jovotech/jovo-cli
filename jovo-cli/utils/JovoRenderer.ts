@@ -20,6 +20,9 @@ const renderHelper = (tasks: ListrTaskHelper[], options: ListrOptionsExtended, l
 
 	for (const task of tasks) {
 		if (task.isEnabled()) {
+			if (options.separateTopTasks === true && level === 1) {
+				output.push('');
+			}
 			output.push(indentString(` ${getSymbol(task, options)} ${task.title}`, level,  '  '));
 
 			if ((task.isPending() || task.isSkipped() || task.hasFailed()) &&
@@ -84,6 +87,7 @@ export class JovoCliRenderer implements Listr.ListrRenderer {
 			showSubtasks: true,
 			collapse: true,
 			clearOutput: false,
+			separateTopTasks: false,
 		}, options);
 	}
 

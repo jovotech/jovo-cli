@@ -28,6 +28,8 @@ import {
 } from 'jovo-cli-core';
 import { buildReverseTask, buildTask, deployTask, initTask } from './tasks';
 
+const subHeadline = require('chalk').white.dim;
+
 const project = getProject();
 
 
@@ -78,12 +80,16 @@ module.exports = (vorpal: Vorpal) => {
 			DEBUG = args.options.debug ? true : false;
 			let answers;
 
+			console.log(' jovo build:  Create and update platform specific files in /platforms folder');
+			console.log(subHeadline('   >> Learn more: https://jovo.tech/docs/cli/build'));
+
 			await project.init();
 
 			// @ts-ignore
 			const tasks = new Listr([], {
 				renderer: JovoCliRenderer,
 				collapse: false,
+				separateTopTasks: true,
 			} as ListrOptionsExtended);
 			try {
 				project.getConfig(args.options.stage);

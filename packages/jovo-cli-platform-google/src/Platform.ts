@@ -13,6 +13,7 @@ import * as inquirer from 'inquirer';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 const highlight = require('chalk').white.bold;
+const subHeadline = require('chalk').white.dim;
 import { AppFileDialogFlow } from './';
 
 import { AppFile, ArgOptions, InputType, IntentInput, JovoCliDeploy, JovoCliPlatform, JovoModel, Project, Utils } from 'jovo-cli-core';
@@ -237,15 +238,18 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			fs.mkdirSync(dialogFlowPath);
 		}
 		const hasGoogleActionDialogflow = this.hasPlatform();
-		let title = 'Creating /platforms/googleAction/dialogflow ' + Utils.printStage(ctx.stage);
+		let title = 'Creating Google Action project files ' + Utils.printStage(ctx.stage);
 		let titleAgentJson = 'Creating Dialogflow Agent';
-		let titleInteractionModel = 'Creating Language Model based on Jovo Language Model in ' + highlight('/models');
+		let titleInteractionModel = 'Creating Language Model';
 
 		if (hasGoogleActionDialogflow) {
-			title = 'Updating /platforms/googleAction/dialogflow ' + Utils.printStage(ctx.stage);
+			title = 'Updating Google Action project files ' + Utils.printStage(ctx.stage);
 			titleAgentJson = 'Updating Dialogflow Agent';
-			titleInteractionModel = 'Updating Dialogflow Language Model based on Jovo Language Model in ' + highlight('/models');
+			titleInteractionModel = 'Updating Language Model';
 		}
+		title += '\n' + subHeadline('   Path: ./platforms/googleAction');
+		titleAgentJson += '\n' + subHeadline('   Path: ./platforms/googleAction/dialogflow');
+		titleInteractionModel += '\n' + subHeadline('   Path: ./platforms/googleAction/dialogflow/intents, ./platforms/googleAction/dialogflow/entities');
 
 		returnTasks.push({
 			title,

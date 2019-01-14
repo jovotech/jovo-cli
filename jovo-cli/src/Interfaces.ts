@@ -6,6 +6,7 @@ export interface ListrOptionsExtended extends Listr.ListrOptions {
 	clearOutput: boolean;
 	collapse: boolean;
 	showSubtasks: boolean;
+	separateTopTasks: boolean;
 }
 
 export interface ListrTaskHelper {

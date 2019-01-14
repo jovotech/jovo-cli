@@ -23,6 +23,8 @@ const { promisify } = require('util');
 const existsAsync = promisify(fs.exists);
 
 const highlight = require('chalk').white.bold;
+const subHeadline = require('chalk').white.dim;
+
 const project = getProject();
 
 function addPlatfromToConfig(platform: JovoCliPlatform): Promise<void> {
@@ -128,7 +130,8 @@ export function buildTask(ctx: JovoTaskContext) {
 	// Check if model-file is valid
 	const validationTasks: Listr.ListrTask[] = [];
 	let modelFileContent: string;
-	project.getLocales(ctx.locales).forEach((locale) => {
+	const locales = project.getLocales(ctx.locales);
+	locales.forEach((locale) => {
 		validationTasks.push({
 			title: locale,
 			task: async (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
@@ -176,11 +179,34 @@ export function buildTask(ctx: JovoTaskContext) {
 	});
 
 	buildPlatformTasks.push({
-		title: 'Validate Model-Files',
-		task: (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
-			return new Listr(validationTasks);
-		}
+		title: 'Initializing build process',
+		task: (ctx) => {
+			const backupLocales: Listr.ListrTask[] = [];
+			backupLocales.push({
+				title: 'Collecting platform configuration from project.js\n   ' + subHeadline('Platforms: ' + ctx.types.join(', ')),
+				task: (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
+					return;
+				}
+			});
+
+			backupLocales.push({
+				title: 'Collecting Jovo Language Model files from /models folder\n   ' + subHeadline('Locales: ' + locales.join(', ')),
+				task: (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
+					return;
+				}
+			});
+
+			backupLocales.push({
+				title: 'Validate Model-Files',
+				task: (ctx: JovoTaskContext, task: Listr.ListrTaskWrapper) => {
+					return new Listr(validationTasks);
+				}
+			});
+
+			return new Listr(backupLocales);
+		},
 	});
+
 
 
 	let platform;

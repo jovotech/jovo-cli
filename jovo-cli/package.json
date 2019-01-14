@@ -22,6 +22,7 @@
 	"license": "Apache-2.0",
 	"dependencies": {
 		"bespoken-tools": "^1.1.0",
+		"chalk": "^2.4.1",
 		"cli-truncate": "^1.1.0",
 		"cross-spawn": "^5.1.0",
 		"dotenv": "^5.0.1",

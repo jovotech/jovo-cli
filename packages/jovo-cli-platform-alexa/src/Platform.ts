@@ -8,15 +8,16 @@ import Vorpal = require('vorpal');
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ask from './Ask';
-import { ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, ModelValidationError, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
+import { ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
-import { AlexaLMTypeValue, AlexaLMIntent, AppFileAlexa, JovoModelAlexa, JovoTaskContextAlexa } from '.';
+import { AlexaLMIntent, AppFileAlexa, JovoModelAlexa, JovoTaskContextAlexa } from '.';
 
 import * as JovoModelAlexaValidator from '../validators/JovoModelAlexa.json';
 
 
 const highlight = require('chalk').white.bold;
+const subHeadline = require('chalk').white.dim;
 
 const project = require('jovo-cli-core').getProject();
 
@@ -276,23 +277,26 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	 */
 	getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
 
-		let title = 'Creating /platforms/alexaSkill ' + Utils.printStage(ctx.stage);
+		let title = 'Creating Alexa Skill project files ' + Utils.printStage(ctx.stage);
 
 		const hasAlexaSkill = this.hasPlatform();
 
 		if (hasAlexaSkill) {
-			title = 'Updating /platforms/alexaSkill ' + Utils.printStage(ctx.stage);
+			title = 'Updating Alexa Skill project files ' + Utils.printStage(ctx.stage);
 		}
+
+		title += '\n' + subHeadline('   Path: ./platforms/alexaSkill');
 
 		const buildPlatformTasks: ListrTask[] = [];
 
 		buildPlatformTasks.push({
 			title,
 			task: () => {
-				let titleInteractionModel = 'Creating Alexa Interaction Model based on Jovo Language Model in ' + highlight('/models');
+				let titleInteractionModel = 'Creating Alexa Interaction Model';
 				if (hasAlexaSkill) {
-					titleInteractionModel = 'Updating Alexa Interaction Model based on Jovo Language Model in ' + highlight('/models');
+					titleInteractionModel = 'Updating Alexa Interaction Model';
 				}
+				titleInteractionModel += '\n' + subHeadline('   Path: ./platforms/alexaSkill/models');
 
 				return new listr([
 					{
@@ -321,18 +325,11 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 						},
 					},
 					{
-						title: 'Updating Alexa project files',
+						title: 'Updating Skill Manifest\n' + subHeadline('   Path: ./platforms/alexaSkill/skill.json'),
 						enabled: () => hasAlexaSkill,
-						task: () => {
-							return new listr([
-								{
-									title: 'skill.json',
-									task: (ctx, task) => {
-										return this.buildSkillAlexa(ctx.stage)
-											.then(() => Utils.wait(500));
-									},
-								},
-							]);
+						task: (ctx, task) => {
+							return this.buildSkillAlexa(ctx.stage)
+								.then(() => Utils.wait(500));
 						},
 					}, {
 						title: titleInteractionModel,
