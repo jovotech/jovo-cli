@@ -200,6 +200,17 @@ module.exports = (vorpal: Vorpal) => {
 				parameters.push('--jovo-webhook');
 			}
 
+			// Pass all parameters through to project process that get
+			// set after "--" example: "jovo run -- --log-level 5"
+			let addActive = false;
+			for (const parameter of process.argv) {
+				if (addActive === true) {
+					parameters.push(parameter);
+				} else if (parameter === '--') {
+					addActive = true;
+				}
+			}
+
 			const ls = spawn(command, parameters, { windowsVerbatimArguments: true, cwd: projectFolder });
 
 			if (!args.options['bst-proxy']) {
