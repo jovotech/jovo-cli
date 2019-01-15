@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli-platform-alexa",
-	"version": "2.0.7",
+	"version": "2.0.8",
 	"description": "Alexa specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
