@@ -472,7 +472,7 @@ Endpoint: ${skillInfo.endpoint}`;
 
 
 	/**
-	 * Get tasks to build JOVO language model from platform
+	 * Get tasks to build Jovo language model from platform
 	 * specific language model
 	 *
 	 * @param {JovoTaskContextAlexa} ctx The Context

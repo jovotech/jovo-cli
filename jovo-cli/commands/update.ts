@@ -51,7 +51,7 @@ module.exports = (vorpal: Vorpal) => {
 			let npmUpdateOutput = '';
 			tasks.add({
 				// @ts-ignore
-				title: `Updating JOVO packages`,
+				title: `Updating Jovo packages`,
 				task: async (ctx, task) => {
 					const jovoPackages = await getPackages(/^jovo\-/);
 

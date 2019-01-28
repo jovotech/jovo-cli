@@ -862,7 +862,7 @@ export class Project {
 
 
 	/**
-	 * Returns the JOVO Framework version
+	 * Returns the Jovo Framework version
 	 *
 	 * @returns {Promise<PackageVersion>}
 	 * @memberof Project
