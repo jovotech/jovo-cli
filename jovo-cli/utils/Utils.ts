@@ -4,8 +4,9 @@ import { join as pathJoin } from 'path';
 import * as logSymbols from 'log-symbols';
 import * as figures from 'figures';
 import * as elegantSpinner from 'elegant-spinner';
-import { ListrTaskHelper, ListrOptionsExtended, PackageVersions }from '../src';
+import { ListrTaskHelper, ListrOptionsExtended, PackageVersions, PackageVersionsNpm }from '../src';
 import Vorpal = require('vorpal');
+import * as latestVersion from 'latest-version';
 
 const { promisify } = require('util');
 
@@ -112,4 +113,36 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
 	});
 
 	return packages;
+}
+
+
+
+/**
+ * Returns the packages with their current versions in package-lock file and on npm
+ *
+ * @export
+ * @param {RegExp} packageRegex Regex to use to filter packages
+ * @returns {Promise<PackageVersionsNpm>}
+ */
+export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<PackageVersionsNpm> {
+	const packages = await getPackages(packageRegex);
+
+	// Start directly with querying the data in parallel
+	const queryPromises: {
+		[key: string]: Promise<string>;
+	} = {};
+	for (const packageName of Object.keys(packages)) {
+		queryPromises[packageName] = latestVersion(packageName);
+	}
+
+	// Wait till data is available and combine data
+	const returnPackages: PackageVersionsNpm = {};
+	for (const packageName of Object.keys(packages)) {
+		returnPackages[packageName] = {
+			local: packages[packageName],
+			npm: await queryPromises[packageName],
+		};
+	}
+
+	return returnPackages;
 }
