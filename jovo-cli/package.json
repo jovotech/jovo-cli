@@ -32,7 +32,7 @@
 		"jovo-cli-core": "^2.0.7",
 		"jovo-cli-deploy-lambda": "^2.0.7",
 		"jovo-cli-platform-alexa": "^2.0.9",
-		"jovo-cli-platform-google": "^2.0.9",
+		"jovo-cli-platform-google": "^2.0.7",
 		"jovo-webhook-connector": "^2.0.4",
 		"latest-version": "^4.0.0",
 		"listr": "^0.14.2",
