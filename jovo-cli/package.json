@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "2.0.10",
+	"version": "2.0.6",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -22,6 +22,7 @@
 	"license": "Apache-2.0",
 	"dependencies": {
 		"bespoken-tools": "^1.1.0",
+		"boxen": "^2.1.0",
 		"chalk": "^2.4.1",
 		"cli-truncate": "^1.1.0",
 		"cross-spawn": "^5.1.0",
@@ -31,8 +32,9 @@
 		"jovo-cli-core": "^2.0.7",
 		"jovo-cli-deploy-lambda": "^2.0.7",
 		"jovo-cli-platform-alexa": "^2.0.9",
-		"jovo-cli-platform-google": "^2.0.7",
+		"jovo-cli-platform-google": "^2.0.9",
 		"jovo-webhook-connector": "^2.0.4",
+		"latest-version": "^4.0.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"nodemon": "^1.18.7",
@@ -57,6 +59,7 @@
 	},
 	"homepage": "https://github.com/jovotech/jovo-cli#readme",
 	"devDependencies": {
+		"@types/boxen": "^2.1.0",
 		"@types/chalk": "^2.2.0",
 		"@types/cli-truncate": "^1.1.0",
 		"@types/cross-spawn": "^6.0.0",
@@ -66,6 +69,7 @@
 		"@types/indent-string": "^3.0.0",
 		"@types/inquirer": "0.0.43",
 		"@types/jest": "^23.3.5",
+		"@types/latest-version": "^4.0.0",
 		"@types/listr": "^0.13.0",
 		"@types/lodash": "^4.14.118",
 		"@types/log-symbols": "^2.0.0",
@@ -99,6 +103,5 @@
 			"js",
 			"json"
 		]
-	},
-	"gitHead": "8a1d91f299998e1599cc0aa61aa811d3bd1784ce"
+	}
 }

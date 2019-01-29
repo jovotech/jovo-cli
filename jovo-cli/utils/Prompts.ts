@@ -1,6 +1,7 @@
 import * as inquirer from 'inquirer';
 
 export const ANSWER_OVERWRITE = 'overwrite';
+export const ANSWER_UPDATE = 'update';
 export const ANSWER_CANCEL = 'cancel';
 export const ANSWER_BACKUP = 'backup';
 
@@ -83,6 +84,30 @@ export function promptOverwriteProject(): Promise<inquirer.Answers> {
 			choices: [{
 				value: ANSWER_OVERWRITE,
 				name: 'Overwrite',
+			}, {
+				value: ANSWER_CANCEL,
+				name: 'Cancel',
+			},
+			],
+		},
+	];
+	return inquirer.prompt(questions);
+}
+
+
+/**
+ * Asks for overwrite confirmation
+ * @return {*}
+ */
+export function promptUpdateVersions(numPackages: number): Promise<inquirer.Answers> {
+	const questions = [
+		{
+			type: 'list',
+			name: 'update',
+			message: `Currently ${numPackages} packages are out of date. What would you like to do?`,
+			choices: [{
+				value: ANSWER_UPDATE,
+				name: 'Update all packages to the newest version',
 			}, {
 				value: ANSWER_CANCEL,
 				name: 'Cancel',

@@ -24,3 +24,10 @@ export interface ListrTaskHelper {
 export interface PackageVersions {
 	[key: string]: string;
 }
+
+export interface PackageVersionsNpm {
+	[key: string]: {
+		local: string;
+		npm: string;
+	};
+}

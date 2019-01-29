@@ -11,8 +11,12 @@ import * as spawn from 'cross-spawn';
 import { ChildProcess } from 'child_process';
 import { BSTProxy } from 'bespoken-tools';
 import * as Platforms from '../utils/Platforms';
+import * as boxen from 'boxen';
 import {
-	addBaseCliOptions
+	addBaseCliOptions,
+	getPackageVersionsNpm,
+	setUpdateMessageDisplayed,
+	shouldDisplayUpdateMessage,
 } from '../utils/Utils';
 import {
 	getProject,
@@ -25,6 +29,7 @@ const opn = require('opn');
 const { promisify } = require('util');
 
 const accessAsync = promisify(fs.access);
+const dimText = require('chalk').white.dim;
 
 
 const project = getProject();
@@ -70,6 +75,52 @@ module.exports = (vorpal: Vorpal) => {
 			const timeout = args.options.timeout || 5000;
 
 			const stage = project.getStage(args.options.stage);
+
+
+			if (shouldDisplayUpdateMessage(24)) {
+				// Update message should be displayed in case old packages get used
+				const packageVersions = await getPackageVersionsNpm(/^jovo\-/);
+				const outOfDatePackages: string[] = [];
+				if (Object.keys(packageVersions).length) {
+					for (const packageName of Object.keys(packageVersions)) {
+						if (packageVersions[packageName].local !== packageVersions[packageName].npm) {
+							outOfDatePackages.push(packageName);
+						}
+					}
+				}
+
+				if (outOfDatePackages.length > 0) {
+					// There are packages which should be updated
+
+					const outputText: string[] = [];
+					let text: string;
+					if (Object.keys(packageVersions).length) {
+						outputText.push('Updates available for the following Jovo packages:');
+						for (const packageName of Object.keys(packageVersions)) {
+							if (packageVersions[packageName].local !== packageVersions[packageName].npm) {
+								text = `  - ${packageName}: ${packageVersions[packageName].local}`;
+								text += dimText(` -> ${packageVersions[packageName].npm}`);
+								outOfDatePackages.push(packageName);
+								outputText.push(text);
+							}
+						}
+					}
+					outputText.push('\nUse "jovo update" to get the newest versions.');
+
+
+					const boxOptions = {
+						padding: 1,
+						margin: 1,
+						borderColor: 'yellow',
+						borderStyle: 'round'
+					};
+
+					// @ts-ignore
+					console.log(boxen(outputText.join('\n'), boxOptions));
+
+					setUpdateMessageDisplayed();
+				}
+			}
 
 
 			try {
