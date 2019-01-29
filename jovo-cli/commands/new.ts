@@ -69,7 +69,7 @@ module.exports = (vorpal: Vorpal) => {
 		.option('--endpoint <endpoint>',
 			'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
 		.option('--v1',
-			'Create a JOVO v1 project')
+			'Create a Jovo v1 project')
 		.option('\n');
 
 	// Add additional CLI base options and the ones of platforms

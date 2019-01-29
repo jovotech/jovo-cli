@@ -119,6 +119,7 @@ module.exports = (vorpal: Vorpal) => {
 				if (await project.isTypeScriptProject()) {
 					// If it is a typescript project look in "dist" folder
 					checkFolders.push('./dist/');
+					checkFolders.push('./dist/src/');
 				} else {
 					// In regular projects in "src" folder
 					checkFolders.push('./src/');

@@ -21,6 +21,7 @@ import { exec } from 'child_process';
 import * as _ from 'lodash';
 import * as uuidv4 from 'uuid/v4';
 import * as Utils from './Utils';
+import * as Listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 import * as tv4 from 'tv4';
 
@@ -473,15 +474,57 @@ export class Project {
 	 * Zips the source folder of the project
 	 */
 	deployTaskZipProjectSource(ctx: JovoTaskContext): ListrTask {
+		if (this.frameworkVersion === 1) {
+			return {
+				title: 'Zip Project ' + Utils.printStage(ctx.stage),
+				task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
+					const pathToZip = await this.zipSrcFolder(ctx);
+					const info = `Zip path: ${pathToZip}`;
+
+					task.skip(info);
+
+					return Promise.resolve();
+				}
+			};
+		}
+
+
+		const zipPromise = this.zipSrcFolder(ctx);
+		let pathToZip: string;
 		return {
-			title: 'Zip Project ' + Utils.printStage(ctx.stage),
-			task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
-				const pathToZip = await this.zipSrcFolder(ctx);
-				const info = `Zip path: ${pathToZip}`;
-
-				task.skip(info);
-
-				return Promise.resolve();
+			title: `Bundle Project` + Utils.printStage(ctx.stage),
+			task: (ctx: JovoTaskContext) => {
+				return new Listr([
+					{
+						title: 'Copy source code to "./bundle"',
+						task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									resolve();
+								}, 1000);
+							});
+						}
+					},
+					{
+						title: 'Run "npm install --production"',
+						task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
+							pathToZip = await zipPromise;
+							return Promise.resolve();
+						}
+					},
+					{
+						title: 'Zip "./bundle" folder',
+						task: async (ctx: JovoTaskContext, task: ListrTaskWrapper) => {
+							const info = `Zip path: ${pathToZip}`;
+							task.skip(info);
+							return new Promise((resolve) => {
+								setTimeout(() => {
+									resolve();
+								}, 500);
+							});
+						}
+					},
+				]);
 			}
 		};
 	}
@@ -862,7 +905,7 @@ export class Project {
 
 
 	/**
-	 * Returns the JOVO Framework version
+	 * Returns the Jovo Framework version
 	 *
 	 * @returns {Promise<PackageVersion>}
 	 * @memberof Project

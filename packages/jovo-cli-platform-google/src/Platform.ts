@@ -362,7 +362,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 
 	/**
-	 * Get tasks to build JOVO language model from platform
+	 * Get tasks to build Jovo language model from platform
 	 * specific language model
 	 *
 	 * @param {JovoTaskContextGoogle} ctx The Context
