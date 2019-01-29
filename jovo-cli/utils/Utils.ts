@@ -146,3 +146,41 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
 
 	return returnPackages;
 }
+
+
+
+/**
+ * Returns if the package update message should be displayed or not
+ *
+ * @export
+ * @param {number} hours The minimum amount of hours since last display
+ * @returns
+ */
+export function shouldDisplayUpdateMessage(hours: number) {
+	const jovoConfig = project.loadJovoConfig();
+
+	if (!jovoConfig.hasOwnProperty('timeLastUpdateMessage')) {
+		return true;
+	}
+
+	const nextDisplayTime = new Date(jovoConfig.timeLastUpdateMessage).getTime() + (1000*60*60*hours);
+
+	if (new Date().getTime() < nextDisplayTime) {
+		return false;
+	}
+	return true;
+}
+
+
+
+/**
+ * Saves the current update message display to the Jovo config
+ *
+ * @export
+ */
+export function setUpdateMessageDisplayed() {
+	const jovoConfig = project.loadJovoConfig();
+	jovoConfig.timeLastUpdateMessage = new Date().toISOString();
+
+	project.saveJovoConfig(jovoConfig);
+}
