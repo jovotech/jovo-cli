@@ -55,7 +55,7 @@ module.exports = (vorpal: Vorpal) => {
 				task: async (ctx, task) => {
 					const jovoPackages = await getPackages(/^jovo\-/);
 
-					const updateCommand = 'npm --depth 99 update ' + Object.keys(jovoPackages).join(' ');
+					const updateCommand = 'npm update ' + Object.keys(jovoPackages).join(' ');
 
 					npmUpdateOutput = await new Promise<string>((resolve, reject) => {
 						exec(updateCommand, {
