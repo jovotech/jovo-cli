@@ -231,7 +231,13 @@ module.exports = (vorpal: Vorpal) => {
 				parameters.push('--model-test');
 			}
 
-			if (args.options['bst-proxy']) {
+            if (args.options['port']) {
+                parameters.push('--port');
+                parameters.push(args.options['port']);
+            }
+
+
+            if (args.options['bst-proxy']) {
 				const proxy = BSTProxy.http(port);
 
 				proxy.start(() => {
