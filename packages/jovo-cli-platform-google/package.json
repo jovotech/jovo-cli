@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli-platform-google",
-	"version": "2.0.8",
+	"version": "2.0.9",
 	"description": "Google specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -39,7 +39,7 @@
 		"adm-zip": "^0.4.11",
 		"archiver": "^3.0.0",
 		"chalk": "^2.4.1",
-		"jovo-cli-core": "^2.0.8",
+		"jovo-cli-core": "^2.0.9",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"request": "^2.88.0",
