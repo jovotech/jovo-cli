@@ -70,95 +70,104 @@ module.exports = (vorpal: Vorpal) => {
 				isValidEndpoint(args.options.endpoint);
 		})
 		.action(async (args: Args) => {
-			DEBUG = args.options.debug ? true : false;
-
-			await project.init();
-
-			if (project.frameworkVersion !== 1) {
-				console.error('The "init" command got deprecated for v2 projects as it is no longer needed.');
-				return Promise.resolve();
-			}
-
-			// @ts-ignore
-			const tasks = new Listr([], {
-				renderer: JovoCliRenderer,
-				collapse: false,
-			} as ListrOptionsExtended);
 			try {
-				project.getConfig(args.options.stage);
-			} catch (e) {
-				console.log('\n\n Could not load app.json. \n\n');
-				return;
-			}
-			let p = Promise.resolve();
-			const config: JovoTaskContext = {
-				types: args.platform ? [args.platform] : [],
-				locales: project.getLocales(args.options.locale),
-				endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-				target: args.options.target || DEFAULT_TARGET,
-				debug: args.options.debug ? true : false,
-				frameworkVersion: project.frameworkVersion,
-			};
-			if (!args.platform) {
-				p = p.then(() => {
-					return promptForPlatform().then((answers) => {
-						config.types = [answers.platform];
-						console.log();
-						console.log();
-					});
-				});
-			}
+				DEBUG = args.options.debug ? true : false;
 
-			if (args.options.deploy) {
-				p = p.then(() => {
-					if (!args.options.build) {
-						console.log('Please use --build if you use --deploy');
-						return;
-					}
-				});
-			}
+				await project.init();
 
-			// Apply platform specific config values
-			config.types.forEach((type) => {
-				const platform = Platforms.get(type);
-				_.merge(config, platform.getPlatformConfigValues(project, args.options));
-			});
+				if (project.frameworkVersion !== 1) {
+					console.error('The "init" command got deprecated for v2 projects as it is no longer needed.');
+					return Promise.resolve();
+				}
 
-
-			return p.then(() => {
-				tasks.add(
-					initTask()
-				);
-
-				// build project
-				if (args.options.build) {
-					// build project
-					tasks.add({
-						title: 'Building',
-						task: (ctx) => {
-							return new Listr(buildTask(ctx));
-						},
+				// @ts-ignore
+				const tasks = new Listr([], {
+					renderer: JovoCliRenderer,
+					collapse: false,
+				} as ListrOptionsExtended);
+				try {
+					project.getConfig(args.options.stage);
+				} catch (e) {
+					console.log('\n\n Could not load app.json. \n\n');
+					return;
+				}
+				let p = Promise.resolve();
+				const config: JovoTaskContext = {
+					types: args.platform ? [args.platform] : [],
+					locales: project.getLocales(args.options.locale),
+					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
+					target: args.options.target || DEFAULT_TARGET,
+					debug: args.options.debug ? true : false,
+					frameworkVersion: project.frameworkVersion,
+				};
+				if (!args.platform) {
+					p = p.then(() => {
+						return promptForPlatform().then((answers) => {
+							config.types = [answers.platform];
+							console.log();
+							console.log();
+						});
 					});
 				}
-				// deploy project
+
 				if (args.options.deploy) {
-					tasks.add({
-						title: 'Deploying',
-						task: (ctx) => {
-							return new Listr(deployTask(ctx));
-						},
+					p = p.then(() => {
+						if (!args.options.build) {
+							console.log('Please use --build if you use --deploy');
+							return;
+						}
 					});
 				}
 
-				return tasks.run(config).then(() => {
-					console.log();
-					console.log('  Initialization completed.');
-					console.log();
-				}).catch((err) => {
-					if (DEBUG === true) {
-						console.error(err);
-					}
+				// Apply platform specific config values
+				config.types.forEach((type) => {
+					const platform = Platforms.get(type);
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
 				});
-			});
+
+
+				return p.then(() => {
+					tasks.add(
+						initTask()
+					);
+
+					// build project
+					if (args.options.build) {
+						// build project
+						tasks.add({
+							title: 'Building',
+							task: (ctx) => {
+								return new Listr(buildTask(ctx));
+							},
+						});
+					}
+					// deploy project
+					if (args.options.deploy) {
+						tasks.add({
+							title: 'Deploying',
+							task: (ctx) => {
+								return new Listr(deployTask(ctx));
+							},
+						});
+					}
+
+					return tasks.run(config).then(() => {
+						console.log();
+						console.log('  Initialization completed.');
+						console.log();
+					}).catch((err) => {
+						if (DEBUG === true) {
+							console.error(err);
+						}
+						process.exit(1);
+					});
+				});
+			} catch (err) {
+				// All errors here did not get caught in the above catch and did so not get displayed
+				// via Listr so simply output it
+				console.error('There was a problem:');
+				console.error(err);
+				process.exit(1);
+			}
 		});
 };

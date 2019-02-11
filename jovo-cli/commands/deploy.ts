@@ -69,50 +69,59 @@ module.exports = (vorpal: Vorpal) => {
 				isValidPlatform(args.options.platform);
 		})
 		.action(async (args: Args) => {
-			DEBUG = args.options.debug ? true : false;
+			try {
+				DEBUG = args.options.debug ? true : false;
+				await project.init();
 
-			await project.init();
-
-			// @ts-ignore
-			const tasks = new Listr([], {
-				renderer: JovoCliRenderer,
-				collapse: false,
-			} as ListrOptionsExtended);
-			const config: JovoTaskContext = {
-				locales: project.getLocales(args.options.locale),
-				types: Platforms.getAll(args.options.platform, args.options.stage),
-				target: args.options.target || DEFAULT_TARGET,
-				src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
-				stage: project.getStage(args.options.stage),
-				debug: args.options.debug ? true : false,
-				frameworkVersion: project.frameworkVersion,
-			};
-
-			if (config.types.length === 0 && (!config.target || config.target && !availableDeployTargets.includes(config.target))) {
-				console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
-				return Promise.resolve();
-			}
-
-			// Apply platform specific ids and config values
-			config.types.forEach((type: string) => {
-				const platform = Platforms.get(type);
-				_.merge(config, platform.getPlatformConfigIds(project, args.options));
-				_.merge(config, platform.getPlatformConfigValues(project, args.options));
-			});
-
-			deployTask(config).forEach((t) => tasks.add(t));
-
-			return tasks.run(config).then(() => {
 				// @ts-ignore
-				if (tasks.tasks.length > 0) {
-					console.log();
-					console.log('  Deployment completed.');
-					console.log();
+				const tasks = new Listr([], {
+					renderer: JovoCliRenderer,
+					collapse: false,
+				} as ListrOptionsExtended);
+				const config: JovoTaskContext = {
+					locales: project.getLocales(args.options.locale),
+					types: Platforms.getAll(args.options.platform, args.options.stage),
+					target: args.options.target || DEFAULT_TARGET,
+					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
+					stage: project.getStage(args.options.stage),
+					debug: args.options.debug ? true : false,
+					frameworkVersion: project.frameworkVersion,
+				};
+
+				if (config.types.length === 0 && (!config.target || config.target && !availableDeployTargets.includes(config.target))) {
+					console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+					return Promise.resolve();
 				}
-			}).catch((err) => {
-				if (DEBUG === true) {
-					console.error(err);
-				}
-			});
+
+				// Apply platform specific ids and config values
+				config.types.forEach((type: string) => {
+					const platform = Platforms.get(type);
+					_.merge(config, platform.getPlatformConfigIds(project, args.options));
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
+				});
+
+				deployTask(config).forEach((t) => tasks.add(t));
+
+				return tasks.run(config).then(() => {
+					// @ts-ignore
+					if (tasks.tasks.length > 0) {
+						console.log();
+						console.log('  Deployment completed.');
+						console.log();
+					}
+				}).catch((err) => {
+					if (DEBUG === true) {
+						console.error(err);
+					}
+
+					process.exit(1);
+				});
+			} catch (err) {
+				// All errors here did not get caught in the above catch and did so not get displayed
+				// via Listr so simply output it
+				console.error('There was a problem:');
+				console.error(err);
+				process.exit(1);
+			}
 		});
 };

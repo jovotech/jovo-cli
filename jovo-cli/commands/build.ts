@@ -77,139 +77,148 @@ module.exports = (vorpal: Vorpal) => {
 				isValidPlatform(args.options.platform);
 		})
 		.action(async (args: Args) => {
-			DEBUG = args.options.debug ? true : false;
-			let answers;
-
-			console.log(' jovo build:  Create and update platform specific files in /platforms folder');
-			console.log(subHeadline('   >> Learn more: https://jovo.tech/docs/cli/build'));
-
-			await project.init();
-
-			// @ts-ignore
-			const tasks = new Listr([], {
-				renderer: JovoCliRenderer,
-				collapse: false,
-				separateTopTasks: true,
-			} as ListrOptionsExtended);
 			try {
-				project.getConfig(args.options.stage);
-			} catch (e) {
-				console.log(`\n\n Could not load ${project.getConfigFileName()}. \n\n`);
-				if (DEBUG === true) {
-					console.error(e);
-				}
-				return Promise.resolve();
-			}
+				DEBUG = args.options.debug ? true : false;
+				let answers;
 
-			const types: string[] = [];
-			if (args.options.platform) {
-				types.push(args.options.platform);
-			} else {
-				types.push.apply(types, Platforms.getAll(args.platform, args.options.stage));
-			}
+				console.log(' jovo build:  Create and update platform specific files in /platforms folder');
+				console.log(subHeadline('   >> Learn more: https://jovo.tech/docs/cli/build'));
 
-			const config: JovoTaskContext = {
-				locales: project.getLocales(args.options.locale),
-				types,
-				projectId: args.options['project-id'] || project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
-				endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-				target: args.options.target || DEFAULT_TARGET,
-				src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
-				stage: project.getStage(args.options.stage),
-				debug: DEBUG,
-				frameworkVersion: project.frameworkVersion,
-				ignoreTasks: (args.options.ignore || '').split(',').map((item: string) => item.trim() ),
-			};
+				await project.init();
 
-			// run init if necessary
-			if (!project.hasConfigFile()) {
-				if (project.frameworkVersion === 1) {
-					if (config.types && config.types.length === 0) {
-						answers = await promptForInit('To use this command, please first initialize at least one platform with jovo init. You can also choose one here:');
-						config.types = [answers.platform];
+				// @ts-ignore
+				const tasks = new Listr([], {
+					renderer: JovoCliRenderer,
+					collapse: false,
+					separateTopTasks: true,
+				} as ListrOptionsExtended);
+				try {
+					project.getConfig(args.options.stage);
+				} catch (e) {
+					console.log(`\n\n Could not load ${project.getConfigFileName()}. \n\n`);
+					if (DEBUG === true) {
+						console.error(e);
 					}
-				} else {
-					console.error(`The "${project.getConfigPath()}" file is missing or invalid!`);
-					return;
-					// return Promise.resolve();
+					return Promise.resolve();
 				}
-			}
 
-			if (config.types.length !== 1 && args.options.reverse) {
-				// If more than one type is set and reverse selected ask the user
-				// for a platform as a reverse build can only be done from one
-				// as further ones would overwrite previous ones.
-				answers = await promptForInit('Please select the platform you want to reverse build from:');
-				config.types = [answers.platform];
-			}
+				const types: string[] = [];
+				if (args.options.platform) {
+					types.push(args.options.platform);
+				} else {
+					types.push.apply(types, Platforms.getAll(args.platform, args.options.stage));
+				}
 
-			for (const type of config.types) {
-				const platform = Platforms.get(type);
+				const config: JovoTaskContext = {
+					locales: project.getLocales(args.options.locale),
+					types,
+					projectId: args.options['project-id'] || project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
+					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
+					target: args.options.target || DEFAULT_TARGET,
+					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
+					stage: project.getStage(args.options.stage),
+					debug: DEBUG,
+					frameworkVersion: project.frameworkVersion,
+					ignoreTasks: (args.options.ignore || '').split(',').map((item: string) => item.trim()),
+				};
 
-				// Apply platform specific config values
-				_.merge(config, platform.getPlatformConfigValues(project, args.options));
-				if (args.options.reverse) {
+				// run init if necessary
+				if (!project.hasConfigFile()) {
+					if (project.frameworkVersion === 1) {
+						if (config.types && config.types.length === 0) {
+							answers = await promptForInit('To use this command, please first initialize at least one platform with jovo init. You can also choose one here:');
+							config.types = [answers.platform];
+						}
+					} else {
+						console.error(`The "${project.getConfigPath()}" file is missing or invalid!`);
+						return;
+						// return Promise.resolve();
+					}
+				}
 
+				if (config.types.length !== 1 && args.options.reverse) {
+					// If more than one type is set and reverse selected ask the user
+					// for a platform as a reverse build can only be done from one
+					// as further ones would overwrite previous ones.
+					answers = await promptForInit('Please select the platform you want to reverse build from:');
+					config.types = [answers.platform];
+				}
+
+				for (const type of config.types) {
 					const platform = Platforms.get(type);
-					config.locales = platform.getLocales(args.options.locale);
-					if (args.options.overwrite) {
-						config.reverse = true;
-					} else if (project.hasModelFiles(config.locales)) {
-						answers = await promptOverwriteReverseBuild();
 
-						if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-							// exit on cancel
-							return;
-						} else {
-							config.reverse = answers.promptOverwriteReverseBuild;
+					// Apply platform specific config values
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
+					if (args.options.reverse) {
+
+						const platform = Platforms.get(type);
+						config.locales = platform.getLocales(args.options.locale);
+						if (args.options.overwrite) {
+							config.reverse = true;
+						} else if (project.hasModelFiles(config.locales)) {
+							answers = await promptOverwriteReverseBuild();
+
+							if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
+								// exit on cancel
+								return;
+							} else {
+								config.reverse = answers.promptOverwriteReverseBuild;
+							}
 						}
 					}
 				}
-			}
 
 
-			if (!project.hasConfigFile() && !args.options.reverse) {
-				tasks.add(
-					initTask()
-				);
-			}
-
-			if (args.options.reverse) {
-				tasks.add(
-					{
-						title: 'Building language model platform model',
-						task: (ctx) => buildReverseTask(ctx),
-					}
-				);
-			} else {
-				// build project
-				buildTask(config).forEach((t) => tasks.add(t));
-				// deploy project
-				if (args.options.deploy) {
-					tasks.add({
-						title: 'Deploying',
-						task: (ctx) => {
-							return new Listr(deployTask(ctx));
-						},
-					});
+				if (!project.hasConfigFile() && !args.options.reverse) {
+					tasks.add(
+						initTask()
+					);
 				}
-			}
-			return tasks.run(config).then(() => {
-				console.log();
-				console.log('  Build completed.');
-				console.log();
-			}).catch((err) => {
-				if (err.show) {
-					err.show();
+
+				if (args.options.reverse) {
+					tasks.add(
+						{
+							title: 'Building language model platform model',
+							task: (ctx) => buildReverseTask(ctx),
+						}
+					);
 				} else {
-					console.error(err.message);
-				}
-
-				if (DEBUG === true) {
-					if (err.context) {
-						console.error(err.context);
+					// build project
+					buildTask(config).forEach((t) => tasks.add(t));
+					// deploy project
+					if (args.options.deploy) {
+						tasks.add({
+							title: 'Deploying',
+							task: (ctx) => {
+								return new Listr(deployTask(ctx));
+							},
+						});
 					}
 				}
-			});
+				return tasks.run(config).then(() => {
+					console.log();
+					console.log('  Build completed.');
+					console.log();
+				}).catch((err) => {
+					if (err.show) {
+						err.show();
+					} else {
+						console.error(err.message);
+					}
+
+					if (DEBUG === true) {
+						if (err.context) {
+							console.error(err.context);
+						}
+					}
+					process.exit(1);
+				});
+			} catch (err) {
+				// All errors here did not get caught in the above catch and did so not get displayed
+				// via Listr so simply output it
+				console.error('There was a problem:');
+				console.error(err);
+				process.exit(1);
+			}
 		});
 };
