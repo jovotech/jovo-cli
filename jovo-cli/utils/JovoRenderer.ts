@@ -6,6 +6,62 @@ import * as Listr from 'listr';
 import { getSymbol, isDefined } from './Utils';
 import { ListrTaskHelper, ListrOptionsExtended } from '../src';
 
+
+// Idents multi-line text correctly and colors it
+const intdentText = (text: string, level: number, indentText = '    ', color: string, firstLinePrefix: string): string[] => {
+	if (typeof text !== 'string') {
+		// If it is still not a string we display custom text
+		text = 'Message can not be displayed!';
+	}
+
+	const indentLength = level * indentString.length;
+	const maxLength = 80;
+	const maxTextLength = maxLength - indentLength;
+
+	let textLeft = text;
+	let tempText = '';
+	const returnArray = [];
+	let lastSpacePosition: number;
+	let fullIdentText: string;
+	let itteration = 0;
+	do {
+		tempText = textLeft.substring(0, maxTextLength);
+		textLeft = textLeft.substring(maxTextLength);
+
+		if (textLeft && tempText.charAt(maxTextLength - 1) !== ' ' && textLeft.charAt(0) !== ' ') {
+			// If the line does not end with a space or the next one does not start with one
+			// we did split within a word. So fix that by adding the part of the last word
+			// in which we did split to the next line.
+			lastSpacePosition = tempText.lastIndexOf(' ');
+
+			if (lastSpacePosition !== -1) {
+				textLeft = (tempText.substring(lastSpacePosition) + textLeft).trim();
+				tempText = tempText.substring(0, lastSpacePosition).trim();
+			}
+
+		} else {
+			tempText = tempText.trim();
+			textLeft = textLeft.trim();
+		}
+
+		fullIdentText = indentText.repeat(level + 1);
+
+		if (firstLinePrefix) {
+			if (itteration === 0) {
+				fullIdentText = fullIdentText + firstLinePrefix;
+			} else {
+				fullIdentText = fullIdentText + ' '.repeat(firstLinePrefix.length);
+			}
+		}
+		// @ts-ignore
+		returnArray.push(`${chalk[color](fullIdentText + tempText)}`);
+		itteration++;
+	} while (textLeft);
+
+	return returnArray;
+};
+
+
 /**
  * Custom Listr renderer helper
  * @param {Array<Task>} tasks
@@ -34,18 +90,15 @@ const renderHelper = (tasks: ListrTaskHelper[], options: ListrOptionsExtended, l
 						const arr = data.substr(6).split('\n');
 						for (const item of arr) {
 							// @ts-ignore
-							output.push(indentString(`   ${chalk.grey(cliTruncate(item, process.stdout.columns - 3))}`, level, '  '));
+							output.push.apply(output, intdentText(item, level, '  ', 'grey', ' -> '));
 						}
 					} else if (data.substr(0, 6) === 'Error:') {
 						const arr = data.substr(7).split('\n');
 						for (const item of arr) {
-							// @ts-ignore
-							output.push(indentString(`   ${chalk.red(cliTruncate(item, process.stdout.columns - 3))}`, level, '  '));
+							output.push.apply(output, intdentText(item, level, '  ', 'red', ' '));
 						}
 					} else {
-						const out = `-> ${data}`;
-						// @ts-ignore
-						output.push(indentString(`   ${chalk.gray(cliTruncate(out, process.stdout.columns - 3))}`, level, '  '));
+						output.push.apply(output, intdentText(data, level, '  ', 'grey', ' -> '));
 					}
 				}
 			}
