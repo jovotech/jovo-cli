@@ -46,7 +46,6 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 					try {
 						if (_.isUndefined(arn)) {
 							const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';
-							// const errorMessage = 'Please add an Lambda Endpoint to your project.js file.  Please add one! and here is some more text to make it to long. Apparently still not long enough to lets go for something even longer.';
 							return Promise.reject(new Error('Error: ' + errorMessage));
 						}
 
