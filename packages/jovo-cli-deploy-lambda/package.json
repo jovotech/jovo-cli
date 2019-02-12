@@ -1,6 +1,6 @@
 {
     "name": "jovo-cli-deploy-lambda",
-    "version": "2.0.10",
+    "version": "2.0.11",
     "description": "Lamdbda specific deploy CLI code",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
