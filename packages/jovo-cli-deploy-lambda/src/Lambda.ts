@@ -37,38 +37,41 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 			{
 				title: 'Uploading to lambda',
 				enabled: (ctx) => !ctx.newSkill &&
-					_.isUndefined(arn) === false,
-				task: (ctx, task) => {
+					_.isUndefined(arn) === false ||
+					// If specifically lambda got defined to be the target execute
+					// even when no arn is defined. So that we can display an error
+					// so that user knows exactly what is wrong
+					(_.isUndefined(arn) === true && ctx.target === 'lambda'),
+				task: async (ctx, task) => {
 					try {
+						if (_.isUndefined(arn)) {
+							const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';
+							return Promise.reject(new Error('Error: ' + errorMessage));
+						}
+
 						const projectConfig = project.getConfig(ctx.stage);
 						ctx.lambdaArn = arn;
-
-						let p = Promise.resolve();
 
 						// special use case
 						// copy app.json/project.js if src directory is not default and config
 						// was set in projectConfig
 						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							p = p.then(
-								() => project.moveTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string));
+							await project.moveTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
 						}
 
-						p = p.then(() => this.checkAsk()).then(() => {
-							return this.upload(ctx, project);
-						});
+						await this.checkAsk();
+						await this.upload(ctx, project);
 
 						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							p = p.then(
-								() => project.deleteTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string));
+							await project.deleteTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
 						}
 
-						p = p.then(() => {
-							let info = 'Info: ';
+						let info = 'Info: ';
 
-							info += `Deployed to lambda function: ${arn}`;
-							task.skip(info);
-						});
-						return p;
+						info += `Deployed to lambda function: ${arn}`;
+						task.skip(info);
+
+						return Promise.resolve();
 					} catch (err) {
 						throw err;
 					}
@@ -94,7 +97,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 		const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
 		if (!region) {
-			return Promise.reject(new Error(`No region foun in "${ctx.lambdaArn}"!`));
+			return Promise.reject(new Error(`No region found in "${ctx.lambdaArn}"!`));
 		}
 		AWS.config.region = region[0];
 
