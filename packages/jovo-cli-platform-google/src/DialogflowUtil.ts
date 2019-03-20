@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { join as pathJoin, sep as pathSep } from 'path';
 import * as archiver from 'archiver';
 import * as _ from 'lodash';
+import * as inquirer from 'inquirer';
 import * as request from 'request';
 import { exec } from 'child_process';
 import * as admZip from 'adm-zip';
@@ -335,6 +336,50 @@ export const v2 = {
 			} catch (error) {
 				console.log(error);
 			}
+		});
+	},
+
+	/**
+	 * Returns all the projects
+	 * @param {*} config
+	 * @return {Promise<any>}
+	 */
+	getProjects(): Promise<inquirer.ChoiceType[]> {
+		return new Promise((resolve, reject) => {
+			this.getAccessToken().then((accessToken) => {
+				const options = {
+					method: 'GET',
+					url: `https://dialogflow.googleapis.com/v2/projects/-/agent:search`,
+					headers: {
+						Authorization: `Bearer ${accessToken.trim()}`,
+						accept: 'application/json',
+					},
+				};
+				request(options, (error, response: request.Response, body: string) => {
+					if (error) {
+						return reject(error);
+					}
+					if (response.body.error) {
+						return reject(new Error(response.body.error.message));
+					}
+
+					try {
+						const res = JSON.parse(body);
+
+						const returnData: inquirer.ChoiceType[] = [];
+						for (const project of res.agents || []) {
+							returnData.push({
+								name: project.displayName,
+								value: project.parent,
+							});
+						}
+
+						return resolve(returnData);
+					} catch (e) {
+						return reject(new Error(`Can't parse response object`));
+					}
+				});
+			});
 		});
 	},
 

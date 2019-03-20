@@ -10,7 +10,7 @@ import * as DeployTargets from '../utils/DeployTargets';
 import {
 	ANSWER_CANCEL,
 	promptOverwriteProjectFiles,
-	promptListForSkillId,
+	promptListForProjectId,
 	promptOverwriteReverseBuild
 } from '../utils/Prompts';
 
@@ -139,8 +139,12 @@ module.exports = (vorpal: Vorpal) => {
 							// If no project got found prompt user to select one
 							subp = subp
 								.then(() => platform.getExistingProjects(config))
-								.then((choices) => promptListForSkillId(choices)).then((answers) => {
-									config.skillId = answers.skillId;
+								.then((choices) => {
+									return choices;
+								})
+								.then((choices) => promptListForProjectId(choices)).then((answers) => {
+									// @ts-ignore
+									config[platform.constructor.ID_KEY] = answers.id;
 								})
 								.catch((error) => {
 									console.log(error.message);

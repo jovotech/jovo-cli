@@ -12,6 +12,7 @@ const project = require('./Project').getProject();
 export class JovoCliPlatform {
 
 	static PLATFORM_KEY = '';
+	static ID_KEY = '';
 
 	constructor() {
 	}

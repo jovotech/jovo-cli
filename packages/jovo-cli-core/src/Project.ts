@@ -202,7 +202,7 @@ export class Project {
      * @param {string} stage
      * @return {string}
      */
-	getConfigParameter(path: string, stage: string): string | undefined {
+	getConfigParameter(path: string, stage?: string): string | undefined {
 		const config: AppFile = this.getConfig(stage);
 		if (typeof _.get(config, path) === 'undefined') {
 			return;
@@ -570,13 +570,6 @@ export class Project {
 		}
 
 		return true;
-	}
-	isInProjectDirectoryOld(): boolean {
-
-
-		return fs.existsSync(this.getProjectPath() + 'index.js') &&
-			fs.existsSync(this.getProjectPath() + 'package.json') &&
-			fs.existsSync(this.getProjectPath() + 'app' + pathSep);
 	}
 
 
