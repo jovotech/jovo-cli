@@ -370,7 +370,7 @@ export const v2 = {
 						for (const project of res.agents || []) {
 							returnData.push({
 								name: project.displayName,
-								value: project.parent,
+								value: project.parent.split('/')[1],
 							});
 						}
 
