@@ -6,7 +6,7 @@ import * as figures from 'figures';
 import * as elegantSpinner from 'elegant-spinner';
 import { ListrTaskHelper, ListrOptionsExtended, PackageVersions, PackageVersionsNpm }from '../src';
 import Vorpal = require('vorpal');
-import * as latestVersion from 'latest-version';
+import latestVersion from 'latest-version';
 
 const { promisify } = require('util');
 
