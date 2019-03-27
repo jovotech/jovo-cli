@@ -25,6 +25,7 @@ const project = require('jovo-cli-core').getProject();
 export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'alexaSkill';
+	static ID_KEY = 'skillId';
 
 	constructor() {
 		super();

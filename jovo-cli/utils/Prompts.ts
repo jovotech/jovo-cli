@@ -59,11 +59,11 @@ export function promptForInit(message: string): Promise<inquirer.Answers> {
  * @param {Array<*>} choices
  * @return {Promise}
  */
-export function promptListForSkillId(choices: inquirer.ChoiceType[]): Promise<inquirer.Answers> {
+export function promptListForProjectId(choices: inquirer.ChoiceType[]): Promise<inquirer.Answers> {
 	const questions = [{
 		type: 'list',
-		name: 'skillId',
-		message: 'Select your skill:',
+		name: 'id',
+		message: 'Select your project:',
 		paginated: true,
 		choices,
 	}];

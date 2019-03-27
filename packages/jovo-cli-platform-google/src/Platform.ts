@@ -56,6 +56,7 @@ const DEFAULT_ENTITY = {
 export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'googleAction';
+	static ID_KEY = 'projectId';
 
     /**
      * Constructor
@@ -129,9 +130,8 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @returns {Promise<object>}
 	 * @memberof JovoCliPlatform
 	 */
-	getExistingProjects(config: AppFile): Promise<inquirer.ChoiceType[]> {
-		// TODO: Implement this for Google!
-		throw new Error('Method "getExistingProjects" is not implemented');
+	async getExistingProjects(config: AppFile): Promise<inquirer.ChoiceType[]> {
+		return DialogFlowUtil.v2.getProjects();
 	}
 
 
