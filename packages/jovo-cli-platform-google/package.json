@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli-platform-google",
-	"version": "2.0.10",
+	"version": "2.1.0",
 	"description": "Google specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
