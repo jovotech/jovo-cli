@@ -39,6 +39,7 @@ import {
 	JovoTaskContext,
 	DEFAULT_ENDPOINT,
 	DEFAULT_TEMPLATE,
+	DEFAULT_LANGUAGE,
 } from 'jovo-cli-core';
 
 
@@ -66,6 +67,8 @@ module.exports = (vorpal: Vorpal) => {
 			'Sets the invocation name')
 		.option('--skip-npminstall',
 			'Skips npm install')
+		.option('--language <language>',
+			'Sets the programming language of the template. \\n\\t\\t\\t\\t<javascript|typescript> Default: javascript')
 		.option('--endpoint <endpoint>',
 			'Type of endpoint \n\t\t\t\t<jovo-webhook|bst-proxy|ngrok|none> - Default: jovo-webhook')
 		.option('--v1',
@@ -193,6 +196,7 @@ module.exports = (vorpal: Vorpal) => {
 					projectname: args.directory,
 					locales: project.getLocales(args.options.locale),
 					template: args.options.template || DEFAULT_TEMPLATE,
+					language: args.options.language || DEFAULT_LANGUAGE,
 					invocation: args.options.invocation,
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
 				});
@@ -222,7 +226,8 @@ module.exports = (vorpal: Vorpal) => {
 						return project.downloadAndExtract(
 							ctx.projectname,
 							ctx.template,
-							ctx.locales[0]
+							ctx.locales[0],
+							ctx.language
 						)
 							.then(() => {
 								return project.updateModelLocale(ctx.locales[0]);

@@ -69,11 +69,12 @@ export class Project {
      * @param {string} projectName The project name
      * @param {string} template Name of the template
      * @param {string} locale The locale
+	 * @param {string} language The programming language (javascript|typescript)
      * @returns {Promise<string>}
      * @memberof Project
      */
-	async downloadAndExtract(projectName: string, template: string, locale: string): Promise<string> {
-		const pathToZip = await this.downloadTemplate(projectName, template, locale);
+	async downloadAndExtract(projectName: string, template: string, locale: string, language: string): Promise<string> {
+		const pathToZip = await this.downloadTemplate(projectName, template, locale, language);
 		return await this.unzip(pathToZip, projectName);
 	}
 
@@ -81,15 +82,16 @@ export class Project {
     /**
      * Downloads prepared template from jovo sample apps repo
      *
-     * @param {string} projectName The project name
+     * @param {string} projectPath The project name
      * @param {string} template Name of the template
      * @param {string} locale The locale
+	 * @param {string} language The programming language
      * @returns {Promise<string>}
      * @memberof Project
      */
-	downloadTemplate(projectPath: string, template: string, locale: string): Promise<string> {
+	downloadTemplate(projectPath: string, template: string, locale: string, language: string): Promise<string> {
 		const templateName = template + '_' + locale + '.zip';
-		const url = REPO_URL + 'v' + this.frameworkVersion + '/' + templateName;
+		const url = REPO_URL + 'v' + this.frameworkVersion + '/' + templateName + '?language='+language;
 
 		if (!fs.existsSync(projectPath)) {
 			fs.mkdirSync(projectPath);
