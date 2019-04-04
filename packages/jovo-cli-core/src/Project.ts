@@ -69,7 +69,6 @@ export class Project {
      * @param {string} projectName The project name
      * @param {string} template Name of the template
      * @param {string} locale The locale
-	 * @param {string} language The programming language (javascript|typescript)
      * @returns {Promise<string>}
      * @memberof Project
      */
@@ -85,7 +84,6 @@ export class Project {
      * @param {string} projectPath The project name
      * @param {string} template Name of the template
      * @param {string} locale The locale
-	 * @param {string} language The programming language
      * @returns {Promise<string>}
      * @memberof Project
      */
