@@ -302,7 +302,12 @@ export class Project {
 			return [DEFAULT_LOCALE];
 		}
 
-		return files.map((file) => pathParse(file).name);
+		return files
+			.filter((file) => {
+				// Remove all the backup files
+				return !file.match(/\d{4}-\d{2}-\d{2}/);
+			})
+			.map((file) => pathParse(file).name);
 	}
 
 
