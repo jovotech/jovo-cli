@@ -184,6 +184,7 @@ module.exports = (vorpal: Vorpal) => {
 					);
 				} else {
 					// build project
+					// @ts-ignore // No idea why that is needed
 					buildTask(config).forEach((t) => tasks.add(t));
 					// deploy project
 					if (args.options.deploy) {
