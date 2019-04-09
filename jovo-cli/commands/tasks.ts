@@ -249,6 +249,10 @@ export function buildReverseTask(ctx: JovoTaskContext) {
 
 
 export function deployTask(ctx: JovoTaskContext): Listr.ListrTask[] {
+	if (ctx.targets === undefined || ctx.targets.length === 0) {
+		return [];
+	}
+
 	const platformsPath = project.getPlatformsPath();
 	if (!fs.existsSync(platformsPath)) {
 		fs.mkdirSync(platformsPath);
@@ -259,28 +263,35 @@ export function deployTask(ctx: JovoTaskContext): Listr.ListrTask[] {
 	const targets: JovoCliDeploy[] = [];
 	let targetNames: string[] = [];
 
-	if (ctx.target === TARGET_ZIP) {
+	if (ctx.targets.length === 1 && ctx.targets.includes(TARGET_ZIP)) {
 		// Only create a zip of the project-src folder
 		return [project.deployTaskZipProjectSource(ctx)];
 	}
 
-	if (ctx.target && ![TARGET_ZIP, TARGET_INFO, TARGET_MODEL].includes(ctx.target)) {
-		if (ctx.target === TARGET_ALL) {
-			targetNames = DeployTargets.getAllAvailable();
-		} else {
-			targetNames = [ctx.target];
-		}
+	if (ctx.targets.includes(TARGET_ALL)) {
+		targetNames = DeployTargets.getAllAvailable();
+	} else {
+		targetNames = ctx.targets;
 	}
 
 	let target;
 	let preDeployTasks: string[] = [];
+	const pluginDeployTargets = DeployTargets.getAllPluginTargets();
 	targetNames.forEach((targetName) => {
+		if (!pluginDeployTargets.includes(targetName)) {
+			// Skip all not plugin targets
+			return;
+		}
 		target = DeployTargets.get(targetName);
 		preDeployTasks = _.union(preDeployTasks, target.getPreDeployTasks());
 		targets.push(target);
 	});
 
 	const deployPlatformTasks: Listr.ListrTask[] = [];
+
+	if (ctx.targets.includes(TARGET_ZIP) && !preDeployTasks.includes(TARGET_ZIP)) {
+		preDeployTasks.push(TARGET_ZIP);
+	}
 
 	preDeployTasks.forEach((targetName) => {
 		if (targetName === TARGET_ZIP) {

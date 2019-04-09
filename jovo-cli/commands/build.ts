@@ -114,7 +114,7 @@ module.exports = (vorpal: Vorpal) => {
 					types,
 					projectId: args.options['project-id'] || project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-					target: args.options.target || DEFAULT_TARGET,
+					targets: project.getDeployTargets(args.options.target, args.options.stage),
 					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: DEBUG,

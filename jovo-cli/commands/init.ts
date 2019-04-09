@@ -96,7 +96,7 @@ module.exports = (vorpal: Vorpal) => {
 					types: args.platform ? [args.platform] : [],
 					locales: project.getLocales(args.options.locale),
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-					target: args.options.target || DEFAULT_TARGET,
+					targets: project.getDeployTargets(args.options.target, args.options.stage),
 					debug: args.options.debug ? true : false,
 					frameworkVersion: project.frameworkVersion,
 				};

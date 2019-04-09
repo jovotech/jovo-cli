@@ -440,7 +440,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 
 		returnTasks.push({
-			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage),
+			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + ctx.projectId,
 			task: (ctx, task) => {
 
 				const deployTasks: ListrTask[] = [

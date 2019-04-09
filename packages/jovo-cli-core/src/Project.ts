@@ -26,7 +26,7 @@ import { ListrTask, ListrTaskWrapper } from 'listr';
 import * as tv4 from 'tv4';
 
 import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, ModelValidationError, PackageVersion } from './';
-import { DEFAULT_LOCALE, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
+import { DEFAULT_LOCALE, DEFAULT_TARGET, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
 
 
 export class Project {
@@ -202,7 +202,7 @@ export class Project {
      * @param {string} stage
      * @return {string}
      */
-	getConfigParameter(path: string, stage?: string): string | undefined {
+	getConfigParameter(path: string, stage?: string): string[] | string | undefined {
 		const config: AppFile = this.getConfig(stage);
 		if (typeof _.get(config, path) === 'undefined') {
 			return;
@@ -272,15 +272,14 @@ export class Project {
 
 
     /**
-     * Returns project locale. Takes the first from the
-     * models path
+     * Returns project locales
      *
      * @param {(string | undefined)} locale
      * @returns
      * @memberof Project
      */
 	getLocales(locale?: string | string[]): string[] {
-		if (locale) {
+		if (locale !== undefined) {
 			if (Array.isArray(locale)) {
 				return locale;
 			} else {
@@ -310,6 +309,32 @@ export class Project {
 			.map((file) => pathParse(file).name);
 	}
 
+
+	/**
+	 * Returns the deploy targets
+	 *
+	 * @param {(string | string[])} [target]
+	 * @param {string} [stage]
+	 * @returns {string[]}
+	 * @memberof Project
+	 */
+	getDeployTargets(target?: string | string[], stage?: string): string[] {
+		if (target !== undefined) {
+			if (Array.isArray(target)) {
+				return target;
+			} else {
+				return [target];
+			}
+		}
+
+		const targets = this.getConfigParameter('deploy.target', stage);
+
+		if (targets === undefined) {
+			return [DEFAULT_TARGET];
+		}
+
+		return targets as string[];
+	}
 
 
 	/**

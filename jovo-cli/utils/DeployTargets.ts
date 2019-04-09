@@ -41,7 +41,7 @@ function createDeployInstance(name: string): JovoCliDeploy {
  * Returns the deploy target example text
  */
 export function getDeployExampleText(): string {
-	const availableDeployTargets = DeployTargets.getAllAvailable();
+	const availableDeployTargets = DeployTargets.getAllPluginTargets();
 	return `<${TARGET_MODEL}|${TARGET_INFO}|${TARGET_ZIP}|${TARGET_ALL}|${availableDeployTargets.join('|')}> Default: ${DEFAULT_TARGET}`;
 }
 
@@ -53,6 +53,27 @@ export function getDeployExampleText(): string {
  * @returns {string[]}
  */
 export function getAllAvailable(): string[] {
+	const targetNames: string[] = [
+		TARGET_MODEL,
+		TARGET_INFO,
+		TARGET_ZIP,
+	];
+
+	const pluginDeployTargets = DeployTargets.getAllPluginTargets();
+
+	targetNames.push.apply(targetNames, pluginDeployTargets);
+
+	return targetNames;
+}
+
+
+/**
+ * Returns all the plugin target names
+ *
+ * @export
+ * @returns {string[]}
+ */
+export function getAllPluginTargets(): string[] {
 	const targetNames: string[] = [];
 
 	AVAILABLE_DEPLOY_TARGETS.forEach((platform) => {

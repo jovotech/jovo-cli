@@ -534,14 +534,17 @@ Endpoint: ${skillInfo.endpoint}`;
 	getDeployTasks(ctx: JovoTaskContextAlexa, targets: JovoCliDeploy[]): ListrTask[] {
 		const returnTasks: ListrTask[] = [];
 
+		ctx.targets = ctx.targets || [];
+
 		// @ts-ignore
 		const additionalTargetKeys: string[] = targets.map((target) => target.constructor.TARGET_KEY);
 
 		try {
 			ctx.skillId = this.getSkillId();
 		} catch (error) {
-			if (!ctx.target || ctx.target && !additionalTargetKeys.includes(ctx.target)) {
-				console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+
+			if (ctx.targets.length === 0 || ctx.targets.length && !additionalTargetKeys.some(targetName => ctx.targets!.includes(targetName))) {
+				console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`);
 				return [];
 			}
 		}
@@ -555,9 +558,10 @@ Endpoint: ${skillInfo.endpoint}`;
 						title:
 							`Creating Alexa Skill project for ASK profile ${highlight(ctx.askProfile)}`, // eslint-disable-line
 						enabled: (ctx: JovoTaskContextAlexa) => _.isUndefined(ctx.skillId) &&
-							(!ctx.target || !!ctx.target && !additionalTargetKeys.includes(ctx.target)),
+							(ctx.targets === undefined || targets.length === 0 ||
+							!!ctx.targets.length && !additionalTargetKeys.some(targetName => ctx.targets!.includes(targetName))),
 						task: (ctx: JovoTaskContextAlexa) => {
-							ctx.target = TARGET_ALL;
+							ctx.targets = [TARGET_ALL];
 							return ask.checkAsk().then(() => {
 								return ask.askApiCreateSkill(
 									ctx,
@@ -581,7 +585,7 @@ Endpoint: ${skillInfo.endpoint}`;
 						title: 'Updating Alexa Skill project for ASK profile ' + ctx.askProfile,
 						enabled: (ctx: JovoTaskContextAlexa) => !_.isUndefined(ctx.skillId) &&
 							_.isUndefined(ctx.newSkill) &&
-							(ctx.target === TARGET_ALL || ctx.target === TARGET_INFO),
+							(ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO)),
 						task: (ctx: JovoTaskContextAlexa, task: ListrTaskWrapper) => {
 							return ask.askApiUpdateSkill(
 								ctx,
@@ -599,8 +603,8 @@ Endpoint: ${skillInfo.endpoint}`;
 						},
 					}, {
 						title: 'Deploying Interaction Model, waiting for build',
-						enabled: (ctx: JovoTaskContextAlexa) => ctx.target === TARGET_ALL ||
-							ctx.target === TARGET_MODEL,
+						enabled: (ctx: JovoTaskContextAlexa) => ctx.targets!.includes(TARGET_ALL) ||
+							ctx.targets!.includes(TARGET_MODEL),
 						task: (ctx: JovoTaskContextAlexa) => {
 							const deployLocaleTasks: ListrTask[] = [];
 

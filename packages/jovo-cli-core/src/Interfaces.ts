@@ -13,7 +13,6 @@ export interface AppFileStages {
 	languageModel?: LanguageModel;
 }
 
-
 export interface AppFile {
 	config?: {
 		[key: string]: object;
@@ -22,6 +21,11 @@ export interface AppFile {
 	stages?: {
 		[key: string]: AppFileStages;
 	};
+	deploy?: DeployConfiguration;
+}
+
+export interface DeployConfiguration {
+	target?: string[];
 }
 
 export interface IntentInput {
@@ -72,7 +76,7 @@ export interface JovoTaskContext {
 	locales?: string[];
 	projectId?: string;
 	endpoint?: string;
-	target?: string;
+	targets?: string[];
 	projectname?: string;
 	template?: string;
 	src?: string;
