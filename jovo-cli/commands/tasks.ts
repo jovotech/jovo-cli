@@ -23,7 +23,7 @@ const { promisify } = require('util');
 const existsAsync = promisify(fs.exists);
 
 const highlight = require('chalk').white.bold;
-const subHeadline = require('chalk').white.dim;
+const subHeadline = require('chalk').grey;
 
 const project = getProject();
 

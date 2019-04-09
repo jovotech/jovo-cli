@@ -13,7 +13,7 @@ import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
 
 const project = require('jovo-cli-core').getProject();
 
-const dimText = require('chalk').white.dim;
+const greyText = require('chalk').grey;
 
 import {
 	addBaseCliOptions,
@@ -60,7 +60,7 @@ module.exports = (vorpal: Vorpal) => {
 						text = `  ${packageName}: ${packageVersions[packageName].local}`;
 
 						if (packageVersions[packageName].local !== packageVersions[packageName].npm) {
-							text += dimText(` -> ${packageVersions[packageName].npm}`);
+							text += greyText(` -> ${packageVersions[packageName].npm}`);
 							outOfDatePackages.push(packageName);
 						}
 						console.log(text);

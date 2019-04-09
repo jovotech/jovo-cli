@@ -29,7 +29,7 @@ const opn = require('opn');
 const { promisify } = require('util');
 
 const accessAsync = promisify(fs.access);
-const dimText = require('chalk').white.dim;
+const greyText = require('chalk').grey;
 
 
 const project = getProject();
@@ -99,7 +99,7 @@ module.exports = (vorpal: Vorpal) => {
 						for (const packageName of Object.keys(packageVersions)) {
 							if (packageVersions[packageName].local !== packageVersions[packageName].npm) {
 								text = `  - ${packageName}: ${packageVersions[packageName].local}`;
-								text += dimText(` -> ${packageVersions[packageName].npm}`);
+								text += greyText(` -> ${packageVersions[packageName].npm}`);
 								outOfDatePackages.push(packageName);
 								outputText.push(text);
 							}

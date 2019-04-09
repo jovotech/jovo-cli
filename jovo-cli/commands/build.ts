@@ -28,7 +28,7 @@ import {
 } from 'jovo-cli-core';
 import { buildReverseTask, buildTask, deployTask, initTask } from './tasks';
 
-const subHeadline = require('chalk').white.dim;
+const subHeadline = require('chalk').grey;
 
 const project = getProject();
 
