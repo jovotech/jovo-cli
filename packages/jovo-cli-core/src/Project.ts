@@ -390,10 +390,9 @@ export class Project {
 
 		const todayDate = new Date();
 		const todayString = todayDate.toISOString().substring(0, 10);
-		let target = this.getModelPath(locale);
-		target = target + todayString + '.json';
 
-		const destinationFile = pathJoin(target + todayString + pathParse(modelFilePath).ext);
+		const target = this.getModelPath(locale);
+		const destinationFile = `${target}.${todayString}${pathParse(modelFilePath).ext}`;
 
 		return copyFileAsync(modelFilePath, destinationFile);
 	}
