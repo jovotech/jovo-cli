@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "2.2.1",
+	"version": "2.2.2",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -30,11 +30,11 @@
 		"dotenv": "^5.0.1",
 		"indent-string": "^3.2.0",
 		"inquirer": "^5.0.0",
-		"jovo-cli-core": "^2.2.1",
-		"jovo-cli-deploy-lambda": "^2.2.1",
-		"jovo-cli-platform-alexa": "^2.2.1",
-		"jovo-cli-platform-google": "^2.2.1",
-		"jovo-webhook-connector": "^2.2.0",
+		"jovo-cli-core": "^2.2.2",
+		"jovo-cli-deploy-lambda": "^2.2.2",
+		"jovo-cli-platform-alexa": "^2.2.2",
+		"jovo-cli-platform-google": "^2.2.2",
+		"jovo-webhook-connector": "^2.2.1",
 		"latest-version": "^5.0.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
@@ -82,10 +82,10 @@
 		"eslint": "^3.19.0",
 		"eslint-config-google": "^0.8.0",
 		"jest": "^23.6.0",
+		"rimraf": "^2.6.2",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
-		"typescript": "^3.0.3",
-		"rimraf": "^2.6.2"
+		"typescript": "^3.0.3"
 	},
 	"jest": {
 		"transform": {
