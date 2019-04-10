@@ -438,7 +438,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 				_.get(config, 'endpoint');
 			arn = _.startsWith(arn, 'arn') ? arn : undefined;
 		}
-		ctx.projectId = 123;
 
 		returnTasks.push({
 			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + (ctx.projectId ? ' ' + ctx.projectId : ''),
