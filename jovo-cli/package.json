@@ -13,7 +13,8 @@
 		"build": "tsc",
 		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
 		"tsc": "node_modules/.bin/tsc",
-		"tscw": "tsc --watch"
+		"tscw": "tsc --watch",
+		"rimraf": "rimraf ./dist"
 	},
 	"bin": {
 		"jovo": "./dist/index.js"
@@ -83,7 +84,8 @@
 		"jest": "^23.6.0",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
-		"typescript": "^3.0.3"
+		"typescript": "^3.0.3",
+		"rimraf": "^2.6.2"
 	},
 	"jest": {
 		"transform": {
