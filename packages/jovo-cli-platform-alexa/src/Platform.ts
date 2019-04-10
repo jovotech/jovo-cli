@@ -544,7 +544,7 @@ Endpoint: ${skillInfo.endpoint}`;
 		} catch (error) {
 
 			if (ctx.targets.length === 0 || ctx.targets.length && !additionalTargetKeys.some(targetName => ctx.targets!.includes(targetName))) {
-				console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`);
+				console.log(`Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`);
 				return [];
 			}
 		}

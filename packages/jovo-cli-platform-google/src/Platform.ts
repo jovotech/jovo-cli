@@ -440,11 +440,11 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 
 		returnTasks.push({
-			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + ctx.projectId,
+			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + (ctx.projectId ? ' ' + ctx.projectId : ''),
 			task: (ctx, task) => {
 
 				const deployTasks: ListrTask[] = [
-{
+					{
 						title: 'Creating file /googleAction/dialogflow_agent.zip',
 						task: (ctx: JovoTaskContextGoogle, task: ListrTaskWrapper) => {
 							return DialogFlowUtil.zip().then(() => {
