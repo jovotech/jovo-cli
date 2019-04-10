@@ -89,7 +89,7 @@ module.exports = (vorpal: Vorpal) => {
 				};
 
 				if (config.types.length === 0 && (config.targets === undefined || config.targets.length === 0 || config.targets.length && !pluginDeployTargets.some(targetName => config.targets!.includes(targetName)))) {
-					console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+					console.log(`Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`);
 					return Promise.resolve();
 				}
 
