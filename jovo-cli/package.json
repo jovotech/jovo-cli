@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "2.2.2",
+	"version": "2.2.3",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -32,8 +32,8 @@
 		"inquirer": "^5.0.0",
 		"jovo-cli-core": "^2.2.2",
 		"jovo-cli-deploy-lambda": "^2.2.2",
-		"jovo-cli-platform-alexa": "^2.2.2",
-		"jovo-cli-platform-google": "^2.2.2",
+		"jovo-cli-platform-alexa": "^2.2.3",
+		"jovo-cli-platform-google": "^2.2.3",
 		"jovo-webhook-connector": "^2.2.1",
 		"latest-version": "^5.0.0",
 		"listr": "^0.14.2",
