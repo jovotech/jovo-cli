@@ -492,12 +492,17 @@ Endpoint: ${skillInfo.endpoint}`;
 				for (const locale of locales) {
 					reverseLocales.push({
 						title: locale.toString(),
-						task: () => {
+						task: async () => {
 							const alexaModel = this.getModel(locale);
 							const alexaInteractionModel = new AlexaInteractionModel(alexaModel);
 							const jovoModel = alexaInteractionModel.reverse(alexaModel);
+
+							// Apply the changes to the current model-file
+							const modelFile = await project.getModel(locale);
+							_.merge(modelFile, jovoModel);
+
 							return project.saveModel(
-								jovoModel,
+								modelFile,
 								locale);
 						},
 					});
