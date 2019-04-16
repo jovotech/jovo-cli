@@ -83,17 +83,20 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 	async upload(ctx: JovoTaskContextLambda, project: Project): Promise<void> {
 		ctx.src = ctx.src.replace(/\\/g, '\\\\');
-		let awsProfile = 'default';
 
-		if (ctx.askProfile) {
-			awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+		if (process.env.AWS_ACCESS_KEY_ID === undefined || process.env.AWS_SECRET_ACCESS_KEY === undefined) {
+			// Only set profile when special AWS environment variables are not set
+
+			let awsProfile = 'default';
+			if (ctx.askProfile) {
+				awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+			}
+			if (ctx.awsProfile) {
+				awsProfile = ctx.awsProfile;
+			}
+
+			AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
 		}
-
-		if (ctx.awsProfile) {
-			awsProfile = ctx.awsProfile;
-		}
-
-		AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
 
 		const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
 		if (!region) {
