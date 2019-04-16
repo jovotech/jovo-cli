@@ -11,7 +11,7 @@
         "bootstrap": "lerna bootstrap --hoist --no-ci",
         "rimraf": "lerna exec npm run rimraf",
         "typedoc": "npm run lerna exec npm run typedoc",
-        "preparePublish": "npm run rimraf && npm run tsc && npm run tslint && npm run test",
+        "preparePublish": "npm run rimraf && npm run tsc && npm run tslint",
         "publish": "lerna publish --registry http://localhost:4873 --no-push"
     },
     "devDependencies": {
