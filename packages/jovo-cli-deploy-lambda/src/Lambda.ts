@@ -116,7 +116,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 		const lambda = new AWS.Lambda(ctx.awsConfig || {});
 
-		const pathToZip = await project.zipSrcFolder(ctx);
+		const pathToZip = await project.getZipBundlePath(ctx);
 
 		await this.updateFunction(
 			lambda,

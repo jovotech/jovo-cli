@@ -440,6 +440,17 @@ export class Project {
 	}
 
 
+	/**
+	 * Returns the path of the bundle zip file
+	 *
+	 * @param {JovoTaskContext} ctx
+	 * @returns {string}
+	 * @memberof Project
+	 */
+	getZipBundlePath(ctx: JovoTaskContext): string {
+		const sourceFolder = ctx.src || this.getProjectPath();
+		return pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
+	}
 
 	/**
 	 * Zips the src folder
@@ -452,7 +463,7 @@ export class Project {
 
 		const sourceFolder = ctx.src || this.getProjectPath();
 
-		const pathToZip = pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
+		const pathToZip = this.getZipBundlePath(ctx);
 
 		return new Promise<string>((resolve, reject) => {
 
