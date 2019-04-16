@@ -8,13 +8,60 @@ import * as inquirer from 'inquirer';
 import * as request from 'request';
 import { exec } from 'child_process';
 import * as admZip from 'adm-zip';
-
-
+import { ExternalModelFile } from 'jovo-model-core';
 import * as GoogleActionUtil from './GoogleActionUtil';
+
+import { promisify } from 'util';
+
+const readdir = promisify(fs.readdir);
+const readFile = promisify(fs.readFile);
+
 
 const project = require('jovo-cli-core').getProject();
 
 import { JovoTaskContextGoogle } from '.';
+
+
+/**
+ * Returns the Dialogflow language files
+ *
+ * @export
+ * @returns {Promise<ExternalModelFile[]>}
+ */
+export async function getPlatformFiles(): Promise<ExternalModelFile[]> {
+	const platformFiles: ExternalModelFile[] = [];
+
+	const foldersIncludeMain = [
+		'entities',
+		'intents',
+	];
+
+	let fileName: string;
+
+	const platformFolderPath = getPath();
+	let subfolderFiles: string[];
+	for (const subfolder of foldersIncludeMain) {
+
+		try {
+			subfolderFiles = await readdir(pathJoin(platformFolderPath, subfolder));
+		} catch (e) {
+			// If folder does not exist skip it
+			continue;
+		}
+
+		for (fileName of subfolderFiles) {
+			platformFiles.push(
+				{
+					path: [subfolder, fileName],
+					content: JSON.parse(await readFile(pathJoin(platformFolderPath, subfolder, fileName), 'utf8')),
+				}
+			);
+		}
+	}
+
+	return platformFiles;
+}
+
 
 /**
  * Returns base path to DialogFlow Skill

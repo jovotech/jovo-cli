@@ -1,31 +1,51 @@
 'use strict';
 
-
-const AlexaInteractionModel = require('./AlexaInteractionModel').AlexaInteractionModel;
 import * as _ from 'lodash';
 import * as inquirer from 'inquirer';
 import Vorpal = require('vorpal');
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ask from './Ask';
-import { ArgOptions, Intent, JovoCliDeploy, JovoModel, JovoCliPlatform, Project, TARGET_ALL, TARGET_INFO, TARGET_MODEL, Utils } from 'jovo-cli-core';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
-import { AlexaLMIntent, AppFileAlexa, JovoModelAlexa, JovoTaskContextAlexa } from '.';
 
-import * as JovoModelAlexaValidator from '../validators/JovoModelAlexa.json';
+import {
+	AppFileAlexa,
+	JovoTaskContextAlexa,
+} from '.';
+import {
+	ArgOptions,
+	DEFAULT_LOCALE,
+	JovoCliDeploy,
+	JovoCliPlatform,
+	Project,
+	TARGET_ALL,
+	TARGET_INFO,
+	TARGET_MODEL,
+	Utils,
+} from 'jovo-cli-core';
+import {
+	AlexaLMIntent,
+	JovoModelBuilderAlexa,
+	JovoModelAlexa,
+} from 'jovo-model-alexa';
+import {
+	Intent,
+	JovoModel,
+} from 'jovo-model-core';
 
 
 const highlight = require('chalk').white.bold;
 const subHeadline = require('chalk').white.dim;
 
-const project = require('jovo-cli-core').getProject();
+const project: Project = require('jovo-cli-core').getProject();
 
 
 export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'alexaSkill';
 	static ID_KEY = 'skillId';
+	static modelBuilder = new JovoModelBuilderAlexa();
 
 	constructor() {
 		super();
@@ -46,7 +66,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 			if (argOptions && argOptions.hasOwnProperty('skill-id') && argOptions['skill-id']) {
 				skillId = argOptions['skill-id'];
 			} else {
-				skillId = project.getConfigParameter('alexaSkill.skillId', argOptions && argOptions.stage) || this.getSkillId();
+				skillId = project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', argOptions && argOptions.stage) || this.getSkillId();
 			}
 
 			const returnValue = {};
@@ -79,10 +99,10 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
 		return {
 			askProfile: askProfile ||
-				project.getConfigParameter('alexaSkill.ask-profile', argOptions && argOptions.stage) ||
-				project.getConfigParameter('alexaSkill.askProfile', argOptions && argOptions.stage) ||
-				project.getConfigParameter('host.lambda.ask-Profile', argOptions && argOptions.stage) ||
-				project.getConfigParameter('host.lambda.askProfile', argOptions && argOptions.stage) ||
+				project.jovoConfigReader!.getConfigParameter('alexaSkill.ask-profile', argOptions && argOptions.stage) ||
+				project.jovoConfigReader!.getConfigParameter('alexaSkill.askProfile', argOptions && argOptions.stage) ||
+				project.jovoConfigReader!.getConfigParameter('host.lambda.ask-Profile', argOptions && argOptions.stage) ||
+				project.jovoConfigReader!.getConfigParameter('host.lambda.askProfile', argOptions && argOptions.stage) ||
 				ask.DEFAULT_ASK_PROFILE,
 		};
 	}
@@ -219,7 +239,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	 * @memberof JovoCliPlatformAlexa
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		return JovoModelAlexaValidator;
+		return JovoCliPlatformAlexa.modelBuilder.getValidator();
 	}
 
 
@@ -493,12 +513,26 @@ Endpoint: ${skillInfo.endpoint}`;
 					reverseLocales.push({
 						title: locale.toString(),
 						task: async () => {
-							const alexaModel = this.getModel(locale);
-							const alexaInteractionModel = new AlexaInteractionModel(alexaModel);
-							const jovoModel = alexaInteractionModel.reverse(alexaModel);
+							const alexaModelFiles = [
+								{
+									path: ['${locale}.json'],
+									content: this.getModel(locale),
+								}
+							];
 
-							// Apply the changes to the current model-file
-							const modelFile = await project.getModel(locale);
+							const jovoModel = JovoCliPlatformAlexa.modelBuilder.toJovoModel(alexaModelFiles, locale.toString());
+
+							// Apply the changes to the current model-file if one exists
+							let modelFile;
+							try {
+								modelFile = await project.getModel(locale);
+							} catch (e) {
+								// Currently no model file exists so there is
+								// nothing to merge it with
+								modelFile = {
+									invocation: '',
+								};
+							}
 							_.merge(modelFile, jovoModel);
 
 							return project.saveModel(
@@ -510,18 +544,6 @@ Endpoint: ${skillInfo.endpoint}`;
 				return new listr(reverseLocales);
 			},
 		});
-
-		try {
-			project.getConfigParameter(JovoCliPlatformAlexa.PLATFORM_KEY, ctx.stage);
-		} catch (err) {
-			returnTasks.push({
-				title: 'Initializing Alexa Skill into app.json',
-				task: (ctx) => {
-					return project.updatePlatformConfig(JovoCliPlatformAlexa.PLATFORM_KEY);
-				},
-			});
-		}
-
 
 		return returnTasks;
 	}
@@ -711,7 +733,7 @@ Endpoint: ${skillInfo.endpoint}`;
 			const files = fs.readdirSync(this.getModelsPath());
 
 			if (files.length === 0) {
-				return [project.DEFAULT_LOCALE];
+				return [DEFAULT_LOCALE];
 			}
 			const locales: string[] = [];
 			for (const file of files) {
@@ -904,18 +926,6 @@ Endpoint: ${skillInfo.endpoint}`;
 		return skillJson;
 	}
 
-    /**
-     * Creates empty model object
-     * @return {*}
-     */
-	createEmptyModelJson() {
-		return {
-			'interactionModel': {
-				'languageModel': {},
-			},
-		};
-	}
-
 
     /**
      * Creates empty skill project files
@@ -941,7 +951,7 @@ Endpoint: ${skillInfo.endpoint}`;
 			}
 
 			const skillJson = this.createEmptySkillJson(
-				project.getProjectName(),
+				project.getProjectName() as string,
 				ctx.locales
 			);
 
@@ -982,20 +992,50 @@ Endpoint: ${skillInfo.endpoint}`;
 	buildLanguageModelAlexa(locale: string, stage: string) {
 		return new Promise((resolve, reject) => {
 			try {
-				let alexaModel;
+
+				let model: JovoModel;
 				try {
-					alexaModel = this.getModel(locale);
-				} catch (err) {
-					alexaModel = this.createEmptyModelJson();
+					model = project.getModel(locale);
+				} catch (e) {
+					console.log(e);
+					return;
 				}
-				const aim = new AlexaInteractionModel(alexaModel);
-				aim.transform(locale, stage, this.getModelPath.bind(this));
+
+				const alexaModelFiles = JovoCliPlatformAlexa.modelBuilder.fromJovoModel(project.jovoConfigReader!, model, locale, stage);
+
+				if (alexaModelFiles.length === 0) {
+					// Should actually never happen but who knows
+					throw new Error(`Could not build Alexa files for locale "${locale}"!`);
+				}
+
+				let locales: string[] = [];
+				if (locale.length === 2) {
+					try {
+						if (!project.jovoConfigReader!.getConfigParameter(`alexaSkill.nlu.lang.${locale}`, stage)) {
+							throw new Error();
+						}
+						locales = project.jovoConfigReader!.getConfigParameter(`alexaSkill.nlu.lang.${locale}`, stage) as string[];
+					} catch (error) {
+						throw new Error('Could not retrieve locales mapping for language ' + locale);
+					}
+				} else {
+					locales = [locale];
+				}
+
+				for (const targetLocale of locales) {
+					fs.writeFileSync(
+						this.getModelPath(targetLocale),
+						JSON.stringify(alexaModelFiles[0].content, null, '\t')
+					);
+				}
+
 				resolve();
 			} catch (error) {
 				reject(error);
 			}
 		});
 	}
+
 
     /**
      * Builds and saves Alexa Skill model from jovo model
@@ -1007,7 +1047,7 @@ Endpoint: ${skillInfo.endpoint}`;
 		return new Promise((resolve, reject) => {
 			try {
 
-				const config = project.getConfig(stage);
+				const config = project.getConfig(stage) as AppFileAlexa;
 				const skillJson = this.getSkillJson();
 				// endpoint
 				if (_.get(config, 'endpoint')) {
@@ -1015,7 +1055,7 @@ Endpoint: ${skillInfo.endpoint}`;
 					if (_.isString(_.get(config, 'endpoint'))) {
 						_.set(skillJson, 'manifest.apis.custom.endpoint', {
 							sslCertificateType: 'Wildcard',
-							uri: project.getEndpointFromConfig(_.get(config, 'endpoint')),
+							uri: project.getEndpointFromConfig(_.get(config, 'endpoint') as string),
 						});
 					} else if (_.isObject(_.get(config, 'endpoint')) && _.get(config, 'endpoint.alexaSkill')) {
 						// get full object
@@ -1046,7 +1086,7 @@ Endpoint: ${skillInfo.endpoint}`;
 					}
 				}
 				if (_.get(config, 'alexaSkill.manifest')) {
-					_.merge(skillJson.manifest, config.alexaSkill.manifest);
+					_.merge(skillJson.manifest, config.alexaSkill!.manifest);
 				}
 
 				fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), (err) => {
@@ -1054,8 +1094,8 @@ Endpoint: ${skillInfo.endpoint}`;
 						reject(err);
 						return;
 					}
-					if (typeof project.getConfigParameter('alexaSkill.skillId', stage) !== 'undefined') {
-						this.setAlexaSkillId(project.getConfigParameter('alexaSkill.skillId', stage))
+					if (typeof project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', stage) !== 'undefined') {
+						this.setAlexaSkillId(project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', stage) as string)
 							.then(() => resolve());
 					} else {
 						resolve();

@@ -1,61 +1,7 @@
-import { AppFile, Intent, JovoModel, JovoTaskContext } from 'jovo-cli-core';
-
-export interface JovoTaskContextGoogle extends JovoTaskContext {
-	pathToZip: string;
-	keyFile: string;
-}
-
-export interface DialogFlowLMIntentData {
-	text: string;
-	userDefined: boolean;
-	alias?: string;
-	meta?: string;
-}
-
-export interface DialogFlowLMIntent {
-	isTemplate: boolean;
-	count: number;
-	data: DialogFlowLMIntentData[];
-}
-
-
-export interface DialogFlowLMInputParameterObject {
-	name: string;
-	isList: boolean;
-	value: string;
-	dataType: string;
-}
-
-
-export interface DialogFlowResponse {
-	parameters: DialogFlowLMInputParameterObject[];
-}
-
-
-export interface DialogFlowLMEntity {
-	isOverridable?: boolean;
-	isEnum?: boolean;
-	automatedExpansion?: boolean;
-}
-
-
-export interface DialogFlowLMInputObject {
-	name: string;
-	auto: boolean;
-	webhookUsed: boolean;
-	fallbackIntent?: boolean;
-	responses?: DialogFlowResponse[];
-	events?: [
-		{
-			name: string;
-		}
-	];
-}
-
-
-export interface IntentDialogFlow extends Intent {
-	dialogflow?: IntentDialogFlow;
-}
+import {
+	AppFile,
+	JovoTaskContext,
+} from 'jovo-cli-core';
 
 
 export interface AppFileDialogFlow extends AppFile {
@@ -66,12 +12,8 @@ export interface AppFileDialogFlow extends AppFile {
 	};
 }
 
-export interface DialogFlowModel {
-	intents?: [
-		DialogFlowLMInputObject
-	];
-}
 
-export interface JovoModelDialogFlow extends JovoModel {
-	dialogflow?: DialogFlowModel;
+export interface JovoTaskContextGoogle extends JovoTaskContext {
+	pathToZip: string;
+	keyFile: string;
 }

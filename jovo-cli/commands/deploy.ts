@@ -21,7 +21,6 @@ import {
 import {
 	getProject,
 	JovoTaskContext,
-	DEFAULT_TARGET,
 } from 'jovo-cli-core';
 
 const project = getProject();
@@ -82,7 +81,7 @@ module.exports = (vorpal: Vorpal) => {
 					locales: project.getLocales(args.options.locale),
 					types: Platforms.getAll(args.options.platform, args.options.stage),
 					targets: project.getDeployTargets(args.options.target, args.options.stage),
-					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
+					src: args.options.src || project.jovoConfigReader!.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: args.options.debug ? true : false,
 					frameworkVersion: project.frameworkVersion,

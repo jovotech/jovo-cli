@@ -8,14 +8,12 @@ import {
 	getProject,
 	JovoCliDeploy,
 	JovoTaskContext,
-	Validators,
 	ENDPOINT_NONE,
 	TARGET_ALL,
-	TARGET_INFO,
-	TARGET_MODEL,
 	TARGET_ZIP,
 	JovoCliPlatform,
 } from 'jovo-cli-core';
+
 import * as DeployTargets from '../utils/DeployTargets';
 const parseJson = require('parse-json');
 
@@ -162,9 +160,6 @@ export function buildTask(ctx: JovoTaskContext) {
 					// Do not validate the model file
 					return Promise.resolve();
 				}
-
-				// Validate if the content is valid
-				project.validateModel(locale, Validators.JovoModel);
 
 				// Validate also content of platform specific properties
 				let platform;

@@ -55,15 +55,15 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 						// special use case
 						// copy app.json/project.js if src directory is not default and config
 						// was set in projectConfig
-						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.moveTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
+						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
+							await project.moveTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
 						}
 
 						await this.checkAsk();
 						await this.upload(ctx, project);
 
-						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.deleteTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
+						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
+							await project.deleteTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
 						}
 
 						let info = 'Info: ';
