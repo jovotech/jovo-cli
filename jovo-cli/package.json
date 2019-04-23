@@ -23,7 +23,7 @@
 	"license": "Apache-2.0",
 	"dependencies": {
 		"bespoken-tools": "^1.1.0",
-		"boxen": "^2.1.0",
+		"boxen": "^3.1.0",
 		"chalk": "^2.4.1",
 		"cli-truncate": "^1.1.0",
 		"cross-spawn": "^5.1.0",
@@ -61,7 +61,6 @@
 	},
 	"homepage": "https://github.com/jovotech/jovo-cli#readme",
 	"devDependencies": {
-		"@types/boxen": "^2.1.0",
 		"@types/chalk": "^2.2.0",
 		"@types/cli-truncate": "^1.1.0",
 		"@types/cross-spawn": "^6.0.0",

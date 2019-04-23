@@ -182,5 +182,5 @@ export function setUpdateMessageDisplayed() {
 	const jovoConfig = project.loadJovoUserConfig();
 	jovoConfig.timeLastUpdateMessage = new Date().toISOString();
 
-	project.saveJovoConfig(jovoConfig);
+	project.saveJovoUserConfig(jovoConfig);
 }
