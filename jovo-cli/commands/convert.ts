@@ -1,7 +1,6 @@
 import * as Vorpal from 'vorpal';
 import { addBaseCliOptions } from '../utils/Utils';
 import { readFileSync, readdirSync, writeFileSync } from 'fs';
-import * as _ from 'lodash';
 
 module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
@@ -94,7 +93,7 @@ function fromI18N(path: string) {
         headers.push(locale);
         obj.headers = headers;
 
-        const values: string[] = [];
+        const values = obj.values;
 
         for (const key in i18nModel) {
             if (!i18nModel.hasOwnProperty(key)) {
@@ -119,11 +118,6 @@ function fromI18N(path: string) {
                 }
             }
         }
-        const o = { headers, values };
-
         console.log(obj);
-        _.merge(obj, o);
-        console.log(obj);
-
     })
 }
