@@ -55,3 +55,5 @@ out
 dist
 
 packages/*/package-lock.json
+
+credentials.json

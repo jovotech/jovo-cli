@@ -11,8 +11,7 @@ const project = getProject();
 
 const pkg = require('../package.json');
 
-
-async function start () {
+async function start() {
 	if (parseInt(process.version.substr(1, 2), 10) < 6) {
 		console.error('Please use node version >= 6');
 		process.exit(1);
@@ -30,14 +29,14 @@ async function start () {
 
 
 	// check for valid Jovo project directory
-	const projectLevelCommands = ['build', 'deploy', 'get', 'init', 'run', 'update'];
+	const projectLevelCommands = ['build', 'deploy', 'get', 'init', 'run', 'update', 'convert'];
 	if (projectLevelCommands.indexOf(process.argv[2]) !== -1 &&
 		versionArg.indexOf(process.argv[2]) === -1) {
 
-		if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-			console.error('To use this command, please go into the directory of a valid Jovo project.');
-			process.exit(1);
-		}
+		// if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
+		// 	console.error('To use this command, please go into the directory of a valid Jovo project.');
+		// 	process.exit(1);
+		// }
 	}
 
 	if (process.argv.length <= 2) {
@@ -65,6 +64,7 @@ async function start () {
 			.use(require('./commands/get.js'))
 			.use(require('./commands/run.js'))
 			.use(require('./commands/update.js'))
+			.use(require('./commands/convert'))
 			.delimiter('')
 			.show()
 			.parse(process.argv);
