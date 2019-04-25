@@ -28,6 +28,17 @@ module.exports = (vorpal: Vorpal) => {
              * from airtable to spreadsheet
              */
 
+            const unifiedForm = {
+                headers: ['en-US', 'de-DE'],
+                values: {
+                    WELCOME: ['Welcome.', 'Willkommen.'],
+                    GOODBYE: [
+                        ['Bye', 'Tschüss'],
+                        ['Bye bye!', 'Bis dann!']
+                    ]
+                }
+            }
+
             console.log('Executing...');
 
             const origin = args.options.from;
@@ -71,8 +82,13 @@ function fromSpreadsheet(path: string) {
 
 function toSpreadsheet(obj: any, path: string) {
     const { headers, values } = obj;
-    // append headers
     let csv = `key,${headers.join(',')}\n`;
+    for(const key in values) {
+        if(!values.hasOwnProperty(key)) {
+            continue;
+        }
+        
+    }
     values.forEach((val: string) => {
         csv += `${val}\n`;
     });
@@ -88,36 +104,35 @@ function fromI18N(path: string) {
 
         let headers = obj.headers;
         if(!headers) {
-            headers = ['key'];
+            headers = [];
         } 
         headers.push(locale);
         obj.headers = headers;
 
-        const values = obj.values;
+        let values = obj.values;
+        if(!values) {
+            values = {};
+        }
 
-        for (const key in i18nModel) {
-            if (!i18nModel.hasOwnProperty(key)) {
+        for (const prop in i18nModel) {
+            if (!i18nModel.hasOwnProperty(prop)) {
                 continue;
             }
 
-            if (key === 'translation') {
-                for (const k in i18nModel[key]) {
-                    const val = i18nModel[key][k];
+            if (prop === 'translation') {
+                for (const key in i18nModel[prop]) {
+                    const value = i18nModel[prop][key];
 
-                    if (val.constructor === Array) {
-                        val.forEach((v: string) => {
-                            values.push(`${k},${v}`);
-                        })
-                    } else if (typeof val === 'string') {
-                        values.push(`${k},${val}`);
-                    } else if (typeof val === 'object') {
-                        for (const j in val) {
-                            values.push(`${k}.${j},${val[j]}`);
-                        }
+                    if(!values[key]) {
+                        values[key] = []; 
                     }
+                    
+                    values[key].push(value);
                 }
             }
         }
-        console.log(obj);
-    })
+
+        obj.values = values;
+    });
+    return obj;
 }
