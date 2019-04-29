@@ -29,23 +29,25 @@ module.exports = (vorpal: Vorpal) => {
              */
 
             const unifiedForm = {
-                'en-US': {
-                    WELCOME: 'Welcome.'
-                },
-                'de-DE': {
-                    WELCOME: 'Willkommen.'
-                },
-                // headers: ['en-US', 'de-DE'],
-                // values: {
-                //     WELCOME: ['Welcome.', 'Willkommen.'],
-                //     GOODBYE: [
-                //         ['Bye', 'Tschüss'],
-                //         ['Bye bye!', 'Bis dann!']
-                //     ]
-                // }
-            }
-
-            
+                locales: ['en-US', 'de-DE'],
+                keys: [
+                    'welcome',
+                    'goodbye',
+                    'welcome_arr',
+                    'welcome_obj.speech',
+                    'welcome_obj.reprompt'
+                ],
+                values: [
+                    ['Welcome', 'Willkommen'],
+                    ['Goodbye.', 'Tschüss'],
+                    [
+                        ['Hello', 'Hallo'],
+                        ['Hey', ''],
+                        ['Hi', 'Moin'],
+                    ],
+                    ['Welcome here.', 'Willkommen hier']
+                ]
+            };
 
             console.log('Executing...');
 
@@ -92,30 +94,56 @@ function toSpreadsheet(obj: any, path: string) {
     console.log(obj);
     const { locales, keys, values } = obj;
     let csv = `${locales.join(',')}\n`;
+    const body: { [key: string]: any } = {};
 
     for (const [i, key] of keys.entries()) {
-        let string = '';
-        csv += key + ',';
-        for (const [j, locale] of locales.entries()) {
+        for (let j = 0; j < locales.length; j++) {
             const value = values[i][j] || '';
-
             if (value.constructor === Array) {
-                for (const [k, val] of value.entries()) {
-                    csv += val;
-                    if (k < value.length - 1) {
-                        csv += ',';
-                    } else {
-                        csv += '\n';
+                if (!body[key]) {
+                    body[key] = [];
+                }
+                for (const [l, v] of value.entries()) {
+                    const newArr = body[key][l] || [];
+
+                    if (body[key].length > 0 &&
+                        value.length > body[key].length &&
+                        newArr.length + 1 < locales.length) {
+                        const length = newArr.length;
+                        for (let m = 0; m < (j - length); m++) {
+                            newArr.push('');
+                        }
                     }
+
+                    newArr.push(v);
+
+                    body[key][l] = newArr;
                 }
+            } else if (typeof value === 'object') {
+                // TODO
+                console.log('Key: ', key);
+                console.log('Value: ', value);
+                for (const subKey in value) {
+                    const newKey = `${key}.${subKey}`;
+                    if (!body[newKey]) {
+                        body[newKey] = [];
+                    }
+                    body[newKey].push(value[subKey]);
+                }
+                console.log('Body: ', body);
             } else if (typeof value === 'string') {
-                csv += value;
-                if (j < locales.length - 1) {
-                    csv += ',';
-                } else {
-                    csv += '\n';
-                }
+                body[key] = values[i].join(',');
             }
+        }
+
+        if (body[key].constructor === Array) {
+            for (const value of body[key]) {
+                csv += `${key},${value.join(',')}\n`;
+            }
+        } else if (typeof body[key] === 'object') {
+            csv += `${key},${body[key].join(',')}\n`;
+        } else if (typeof body[key] === 'string') {
+            csv += `${key},${body[key]}\n`;
         }
     }
     console.log(csv);
@@ -154,7 +182,7 @@ function fromI18N(path: string) {
     for (const locale in obj) {
         locales.push(locale);
         for (const [i, key] of keys.entries()) {
-            const value = obj[locale][key];
+            const value = obj[locale][key] || '';
             if (i === values.length) {
                 values.push([value]);
             } else {

@@ -1,5 +1,9 @@
 {
     "translation": {
-        "welcome": "Willkommen!"
+        "welcome": "Willkommen!",
+        "welcome_array": [
+            "Willkommen",
+            "Hallo"
+        ]
     }
 }
