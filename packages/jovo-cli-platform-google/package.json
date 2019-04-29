@@ -29,17 +29,17 @@
 		"@types/request": "^2.48.1",
 		"@types/vorpal": "^1.11.0",
 		"jest": "^23.6.0",
+		"rimraf": "^2.6.2",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
-		"typescript": "^3.0.3",
-		"rimraf": "^2.6.2"
+		"typescript": "^3.0.3"
 	},
 	"dependencies": {
 		"adm-zip": "^0.4.11",
 		"archiver": "^3.0.0",
 		"chalk": "^2.4.1",
 		"jovo-cli-core": "^2.2.2",
-		"jovo-model-core": "^0.1.0",
+		"jovo-model": "^0.1.0",
 		"jovo-model-dialogflow": "^0.1.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",

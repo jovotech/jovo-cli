@@ -26,8 +26,8 @@ import {
 } from 'jovo-cli-core';
 import {
 	AlexaLMIntent,
-	JovoModelBuilderAlexa,
 	JovoModelAlexa,
+	JovoModelAlexaData,
 } from 'jovo-model-alexa';
 import {
 	Intent,
@@ -45,7 +45,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'alexaSkill';
 	static ID_KEY = 'skillId';
-	static modelBuilder = new JovoModelBuilderAlexa();
+	static jovoModel = new JovoModelAlexa();
 
 	constructor() {
 		super();
@@ -164,11 +164,11 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	/**
 	 * Set platform defaults on model
 	 *
-	 * @param {JovoModel} model The model to set the data on
+	 * @param {JovoModelAlexaData} model The model to set the data on
 	 * @returns {JovoModel}
 	 * @memberof JovoCliPlatform
 	 */
-	setPlatformDefaults(model: JovoModelAlexa): JovoModel {
+	setPlatformDefaults(model: JovoModelAlexaData): JovoModel {
 
 		if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
 			const result = _.unionBy(_.get(model, 'alexa.interactionModel.languageModel.intents'), this.getDefaultIntents(), 'name');
@@ -240,7 +240,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	 * @memberof JovoCliPlatformAlexa
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		return JovoCliPlatformAlexa.modelBuilder.getValidator();
+		return JovoCliPlatformAlexa.jovoModel.getValidator();
 	}
 
 
@@ -521,7 +521,7 @@ Endpoint: ${skillInfo.endpoint}`;
 								}
 							];
 
-							const jovoModel = JovoCliPlatformAlexa.modelBuilder.toJovoModel(alexaModelFiles, locale.toString());
+							const jovoModel = JovoCliPlatformAlexa.jovoModel.toJovoModel(alexaModelFiles, locale.toString());
 
 							// Apply the changes to the current model-file if one exists
 							let modelFile;
@@ -991,6 +991,13 @@ Endpoint: ${skillInfo.endpoint}`;
      * @return {Promise<any>}
      */
 	buildLanguageModelAlexa(locale: string, stage: string) {
+
+		const concatArrays = function customizer(objValue: any[], srcValue: any) { // tslint:disable-line:no-any
+			if (_.isArray(objValue)) {
+				return objValue.concat(srcValue);
+			}
+		};
+
 		return new Promise((resolve, reject) => {
 			try {
 
@@ -1002,7 +1009,20 @@ Endpoint: ${skillInfo.endpoint}`;
 					return;
 				}
 
-				const alexaModelFiles = JovoCliPlatformAlexa.modelBuilder.fromJovoModel(project.jovoConfigReader!, model, locale, stage);
+				if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
+					model = _.mergeWith(
+						model,
+						project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
+						concatArrays);
+				}
+				if (project.jovoConfigReader!.getConfigParameter(`alexaSkill.languageModel.${locale}`, stage)) {
+					model = _.mergeWith(
+						model,
+						project.jovoConfigReader!.getConfigParameter(`alexaSkill.languageModel.${locale}`, stage),
+						concatArrays);
+				}
+
+				const alexaModelFiles = JovoCliPlatformAlexa.jovoModel.fromJovoModel(model, locale);
 
 				if (alexaModelFiles.length === 0) {
 					// Should actually never happen but who knows

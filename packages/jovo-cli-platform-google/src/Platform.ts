@@ -30,7 +30,7 @@ import {
 	JovoModel,
 } from 'jovo-model-core';
 import {
-	JovoModelBuilderDialogflow,
+	JovoModelDialogflow,
 } from 'jovo-model-dialogflow';
 
 
@@ -44,7 +44,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'googleAction';
 	static ID_KEY = 'projectId';
-	static modelBuilder = new JovoModelBuilderDialogflow();
+	static jovoModel = new JovoModelDialogflow();
 
     /**
      * Constructor
@@ -107,7 +107,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @memberof JovoCliPlatformGoogle
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		return JovoCliPlatformGoogle.modelBuilder.getValidator();
+		return JovoCliPlatformGoogle.jovoModel.getValidator();
 	}
 
 
@@ -490,7 +490,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
      */
 	async reverse(locale: string): Promise<JovoModel> {
 		const platformFiles: ExternalModelFile[] = await DialogFlowUtil.getPlatformFiles();
-		return JovoCliPlatformGoogle.modelBuilder.toJovoModel(platformFiles, locale);
+		return JovoCliPlatformGoogle.jovoModel.toJovoModel(platformFiles, locale);
 	}
 
 
@@ -524,7 +524,29 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			}
 		}
 
-		const alexaModelFiles = JovoCliPlatformGoogle.modelBuilder.fromJovoModel(project.jovoConfigReader!, model, outputLocale, stage);
+		const concatArrays = function customizer(objValue: any[], srcValue: any) { // tslint:disable-line
+			if (_.isArray(objValue)) {
+				return objValue.concat(srcValue);
+			}
+		};
+
+		if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
+			model = _.mergeWith(
+				model,
+				project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
+				concatArrays);
+		}
+		if (project.jovoConfigReader!.getConfigParameter(
+			`googleAction.dialogflow.languageModel.${locale}`, stage)) {
+			model = _.mergeWith(
+				model,
+				project.jovoConfigReader!.getConfigParameter(
+					`googleAction.dialogflow.languageModel.${locale}`, stage),
+				concatArrays);
+		}
+
+
+		const alexaModelFiles = JovoCliPlatformGoogle.jovoModel.fromJovoModel(model, outputLocale);
 
 		if (alexaModelFiles.length === 0) {
 			// Should actually never happen but who knows

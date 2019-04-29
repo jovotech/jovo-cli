@@ -35,7 +35,7 @@
 		"aws-sdk": "^2.344.0",
 		"chalk": "^2.4.1",
 		"jovo-cli-core": "^2.2.2",
-		"jovo-model-core": "^0.1.0",
+		"jovo-model": "^0.1.0",
 		"jovo-model-alexa": "^0.1.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
