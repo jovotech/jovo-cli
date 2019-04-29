@@ -8,7 +8,7 @@ import * as inquirer from 'inquirer';
 import * as request from 'request';
 import { exec } from 'child_process';
 import * as admZip from 'adm-zip';
-import { ExternalModelFile } from 'jovo-model-core';
+import { NativeFileInformation } from 'jovo-model';
 import * as GoogleActionUtil from './GoogleActionUtil';
 
 import { promisify } from 'util';
@@ -26,10 +26,10 @@ import { JovoTaskContextGoogle } from '.';
  * Returns the Dialogflow language files
  *
  * @export
- * @returns {Promise<ExternalModelFile[]>}
+ * @returns {Promise<NativeFileInformation[]>}
  */
-export async function getPlatformFiles(): Promise<ExternalModelFile[]> {
-	const platformFiles: ExternalModelFile[] = [];
+export async function getPlatformFiles(): Promise<NativeFileInformation[]> {
+	const platformFiles: NativeFileInformation[] = [];
 
 	const foldersIncludeMain = [
 		'entities',

@@ -26,9 +26,9 @@ import {
 	Utils,
 } from 'jovo-cli-core';
 import {
-	ExternalModelFile,
-	JovoModel,
-} from 'jovo-model-core';
+	JovoModelData,
+	NativeFileInformation,
+} from 'jovo-model';
 import {
 	JovoModelDialogflow,
 } from 'jovo-model-dialogflow';
@@ -44,7 +44,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'googleAction';
 	static ID_KEY = 'projectId';
-	static jovoModel = new JovoModelDialogflow();
 
     /**
      * Constructor
@@ -107,7 +106,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @memberof JovoCliPlatformGoogle
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		return JovoCliPlatformGoogle.jovoModel.getValidator();
+		return JovoModelDialogflow.getValidator();
 	}
 
 
@@ -174,11 +173,11 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	/**
 	 * Set platform defaults on model
 	 *
-	 * @param {JovoModel} model The model to set the data on
-	 * @returns {JovoModel}
+	 * @param {JovoModelData} model The model to set the data on
+	 * @returns {JovoModelData}
 	 * @memberof JovoCliPlatform
 	 */
-	setPlatformDefaults(model: JovoModel): JovoModel {
+	setPlatformDefaults(model: JovoModelData): JovoModelData {
 		_.set(model, 'dialogflow.intents', DialogFlowUtil.getDefaultIntents());
 		return model;
 	}
@@ -488,9 +487,16 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
      * @param {string} locale
      * @return {{}}
      */
-	async reverse(locale: string): Promise<JovoModel> {
-		const platformFiles: ExternalModelFile[] = await DialogFlowUtil.getPlatformFiles();
-		return JovoCliPlatformGoogle.jovoModel.toJovoModel(platformFiles, locale);
+	async reverse(locale: string): Promise<JovoModelData> {
+		const platformFiles: NativeFileInformation[] = await DialogFlowUtil.getPlatformFiles();
+
+		const jovoModel = new JovoModelDialogflow();
+		jovoModel.importNative(platformFiles, locale);
+		const nativeData = jovoModel.exportJovoModel();
+		if (nativeData === undefined) {
+			throw new Error('Dialogflow files did not contain any valid data.');
+		}
+		return nativeData;
 	}
 
 
@@ -545,10 +551,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 				concatArrays);
 		}
 
+		const jovoModel = new JovoModelDialogflow(model, outputLocale);
+		const alexaModelFiles = jovoModel.exportNative();
 
-		const alexaModelFiles = JovoCliPlatformGoogle.jovoModel.fromJovoModel(model, outputLocale);
-
-		if (alexaModelFiles.length === 0) {
+		if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
 			// Should actually never happen but who knows
 			throw new Error(`Could not build Dialogflow files for locale "${locale}"!`);
 		}

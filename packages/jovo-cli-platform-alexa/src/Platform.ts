@@ -45,7 +45,6 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
 	static PLATFORM_KEY = 'alexaSkill';
 	static ID_KEY = 'skillId';
-	static jovoModel = new JovoModelAlexa();
 
 	constructor() {
 		super();
@@ -240,7 +239,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	 * @memberof JovoCliPlatformAlexa
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		return JovoCliPlatformAlexa.jovoModel.getValidator();
+		return JovoModelAlexa.getValidator();
 	}
 
 
@@ -521,7 +520,8 @@ Endpoint: ${skillInfo.endpoint}`;
 								}
 							];
 
-							const jovoModel = JovoCliPlatformAlexa.jovoModel.toJovoModel(alexaModelFiles, locale.toString());
+							const jovoModel = new JovoModelAlexa();
+							jovoModel.importNative(alexaModelFiles, locale.toString());
 
 							// Apply the changes to the current model-file if one exists
 							let modelFile;
@@ -534,7 +534,13 @@ Endpoint: ${skillInfo.endpoint}`;
 									invocation: '',
 								};
 							}
-							_.merge(modelFile, jovoModel);
+
+							const nativeData = jovoModel.exportJovoModel();
+							if (nativeData === undefined) {
+								throw new Error('Alexa files did not contain any valid data.');
+							}
+
+							_.merge(modelFile, nativeData);
 
 							return project.saveModel(
 								modelFile,
@@ -1022,9 +1028,10 @@ Endpoint: ${skillInfo.endpoint}`;
 						concatArrays);
 				}
 
-				const alexaModelFiles = JovoCliPlatformAlexa.jovoModel.fromJovoModel(model, locale);
+				const jovoModel = new JovoModelAlexa(model, locale);
+				const alexaModelFiles = jovoModel.exportNative();
 
-				if (alexaModelFiles.length === 0) {
+				if (alexaModelFiles === undefined  || alexaModelFiles.length === 0) {
 					// Should actually never happen but who knows
 					throw new Error(`Could not build Alexa files for locale "${locale}"!`);
 				}
