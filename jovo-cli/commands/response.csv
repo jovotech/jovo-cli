@@ -1,0 +1,8 @@
+key,de-DE,en-CA,en-US,en-US-AlexaSkill
+welcome,Willkommen!,Welcome here!,Welcome,Welcome to the Alexa Skill.
+welcome_array,,Welcome there!,Welcome,
+welcome_array,,,Hey,
+welcome_array,,,Hello,
+welcome_with_parameter,,,Welcome {{firstname}} {{lastname}},
+welcome_nested.speech,,,You can access this with welcome_nested.speech,
+welcome_nested.reprompt,,,You can access this with welcome_nested.reprompt,

@@ -19,35 +19,17 @@ module.exports = (vorpal: Vorpal) => {
         })
         .action(async (args: Vorpal.Args) => {
             /**
-             * convert cms
-             * from spreadsheet to i18n
-             * from spreadsheet to airtable
-             * from i18n to spreadsheet
-             * fom i18n to airtable
-             * from airtable to i18n
-             * from airtable to spreadsheet
+             * Unified form: 
+             * {
+             *      'en-US': {
+             *          key: 'value',
+             *          key_2: ['value_1', 'value_2']  
+             *      },
+             *      'de-DE': {
+             *          key: 'german value'
+             *      }
+             * }
              */
-
-            const unifiedForm = {
-                locales: ['en-US', 'de-DE'],
-                keys: [
-                    'welcome',
-                    'goodbye',
-                    'welcome_arr',
-                    'welcome_obj.speech',
-                    'welcome_obj.reprompt'
-                ],
-                values: [
-                    ['Welcome', 'Willkommen'],
-                    ['Goodbye.', 'Tschüss'],
-                    [
-                        ['Hello', 'Hallo'],
-                        ['Hey', ''],
-                        ['Hi', 'Moin'],
-                    ],
-                    ['Welcome here.', 'Willkommen hier']
-                ]
-            };
 
             console.log('Executing...');
 
@@ -55,7 +37,7 @@ module.exports = (vorpal: Vorpal) => {
             const target = args.options.to;
 
             if (origin === 'i18n' && target === 'spreadsheet') {
-                toSpreadsheet(fromI18N('./commands/i18n'), '');
+                toSpreadsheet(fromI18N('./commands/i18n'), './commands/response.csv');
             }
         });
 }
@@ -90,73 +72,72 @@ function fromSpreadsheet(path: string) {
     return { headers, values };
 }
 
-function toSpreadsheet(obj: any, path: string) {
-    console.log(obj);
-    const { locales, keys, values } = obj;
-    let csv = `${locales.join(',')}\n`;
-    const body: { [key: string]: any } = {};
+function toSpreadsheet(model: any, path: string) {
+    const locales = Object.keys(model);
+    console.log('locales: ', locales);
 
-    for (const [i, key] of keys.entries()) {
-        for (let j = 0; j < locales.length; j++) {
-            const value = values[i][j] || '';
-            if (value.constructor === Array) {
-                if (!body[key]) {
-                    body[key] = [];
-                }
-                for (const [l, v] of value.entries()) {
-                    const newArr = body[key][l] || [];
+    const obj: { [key: string]: any } = {};
 
-                    if (body[key].length > 0 &&
-                        value.length > body[key].length &&
-                        newArr.length + 1 < locales.length) {
-                        const length = newArr.length;
-                        for (let m = 0; m < (j - length); m++) {
-                            newArr.push('');
+    for (const [i, locale] of locales.entries()) {
+        const keys = Object.keys(model[locale]);
+
+        for (const [j, key] of keys.entries()) {
+            const value = model[locale][key];
+            switch (value.constructor) {
+                case String: {
+                    if (!obj[key]) {
+                        obj[key] = new Array(locales.length).fill('');
+                    }
+
+                    obj[key][i] = model[locale][key]
+                } break;
+                case Array: {
+                    if (!obj[key]) {
+                        obj[key] = [];
+                    }
+
+                    while (obj[key].length < value.length) {
+                        obj[key].push(new Array(locales.length).fill(''));
+                    }
+
+                    for (const [k, v] of value.entries()) {
+                        obj[key][k][i] = v;
+                    }
+                } break;
+                case Object: {
+                    const k = Object.keys(value);
+                    for (const k in value) {
+                        const v = value[k];
+                        const newKey = `${key}.${k}`;
+
+                        if (!obj[newKey]) {
+                            obj[newKey] = new Array(locales.length).fill('');
                         }
+
+                        obj[newKey][i] = v;
                     }
-
-                    newArr.push(v);
-
-                    body[key][l] = newArr;
-                }
-            } else if (typeof value === 'object') {
-                // TODO
-                console.log('Key: ', key);
-                console.log('Value: ', value);
-                for (const subKey in value) {
-                    const newKey = `${key}.${subKey}`;
-                    if (!body[newKey]) {
-                        body[newKey] = [];
-                    }
-                    body[newKey].push(value[subKey]);
-                }
-                console.log('Body: ', body);
-            } else if (typeof value === 'string') {
-                body[key] = values[i].join(',');
+                } break;
             }
-        }
-
-        if (body[key].constructor === Array) {
-            for (const value of body[key]) {
-                csv += `${key},${value.join(',')}\n`;
-            }
-        } else if (typeof body[key] === 'object') {
-            csv += `${key},${body[key].join(',')}\n`;
-        } else if (typeof body[key] === 'string') {
-            csv += `${key},${body[key]}\n`;
         }
     }
-    console.log(csv);
 
-    // writeFileSync(path, csv);
+    let csv = `key,${locales.join(',')}\n`;
+    for (const k in obj) {
+        if (obj[k][0].constructor === Array) {
+            for (const arr of obj[k]) {
+                csv += `${k},${arr.join(',')}\n`;
+            }
+        } else {
+            csv += `${k},${obj[k].join(',')}\n`
+        }
+    }
+
+    writeFileSync(path, csv);
 }
 
 function fromI18N(path: string) {
     const files = readdirSync(path);
-    const obj: { [key: string]: any } = {};
-    const locales: string[] = [];
-    const keys: string[] = [];
-    const values: any[] = [];
+    const model: { [key: string]: any } = {};
     files.forEach((locale) => {
         const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
         for (const prop in i18nModel) {
@@ -167,29 +148,19 @@ function fromI18N(path: string) {
             let model = i18nModel[prop];
             if (prop !== 'translation') {
                 model = i18nModel[prop]['translation'];
-                obj[prop] = model;
+                model[`${locale.replace('.json', '')}-${prop}`] = model;
             } else {
-                obj[locale.replace('.json', '')] = model;
-            }
-            for (const key in i18nModel[prop]) {
-                if (keys.indexOf(key) === -1) {
-                    keys.push(key);
-                }
+                model[locale.replace('.json', '')] = model;
             }
         }
     });
+    return model;
+}
 
-    for (const locale in obj) {
-        locales.push(locale);
-        for (const [i, key] of keys.entries()) {
-            const value = obj[locale][key] || '';
-            if (i === values.length) {
-                values.push([value]);
-            } else {
-                values[i].push(value);
-            }
-        }
+function toI18N(model: any, path: string) {
+    const locales = Object.keys(model);
+
+    for(const locale of locales) {
+            
     }
-
-    return { locales, keys, values };
 }
