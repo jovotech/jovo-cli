@@ -35,7 +35,8 @@ import {
 import {
 	JovoModel,
 	ModelValidationError,
-} from 'jovo-model-core';
+	JovoModelData
+} from 'jovo-model';
 import { JovoConfigReader } from 'jovo-config';
 
 import { DEFAULT_LOCALE, DEFAULT_TARGET, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
@@ -360,7 +361,7 @@ export class Project {
      * @returns
      * @memberof Project
      */
-	getModel(locale: string): JovoModel {
+	getModel(locale: string): JovoModelData {
 		try {
 			return require(this.getModelPath(locale));
 		} catch (error) {
@@ -786,7 +787,7 @@ export class Project {
 	updateInvocation(invocation: string, locale: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			try {
-				const model: JovoModel = this.getModel(locale);
+				const model: JovoModelData = this.getModel(locale);
 				model.invocation = invocation;
 				this.saveModel(model, locale).then(() => resolve());
 			} catch (error) {
@@ -824,7 +825,7 @@ export class Project {
 
 		let locale;
 		for (locale of this.getLocales()) {
-			let model: JovoModel;
+			let model: JovoModelData;
 
 			try {
 				model = this.getModel(locale);
@@ -836,7 +837,6 @@ export class Project {
 
 				throw (new Error('Could not get model!'));
 			}
-
 			await platform.setPlatformDefaults(model);
 			return await this.saveModel(model, locale);
 		}
@@ -999,7 +999,7 @@ export class Project {
      * @returns {Promise<void>}
      * @memberof Project
      */
-	async saveModel(model: JovoModel, locale: string): Promise<void> {
+	async saveModel(model: JovoModelData, locale: string): Promise<void> {
 		if (!existsAsync(this.getModelsPath())) {
 			await mkdirAsync(this.getModelsPath());
 		}
@@ -1056,7 +1056,7 @@ export class Project {
 	 * @param {*} locale
 	 */
 	validateModel(locale: string, validator: tv4.JsonSchema): void {
-		let model: JovoModel;
+		let model: JovoModelData;
 		try {
 			model = this.getModel(locale);
 		} catch (error) {

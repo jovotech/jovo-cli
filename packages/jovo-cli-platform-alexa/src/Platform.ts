@@ -32,7 +32,8 @@ import {
 import {
 	Intent,
 	JovoModel,
-} from 'jovo-model-core';
+	JovoModelData
+} from 'jovo-model';
 
 
 const highlight = require('chalk').white.bold;
@@ -167,7 +168,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 	 * @returns {JovoModel}
 	 * @memberof JovoCliPlatform
 	 */
-	setPlatformDefaults(model: JovoModelAlexaData): JovoModel {
+	setPlatformDefaults(model: JovoModelAlexaData): JovoModelData {
 
 		if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
 			const result = _.unionBy(_.get(model, 'alexa.interactionModel.languageModel.intents'), this.getDefaultIntents(), 'name');
@@ -530,6 +531,7 @@ Endpoint: ${skillInfo.endpoint}`;
 							} catch (e) {
 								// Currently no model file exists so there is
 								// nothing to merge it with
+
 								modelFile = {
 									invocation: '',
 								};
@@ -1007,7 +1009,7 @@ Endpoint: ${skillInfo.endpoint}`;
 		return new Promise((resolve, reject) => {
 			try {
 
-				let model: JovoModel;
+				let model: JovoModelData;
 				try {
 					model = project.getModel(locale);
 				} catch (e) {
