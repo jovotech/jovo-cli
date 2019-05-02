@@ -28,7 +28,6 @@ import {
 import {
 	JovoTaskContext,
 	DEFAULT_ENDPOINT,
-	DEFAULT_TARGET,
 } from 'jovo-cli-core';
 
 const project = require('jovo-cli-core').getProject();

@@ -55,15 +55,15 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 						// special use case
 						// copy app.json/project.js if src directory is not default and config
 						// was set in projectConfig
-						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.moveTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
+						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
+							await project.moveTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
 						}
 
 						await this.checkAsk();
 						await this.upload(ctx, project);
 
-						if (project.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.deleteTempJovoConfig(project.getConfigParameter('src', ctx.stage) as string);
+						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
+							await project.deleteTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
 						}
 
 						let info = 'Info: ';
@@ -83,17 +83,20 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 	async upload(ctx: JovoTaskContextLambda, project: Project): Promise<void> {
 		ctx.src = ctx.src.replace(/\\/g, '\\\\');
-		let awsProfile = 'default';
 
-		if (ctx.askProfile) {
-			awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+		if (process.env.AWS_ACCESS_KEY_ID === undefined || process.env.AWS_SECRET_ACCESS_KEY === undefined) {
+			// Only set profile when special AWS environment variables are not set
+
+			let awsProfile = 'default';
+			if (ctx.askProfile) {
+				awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+			}
+			if (ctx.awsProfile) {
+				awsProfile = ctx.awsProfile;
+			}
+
+			AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
 		}
-
-		if (ctx.awsProfile) {
-			awsProfile = ctx.awsProfile;
-		}
-
-		AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
 
 		const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
 		if (!region) {
@@ -116,7 +119,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 		const lambda = new AWS.Lambda(ctx.awsConfig || {});
 
-		const pathToZip = await project.zipSrcFolder(ctx);
+		const pathToZip = await project.getZipBundlePath(ctx);
 
 		await this.updateFunction(
 			lambda,

@@ -29,7 +29,6 @@ import {
 import {
 	getProject,
 	JovoTaskContext,
-	TARGET_ALL,
 } from 'jovo-cli-core';
 
 const project = getProject();

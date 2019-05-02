@@ -157,7 +157,7 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
  * @returns
  */
 export function shouldDisplayUpdateMessage(hours: number) {
-	const jovoConfig = project.loadJovoConfig();
+	const jovoConfig = project.loadJovoUserConfig();
 
 	if (!jovoConfig.hasOwnProperty('timeLastUpdateMessage')) {
 		return true;
@@ -179,8 +179,8 @@ export function shouldDisplayUpdateMessage(hours: number) {
  * @export
  */
 export function setUpdateMessageDisplayed() {
-	const jovoConfig = project.loadJovoConfig();
+	const jovoConfig = project.loadJovoUserConfig();
 	jovoConfig.timeLastUpdateMessage = new Date().toISOString();
 
-	project.saveJovoConfig(jovoConfig);
+	project.saveJovoUserConfig(jovoConfig);
 }

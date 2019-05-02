@@ -139,8 +139,8 @@ module.exports = (vorpal: Vorpal) => {
 			}
 			let srcDir;
 			// prepend src directory from config
-			if (project.getConfigParameter('src', stage) as string | undefined) {
-				srcDir = project.getConfigParameter('src', stage) as string | undefined;
+			if (project.jovoConfigReader!.getConfigParameter('src', stage) as string | undefined) {
+				srcDir = project.jovoConfigReader!.getConfigParameter('src', stage) as string | undefined;
 				if (srcDir && !_.endsWith(path.sep, srcDir)) {
 					srcDir = srcDir + path.sep;
 				}
@@ -310,11 +310,11 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
 	}
 
 	try {
-		if (!project.getConfigParameter('endpoint', stage)) {
+		if (!project.jovoConfigReader!.getConfigParameter('endpoint', stage)) {
 			// throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
 		}
 
-		if (_.startsWith(project.getConfigParameter('endpoint', stage) as string, 'arn')) {
+		if (_.startsWith(project.jovoConfigReader!.getConfigParameter('endpoint', stage) as string, 'arn')) {
 			throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
 		}
 	} catch (err) {

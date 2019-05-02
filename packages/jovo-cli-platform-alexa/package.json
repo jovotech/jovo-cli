@@ -5,7 +5,7 @@
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
-		"build": "gulp && tsc",
+		"build": "tsc",
 		"tslint": "tslint -p tsconfig.json -c tslint.json",
 		"tsc": "tsc",
 		"tscw": "tsc --watch",
@@ -24,20 +24,19 @@
 		"@types/listr": "^0.13.0",
 		"@types/lodash": "^4.14.118",
 		"@types/node": "^10.10.1",
-		"@types/tv4": "^1.2.29",
 		"@types/vorpal": "^1.11.0",
-		"gulp": "^3.9.1",
 		"jest": "^23.6.0",
-		"rimraf": "^2.6.2",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
 		"typescript": "^3.0.3",
-		"typescript-json-schema": "^0.34.0"
+		"rimraf": "^2.6.2"
 	},
 	"dependencies": {
 		"aws-sdk": "^2.344.0",
 		"chalk": "^2.4.1",
 		"jovo-cli-core": "^2.2.2",
+		"jovo-model": "^0.1.0",
+		"jovo-model-alexa": "^0.1.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"vorpal": "^1.12.0"
