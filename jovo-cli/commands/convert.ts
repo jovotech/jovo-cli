@@ -36,9 +36,11 @@ module.exports = (vorpal: Vorpal) => {
             const origin = args.options.from;
             const target = args.options.to;
 
-            if (origin === 'i18n' && target === 'spreadsheet') {
-                toSpreadsheet(fromI18N('./commands/i18n'), './commands/response.csv');
-            }
+            // if (origin === 'i18n' && target === 'spreadsheet') {
+            //     toSpreadsheet(fromI18N('./commands/i18n'), './commands/response.csv');
+            // }
+            // fromSpreadsheet('./commands/response.csv');
+            toI18N(fromI18N('./commands/i18n'), './commands');
         });
 }
 
@@ -66,10 +68,61 @@ function isValidTarget(target: string) {
  */
 function fromSpreadsheet(path: string) {
     const csv = readFileSync(path, 'utf8').split('\n');
-    const [headersStr, ...values] = csv;
-    const headers = headersStr.split(',');
-    headers.shift();
-    return { headers, values };
+    console.log(csv)
+    const [localesStr, ...valueStr] = csv;
+    const locales = localesStr.split(',');
+    const model: { [key: string]: any } = {};
+
+    locales.shift();
+
+    for (const valueS of valueStr) {
+        const [key, ...vals] = valueS.split(',');
+
+        for (const [i, locale] of locales.entries()) {
+            if (!model[locale]) {
+                model[locale] = {};
+            }
+
+            console.log('----------------------------------------------');
+            console.log('Locale: ', locale);
+            console.log('Model: ', model[locale]);
+            console.log('Key: ', key);
+
+            const v = model[locale][key];
+            console.log('Value: ', vals[i]);
+            console.log('Existing value: ', v);
+
+            if (!v) {
+                model[locale][key] = vals[i];
+                continue;
+            }
+
+            switch (v.constructor) {
+                case Array: {
+                    while (v.length <= i) {
+                        v.push('');
+                    }
+
+                    v.push(vals[i]);
+                } break;
+                case String: {
+                    model[locale][key] = new Array(locales.length).fill('');
+                    console.log('Value before being overwritten: ', v);
+                    model[locale][key][0] = v;
+                    model[locale][key][i] = vals[i];
+                    console.log('Value after: ', model[locale][key]);
+                } break;
+                case Object: {
+                    console.log('---------------------------------------------------------------');
+                } break;
+            }
+
+        }
+        console.log('Model: ', model);
+    }
+
+    console.log(model);
+    // return { headers, values };
 }
 
 function toSpreadsheet(model: any, path: string) {
@@ -145,12 +198,12 @@ function fromI18N(path: string) {
                 continue;
             }
 
-            let model = i18nModel[prop];
+            let obj = i18nModel[prop];
             if (prop !== 'translation') {
-                model = i18nModel[prop]['translation'];
-                model[`${locale.replace('.json', '')}-${prop}`] = model;
+                obj = i18nModel[prop]['translation'];
+                model[`${locale.replace('.json', '')}-${prop}`] = obj;
             } else {
-                model[locale.replace('.json', '')] = model;
+                model[locale.replace('.json', '')] = obj;
             }
         }
     });
@@ -158,9 +211,28 @@ function fromI18N(path: string) {
 }
 
 function toI18N(model: any, path: string) {
-    const locales = Object.keys(model);
+    // const locales = Object.keys(model);
 
-    for(const locale of locales) {
-            
+
+    for (const locale in model) {
+        if(!model.hasOwnProperty(locale)) {
+            continue;
+        }
+
+        const obj: { [key: string]: any } = {
+            translation: model[locale]
+        };
+
+        for (const platform of ['AlexaSkill', 'GoogleAction']) {
+            const key = `${locale}-${platform}`;
+            if (model[key]) {
+                obj[platform] = {
+                    translation: model[key]
+                }
+                delete model[key];
+            }
+        }
+
+        writeFileSync(`${path}/${locale}.json`, JSON.stringify(obj, null, '\t'));
     }
 }
