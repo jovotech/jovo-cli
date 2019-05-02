@@ -39,8 +39,7 @@ module.exports = (vorpal: Vorpal) => {
             // if (origin === 'i18n' && target === 'spreadsheet') {
             //     toSpreadsheet(fromI18N('./commands/i18n'), './commands/response.csv');
             // }
-            // fromSpreadsheet('./commands/response.csv');
-            toI18N(fromI18N('./commands/i18n'), './commands');
+            toSpreadsheet(fromSpreadsheet('./commands/response.csv'), './commands/responses.csv');
         });
 }
 
@@ -68,7 +67,6 @@ function isValidTarget(target: string) {
  */
 function fromSpreadsheet(path: string) {
     const csv = readFileSync(path, 'utf8').split('\n');
-    console.log(csv)
     const [localesStr, ...valueStr] = csv;
     const locales = localesStr.split(',');
     const model: { [key: string]: any } = {};
@@ -76,6 +74,9 @@ function fromSpreadsheet(path: string) {
     locales.shift();
 
     for (const valueS of valueStr) {
+        if (!valueS) {
+            continue;
+        }
         const [key, ...vals] = valueS.split(',');
 
         for (const [i, locale] of locales.entries()) {
@@ -83,46 +84,35 @@ function fromSpreadsheet(path: string) {
                 model[locale] = {};
             }
 
-            console.log('----------------------------------------------');
-            console.log('Locale: ', locale);
-            console.log('Model: ', model[locale]);
-            console.log('Key: ', key);
+            if (!vals[i]) {
+                continue;
+            }
 
             const v = model[locale][key];
-            console.log('Value: ', vals[i]);
-            console.log('Existing value: ', v);
 
-            if (!v) {
+            if (!v && v !== '') {
                 model[locale][key] = vals[i];
                 continue;
             }
 
             switch (v.constructor) {
                 case Array: {
-                    while (v.length <= i) {
-                        v.push('');
+                    if (vals[i] !== '') {
+                        v.push(vals[i]);
                     }
-
-                    v.push(vals[i]);
                 } break;
                 case String: {
-                    model[locale][key] = new Array(locales.length).fill('');
-                    console.log('Value before being overwritten: ', v);
-                    model[locale][key][0] = v;
-                    model[locale][key][i] = vals[i];
-                    console.log('Value after: ', model[locale][key]);
-                } break;
-                case Object: {
-                    console.log('---------------------------------------------------------------');
+                    model[locale][key] = [v];
+                    if (vals[i] !== '') {
+                        model[locale][key].push(vals[i]);
+                    }
                 } break;
             }
 
         }
-        console.log('Model: ', model);
     }
 
-    console.log(model);
-    // return { headers, values };
+    return model;
 }
 
 function toSpreadsheet(model: any, path: string) {
@@ -134,7 +124,7 @@ function toSpreadsheet(model: any, path: string) {
     for (const [i, locale] of locales.entries()) {
         const keys = Object.keys(model[locale]);
 
-        for (const [j, key] of keys.entries()) {
+        for (const key of keys) {
             const value = model[locale][key];
             switch (value.constructor) {
                 case String: {
@@ -147,6 +137,11 @@ function toSpreadsheet(model: any, path: string) {
                 case Array: {
                     if (!obj[key]) {
                         obj[key] = [];
+                    }
+
+                    // ! WORKAROUND for the case, that a key is a string in one instance and an array in another
+                    if(obj[key][0].constructor === String) {
+                        obj[key] = [obj[key]];
                     }
 
                     while (obj[key].length < value.length) {
@@ -211,11 +206,8 @@ function fromI18N(path: string) {
 }
 
 function toI18N(model: any, path: string) {
-    // const locales = Object.keys(model);
-
-
     for (const locale in model) {
-        if(!model.hasOwnProperty(locale)) {
+        if (!model.hasOwnProperty(locale)) {
             continue;
         }
 
