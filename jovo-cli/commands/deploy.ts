@@ -21,7 +21,6 @@ import {
 import {
 	getProject,
 	JovoTaskContext,
-	DEFAULT_TARGET,
 } from 'jovo-cli-core';
 
 const project = getProject();
@@ -35,7 +34,7 @@ process.on('unhandledRejection', (reason, p) => {
 module.exports = (vorpal: Vorpal) => {
 	let DEBUG = false;
 
-	const availableDeployTargets = DeployTargets.getAllAvailable();
+	const pluginDeployTargets = DeployTargets.getAllPluginTargets();
 
 	const vorpalInstance = vorpal
 		.command('deploy')
@@ -81,15 +80,15 @@ module.exports = (vorpal: Vorpal) => {
 				const config: JovoTaskContext = {
 					locales: project.getLocales(args.options.locale),
 					types: Platforms.getAll(args.options.platform, args.options.stage),
-					target: args.options.target || DEFAULT_TARGET,
-					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
+					targets: project.getDeployTargets(args.options.target, args.options.stage),
+					src: args.options.src || project.jovoConfigReader!.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: args.options.debug ? true : false,
 					frameworkVersion: project.frameworkVersion,
 				};
 
-				if (config.types.length === 0 && (!config.target || config.target && !availableDeployTargets.includes(config.target))) {
-					console.log(`Couldn't find a platform. Please use init <platform> or get to retrieve platform files.`); // eslint-disable-line
+				if (config.types.length === 0 && (config.targets === undefined || config.targets.length === 0 || config.targets.length && !pluginDeployTargets.some(targetName => config.targets!.includes(targetName)))) {
+					console.log(`Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`);
 					return Promise.resolve();
 				}
 

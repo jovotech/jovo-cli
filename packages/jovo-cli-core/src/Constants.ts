@@ -1,6 +1,8 @@
 export const DEFAULT_LOCALE = 'en-US';
 export const DEFAULT_PLATFORM = 'none';
 export const DEFAULT_TEMPLATE = 'helloworld';
+export const DEFAULT_LANGUAGE = 'javascript';
+
 export const DEFAULT_TARGET = 'all';
 export const DEFAULT_ENDPOINT = 'jovo-webhook';
 

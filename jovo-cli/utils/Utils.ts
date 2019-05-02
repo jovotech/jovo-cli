@@ -6,7 +6,7 @@ import * as figures from 'figures';
 import * as elegantSpinner from 'elegant-spinner';
 import { ListrTaskHelper, ListrOptionsExtended, PackageVersions, PackageVersionsNpm }from '../src';
 import Vorpal = require('vorpal');
-import * as latestVersion from 'latest-version';
+import latestVersion from 'latest-version';
 
 const { promisify } = require('util');
 
@@ -157,7 +157,7 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
  * @returns
  */
 export function shouldDisplayUpdateMessage(hours: number) {
-	const jovoConfig = project.loadJovoConfig();
+	const jovoConfig = project.loadJovoUserConfig();
 
 	if (!jovoConfig.hasOwnProperty('timeLastUpdateMessage')) {
 		return true;
@@ -179,8 +179,8 @@ export function shouldDisplayUpdateMessage(hours: number) {
  * @export
  */
 export function setUpdateMessageDisplayed() {
-	const jovoConfig = project.loadJovoConfig();
+	const jovoConfig = project.loadJovoUserConfig();
 	jovoConfig.timeLastUpdateMessage = new Date().toISOString();
 
-	project.saveJovoConfig(jovoConfig);
+	project.saveJovoUserConfig(jovoConfig);
 }

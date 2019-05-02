@@ -120,7 +120,7 @@ describe('deploy v1', () => {
 
 
 describe('deploy v2', () => {
-	it('jovo new <project> --init alexaSkill --build\n      jovo deploy --platform alexaSkill', async () => {
+	it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
 		if (!askProfile) {
 			console.log('Skipping because no ask profile found');
 			return;
@@ -154,7 +154,7 @@ describe('deploy v2', () => {
 	}, 200000);
 
 
-	it('jovo new <project> --init alexaSkill --build\n      jovo deploy --target zip', async () => {
+	it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
 		const projectName = 'jovo-cli-unit-test-zip_v2';
 
 		// Create new project
@@ -180,7 +180,7 @@ describe('deploy v2', () => {
 	}, 200000);
 
 
-	it('jovo new <project> --init googleAction --build\n      jovo deploy', async () => {
+	it('jovo new <project> --build\n      jovo deploy', async () => {
 		const projectName = 'helloworldDeployGoogleAction_v2';
 
 		// Create new project

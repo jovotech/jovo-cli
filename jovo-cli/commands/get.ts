@@ -29,7 +29,6 @@ import {
 import {
 	getProject,
 	JovoTaskContext,
-	TARGET_ALL,
 } from 'jovo-cli-core';
 
 const project = getProject();
@@ -76,14 +75,12 @@ module.exports = (vorpal: Vorpal) => {
 
 				await project.init();
 
-				let p: Promise<void | JovoTaskContext> = Promise.resolve();
 				const types: string[] = [];
 				if (args.platform) {
 					types.push(args.platform);
 				} else {
 					types.push.apply(types, Platforms.getAll(args.platform, args.options.stage));
 				}
-
 
 				// @ts-ignore
 				const tasks = new Listr([], {
@@ -101,8 +98,7 @@ module.exports = (vorpal: Vorpal) => {
 					debug: DEBUG,
 				};
 
-
-				config.types.forEach((type) => {
+				for (const type of config.types){
 					const platform = Platforms.get(type);
 
 					// Try to get platform id only from the files and not from the cli arguments. That is important
@@ -110,104 +106,71 @@ module.exports = (vorpal: Vorpal) => {
 					let platformConfigIds = platform.getPlatformConfigIds(project, {});
 
 					if (!args.options.overwrite && Object.keys(platformConfigIds).length) {
-						p = p.then(() => {
-							return promptOverwriteProjectFiles().then((answers) => {
-								if (answers.overwrite === ANSWER_CANCEL) {
-									p = Promise.resolve();
-								} else {
-									return Promise.resolve();
-								}
-							});
-						});
+						const answers = await promptOverwriteProjectFiles();
+						if (answers.overwrite === ANSWER_CANCEL) {
+							return Promise.resolve();
+						}
 					}
 
 					// Look now for the config ids also in the cli arguments
 					platformConfigIds = platform.getPlatformConfigIds(project, args.options);
 
-					p = p.then(() => {
-						_.merge(config, platformConfigIds);
-						// Apply platform specific config values
-						_.merge(config, platform.getPlatformConfigValues(project, args.options));
-						_.merge(config, {
-							locales: project.getLocales(args.options.locale),
-							target: args.options.target || TARGET_ALL,
-							stage: project.getStage(args.options.stage),
-						});
-
-						let subp = Promise.resolve();
-						if (Object.keys(platformConfigIds).length === 0) {
-							// If no project got found prompt user to select one
-							subp = subp
-								.then(() => platform.getExistingProjects(config))
-								.then((choices) => {
-									return choices;
-								})
-								.then((choices) => promptListForProjectId(choices)).then((answers) => {
-									// @ts-ignore
-									config[platform.constructor.ID_KEY] = answers.id;
-								})
-								.catch((error) => {
-									console.log(error.message);
-									p = subp = Promise.resolve();
-								});
-						}
-
-
-						if (args.options.reverse) {
-							// take locales from alexaSkill/models directory
-							subp = subp.then(() => {
-								try {
-									config.locales = platform.getLocales(args.options.locale);
-								} catch (e) {
-									config.locales = undefined;
-								}
-								if (args.options.overwrite) {
-									config.reverse = true;
-								} else if (project.hasModelFiles(config.locales)) {
-									return promptOverwriteReverseBuild().then((answers) => {
-										if (answers.promptOverwriteReverseBuild ===
-											ANSWER_CANCEL) {
-											// exit on cancel
-											p = subp = Promise.resolve();
-										} else {
-											config.reverse = answers.promptOverwriteReverseBuild;
-										}
-									});
-								}
-							});
-						}
-
-						getTask(config).forEach((t) => tasks.add(t));
-						return subp.then(() => Promise.resolve(config));
+					_.merge(config, platformConfigIds);
+					// Apply platform specific config values
+					_.merge(config, platform.getPlatformConfigValues(project, args.options));
+					_.merge(config, {
+						locales: project.getLocales(args.options.locale),
+						targets: project.getDeployTargets(args.options.target, args.options.stage),
+						stage: project.getStage(args.options.stage),
 					});
-				});
 
-				return p.then((config) => {
-					if (args.options.build &&
-						args.options.reverse) {
-						// build project
-						tasks.add(
-							{
-								title: 'Building language model platform model',
-								task: (ctx) => buildReverseTask(ctx),
-							}
-						);
+					if (Object.keys(platformConfigIds).length === 0) {
+						// If no project got found prompt user to select one
+						const choices = await platform.getExistingProjects(config);
+						const answers = await promptListForProjectId(choices);
+						// @ts-ignore
+						config[platform.constructor.ID_KEY] = answers.id;
 					}
 
-					return tasks.run(config).then(() => {
-						console.log();
-						console.log('  Get completed.');
-						console.log();
-					}).catch((err) => {
-						if (DEBUG === true) {
-							console.error(err);
+					if (args.options.reverse) {
+						// take locales from alexaSkill/models directory
+						try {
+							config.locales = platform.getLocales(args.options.locale);
+						} catch (e) {
+							config.locales = undefined;
 						}
-						process.exit(1);
-					});
-				});
+						if (args.options.overwrite) {
+							config.reverse = true;
+						} else if (project.hasModelFiles(config.locales)) {
+							const answers = await promptOverwriteReverseBuild();
+							if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
+								// exit on cancel
+								return Promise.resolve();
+							} else {
+								config.reverse = answers.promptOverwriteReverseBuild;
+							}
+						}
+					}
+
+					getTask(config).forEach((t) => tasks.add(t));
+				}
+
+				if (args.options.build &&
+					args.options.reverse) {
+					// build project
+					tasks.add(
+						{
+							title: 'Building language model platform model',
+							task: (ctx) => buildReverseTask(ctx),
+						}
+					);
+				}
+
+				await tasks.run(config);
+				console.log();
+				console.log('  Get completed.');
+				console.log();
 			} catch (err) {
-				// All errors here did not get caught in the above catch and did so not get displayed
-				// via Listr so simply output it
 				console.error('There was a problem:');
 				console.error(err);
 				process.exit(1);

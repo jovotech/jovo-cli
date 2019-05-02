@@ -25,14 +25,27 @@ import * as Listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 import * as tv4 from 'tv4';
 
-import { AppFile, JovoCliPlatform, JovoConfig, JovoTaskContext, JovoModel, ModelValidationError, PackageVersion } from './';
-import { DEFAULT_LOCALE, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
+import {
+	AppFile,
+	JovoCliPlatform,
+	JovoTaskContext,
+	JovoUserConfig,
+	PackageVersion,
+} from './';
+import {
+	JovoModel,
+	ModelValidationError,
+} from 'jovo-model-core';
+import { JovoConfigReader } from 'jovo-config';
+
+import { DEFAULT_LOCALE, DEFAULT_TARGET, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
 
 
 export class Project {
 
 	projectPath: string;
 	frameworkVersion: number;
+	jovoConfigReader: JovoConfigReader | null = null;
 
 	constructor() {
 		this.projectPath = process.cwd();
@@ -60,6 +73,18 @@ export class Project {
 		} else {
 			this.frameworkVersion = frameworkVersion;
 		}
+
+		try {
+			const configContent = this.getConfigContent();
+			this.jovoConfigReader = new JovoConfigReader(configContent);
+		} catch (error) {
+			if (_.get(error, 'constructor.name') === 'SyntaxError') {
+				console.log(error);
+				throw error;
+			}
+			// There is no project.js file so init empty
+			this.jovoConfigReader = new JovoConfigReader({});
+		}
 	}
 
 
@@ -72,8 +97,8 @@ export class Project {
      * @returns {Promise<string>}
      * @memberof Project
      */
-	async downloadAndExtract(projectName: string, template: string, locale: string): Promise<string> {
-		const pathToZip = await this.downloadTemplate(projectName, template, locale);
+	async downloadAndExtract(projectName: string, template: string, locale: string, language: string): Promise<string> {
+		const pathToZip = await this.downloadTemplate(projectName, template, locale, language);
 		return await this.unzip(pathToZip, projectName);
 	}
 
@@ -81,15 +106,15 @@ export class Project {
     /**
      * Downloads prepared template from jovo sample apps repo
      *
-     * @param {string} projectName The project name
+     * @param {string} projectPath The project name
      * @param {string} template Name of the template
      * @param {string} locale The locale
      * @returns {Promise<string>}
      * @memberof Project
      */
-	downloadTemplate(projectPath: string, template: string, locale: string): Promise<string> {
+	downloadTemplate(projectPath: string, template: string, locale: string, language: string): Promise<string> {
 		const templateName = template + '_' + locale + '.zip';
-		const url = REPO_URL + 'v' + this.frameworkVersion + '/' + templateName;
+		const url = REPO_URL + 'v' + this.frameworkVersion + '/' + templateName + '?language='+language;
 
 		if (!fs.existsSync(projectPath)) {
 			fs.mkdirSync(projectPath);
@@ -197,29 +222,6 @@ export class Project {
 
 
     /**
-     * Returns config parameter for given path
-     * @param {string} path
-     * @param {string} stage
-     * @return {string}
-     */
-	getConfigParameter(path: string, stage?: string): string | undefined {
-		const config: AppFile = this.getConfig(stage);
-		if (typeof _.get(config, path) === 'undefined') {
-			return;
-		}
-		let val = _.get(config, path);
-		if (typeof val === 'string') {
-			val = val.replace(/\\/g, '\\\\');
-		} else if (_.isArray(val) || _.isObject(val)) {
-			return val;
-		}
-
-		return eval('`' + val + '`');
-	}
-
-
-
-    /**
      * Returns true if app.json exists
      *
      * @returns {boolean}
@@ -272,15 +274,14 @@ export class Project {
 
 
     /**
-     * Returns project locale. Takes the first from the
-     * models path
+     * Returns project locales
      *
      * @param {(string | undefined)} locale
      * @returns
      * @memberof Project
      */
 	getLocales(locale?: string | string[]): string[] {
-		if (locale) {
+		if (locale !== undefined) {
 			if (Array.isArray(locale)) {
 				return locale;
 			} else {
@@ -302,9 +303,40 @@ export class Project {
 			return [DEFAULT_LOCALE];
 		}
 
-		return files.map((file) => pathParse(file).name);
+		return files
+			.filter((file) => {
+				// Remove all the backup files
+				return !file.match(/\d{4}-\d{2}-\d{2}/);
+			})
+			.map((file) => pathParse(file).name);
 	}
 
+
+	/**
+	 * Returns the deploy targets
+	 *
+	 * @param {(string | string[])} [target]
+	 * @param {string} [stage]
+	 * @returns {string[]}
+	 * @memberof Project
+	 */
+	getDeployTargets(target?: string | string[], stage?: string): string[] {
+		if (target !== undefined) {
+			if (Array.isArray(target)) {
+				return target;
+			} else {
+				return [target];
+			}
+		}
+
+		const targets = this.jovoConfigReader!.getConfigParameter('deploy.target', stage);
+
+		if (targets === undefined) {
+			return [DEFAULT_TARGET];
+		}
+
+		return targets as string[];
+	}
 
 
 	/**
@@ -360,10 +392,9 @@ export class Project {
 
 		const todayDate = new Date();
 		const todayString = todayDate.toISOString().substring(0, 10);
-		let target = this.getModelPath(locale);
-		target = target + todayString + '.json';
 
-		const destinationFile = pathJoin(target + todayString + pathParse(modelFilePath).ext);
+		const target = this.getModelPath(locale);
+		const destinationFile = `${target}.${todayString}${pathParse(modelFilePath).ext}`;
 
 		return copyFileAsync(modelFilePath, destinationFile);
 	}
@@ -409,6 +440,17 @@ export class Project {
 	}
 
 
+	/**
+	 * Returns the path of the bundle zip file
+	 *
+	 * @param {JovoTaskContext} ctx
+	 * @returns {string}
+	 * @memberof Project
+	 */
+	getZipBundlePath(ctx: JovoTaskContext): string {
+		const sourceFolder = ctx.src || this.getProjectPath();
+		return pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
+	}
 
 	/**
 	 * Zips the src folder
@@ -421,7 +463,7 @@ export class Project {
 
 		const sourceFolder = ctx.src || this.getProjectPath();
 
-		const pathToZip = pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
+		const pathToZip = this.getZipBundlePath(ctx);
 
 		return new Promise<string>((resolve, reject) => {
 
@@ -594,7 +636,7 @@ export class Project {
 					reject(err);
 				}
 			} else if (endpointType === ENDPOINT_JOVOWEBHOOK) {
-				const uuid = this.saveJovoWebhookToConfig();
+				const uuid = this.saveJovoWebhookToUserConfig();
 				resolve(JOVO_WEBHOOK_URL + '/' + uuid);
 			}
 		});
@@ -609,10 +651,10 @@ export class Project {
      */
 	getOrCreateJovoWebhookId(): string {
 		try {
-			const config = this.loadJovoConfig();
+			const config = this.loadJovoUserConfig();
 			return config.webhook.uuid;
 		} catch (error) {
-			return this.saveJovoWebhookToConfig();
+			return this.saveJovoWebhookToUserConfig();
 		}
 	}
 
@@ -628,7 +670,7 @@ export class Project {
 	getWebhookUuid(): string {
 		try {
 			// @ts-ignore
-			return this.loadJovoConfig().webhook.uuid;
+			return this.loadJovoUserConfig().webhook.uuid;
 		} catch (error) {
 			throw error;
 		}
@@ -683,8 +725,6 @@ export class Project {
 	}
 
 
-
-
     /**
      * Returns path to all jovo model files
      *
@@ -696,7 +736,7 @@ export class Project {
 	}
 
 
-	loadJovoConfig(): JovoConfig {
+	loadJovoUserConfig(): JovoUserConfig {
 		let data = {};
 		try {
 			data = fs.readFileSync(pathJoin(Utils.getUserHome(), '.jovo/config'));
@@ -705,9 +745,6 @@ export class Project {
 		}
 		return JSON.parse(data.toString());
 	}
-
-
-
 
 
     /**
@@ -1005,7 +1042,8 @@ export class Project {
 		});
 	}
 
-	saveJovoConfig(config: JovoConfig): void {
+
+	saveJovoUserConfig(config: JovoUserConfig): void {
 		if (!fs.existsSync(pathJoin(Utils.getUserHome(), '.jovo'))) {
 			fs.mkdirSync(pathJoin(Utils.getUserHome(), '.jovo'));
 		}
@@ -1042,13 +1080,13 @@ export class Project {
      * @returns {string}
      * @memberof Project
      */
-	saveJovoWebhookToConfig(): string {
-		let config: JovoConfig;
+	saveJovoWebhookToUserConfig(): string {
+		let config: JovoUserConfig;
 		try {
-			config = this.loadJovoConfig();
+			config = this.loadJovoUserConfig();
 			if (!_.get(config, 'webhook.uuid')) {
 				_.set(config, 'webhook.uuid', uuidv4());
-				this.saveJovoConfig(config);
+				this.saveJovoUserConfig(config);
 			}
 			return config.webhook.uuid;
 		} catch (error) {
@@ -1057,7 +1095,7 @@ export class Project {
 					uuid: uuidv4()
 				}
 			};
-			this.saveJovoConfig(config);
+			this.saveJovoUserConfig(config);
 			return config.webhook.uuid;
 		}
 	}

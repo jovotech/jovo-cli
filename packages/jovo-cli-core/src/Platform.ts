@@ -1,4 +1,5 @@
-import { AppFile, JovoCliDeploy, JovoModel, JovoTaskContext, Project } from './';
+import { AppFile, JovoCliDeploy, JovoTaskContext, Project } from './';
+import { JovoModelData } from 'jovo-model';
 import { ListrTask } from 'listr';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
@@ -166,11 +167,11 @@ export class JovoCliPlatform {
 	/**
 	 * Set platform defaults on model
 	 *
-	 * @param {JovoModel} model The model to set the data on
+	 * @param {JovoModelData} model The model to set the data on
 	 * @returns {JovoModel}
 	 * @memberof JovoCliPlatform
 	 */
-	setPlatformDefaults(model: JovoModel): JovoModel {
+	setPlatformDefaults(model: JovoModelData): JovoModelData {
 		// @ts-ignore
 		throw new Error(`Method "setPlatformDefaults" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
 	}
@@ -192,10 +193,10 @@ export class JovoCliPlatform {
 	/**
 	 * Validate the platform specific properties on model
 	 *
-	 * @param {JovoModel} model The model to validate
+	 * @param {JovoModelData} model The model to validate
 	 * @memberof JovoCliPlatform
 	 */
-	validateModel(model: JovoModel): void {
+	validateModel(model: JovoModelData): void {
 		// @ts-ignore
 		throw new Error(`Method "validateModel" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
 	}

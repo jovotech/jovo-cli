@@ -28,7 +28,6 @@ import {
 import {
 	JovoTaskContext,
 	DEFAULT_ENDPOINT,
-	DEFAULT_TARGET,
 } from 'jovo-cli-core';
 
 const project = require('jovo-cli-core').getProject();
@@ -96,7 +95,7 @@ module.exports = (vorpal: Vorpal) => {
 					types: args.platform ? [args.platform] : [],
 					locales: project.getLocales(args.options.locale),
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-					target: args.options.target || DEFAULT_TARGET,
+					targets: project.getDeployTargets(args.options.target, args.options.stage),
 					debug: args.options.debug ? true : false,
 					frameworkVersion: project.frameworkVersion,
 				};

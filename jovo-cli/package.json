@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "2.0.13",
+	"version": "2.2.2",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -13,7 +13,8 @@
 		"build": "tsc",
 		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
 		"tsc": "node_modules/.bin/tsc",
-		"tscw": "tsc --watch"
+		"tscw": "tsc --watch",
+		"rimraf": "rimraf ./dist"
 	},
 	"bin": {
 		"jovo": "./dist/index.js"
@@ -22,19 +23,20 @@
 	"license": "Apache-2.0",
 	"dependencies": {
 		"bespoken-tools": "^1.1.0",
-		"boxen": "^2.1.0",
+		"boxen": "^3.1.0",
 		"chalk": "^2.4.1",
 		"cli-truncate": "^1.1.0",
 		"cross-spawn": "^5.1.0",
 		"dotenv": "^5.0.1",
 		"indent-string": "^3.2.0",
 		"inquirer": "^5.0.0",
-		"jovo-cli-core": "^2.0.9",
-		"jovo-cli-deploy-lambda": "^2.0.9",
-		"jovo-cli-platform-alexa": "^2.0.11",
-		"jovo-cli-platform-google": "^2.0.9",
-		"jovo-webhook-connector": "^2.0.4",
-		"latest-version": "^4.0.0",
+		"jovo-cli-core": "^2.2.2",
+		"jovo-cli-deploy-lambda": "^2.2.2",
+		"jovo-cli-platform-alexa": "^2.2.2",
+		"jovo-cli-platform-google": "^2.2.2",
+		"jovo-model": "^0.1.0",
+		"jovo-webhook-connector": "^2.2.1",
+		"latest-version": "^5.0.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.11",
 		"nodemon": "^1.18.7",
@@ -59,7 +61,6 @@
 	},
 	"homepage": "https://github.com/jovotech/jovo-cli#readme",
 	"devDependencies": {
-		"@types/boxen": "^2.1.0",
 		"@types/chalk": "^2.2.0",
 		"@types/cli-truncate": "^1.1.0",
 		"@types/cross-spawn": "^6.0.0",
@@ -69,7 +70,6 @@
 		"@types/indent-string": "^3.0.0",
 		"@types/inquirer": "0.0.43",
 		"@types/jest": "^23.3.5",
-		"@types/latest-version": "^4.0.0",
 		"@types/listr": "^0.13.0",
 		"@types/lodash": "^4.14.118",
 		"@types/log-symbols": "^2.0.0",
@@ -82,6 +82,7 @@
 		"eslint": "^3.19.0",
 		"eslint-config-google": "^0.8.0",
 		"jest": "^23.6.0",
+		"rimraf": "^2.6.2",
 		"ts-jest": "^23.10.4",
 		"tslint": "^5.11.0",
 		"typescript": "^3.0.3"

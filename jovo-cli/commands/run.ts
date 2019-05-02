@@ -29,7 +29,7 @@ const opn = require('opn');
 const { promisify } = require('util');
 
 const accessAsync = promisify(fs.access);
-const dimText = require('chalk').white.dim;
+const greyText = require('chalk').grey;
 
 
 const project = getProject();
@@ -99,7 +99,7 @@ module.exports = (vorpal: Vorpal) => {
 						for (const packageName of Object.keys(packageVersions)) {
 							if (packageVersions[packageName].local !== packageVersions[packageName].npm) {
 								text = `  - ${packageName}: ${packageVersions[packageName].local}`;
-								text += dimText(` -> ${packageVersions[packageName].npm}`);
+								text += greyText(` -> ${packageVersions[packageName].npm}`);
 								outOfDatePackages.push(packageName);
 								outputText.push(text);
 							}
@@ -139,8 +139,8 @@ module.exports = (vorpal: Vorpal) => {
 			}
 			let srcDir;
 			// prepend src directory from config
-			if (project.getConfigParameter('src', stage)) {
-				srcDir = project.getConfigParameter('src', stage);
+			if (project.jovoConfigReader!.getConfigParameter('src', stage) as string | undefined) {
+				srcDir = project.jovoConfigReader!.getConfigParameter('src', stage) as string | undefined;
 				if (srcDir && !_.endsWith(path.sep, srcDir)) {
 					srcDir = srcDir + path.sep;
 				}
@@ -310,11 +310,11 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
 	}
 
 	try {
-		if (!project.getConfigParameter('endpoint', stage)) {
+		if (!project.jovoConfigReader!.getConfigParameter('endpoint', stage)) {
 			// throw new Error('Warning: You haven\'t defined an endpoint in your app.json yet.');
 		}
 
-		if (_.startsWith(project.getConfigParameter('endpoint', stage), 'arn')) {
+		if (_.startsWith(project.jovoConfigReader!.getConfigParameter('endpoint', stage) as string, 'arn')) {
 			throw new Error('Warning: Your endpoint is a lambda endpoint. Lambda isn\'t supported with jovo webhook');
 		}
 	} catch (err) {

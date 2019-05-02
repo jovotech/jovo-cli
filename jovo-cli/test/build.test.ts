@@ -230,7 +230,7 @@ describe('build v1', () => {
 
 
 describe('build v2', () => {
-	it('jovo new <project> --init alexaSkill \n      jovo build', async () => {
+	it('jovo new <project>\n      jovo build', async () => {
 		const projectName = 'helloworld_v2';
 
 		// Create new project
@@ -268,7 +268,7 @@ describe('build v2', () => {
 	}, 12000);
 
 
-	it('jovo new <project> --init googleAction \n      jovo build', async () => {
+	it('jovo new <project>\n      jovo build', async () => {
 		const projectName = 'helloworld2_v2';
 
 		// Create new project
@@ -379,7 +379,7 @@ describe('build v2', () => {
 			.toBe(true);
 	}, 12000);
 
-	it('jovo new <project> --init alexaSkill --build \n      jovo build --reverse --overwrite', async () => {
+	it('jovo new <project> --build \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_alexaSkill_v2';
 
 		// Create new project
@@ -406,7 +406,7 @@ describe('build v2', () => {
 			.toBe('my test app');
 	}, 12000);
 
-	it('jovo new <project> --init googleAction --build \n      jovo build --reverse --overwrite', async () => {
+	it('jovo new <project> --build \n      jovo build --reverse --overwrite', async () => {
 		const projectName = 'helloworld_reverse_googleAction_v2';
 
 		// Create new project

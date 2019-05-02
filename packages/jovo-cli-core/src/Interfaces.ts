@@ -1,78 +1,34 @@
+import {
+	JovoConfig,
+} from 'jovo-config';
+
 export interface ArgOptions {
 	[key: string]: string;
 }
 
-export interface LanguageModel {
-	[key: string]: {
-		invocation: string;
-	};
-}
-
-export interface AppFileStages {
-	endpoint?: string;
-	languageModel?: LanguageModel;
-}
-
-
-export interface AppFile {
-	config?: {
-		[key: string]: object;
-	};
-	endpoint?: string;
-	stages?: {
-		[key: string]: AppFileStages;
-	};
-}
-
-export interface IntentInput {
-	name: string;
-	text?: string;
-	type?: string | {
-		[key: string]: string;
-	};
-}
-
-export interface InputTypeValue {
-	value: string;
-	id?: string;
-	synonyms?: string[];
-}
-
-
-export interface InputType {
-	name: string;
-	values?: InputTypeValue[];
-}
-
-
-export interface Intent {
-	name: string;
-	phrases?: string[];
-	samples?: string[];
-	inputs?: IntentInput[];
-}
 
 export interface GenericData {
 	[key: string]: string | number | GenericData | object;
 }
 
 
-export interface JovoModel {
-	// [key: string]: any; // For platform keys like "alexa"
-	invocation: string;
-	inputTypes?: InputType[];
-	intents?: Intent[];
+export interface AppFile extends JovoConfig {
+	deploy?: DeployConfiguration;
+	endpoint?: string;
 }
 
 
+export interface DeployConfiguration {
+	target?: string[];
+}
+
 export interface JovoTaskContext {
 	types: string[];
-	// skillId?: string[];
 	skillId?: string;
 	locales?: string[];
 	projectId?: string;
 	endpoint?: string;
-	target?: string;
+	targets?: string[];
 	projectname?: string;
 	template?: string;
 	src?: string;
@@ -83,7 +39,7 @@ export interface JovoTaskContext {
 	ignoreTasks?: string[];
 }
 
-export interface JovoConfig {
+export interface JovoUserConfig {
 	webhook: {
 		uuid: string;
 	};
@@ -95,8 +51,3 @@ export interface PackageVersion {
 	minor: number;
 	patch: number;
 }
-
-// export interface JovoCliPlatform {
-// 	setPlatformDefaults(model: JovoModel): Promise<void>;
-// 	updateModelPlatformDefault(model: JovoModel): JovoModel;
-// }

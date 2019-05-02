@@ -24,11 +24,10 @@ import {
 	getProject,
 	JovoTaskContext,
 	DEFAULT_ENDPOINT,
-	DEFAULT_TARGET,
 } from 'jovo-cli-core';
 import { buildReverseTask, buildTask, deployTask, initTask } from './tasks';
 
-const subHeadline = require('chalk').white.dim;
+const subHeadline = require('chalk').grey;
 
 const project = getProject();
 
@@ -112,10 +111,10 @@ module.exports = (vorpal: Vorpal) => {
 				const config: JovoTaskContext = {
 					locales: project.getLocales(args.options.locale),
 					types,
-					projectId: args.options['project-id'] || project.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
+					projectId: args.options['project-id'] || project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-					target: args.options.target || DEFAULT_TARGET,
-					src: args.options.src || project.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
+					targets: project.getDeployTargets(args.options.target, args.options.stage),
+					src: args.options.src || project.jovoConfigReader!.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: DEBUG,
 					frameworkVersion: project.frameworkVersion,
@@ -184,6 +183,7 @@ module.exports = (vorpal: Vorpal) => {
 					);
 				} else {
 					// build project
+					// @ts-ignore // No idea why that is needed
 					buildTask(config).forEach((t) => tasks.add(t));
 					// deploy project
 					if (args.options.deploy) {
