@@ -6,7 +6,7 @@ module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
         .command('convert <fn>')
         // @ts-ignore
-        .description('Converts cms')
+        .description('Converts Csv to I18n and vice versa.')
         .option('--from <from>')
         .option('--to <to>');
 
