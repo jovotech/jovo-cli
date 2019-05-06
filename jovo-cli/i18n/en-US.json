@@ -1,0 +1,20 @@
+{
+    "translation": {
+        "welcome": "Welcome",
+        "welcome_with_parameter": "Welcome {{firstname}} {{lastname}}",
+        "welcome_array": [
+            "Welcome",
+            "Hey",
+            "Hello"
+        ],
+        "welcome_nested": {
+            "speech": "You can access this with welcome_nested.speech",
+            "reprompt": "You can access this with welcome_nested.reprompt"
+        }
+    },
+    "AlexaSkill": {
+        "translation": {
+            "welcome": "Welcome to the Alexa Skill."
+        }
+    }
+}

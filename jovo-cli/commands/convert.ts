@@ -47,6 +47,7 @@ module.exports = (vorpal: Vorpal) => {
                         console.log(e);
                     }
                 } break;
+                default: {}
             }
         });
 };
@@ -111,6 +112,7 @@ function fromCsv(path: string) {
                         model[locale][key].push(vals[i]);
                     }
                 } break;
+                default: {}
             }
         }
     }
@@ -171,6 +173,7 @@ function toCsv(model: any) {    // tslint:disable-line
                         obj[newKey][i] = v;
                     }
                 } break;
+                default: {}
             }
         }
     }
@@ -190,7 +193,17 @@ function toCsv(model: any) {    // tslint:disable-line
 }
 
 function fromI18N(path: string) {
-    const files = readdirSync(path);
+    let files: string[] = [];
+
+    // Workaround for single files
+    if (path.indexOf('.json', path.length - 5) !== -1) {
+        const pathArr = path.split('/');
+        files.push(pathArr.pop()!);
+        path = pathArr.join('/');
+    } else {
+        files = readdirSync(path);
+    }
+
     const model: { [key: string]: any } = {};   // tslint:disable-line
     files.forEach((locale) => {
         const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
