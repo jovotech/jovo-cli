@@ -80,7 +80,7 @@ module.exports = (vorpal: Vorpal) => {
 				const config: JovoTaskContext = {
 					locales: project.getLocales(args.options.locale),
 					types: Platforms.getAll(args.options.platform, args.options.stage),
-					targets: project.getDeployTargets(args.options.target, args.options.stage),
+					targets: project.getTargets('deploy', args.options.target, args.options.stage),
 					src: args.options.src || project.jovoConfigReader!.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: args.options.debug ? true : false,

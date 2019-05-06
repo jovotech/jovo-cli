@@ -36,13 +36,13 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 		return [
 			{
 				title: 'Uploading to lambda',
-				enabled: (ctx) => !ctx.newSkill &&
+				enabled: (ctx: JovoTaskContextLambda) => !ctx.newSkill &&
 					_.isUndefined(arn) === false ||
 					// If specifically lambda got defined to be the target execute
 					// even when no arn is defined. So that we can display an error
 					// so that user knows exactly what is wrong
-					(_.isUndefined(arn) === true && ctx.target === 'lambda'),
-				task: async (ctx, task) => {
+					(_.isUndefined(arn) === true && ctx.targets!.includes('lambda')),
+				task: async (ctx: JovoTaskContextLambda, task) => {
 					try {
 						if (_.isUndefined(arn)) {
 							const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';

@@ -419,8 +419,8 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 		return [
 			{
 				title: 'Getting Alexa Skill project for ASK profile ' + highlight(ctx.askProfile),
-				enabled: (ctx) => ctx.target === TARGET_ALL || ctx.target === TARGET_INFO,
-				task: (ctx, task) => {
+				enabled: (ctx: JovoTaskContextAlexa) => ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO),
+				task: (ctx: JovoTaskContextAlexa, task) => {
 					let p = Promise.resolve();
 					ctx.info = 'Info: ';
 
@@ -428,7 +428,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 						.then(() => ask.checkAsk())
 						.then(() => ask.askApiGetSkill(
 							ctx, this.getSkillJsonPath()))
-						.then(() => this.setAlexaSkillId(ctx.skillId))
+						.then(() => this.setAlexaSkillId(ctx.skillId!))
 						.then(() => ask.askApiGetAccountLinking(ctx))
 						.then((accountLinkingJson) => {
 							if (accountLinkingJson) {
@@ -456,9 +456,9 @@ Endpoint: ${skillInfo.endpoint}`;
 			},
 			{
 				title: 'Getting Alexa Skill model files and saving to /platforms/alexaSkill/models',
-				enabled: (ctx) => ctx.target === TARGET_ALL ||
-					ctx.target === TARGET_MODEL,
-				task: (ctx) => {
+				enabled: (ctx: JovoTaskContextAlexa) => ctx.targets!.includes(TARGET_ALL) ||
+					ctx.targets!.includes(TARGET_MODEL),
+				task: (ctx: JovoTaskContextAlexa) => {
 
 					const alexaModelPath = this.getModelsPath();
 					if (!fs.existsSync(alexaModelPath)) {
@@ -469,15 +469,15 @@ Endpoint: ${skillInfo.endpoint}`;
 					let locales = Object.keys(
 						skillJson.manifest.publishingInformation.locales);
 
-					if (ctx.locale && ctx.target === TARGET_MODEL) {
-						locales = [ctx.locale];
+					if (ctx.locales && ctx.targets!.includes(TARGET_MODEL)) {
+						locales = ctx.locales;
 					}
 
 					const getLocaleSubtasks: ListrTask[] = [];
 					for (const locale of locales) {
 						getLocaleSubtasks.push({
 							title: locale,
-							task: (ctx) => {
+							task: (ctx: JovoTaskContextAlexa) => {
 								return ask.askApiGetModel(
 									ctx,
 									this.getModelPath(locale),
@@ -507,7 +507,7 @@ Endpoint: ${skillInfo.endpoint}`;
 
 		returnTasks.push({
 			title: 'Reversing model files',
-			task: (ctx) => {
+			task: (ctx: JovoTaskContextAlexa) => {
 				const reverseLocales: ListrTask[] = [];
 				const locales = this.getLocales(ctx.locales);
 				for (const locale of locales) {
