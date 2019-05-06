@@ -2,24 +2,9 @@ import * as Vorpal from 'vorpal';
 import { addBaseCliOptions } from '../utils/Utils';
 import { readFileSync, readdirSync, writeFileSync } from 'fs';
 
-const fns: { [key: string]: any } = {   // tslint:disable-line
-    tospreadsheet: {
-        path: './i18n/responses.csv',
-        fn: toCsv,
-    },
-    fromspreadsheet: {
-        path: './',
-        fn: fromCsv,
-    },
-    toairtable: toCsv,
-    fromairtable: fromCsv,
-    toi18n: toI18N,
-    fromi18n: fromI18N
-};
-
 module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
-        .command('convert')
+        .command('convert <fn>')
         // @ts-ignore
         .description('Converts cms')
         .option('--from <from>')
@@ -29,95 +14,112 @@ module.exports = (vorpal: Vorpal) => {
 
     vorpalInstance
         .validate((args: Vorpal.Args) => {
-            return isValidOrigin(args.options.from) &&
-                isValidTarget(args.options.to);
+            return isValidFunction(args.fn) && isValidOrigin(args.options.from);
         })
         .action(async (args: Vorpal.Args) => {
             const origin = args.options.from;
-            const target = args.options.to;
+            let target = args.options.to;
+            target = target ? target.replace(/\/?$/, '/') : target;
 
-            const originPath = origin === 'i18n' ? './commands/i18n' : './commands/response.csv';
-            const model = fns[`from${origin}`](originPath);
-            const targetModel = fns[`to${target}`](model);
-
-
+            switch (args.fn) {
+                case 'i18nToCsv': {
+                    try {
+                        const csv = toCsv(fromI18N(origin));
+                        writeFileSync(`${target || './'}responses.csv`, csv);
+                        console.log('Successfully converted I18n to Csv.');
+                    } catch (e) {
+                        console.log('Something went wrong while convertingfrom I18N. Check the logs below:\n');
+                        console.log(e);
+                    }
+                } break;
+                case 'csvToI18n': {
+                    try {
+                        const model = toI18N(fromCsv(origin)) || {};
+                        for (const locale in model) {
+                            if (!model.hasOwnProperty(locale)) {
+                                continue;
+                            }
+                            writeFileSync(`${target || './i18n/'}${locale}.json`, JSON.stringify(model[locale], null, '\t'));
+                            console.log('Successfully converted Csv to I18n.');
+                        }
+                    } catch (e) {
+                        console.log('Something went wrong while converting from Csv. Check the logs below:\n');
+                        console.log(e);
+                    }
+                } break;
+            }
         });
 };
 
-function isValidConvertable(s: string, message: string) {
-    if (['i18n', 'spreadsheet', 'airtable'].indexOf(s) === -1) {
-        console.log(message);
+function isValidFunction(fn: string) {
+    if (['i18nToCsv', 'csvToI18n'].indexOf(fn) === -1) {
+        console.log(`The function ${fn} is not supported. Please use one of the following:`);
+        console.log('* i18nToCsv\n* csvToI18n');
         return false;
     }
     return true;
 }
 
 function isValidOrigin(origin: string) {
-    return isValidConvertable(origin, 'Invalid origin');
-}
-
-function isValidTarget(target: string) {
-    return isValidConvertable(target, 'Invalid target.');
+    if (!origin) {
+        console.log('Orgin has to bet set!');
+        return false;
+    }
+    return true;
 }
 
 
 function fromCsv(path: string) {
-    try {
-        const csv = readFileSync(path, 'utf8').split('\n');
-        const [localesStr, ...valueStr] = csv;
-        const locales = localesStr.split(',');
-        const model: { [key: string]: any } = {};   // tslint:disable-line
+    const csv = readFileSync(path, 'utf8').split('\n');
+    const [localesStr, ...valueStr] = csv;
+    const locales = localesStr.split(',');
+    const model: { [key: string]: any } = {};   // tslint:disable-line
 
-        locales.shift();
+    locales.shift();
 
-        for (const valueS of valueStr) {
-            if (!valueS) {
+    for (const valueS of valueStr) {
+        if (!valueS) {
+            continue;
+        }
+        const [key, ...vals] = valueS.split(',');
+
+        for (const [i, locale] of locales.entries()) {
+            if (!model[locale]) {
+                model[locale] = {};
+            }
+
+            if (!vals[i]) {
                 continue;
             }
-            const [key, ...vals] = valueS.split(',');
 
-            for (const [i, locale] of locales.entries()) {
-                if (!model[locale]) {
-                    model[locale] = {};
-                }
+            const v = model[locale][key];
 
-                if (!vals[i]) {
-                    continue;
-                }
+            if (!v && v !== '') {
+                model[locale][key] = vals[i];
+                continue;
+            }
 
-                const v = model[locale][key];
-
-                if (!v && v !== '') {
-                    model[locale][key] = vals[i];
-                    continue;
-                }
-
-                switch (v.constructor) {    // tslint:disable-line
-                    case Array: {
-                        if (vals[i] !== '') {
-                            v.push(vals[i]);
-                        }
-                    } break;
-                    case String: {
-                        model[locale][key] = [v];
-                        if (vals[i] !== '') {
-                            model[locale][key].push(vals[i]);
-                        }
-                    } break;
-                }
+            switch (v.constructor) {    // tslint:disable-line
+                case Array: {
+                    if (vals[i] !== '') {
+                        v.push(vals[i]);
+                    }
+                } break;
+                case String: {
+                    model[locale][key] = [v];
+                    if (vals[i] !== '') {
+                        model[locale][key].push(vals[i]);
+                    }
+                } break;
             }
         }
-
-        return model;
-    } catch (e) {
-        console.log('Something went wrong while trying to fetch the csv file. See the logs below:\n');
-        console.log(e);
     }
+    return model;
 }
 
 function toCsv(model: any) {    // tslint:disable-line
     if (!model) {
-        return console.log('Something went wrong!');
+        throw new Error('Something went wrong!');
     }
     const locales = Object.keys(model);
 
@@ -142,7 +144,7 @@ function toCsv(model: any) {    // tslint:disable-line
                     }
 
                     // ! WORKAROUND for the case, that a key is a string in one instance and an array in another
-                    if (obj[key].length > 0 && [0].constructor === String) {
+                    if (obj[key].length > 0 && obj[key][0].constructor === String) {
                         obj[key] = [obj[key]];
                     }
 
@@ -155,7 +157,6 @@ function toCsv(model: any) {    // tslint:disable-line
                     }
                 } break;
                 case Object: {
-                    const k = Object.keys(value);
                     for (const k in value) {
                         if (!value.hasOwnProperty(k)) {
                             continue;
@@ -185,42 +186,36 @@ function toCsv(model: any) {    // tslint:disable-line
         }
     }
 
-    writeFileSync('./commands/response.csv', csv);
     return csv;
 }
 
 function fromI18N(path: string) {
-    try {
-        const files = readdirSync(path);
-        const model: { [key: string]: any } = {};   // tslint:disable-line
-        files.forEach((locale) => {
-            const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
-            for (const prop in i18nModel) {
-                if (!i18nModel.hasOwnProperty(prop)) {
-                    continue;
-                }
-
-                let obj = i18nModel[prop];
-                if (prop !== 'translation') {
-                    obj = i18nModel[prop]['translation'];
-                    model[`${locale.replace('.json', '')}-${prop}`] = obj;
-                } else {
-                    model[locale.replace('.json', '')] = obj;
-                }
+    const files = readdirSync(path);
+    const model: { [key: string]: any } = {};   // tslint:disable-line
+    files.forEach((locale) => {
+        const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
+        for (const prop in i18nModel) {
+            if (!i18nModel.hasOwnProperty(prop)) {
+                continue;
             }
-        });
-        return model;
-    } catch (e) {
-        console.log('Something went wrong while trying to fetch i18n files. See the logs below:\n');
-        console.log(e);
-    }
+
+            let obj = i18nModel[prop];
+            if (prop !== 'translation') {
+                obj = i18nModel[prop]['translation'];
+                model[`${locale.replace('.json', '')}-${prop}`] = obj;
+            } else {
+                model[locale.replace('.json', '')] = obj;
+            }
+        }
+    });
+    return model;
 }
 
 function toI18N(model: any) {       // tslint:disable-line
     if (!model) {
-        return console.log('Something went wrong.');
+        throw new Error('Something went wrong!');
     }
-    const obj: { [key: string]: any } = {};     // tslint:disable-line
+    const i18n: { [key: string]: any } = {};     // tslint:disable-line
     for (const locale in model) {
         if (!model.hasOwnProperty(locale)) {
             continue;
@@ -240,8 +235,7 @@ function toI18N(model: any) {       // tslint:disable-line
             }
         }
 
-        obj[locale] = obj;
-        writeFileSync(`./commands/i18n/${locale}.json`, JSON.stringify(obj, null, '\t'));
+        i18n[locale] = obj;
     }
-    return obj;
+    return i18n;
 }
