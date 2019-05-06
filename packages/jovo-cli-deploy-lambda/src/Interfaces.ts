@@ -8,4 +8,5 @@ export interface JovoTaskContextLambda extends JovoTaskContext {
 	lambdaArn: string;
 	awsConfig: object;
 	lambdaConfig: object;
+	newSkill?: boolean;
 }

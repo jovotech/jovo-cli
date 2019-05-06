@@ -46,5 +46,7 @@ export interface AskSkillList {
 export interface JovoTaskContextAlexa extends JovoTaskContext {
 	askProfile: string;
 	lambdaArn?: string;
+	skillId?: string;
+	info?: string;
 	newSkill?: boolean;
 }
