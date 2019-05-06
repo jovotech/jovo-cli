@@ -13,16 +13,14 @@
 		"outDir": "./dist/",
 		"target": "es2017",
 		"sourceMap": true,
-		"newLine": "LF",
-		"resolveJsonModule": true
+		"newLine": "LF"
 	},
 	"include": [
 		"**/*.d.ts",
 		"index.ts",
 		"src/**/*",
 		"commands/**/*",
-		"utils/**/*",
-		"commands/**/*.json"
+		"utils/**/*"
 	],
 	"exclude": [
 		"dist/**/*",
