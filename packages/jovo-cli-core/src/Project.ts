@@ -316,12 +316,13 @@ export class Project {
 	/**
 	 * Returns the deploy targets
 	 *
+	 * @param {(string | string[])} [command]
 	 * @param {(string | string[])} [target]
 	 * @param {string} [stage]
 	 * @returns {string[]}
 	 * @memberof Project
 	 */
-	getDeployTargets(target?: string | string[], stage?: string): string[] {
+	getTargets(command: string, target?: string | string[], stage?: string): string[] {
 		if (target !== undefined) {
 			if (Array.isArray(target)) {
 				return target;
@@ -330,7 +331,7 @@ export class Project {
 			}
 		}
 
-		const targets = this.jovoConfigReader!.getConfigParameter('deploy.target', stage);
+		const targets = this.jovoConfigReader!.getConfigParameter(command + '.target', stage);
 
 		if (targets === undefined) {
 			return [DEFAULT_TARGET];

@@ -120,7 +120,7 @@ module.exports = (vorpal: Vorpal) => {
 					_.merge(config, platform.getPlatformConfigValues(project, args.options));
 					_.merge(config, {
 						locales: project.getLocales(args.options.locale),
-						targets: project.getDeployTargets(args.options.target, args.options.stage),
+						targets: project.getTargets('get', args.options.target, args.options.stage),
 						stage: project.getStage(args.options.stage),
 					});
 

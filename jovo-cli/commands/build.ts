@@ -113,7 +113,7 @@ module.exports = (vorpal: Vorpal) => {
 					types,
 					projectId: args.options['project-id'] || project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.projectId', args.options.stage),
 					endpoint: args.options.endpoint || DEFAULT_ENDPOINT,
-					targets: project.getDeployTargets(args.options.target, args.options.stage),
+					targets: project.getTargets('deploy', args.options.target, args.options.stage),
 					src: args.options.src || project.jovoConfigReader!.getConfigParameter('src', args.options.stage) || project.getProjectPath(),
 					stage: project.getStage(args.options.stage),
 					debug: DEBUG,
