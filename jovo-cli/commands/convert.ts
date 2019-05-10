@@ -17,6 +17,18 @@ module.exports = (vorpal: Vorpal) => {
             return isValidFunction(args.fn) && isValidOrigin(args.options.from);
         })
         .action(async (args: Vorpal.Args) => {
+            /**
+             * All functions are based on a unified form like this:
+             *  {
+             *      'en-US': {
+             *          key: 'value',
+             *          key_arr: ['value1', 'value2']
+             *      },
+             *      'de-DE': {
+             *          key: 'wert'
+             *      }
+             *  }
+             */
             const origin = args.options.from;
             let target = args.options.to;
             target = target ? target.replace(/\/?$/, '/') : target;
@@ -76,6 +88,7 @@ function fromCsv(path: string) {
     const locales = localesStr.split(',');
     const model: { [key: string]: any } = {};   // tslint:disable-line
 
+    // Delete 'key' from locales
     locales.shift();
 
     for (const valueS of valueStr) {
@@ -84,6 +97,7 @@ function fromCsv(path: string) {
         }
         const [key, ...vals] = valueS.split(',');
 
+        // Every row of values (vals) is ordered by locales, so by looping over every locales we can fetch the respective value
         for (const [i, locale] of locales.entries()) {
             if (!model[locale]) {
                 model[locale] = {};
@@ -95,12 +109,14 @@ function fromCsv(path: string) {
 
             const v = model[locale][key];
 
+            // If the current value does yet not exist for the current locale and key, assign it to the key
             if (!v && v !== '') {
                 model[locale][key] = vals[i];
                 continue;
             }
 
-            switch (v.constructor) {    // tslint:disable-line
+            // If there already exists a value, either create an array out of the existing and new value or push the new value
+            switch (v.constructor) {
                 case Array: {
                     if (vals[i] !== '') {
                         v.push(vals[i]);
@@ -130,6 +146,12 @@ function toCsv(model: any) {    // tslint:disable-line
     for (const [i, locale] of locales.entries()) {
         const keys = Object.keys(model[locale]);
 
+        /* 
+        * Every row in the .csv is simulated in an object by having an array of length=locales.length filled with empty strings.
+        * All values are set on their respective position in the array based on the current locale.
+        * In the end each array is joined with ',', resulting in comma-seperated strings.
+        * e.g. WELCOME,Welcome!,,Willkommen! with locales en-US, en-CA, de-DE where the value for en-CA is empty
+        */
         for (const key of keys) {
             const value = model[locale][key] || '';
             switch (value.constructor) {    // tslint:disable-line
@@ -158,6 +180,7 @@ function toCsv(model: any) {    // tslint:disable-line
                         obj[key][k][i] = v;
                     }
                 } break;
+                // If the current key is an object, merge the child keys with its parent and write their respective values into the array
                 case Object: {
                     for (const k in value) {
                         if (!value.hasOwnProperty(k)) {
@@ -179,13 +202,14 @@ function toCsv(model: any) {    // tslint:disable-line
     }
 
     let csv = `key,${locales.join(',')}\n`;
-    for (const k in obj) {
-        if (obj[k][0].constructor === Array) {
-            for (const arr of obj[k]) {
-                csv += `${k},${arr.join(',')}\n`;
+    for (const key in obj) {
+        // If the current key holds multiple arrays (the key has multiple occurrences), loop over it and write the key multiple times
+        if (obj[key][0].constructor === Array) {
+            for (const arr of obj[key]) {
+                csv += `${key},${arr.join(',')}\n`;
             }
         } else {
-            csv += `${k},${obj[k].join(',')}\n`;
+            csv += `${key},${obj[key].join(',')}\n`;
         }
     }
 
@@ -205,6 +229,7 @@ function fromI18N(path: string) {
     }
 
     const model: { [key: string]: any } = {};   // tslint:disable-line
+    // For each i18n file, cut out the 'translation' part and push all the keys and their respective values onto the returned model
     files.forEach((locale) => {
         const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
         for (const prop in i18nModel) {
@@ -229,6 +254,7 @@ function toI18N(model: any) {       // tslint:disable-line
         throw new Error('Something went wrong!');
     }
     const i18n: { [key: string]: any } = {};     // tslint:disable-line
+    // For each locale, push the keys and their respective values onto a new object with a new attribute 'translation' as parent
     for (const locale in model) {
         if (!model.hasOwnProperty(locale)) {
             continue;
@@ -238,6 +264,7 @@ function toI18N(model: any) {       // tslint:disable-line
             translation: model[locale]
         };
 
+        // If the model includes any platform-specific locales, push them onto the current locale and delete them from the model
         for (const platform of ['AlexaSkill', 'GoogleAction']) {
             const key = `${locale}-${platform}`;
             if (model[key]) {
