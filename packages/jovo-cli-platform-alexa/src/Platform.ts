@@ -893,6 +893,15 @@ Endpoint: ${skillInfo.endpoint}`;
 
 				},
 				'manifestVersion': '1.0',
+				'privacyAndCompliance': {
+					'allowsPurchases': false,
+					'locales': {
+					},
+					'isExportCompliant': true,
+					'containsAds': false,
+					'isChildDirected': false,
+					'usesPersonalInfo': false
+				},
 			},
 		};
 
@@ -912,8 +921,19 @@ Endpoint: ${skillInfo.endpoint}`;
 								'examplePhrases': [
 									'Alexa open hello world',
 								],
+								'keywords': [
+									'hello',
+									'world'
+								],
 								'name': skillName,
 								'description': 'Sample Full Description',
+								'smallIconUri': 'https://via.placeholder.com/108/09f/09f.png',
+								'largeIconUri': 'https://via.placeholder.com/512/09f/09f.png',
+							});
+
+							_.set(skillJson, `manifest.privacyAndCompliance.locales.${sublocale}`, {
+								'privacyPolicyUrl': 'http://example.com/policy',
+								'termsOfUseUrl': ''
 							});
 						}
 					} catch (error) {
@@ -925,8 +945,19 @@ Endpoint: ${skillInfo.endpoint}`;
 						'examplePhrases': [
 							'Alexa open hello world',
 						],
+						'keywords': [
+							'hello',
+							'world'
+						],
 						'name': skillName,
 						'description': 'Sample Full Description',
+						'smallIconUri': 'https://via.placeholder.com/108/09f/09f.png',
+						'largeIconUri': 'https://via.placeholder.com/512/09f/09f.png',
+					});
+
+					_.set(skillJson, `manifest.privacyAndCompliance.locales.${locale}`, {
+						'privacyPolicyUrl': 'http://example.com/policy',
+						'termsOfUseUrl': ''
 					});
 				}
 			}
