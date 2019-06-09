@@ -6,7 +6,7 @@ module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
         .command('convert <fn>')
         // @ts-ignore
-        .description('Converts Csv to I18n and vice versa.')
+        .description('Converts .csv-files to i18n.json-files and vice versa.')
         .option('--from <from>')
         .option('--to <to>');
 
@@ -40,7 +40,7 @@ module.exports = (vorpal: Vorpal) => {
                         writeFileSync(`${target || './'}responses.csv`, csv);
                         console.log('Successfully converted I18n to Csv.');
                     } catch (e) {
-                        console.log('Something went wrong while convertingfrom I18N. Check the logs below:\n');
+                        console.log('Something went wrong while converting from I18N. Check the logs below:\n');
                         console.log(e);
                     }
                 } break;
@@ -59,7 +59,7 @@ module.exports = (vorpal: Vorpal) => {
                         console.log(e);
                     }
                 } break;
-                default: {}
+                default: { }
             }
         });
 };
@@ -75,7 +75,7 @@ function isValidFunction(fn: string) {
 
 function isValidOrigin(origin: string) {
     if (!origin) {
-        console.log('Orgin has to bet set!');
+        console.log('The path from your originating files has to be set.\nYou can choose between setting a single file or an entire folder.');
         return false;
     }
     return true;
@@ -86,7 +86,7 @@ function fromCsv(path: string) {
     const csv = readFileSync(path, 'utf8').split('\n');
     const [localesStr, ...valueStr] = csv;
     const locales = localesStr.split(',');
-    const model: { [key: string]: any } = {};   // tslint:disable-line
+    const model: { [key: string]: any } = {};   // tslint:disable-line:no-any
 
     // Delete 'key' from locales
     locales.shift();
@@ -128,20 +128,20 @@ function fromCsv(path: string) {
                         model[locale][key].push(vals[i]);
                     }
                 } break;
-                default: {}
+                default: { }
             }
         }
     }
     return model;
 }
 
-function toCsv(model: any) {    // tslint:disable-line
+function toCsv(model: any) {    // tslint:disable-line:no-any
     if (!model) {
         throw new Error('Something went wrong!');
     }
     const locales = Object.keys(model);
 
-    const obj: { [key: string]: any } = {};     // tslint:disable-line
+    const obj: { [key: string]: any } = {};     // tslint:disable-line:no-any
 
     for (const [i, locale] of locales.entries()) {
         const keys = Object.keys(model[locale]);
@@ -154,7 +154,7 @@ function toCsv(model: any) {    // tslint:disable-line
         */
         for (const key of keys) {
             const value = model[locale][key] || '';
-            switch (value.constructor) {    // tslint:disable-line
+            switch (value.constructor) {    // tslint:disable-line:no-any
                 case String: {
                     if (!obj[key]) {
                         obj[key] = new Array(locales.length).fill('');
@@ -196,7 +196,7 @@ function toCsv(model: any) {    // tslint:disable-line
                         obj[newKey][i] = v;
                     }
                 } break;
-                default: {}
+                default: { }
             }
         }
     }
@@ -228,7 +228,7 @@ function fromI18N(path: string) {
         files = readdirSync(path);
     }
 
-    const model: { [key: string]: any } = {};   // tslint:disable-line
+    const model: { [key: string]: any } = {};   // tslint:disable-line:no-any
     // For each i18n file, cut out the 'translation' part and push all the keys and their respective values onto the returned model
     files.forEach((locale) => {
         const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
@@ -249,18 +249,18 @@ function fromI18N(path: string) {
     return model;
 }
 
-function toI18N(model: any) {       // tslint:disable-line
+function toI18N(model: any) {       // tslint:disable-line:no-any
     if (!model) {
         throw new Error('Something went wrong!');
     }
-    const i18n: { [key: string]: any } = {};     // tslint:disable-line
+    const i18n: { [key: string]: any } = {};     // tslint:disable-line:no-any
     // For each locale, push the keys and their respective values onto a new object with a new attribute 'translation' as parent
     for (const locale in model) {
         if (!model.hasOwnProperty(locale)) {
             continue;
         }
 
-        const obj: { [key: string]: any } = {       // tslint:disable-line
+        const obj: { [key: string]: any } = {       // tslint:disable-line:no-any
             translation: model[locale]
         };
 
