@@ -35,7 +35,6 @@ module.exports = (vorpal: Vorpal) => {
             }
 
             const isTsProject = await project.isTypeScriptProject();
-            const isTsComponent = isTypeScriptComponent(src);
 
             const options = {
                 filter(s: string) {
@@ -43,10 +42,7 @@ module.exports = (vorpal: Vorpal) => {
                     if (isTsProject) {
                         invalidFiles.push('dist');
                     } else {
-                        // JS Project
-                        if (isTsComponent) {
-                            invalidFiles.push('index.ts', 'src');
-                        }
+                        invalidFiles.push('index.ts', 'src');
                     }
 
                     return !invalidFiles.includes(s.replace(src, ''));
@@ -72,16 +68,4 @@ function componentExists(component: string) {
         return false;
     }
     return true;
-}
-
-function isTypeScriptComponent(componentSrc: string): boolean {
-    const packagePath = pathJoin(componentSrc, 'package.json');
-    const content = readFileSync(packagePath, { encoding: 'utf-8' });
-    const packageFile = JSON.parse(content);
-
-    if (packageFile.hasOwnProperty('devDependencies') && packageFile.devDependencies.hasOwnProperty('typescript')) {
-        return true;
-    }
-
-    return false;
 }
