@@ -68,7 +68,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		try {
 			let projectId;
 			if (argOptions && argOptions.hasOwnProperty('project-id') && argOptions['project-id']) {
-				projectId = argOptions['skill-id'];
+				projectId = argOptions['project-id'];
 			} else {
 				projectId = project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.projectId', argOptions && argOptions.stage);
 			}
@@ -95,7 +95,18 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getPlatformConfigValues(project: Project, argOptions: ArgOptions): object {
-		return {};
+		// allow access to ASK profile (for lambda upload)
+		let askProfile;
+        if (argOptions && argOptions.hasOwnProperty('ask-profile') && argOptions['ask-profile']) {
+            askProfile = argOptions['ask-profile'];
+        }
+
+        return {
+            askProfile: askProfile ||
+            project.jovoConfigReader!.getConfigParameter('host.lambda.ask-Profile', argOptions && argOptions.stage) ||
+            project.jovoConfigReader!.getConfigParameter('host.lambda.askProfile', argOptions && argOptions.stage) ||
+            process.env.ASK_DEFAULT_PROFILE
+        };
 	}
 
 
@@ -128,6 +139,12 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 				.option('--project-id <projectId>',
 					'Google Cloud Project ID');
 		}
+
+        if (['deploy'].includes(command)) {
+            vorpalCommand
+                .option('--ask-profile <askProfile>',
+                    'Name of use ASK profile \n\t\t\t\tDefault: default');
+        }
 	}
 
 	validateAdditionalCliOptions(command: string, args: Vorpal.Args): boolean {
@@ -406,15 +423,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		const config = project.getConfig(ctx.stage);
 
 		const returnTasks: ListrTask[] = [];
-
-		let arn = _.get(config, 'googleAction.host.lambda.arn') ||
-			_.get(config, 'host.lambda.arn');
-
-		if (!arn) {
-			arn = _.get(config, 'googleAction.endpoint') ||
-				_.get(config, 'endpoint');
-			arn = _.startsWith(arn, 'arn') ? arn : undefined;
-		}
 
 		returnTasks.push({
 			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + (ctx.projectId ? ' ' + ctx.projectId : ''),
