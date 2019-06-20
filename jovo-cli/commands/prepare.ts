@@ -58,6 +58,8 @@ module.exports = (vorpal: Vorpal) => {
                 });
                 removeSync(`${dest}/${component}/dist`);
             }
+
+            console.log(`Successfully copied ${component} into ${dest}.`);
         });
 };
 
