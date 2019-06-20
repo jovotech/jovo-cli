@@ -30,14 +30,14 @@ async function start() {
 
 	// check for valid Jovo project directory
 	const projectLevelCommands = ['build', 'deploy', 'get', 'init', 'run', 'update', 'convert', 'prepare'];
-	// if (projectLevelCommands.indexOf(process.argv[2]) !== -1 &&
-	// 	versionArg.indexOf(process.argv[2]) === -1) {
+	if (projectLevelCommands.indexOf(process.argv[2]) !== -1 &&
+		versionArg.indexOf(process.argv[2]) === -1) {
 
-	// 	if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
-	// 		console.error('To use this command, please go into the directory of a valid Jovo project.');
-	// 		process.exit(1);
-	// 	}
-	// }
+		if (!await project.isInProjectDirectory() && process.argv.indexOf('--help') === -1) {
+			console.error('To use this command, please go into the directory of a valid Jovo project.');
+			process.exit(1);
+		}
+	}
 
 	if (process.argv.length <= 2) {
 	} else if (process.argv.length === 3 &&
