@@ -50,13 +50,12 @@ module.exports = (vorpal: Vorpal) => {
             };
 
             copySync(`./${src}`, `${dest}/${component}`, options);
-            if (!isTsProject && isTsComponent) {
-                const o = {
+            if (!isTsProject) {
+                copySync(`./${src}dist`, `${dest}/${component}`, {
                     filter(s: string) {
                         return !/.*(\.d\.ts)|.*(\.js\.map)/g.test(s.replace(src, ''));
                     }
-                }
-                copySync(`./${src}dist`, `${dest}/${component}`, o);
+                });
                 removeSync(`${dest}/${component}/dist`);
             }
         });
