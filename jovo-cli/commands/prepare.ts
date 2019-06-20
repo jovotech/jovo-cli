@@ -20,7 +20,7 @@ module.exports = (vorpal: Vorpal) => {
         })
         .action(async (args: Vorpal.Args) => {
             const component = args.component;
-            const src = `node_module/${component}/`;
+            const src = `node_modules/${component}/`;
             let dest = '';
             if (existsSync('./src')) {
                 if (!existsSync('./src/components')) {
@@ -53,6 +53,7 @@ module.exports = (vorpal: Vorpal) => {
             if (!isTsProject) {
                 copySync(`./${src}dist`, `${dest}/${component}`, {
                     filter(s: string) {
+                        // Exclude .d.ts and .js.map files
                         return !/.*(\.d\.ts)|.*(\.js\.map)/g.test(s.replace(src, ''));
                     }
                 });
@@ -64,7 +65,7 @@ module.exports = (vorpal: Vorpal) => {
 };
 
 function componentExists(component: string) {
-    if (!existsSync(`./node_module/${component}`)) {
+    if (!existsSync(`./node_modules/${component}`)) {
         console.log(`The component '${component}' does not exists. Please check for spelling or install it with 'npm i ${component} -S'.`);
         return false;
     }
