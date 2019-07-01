@@ -35,7 +35,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
 		return [
 			{
-				title: 'Uploading to lambda',
+				title: 'Uploading to AWS Lambda',
 				enabled: (ctx: JovoTaskContextLambda) => !ctx.newSkill &&
 					_.isUndefined(arn) === false ||
 					// If specifically lambda got defined to be the target execute
