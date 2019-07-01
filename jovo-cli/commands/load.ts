@@ -11,7 +11,7 @@ const project = getProject();
 
 module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
-        .command('prepare <component>')
+        .command('load <component>')
         // @ts-ignore
         .description('Extracts the necessary files for a component from ./node_modules into your projects ./components folder.');
 
@@ -76,7 +76,7 @@ module.exports = (vorpal: Vorpal) => {
 
             if (!isTsProject && isTsComponent) {
                 tasksArr.push({
-                    title: 'Preparing Component for Javascript Project',
+                    title: 'Loading Component into Javascript Project',
                     async task() {
                         await new Promise((res) => setTimeout(
                             () => {

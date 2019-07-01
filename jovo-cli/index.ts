@@ -29,7 +29,7 @@ async function start() {
 
 
 	// check for valid Jovo project directory
-	const projectLevelCommands = ['build', 'deploy', 'get', 'init', 'run', 'update', 'convert', 'prepare'];
+	const projectLevelCommands = ['build', 'deploy', 'get', 'init', 'run', 'update', 'convert', 'load'];
 	if (projectLevelCommands.indexOf(process.argv[2]) !== -1 &&
 		versionArg.indexOf(process.argv[2]) === -1) {
 
@@ -65,7 +65,7 @@ async function start() {
 			.use(require('./commands/run.js'))
 			.use(require('./commands/update.js'))
 			.use(require('./commands/convert'))
-			.use(require('./commands/prepare'))
+			.use(require('./commands/load'))
 			.delimiter('')
 			.show()
 			.parse(process.argv);
