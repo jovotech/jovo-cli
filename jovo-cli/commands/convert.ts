@@ -1,6 +1,9 @@
+import * as Listr from 'listr';
 import * as Vorpal from 'vorpal';
 import { addBaseCliOptions } from '../utils/Utils';
-import { readFileSync, readdirSync, writeFileSync } from 'fs';
+import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { JovoCliRenderer } from '../utils/JovoRenderer';
+import { ListrOptionsExtended } from '../src';
 
 module.exports = (vorpal: Vorpal) => {
     const vorpalInstance = vorpal
@@ -33,33 +36,73 @@ module.exports = (vorpal: Vorpal) => {
             let target = args.options.to;
             target = target ? target.replace(/\/?$/, '/') : target;
 
+            const tasksArr: { title: string, task: Function }[] = [];
+            let successMsg = '';
+            let failMsg = '';
+
             switch (args.fn) {
                 case 'i18nToCsv': {
-                    try {
-                        const csv = toCsv(fromI18N(origin));
-                        writeFileSync(`${target || './'}responses.csv`, csv);
-                        console.log('Successfully converted I18n to Csv.');
-                    } catch (e) {
-                        console.log('Something went wrong while converting from I18N. Check the logs below:\n');
-                        console.log(e);
-                    }
+                    tasksArr.push(
+                        {
+                            title: 'Converting to .csv file',
+                            task(ctx: any) {
+                                ctx.csv = toCsv(fromI18N(origin));
+                            }
+                        },
+                        {
+                            title: 'Writing .csv file',
+                            task(ctx: any) {
+                                writeFileSync(`${target || './'}responses.csv`, ctx.csv);
+                            }
+                        }
+                    );
+                    successMsg = 'Successfully converted I18n to Csv.';
+                    failMsg = 'Something went wrong while converting from I18N. Check the logs below:\n';
                 } break;
                 case 'csvToI18n': {
-                    try {
-                        const model = toI18N(fromCsv(origin)) || {};
-                        for (const locale in model) {
-                            if (!model.hasOwnProperty(locale)) {
-                                continue;
+                    tasksArr.push(
+                        {
+                            title: 'Converting to i18n files',
+                            task(ctx: any) {
+                                ctx.model = toI18N(fromCsv(origin)) || {};
                             }
-                            writeFileSync(`${target || './i18n/'}${locale}.json`, JSON.stringify(model[locale], null, '\t'));
-                            console.log('Successfully converted Csv to I18n.');
+                        },
+                        {
+                            title: 'Writing i18n files',
+                            task(ctx: any) {
+                                const model = ctx.model;
+                                for (const locale in model) {
+                                    if (!model.hasOwnProperty(locale)) {
+                                        continue;
+                                    }
+
+                                    const dest = target || './i18n/';
+                                    if (!existsSync(dest)) {
+                                        mkdirSync(dest);
+                                    }
+                                    writeFileSync(`${dest}${locale}.json`, JSON.stringify(model[locale], null, '\t'));
+                                }
+                            }
                         }
-                    } catch (e) {
-                        console.log('Something went wrong while converting from Csv. Check the logs below:\n');
-                        console.log(e);
-                    }
+                    );
+                    successMsg = 'Successfully converted Csv to I18n.';
+                    failMsg = 'Something went wrong while converting from Csv. Check the logs below:\n';
                 } break;
                 default: { }
+            }
+
+            // @ts-ignore
+            const tasks = new Listr(tasksArr, {
+                renderer: JovoCliRenderer,
+                collapse: false,
+            } as ListrOptionsExtended);
+
+            try {
+                await tasks.run();
+                console.log(`\n\n${successMsg}`);
+            } catch (err) {
+                console.log(`\n\n${failMsg}`);
+                console.log(err);
             }
         });
 };
@@ -83,7 +126,7 @@ function isValidOrigin(origin: string) {
 
 
 function fromCsv(path: string) {
-    const csv = readFileSync(path, 'utf8').split('\n');
+    const csv = readFileSync(path, 'utf8').replace(/\r/g, '').split('\n');
     const [localesStr, ...valueStr] = csv;
     const locales = localesStr.split(',');
     const model: { [key: string]: any } = {};   // tslint:disable-line:no-any
