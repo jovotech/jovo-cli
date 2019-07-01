@@ -59,7 +59,7 @@ module.exports = (vorpal: Vorpal) => {
                 }
             };
 
-            const tasksArr: { title: string, task: Function }[] = [
+            const tasksArr: Array<{ title: string, task: Function }> = [
                 {
                     title: 'Copying Component Files',
                     async task() {

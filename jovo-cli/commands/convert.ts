@@ -36,7 +36,7 @@ module.exports = (vorpal: Vorpal) => {
             let target = args.options.to;
             target = target ? target.replace(/\/?$/, '/') : target;
 
-            const tasksArr: { title: string, task: Function }[] = [];
+            const tasksArr: Array<{ title: string, task: Function }> = [];
             let successMsg = '';
             let failMsg = '';
 
@@ -45,13 +45,13 @@ module.exports = (vorpal: Vorpal) => {
                     tasksArr.push(
                         {
                             title: 'Converting to .csv file',
-                            task(ctx: any) {
+                            task(ctx: any) {    // tslint:disable-line:no-any
                                 ctx.csv = toCsv(fromI18N(origin));
                             }
                         },
                         {
                             title: 'Writing .csv file',
-                            task(ctx: any) {
+                            task(ctx: any) {    // tslint:disable-line:no-any
                                 writeFileSync(`${target || './'}responses.csv`, ctx.csv);
                             }
                         }
@@ -63,13 +63,13 @@ module.exports = (vorpal: Vorpal) => {
                     tasksArr.push(
                         {
                             title: 'Converting to i18n files',
-                            task(ctx: any) {
+                            task(ctx: any) {    // tslint:disable-line:no-any
                                 ctx.model = toI18N(fromCsv(origin)) || {};
                             }
                         },
                         {
                             title: 'Writing i18n files',
-                            task(ctx: any) {
+                            task(ctx: any) {    // tslint:disable-line:no-any
                                 const model = ctx.model;
                                 for (const locale in model) {
                                     if (!model.hasOwnProperty(locale)) {
