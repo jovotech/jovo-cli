@@ -19,7 +19,7 @@ afterAll(() => {
 });
 
 describe('prepare', () => {
-	it('jovo new <project> --init alexaSkill --build\n\tjovo prepare jovo-component-email\n\t>> Fail if component doesn\'t exist', async () => {
+	it('jovo new <project> --init alexaSkill --build\n\tjovo prepare jovo-component-email\n\t>> Should fail if component doesn\'t exist', async () => {
 		const projectName = 'jovo-cli-unit-test';
 
 		const parameters = [
@@ -32,14 +32,10 @@ describe('prepare', () => {
 		const projectFolder = path.join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
-		const log = console.log;
-		console.log = jest.fn((s) => log(s));
-
 		// Prepare component
-		await runJovoCommand('prepare', ['jovo-component-email'], projectFolder, 'The component \'jovo-component-email\' does not exist. Please check for spelling or install it with \'npm i jovo-component-email -s\'.');
+		const res = await runJovoCommand('prepare', ['jovo-component-email'], projectFolder, 'The component \'jovo-component-email\' does not exist. Please check for spelling or install it with \'npm i jovo-component-email -s\'.');
 
-		// @ts-ignore
-		expect(console.log.mock.calls[3][0]).toMatch(
+		expect(res).toMatch(
 			'The component \'jovo-component-email\' does not exist. ' +
 			'Please check for spelling or install it with \'npm i jovo-component-email -s\'.'
 		);
@@ -91,8 +87,9 @@ describe('prepare', () => {
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.ts README.md package.json dist/index.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('mkdir node_modules/jovo-component-email/dist/src -p', { cwd: `${testFolder}/${projectName}` });
+		await exec('mkdir node_modules/jovo-component-email/src/ -p', { cwd: `${testFolder}/${projectName}` });
+		await exec('touch index.ts README.md package.json tsconfig.json src/handler.ts dist/index.js dist/src/handler.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
 		const packageJson = {
 			devDependencies: {
 				typescript: '^3.5.2'
@@ -105,7 +102,9 @@ describe('prepare', () => {
 
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
+		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/src/handler.js`)).toBeTruthy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/dist`)).toBeFalsy();
+		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/src/handler.ts`)).toBeFalsy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.ts`)).toBeFalsy();
 	}, 20000);
 
