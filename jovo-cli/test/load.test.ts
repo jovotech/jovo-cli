@@ -39,7 +39,7 @@ describe('load', () => {
 			'The component \'jovo-component-email\' does not exist. ' +
 			'Please check for spelling or install it with \'npm i jovo-component-email -s\'.'
 		);
-	}, 20000);
+	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Typescript Component', async () => {
 		const projectName = 'jovo-cli-unit-test';
@@ -71,7 +71,7 @@ describe('load', () => {
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/dist`)).toBeFalsy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.ts`)).toBeTruthy();
-	}, 20000);
+	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Typescript Component', async () => {
 		const projectName = 'jovo-cli-unit-test';
@@ -106,7 +106,7 @@ describe('load', () => {
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/dist`)).toBeFalsy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/src/handler.ts`)).toBeFalsy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.ts`)).toBeFalsy();
-	}, 20000);
+	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Javascript Component', async () => {
 		const projectName = 'jovo-cli-unit-test';
@@ -131,7 +131,7 @@ describe('load', () => {
 
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
-	}, 20000);
+	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Javascript Component', async () => {
 		const projectName = 'jovo-cli-unit-test';
@@ -155,6 +155,6 @@ describe('load', () => {
 
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
 		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
-	}, 20000);
+	}, 200000);
 });
 
