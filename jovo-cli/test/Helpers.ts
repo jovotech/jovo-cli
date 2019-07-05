@@ -41,6 +41,7 @@ export function runJovoCommand(command: string, parameters: string[], cwd: strin
 			reject(new Error(data.toString()));
 		});
 		child.stdout.on('data', (data) => {
+			console.log(data.toString());
 			if (waitText !== null) {
 				for (const text of waitText) {
 					if (data.toString().indexOf(text) > -1) {

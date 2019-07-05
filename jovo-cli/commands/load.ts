@@ -24,17 +24,11 @@ module.exports = (vorpal: Vorpal) => {
         .action(async (args: Vorpal.Args) => {
             const component = args.component;
             const src = `node_modules/${component}/`;
-            let dest = '';
-            if (existsSync('./src')) {
-                if (!existsSync('./src/components')) {
-                    mkdirSync('./src/components');
-                }
-                dest = './src/components';
-            } else {
-                if (!existsSync('./components')) {
-                    mkdirSync('./components');
-                }
-                dest = './components';
+
+            const dest = existsSync('./src') ? './src/components' : './components';
+
+            if (!existsSync(dest)) {
+                mkdirSync(dest);
             }
 
             const isTsProject = await project.isTypeScriptProject();
