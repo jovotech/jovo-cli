@@ -33,13 +33,21 @@ import {
 	PackageVersion,
 } from './';
 import {
-	JovoModel,
 	ModelValidationError,
 	JovoModelData
 } from 'jovo-model';
 import { JovoConfigReader } from 'jovo-config';
 
-import { DEFAULT_LOCALE, DEFAULT_TARGET, DEPLOY_ZIP_FILE_NAME, ENDPOINT_BSTPROXY, ENDPOINT_JOVOWEBHOOK, JOVO_WEBHOOK_URL, REPO_URL } from './Constants';
+import {
+	DEFAULT_LOCALE,
+	DEFAULT_TARGET,
+	DEPLOY_BUNDLE_DIRECTORY_NAME,
+	DEPLOY_ZIP_FILE_NAME,
+	ENDPOINT_BSTPROXY,
+	ENDPOINT_JOVOWEBHOOK,
+	JOVO_WEBHOOK_URL,
+	REPO_URL,
+} from './Constants';
 
 
 export class Project {
@@ -453,6 +461,20 @@ export class Project {
 		const sourceFolder = ctx.src || this.getProjectPath();
 		return pathJoin(sourceFolder, DEPLOY_ZIP_FILE_NAME);
 	}
+
+
+	/**
+	 * Returns the path of the bundle directory
+	 *
+	 * @param {JovoTaskContext} ctx
+	 * @returns {string}
+	 * @memberof Project
+	 */
+	getZipBundleDirectoryPath(ctx?: JovoTaskContext): string {
+		const sourceFolder = ctx && ctx.src ? ctx.src : this.getProjectPath();
+		return pathJoin(sourceFolder, DEPLOY_BUNDLE_DIRECTORY_NAME);
+	}
+
 
 	/**
 	 * Zips the src folder

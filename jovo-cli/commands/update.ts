@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { stat as fsStat } from 'fs';
+import { join as pathJoin } from 'path';
+import * as rimraf from 'rimraf';
 import * as _ from 'lodash';
 import Vorpal = require('vorpal');
 import { Args } from 'vorpal';
@@ -14,6 +17,9 @@ import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
 const project = require('jovo-cli-core').getProject();
 
 const greyText = require('chalk').grey;
+
+const { promisify } = require('util');
+const fsStatAsync = promisify(fsStat);
 
 import {
 	addBaseCliOptions,
@@ -109,6 +115,34 @@ module.exports = (vorpal: Vorpal) => {
 						});
 					},
 				});
+
+				// Check bundle directory exists with node_modules. If it exists delete.
+				const bundleDirectoryPath = project.getZipBundleDirectoryPath();
+				try {
+					// Check if bundle folder exists
+					await fsStatAsync(bundleDirectoryPath);
+
+					// Check if node-modules folder exists in it
+					const bundleNodeDirectoryPath = pathJoin(bundleDirectoryPath, 'node_modules');
+					await fsStatAsync(bundleNodeDirectoryPath);
+
+					tasks.add({
+						// @ts-ignore
+						title: `Delete "node_modules" in bundle directory`,
+						task: (ctx, task) => {
+							return new Promise<void>((resolve, reject) => {
+								rimraf(bundleNodeDirectoryPath, {}, (error: Error) => {
+									if (error) {
+										return reject(error);
+									}
+									resolve();
+								});
+							});
+						}
+					});
+				} catch (error) {
+					// Does not exist so nothing to do
+				}
 
 				return tasks.run()
 					.then(async () => {
