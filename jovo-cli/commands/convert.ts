@@ -128,7 +128,7 @@ function isValidOrigin(origin: string) {
 function fromCsv(path: string) {
     const csv = readFileSync(path, 'utf8').replace(/\r/g, '').split('\n');
     const [localesStr, ...valueStr] = csv;
-    const locales = localesStr.split(',');
+    const locales = localesStr.split('\t');
     const model: { [key: string]: any } = {};   // tslint:disable-line:no-any
 
     // Delete 'key' from locales
@@ -138,7 +138,7 @@ function fromCsv(path: string) {
         if (!valueS) {
             continue;
         }
-        const [key, ...vals] = valueS.split(',');
+        const [key, ...vals] = valueS.split('\t');
 
         // Every row of values (vals) is ordered by locales, so by looping over every locales we can fetch the respective value
         for (const [i, locale] of locales.entries()) {
