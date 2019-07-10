@@ -6,6 +6,7 @@ export const DEFAULT_LANGUAGE = 'javascript';
 export const DEFAULT_TARGET = 'all';
 export const DEFAULT_ENDPOINT = 'jovo-webhook';
 
+export const DEPLOY_BUNDLE_DIRECTORY_NAME = 'bundle';
 export const DEPLOY_ZIP_FILE_NAME = 'bundle.zip';
 
 export const TARGET_ALL = 'all';
