@@ -278,6 +278,12 @@ module.exports = (vorpal: Vorpal) => {
 				}, stage, ls);
 			}
 
+        	ls.on('close', (code) => {
+                if (code !== 0) {
+                    process.exit(-1);
+                }
+            });
+
 			// Output everything the child process prints
 			ls.stdout.pipe(process.stdout);
 			ls.stderr.pipe(process.stderr);
