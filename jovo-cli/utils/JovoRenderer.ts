@@ -15,7 +15,7 @@ const intdentText = (text: string, level: number, indentText = '    ', color: st
 	}
 
 	const indentLength = level * indentString.length;
-	const maxLength = 80;
+	const maxLength = 120;
 	const maxTextLength = maxLength - indentLength;
 
 	let textLeft = text;
