@@ -31,7 +31,7 @@ module.exports = (vorpal: Vorpal) => {
                     destPath = './src/app.scaffold.js';
                 }
 
-                if (answers.overwrite === ANSWER_CANCEL) {
+                if (answers.overwriteHandler === ANSWER_CANCEL) {
                     return Promise.resolve();
                 }
             }
