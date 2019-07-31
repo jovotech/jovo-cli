@@ -21,20 +21,9 @@ module.exports = (vorpal: Vorpal) => {
             return isValidFunction(args.fn) && isValidOrigin(args.options.from);
         })
         .action(async (args: Vorpal.Args) => {
-            /**
-             * All functions are based on a unified form like this:
-             *  {
-             *      'en-US': {
-             *          key: 'value',
-             *          key_arr: ['value1', 'value2']
-             *      },
-             *      'de-DE': {
-             *          key: 'wert'
-             *      }
-             *  }
-             */
             const origin = args.options.from;
             let target = args.options.to;
+            // If target does not end with "/", place a "/" to the end of it. 
             target = target ? target.replace(/\/?$/, '/') : target;
 
             const tasksArr: Array<{ title: string, task: Function }> = [];
@@ -46,14 +35,19 @@ module.exports = (vorpal: Vorpal) => {
                     tasksArr.push(
                         {
                             title: 'Converting to .csv file',
-                            task(ctx: any) {    // tslint:disable-line:no-any
-                                // ctx.csv = toCsv(fromI18N(origin));
+                            async task(ctx: any) {    // tslint:disable-line:no-any
+                                ctx.csv = await new Promise((res) => setTimeout(() => {
+                                    res(toCsv(fromI18N(origin)))
+                                }, 500));
                             }
                         },
                         {
                             title: 'Writing .csv file',
-                            task(ctx: any) {    // tslint:disable-line:no-any
-                                writeFileSync(`${target || './'}responses.csv`, ctx.csv);
+                            async task(ctx: any) {    // tslint:disable-line:no-any
+                                await new Promise((res) => setTimeout(() => {
+                                    writeFileSync(`${target || './'}responses.csv`, ctx.csv);
+                                    res();
+                                }, 500));
                             }
                         }
                     );
@@ -65,24 +59,29 @@ module.exports = (vorpal: Vorpal) => {
                         {
                             title: 'Converting to i18n files',
                             async task(ctx: any) {    // tslint:disable-line:no-any
-                                ctx.model = toI18N(await fromCsv(origin));
+                                ctx.model = await new Promise((res) => setTimeout(async () => {
+                                    res(toI18N(await fromCsv(origin)));
+                                }, 500));
                             }
                         },
                         {
                             title: 'Writing i18n files',
-                            task(ctx: any) {    // tslint:disable-line:no-any
-                                const model = ctx.model;
-                                for (const locale in model) {
-                                    if (!model.hasOwnProperty(locale)) {
-                                        continue;
-                                    }
+                            async task(ctx: any) {    // tslint:disable-line:no-any
+                                await new Promise((res) => setTimeout(() => {
+                                    const model = ctx.model;
+                                    for (const locale in model) {
+                                        if (!model.hasOwnProperty(locale)) {
+                                            continue;
+                                        }
 
-                                    const dest = target || './i18n/';
-                                    if (!existsSync(dest)) {
-                                        mkdirSync(dest);
+                                        const dest = target || './i18n/';
+                                        if (!existsSync(dest)) {
+                                            mkdirSync(dest);
+                                        }
+                                        writeFileSync(`${dest}${locale}.json`, JSON.stringify(model[locale], null, '\t'));
                                     }
-                                    writeFileSync(`${dest}${locale}.json`, JSON.stringify(model[locale], null, '\t'));
-                                }
+                                    res();
+                                }, 500));
                             }
                         }
                     );
@@ -145,82 +144,113 @@ function toCsv(model: { [key: string]: string }[]) {    // tslint:disable-line:n
     return csv;
 }
 
+function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model: { [key: string]: string }[]): { [key: string]: string }[] {
+    for (const prop in i18nModel) {
+        if (!i18nModel.hasOwnProperty(prop)) {
+            continue;
+        }
+
+        if (prop === 'translation') {
+            for (const key in i18nModel[prop]) {
+                if (!i18nModel[prop].hasOwnProperty(key)) {
+                    continue;
+                }
+
+                const value = i18nModel[prop][key];
+                switch (value.constructor) {
+                    case Array: {
+                        for (const v of value) {
+                            writeToJson(locale, key, v, model);
+                        }
+                    } break;
+                    case String: {
+                        writeToJson(locale, key, value, model);
+                    } break;
+                    case Object: {
+                        for (const k in value) {
+                            writeToJson(locale, `${key}.${k}`, value[k], model);
+                        }
+                    }
+                }
+            }
+        } else {
+            parseI18nModel(`${locale}-${prop}`, i18nModel[prop], model);
+        }
+    }
+    return model;
+}
+
+function writeToJson(locale: string, key: string, value: any, model: { [key: string]: string }[]) {
+    // go through every entry, write an empty string there
+    // save index where to write the real value
+    if (value.includes(',')) {
+        value = `"${value}"`;
+    }
+
+    let index;
+    for (const [i, keyValue] of model.entries()) {
+        if (!keyValue[locale]) {
+            keyValue[locale] = '';
+        }
+
+        if (keyValue.key === key) {
+            index = i;
+            // Check if current locale already exists here
+            if (keyValue[locale] && keyValue[locale] !== '') {
+                // If so, look for another entry
+                index = undefined;
+                continue;
+            }
+        }
+    }
+
+    if (index) {
+        model[index][locale] = value;
+    } else {
+        const obj: any = {};
+        if (model[0]) {
+            for (const k in model[0]) {
+                if (!model[0].hasOwnProperty(k)) {
+                    continue;
+                }
+
+                if (k === 'key') {
+                    obj[k] = key;
+                } else {
+                    obj[k] = '';
+                }
+            }
+            obj[locale] = value;
+        } else {
+            obj.key = key
+            obj[locale] = value;
+        }
+        model.push(obj);
+    }
+}
+
 function fromI18N(path: string) {
-    // let files: string[] = [];
+    let files: string[] = [];
 
-    // // Workaround for single files
-    // if (path.indexOf('.json', path.length - 5) !== -1) {
-    //     const pathArr = path.split('/');
-    //     files.push(pathArr.pop()!);
-    //     path = pathArr.join('/');
-    // } else {
-    //     files = readdirSync(path);
-    // }
+    // Workaround for single files
+    if (path.indexOf('.json', path.length - 5) !== -1) {
+        const pathArr = path.split('/');
+        files.push(pathArr.pop()!);
+        path = pathArr.join('/');
+    } else {
+        files = readdirSync(path);
+    }
 
-    // const model: { [key: string]: string }[] = [];   // tslint:disable-line:no-any
+    const model: { [key: string]: string }[] = [];   // tslint:disable-line:no-any
 
-    // for (const entry of files) {
-    //     const i18nModel = JSON.parse(readFileSync(`${path}/${entry}`, 'utf8'));
-    //     const locale = entry.replace('.json', '');
-    //     for (const prop in i18nModel) {
-    //         if (!i18nModel.hasOwnProperty(prop)) {
-    //             continue;
-    //         }
+    for (const entry of files) {
+        const i18nModel = JSON.parse(readFileSync(`${path}/${entry}`, 'utf8'));
+        const locale = entry.replace('.json', '');
+        parseI18nModel(locale, i18nModel, model);
+    }
 
-    //         if (prop === 'translation') {
-    //             keyLoop:
-    //             for (const key in i18nModel[prop]) {
-    //                 if (!i18nModel[prop].hasOwnProperty(key)) {
-    //                     continue;
-    //                 }
-
-    //                 const value = i18nModel[prop][key];
-
-    //                 switch (value.constructor) {
-    //                     case String: {
-
-    //                     }
-    //                     case Array: {
-
-    //                     }
-    //                     case Object: {
-
-    //                     }
-    //                 }
-
-    //                 if (!keysToIndex[key]) {
-    //                     keysToIndex[key] = model.length - 1;
-    //                     const keyValue: { [key: string]: string } = {
-    //                         key,
-    //                         [locale]: value
-    //                     };
-    //                     model.push(keyValue);
-    //                 } else {
-    //                     const index = keysToIndex[key];
-    //                     model[index][locale] = value;
-    //                 }
-
-    //                 // TODO: handle array
-    //                 for (const obj of model) {
-    //                     if (obj.key === key && !obj[locale]) {
-    //                         obj[locale] = i18nModel[prop][key];
-    //                         continue keyLoop;
-    //                     }
-    //                 }
-
-    //                 const keyValue: { [key: string]: string } = {
-    //                     key,
-    //                     [locale]: i18nModel[prop][key]
-    //                 };
-    //                 model.push(keyValue);
-    //             }
-    //         } else {
-    //             // Tags / Platform speficis
-    //         }
-    //     }
-    // }
-
-    // return model;
+    // console.log(model);
+    return model;
 }
 
 function toI18N(model: { [key: string]: string }[]) {
