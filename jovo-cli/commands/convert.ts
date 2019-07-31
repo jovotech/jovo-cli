@@ -109,9 +109,9 @@ module.exports = (vorpal: Vorpal) => {
 };
 
 function isValidFunction(fn: string) {
-    if (['i18nToCsv', 'csvToI18n'].indexOf(fn) === -1) {
+    if (!['i18nToCsv', 'csvToI18n'].includes(fn)) {
         console.log(`The function ${fn} is not supported. Please use one of the following:`);
-        console.log('* i18nToCsv\n* csvToI18n');
+        console.log('\t* i18nToCsv\n\t* csvToI18n');
         return false;
     }
     return true;
@@ -134,121 +134,100 @@ function toCsv(model: { [key: string]: string }[]) {    // tslint:disable-line:n
     if (!model) {
         throw new Error('Something went wrong!');
     }
-    // const locales = Object.keys(model);
 
-    // const obj: { [key: string]: any } = {};     // tslint:disable-line:no-any
+    // Since the keys are the same in every entry, it is sufficient to fetch them from the first one.
+    const keys = Object.keys(model[0]);
+    let csv = keys.join(',');
+    for (const keyValue of model) {
+        csv += `\n${Object.values(keyValue).join(',')}`;
+    }
 
-    // for (const [i, locale] of locales.entries()) {
-    //     const keys = Object.keys(model[locale]);
-
-    //     /* 
-    //     * Every row in the .csv is simulated in an object by having an array of length=locales.length filled with empty strings.
-    //     * All values are set on their respective position in the array based on the current locale.
-    //     * In the end each array is joined with ',', resulting in comma-seperated strings.
-    //     * e.g. WELCOME,Welcome!,,Willkommen! with locales en-US, en-CA, de-DE where the value for en-CA is empty
-    //     */
-    //     for (const key of keys) {
-    //         const value = model[locale][key] || '';
-    //         switch (value.constructor) {    // tslint:disable-line:no-any
-    //             case String: {
-    //                 if (!obj[key]) {
-    //                     obj[key] = new Array(locales.length).fill('');
-    //                 }
-
-    //                 obj[key][i] = model[locale][key];
-    //             } break;
-    //             case Array: {
-    //                 if (!obj[key]) {
-    //                     obj[key] = [];
-    //                 }
-
-    //                 // ! WORKAROUND for the case, that a key is a string in one instance and an array in another
-    //                 if (obj[key].length > 0 && obj[key][0].constructor === String) {
-    //                     obj[key] = [obj[key]];
-    //                 }
-
-    //                 while (obj[key].length < value.length) {
-    //                     obj[key].push(new Array(locales.length).fill(''));
-    //                 }
-
-    //                 for (const [k, v] of value.entries()) {
-    //                     obj[key][k][i] = v;
-    //                 }
-    //             } break;
-    //             // If the current key is an object, merge the child keys with its parent and write their respective values into the array
-    //             case Object: {
-    //                 for (const k in value) {
-    //                     if (!value.hasOwnProperty(k)) {
-    //                         continue;
-    //                     }
-    //                     const v = value[k];
-    //                     const newKey = `${key}.${k}`;
-
-    //                     if (!obj[newKey]) {
-    //                         obj[newKey] = new Array(locales.length).fill('');
-    //                     }
-
-    //                     obj[newKey][i] = v;
-    //                 }
-    //             } break;
-    //             default: { }
-    //         }
-    //     }
-    // }
-
-    // let csv = `key,${locales.join(',')}\n`;
-    // for (const key in obj) {
-    //     // If the current key holds multiple arrays (the key has multiple occurrences), loop over it and write the key multiple times
-    //     if (obj[key][0].constructor === Array) {
-    //         for (const arr of obj[key]) {
-    //             csv += `${key},${arr.join(',')}\n`;
-    //         }
-    //     } else {
-    //         csv += `${key},${obj[key].join(',')}\n`;
-    //     }
-    // }
-
-    // return csv;
+    return csv;
 }
 
 function fromI18N(path: string) {
-    let files: string[] = [];
+    // let files: string[] = [];
 
-    // Workaround for single files
-    if (path.indexOf('.json', path.length - 5) !== -1) {
-        const pathArr = path.split('/');
-        files.push(pathArr.pop()!);
-        path = pathArr.join('/');
-    } else {
-        files = readdirSync(path);
-    }
+    // // Workaround for single files
+    // if (path.indexOf('.json', path.length - 5) !== -1) {
+    //     const pathArr = path.split('/');
+    //     files.push(pathArr.pop()!);
+    //     path = pathArr.join('/');
+    // } else {
+    //     files = readdirSync(path);
+    // }
 
-    const model: { [key: string]: any } = {};   // tslint:disable-line:no-any
-    // For each i18n file, cut out the 'translation' part and push all the keys and their respective values onto the returned model
-    files.forEach((locale) => {
-        const i18nModel = JSON.parse(readFileSync(`${path}/${locale}`, 'utf8'));
-        for (const prop in i18nModel) {
-            if (!i18nModel.hasOwnProperty(prop)) {
-                continue;
-            }
+    // const model: { [key: string]: string }[] = [];   // tslint:disable-line:no-any
 
-            let obj = i18nModel[prop];
-            if (prop !== 'translation') {
-                obj = i18nModel[prop]['translation'];
-                model[`${locale.replace('.json', '')}-${prop}`] = obj;
-            } else {
-                model[locale.replace('.json', '')] = obj;
-            }
-        }
-    });
-    return model;
+    // for (const entry of files) {
+    //     const i18nModel = JSON.parse(readFileSync(`${path}/${entry}`, 'utf8'));
+    //     const locale = entry.replace('.json', '');
+    //     for (const prop in i18nModel) {
+    //         if (!i18nModel.hasOwnProperty(prop)) {
+    //             continue;
+    //         }
+
+    //         if (prop === 'translation') {
+    //             keyLoop:
+    //             for (const key in i18nModel[prop]) {
+    //                 if (!i18nModel[prop].hasOwnProperty(key)) {
+    //                     continue;
+    //                 }
+
+    //                 const value = i18nModel[prop][key];
+
+    //                 switch (value.constructor) {
+    //                     case String: {
+
+    //                     }
+    //                     case Array: {
+
+    //                     }
+    //                     case Object: {
+
+    //                     }
+    //                 }
+
+    //                 if (!keysToIndex[key]) {
+    //                     keysToIndex[key] = model.length - 1;
+    //                     const keyValue: { [key: string]: string } = {
+    //                         key,
+    //                         [locale]: value
+    //                     };
+    //                     model.push(keyValue);
+    //                 } else {
+    //                     const index = keysToIndex[key];
+    //                     model[index][locale] = value;
+    //                 }
+
+    //                 // TODO: handle array
+    //                 for (const obj of model) {
+    //                     if (obj.key === key && !obj[locale]) {
+    //                         obj[locale] = i18nModel[prop][key];
+    //                         continue keyLoop;
+    //                     }
+    //                 }
+
+    //                 const keyValue: { [key: string]: string } = {
+    //                     key,
+    //                     [locale]: i18nModel[prop][key]
+    //                 };
+    //                 model.push(keyValue);
+    //             }
+    //         } else {
+    //             // Tags / Platform speficis
+    //         }
+    //     }
+    // }
+
+    // return model;
 }
 
 function toI18N(model: { [key: string]: string }[]) {
     if (!model) {
         throw new Error('Something went wrong!');
     }
-    const obj: { [key: string]: any } = {};     // tslint:disable-line:no-any
+    const i18n: { [key: string]: any } = {};     // tslint:disable-line:no-any
 
     for (const keyValue of model) {
         const { key, ...locales } = keyValue;
@@ -258,56 +237,50 @@ function toI18N(model: { [key: string]: string }[]) {
                 continue;
             }
 
-            if (!obj[locale]) {
-                obj[locale] = {
+            if (!i18n[locale]) {
+                i18n[locale] = {
                     translation: {}
                 };
             }
 
-            let existingValue = obj[locale].translation[key];
+            const value = keyValue[locale];
+            let existingValue = i18n[locale].translation[key];
+
+            if (!value && !existingValue) {
+                continue;
+            }
+
             if (!existingValue) {
-                existingValue = keyValue[locale];
+                existingValue = value;
             } else {
                 switch (existingValue.constructor) {
                     case String: {
-                        existingValue = [existingValue, keyValue[locale]];
+                        existingValue = [existingValue, value];
                     } break;
                     case Array: {
-                        existingValue.push(keyValue[locale]);
-                    }
+                        existingValue.push(value);
+                    } break;
+                    default: { }
                 }
             }
-            obj[locale].translation[key] = existingValue;
-            
-            let keyToPushOn = `${locale}.translation`;
+            i18n[locale].translation[key] = existingValue;
         }
     }
 
-    // return i18n;
+    // TODO: Platform specific stuff, replace with Tags
+    for (const key in i18n) {
+        if (!i18n.hasOwnProperty(key)) {
+            continue;
+        }
 
+        for (const platform of ['AlexaSkill', 'GoogleAction']) {
+            const locale = `${key}-${platform}`;
+            if (i18n[locale]) {
+                i18n[key][platform] = i18n[locale];
+                delete i18n[locale];
+            }
+        }
+    }
 
-    // // For each locale, push the keys and their respective values onto a new object with a new attribute 'translation' as parent
-    // for (const locale in model) {
-    //     if (!model.hasOwnProperty(locale)) {
-    //         continue;
-    //     }
-
-    //     const obj: { [key: string]: any } = {       // tslint:disable-line:no-any
-    //         translation: model[locale]
-    //     };
-
-    //     // If the model includes any platform-specific locales, push them onto the current locale and delete them from the model
-    //     for (const platform of ['AlexaSkill', 'GoogleAction']) {
-    //         const key = `${locale}-${platform}`;
-    //         if (model[key]) {
-    //             obj[platform] = {
-    //                 translation: model[key]
-    //             };
-    //             delete model[key];
-    //         }
-    //     }
-
-    //     i18n[locale] = obj;
-    // }
-    // return i18n;
+    return i18n;
 }

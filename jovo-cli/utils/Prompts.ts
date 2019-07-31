@@ -4,6 +4,7 @@ export const ANSWER_OVERWRITE = 'overwrite';
 export const ANSWER_UPDATE = 'update';
 export const ANSWER_CANCEL = 'cancel';
 export const ANSWER_BACKUP = 'backup';
+export const ANSWER_SEPERATE = 'seperate_file';
 
 
 /**
@@ -129,13 +130,15 @@ export function promptOverwriteProjectFiles(): Promise<inquirer.Answers> {
 			type: 'list',
 			name: 'overwrite',
 			message: 'Found existing project files. How to proceed?',
-			choices: [{
-				value: ANSWER_OVERWRITE,
-				name: 'Overwrite',
-			}, {
-				value: ANSWER_CANCEL,
-				name: 'Cancel',
-			},
+			choices: [
+				{
+					value: ANSWER_OVERWRITE,
+					name: 'Overwrite',
+				},
+				{
+					value: ANSWER_CANCEL,
+					name: 'Cancel',
+				},
 			],
 		},
 	];
@@ -153,16 +156,19 @@ export function promptOverwriteReverseBuild(): Promise<inquirer.Answers> {
 			type: 'list',
 			name: 'promptOverwriteReverseBuild',
 			message: 'Found existing model files. How to proceed?',
-			choices: [{
-				value: ANSWER_OVERWRITE,
-				name: 'Overwrite',
-			}, {
-				value: ANSWER_BACKUP,
-				name: 'Backup old file and proceed',
-			}, {
-				value: ANSWER_CANCEL,
-				name: 'Cancel',
-			},
+			choices: [
+				{
+					value: ANSWER_OVERWRITE,
+					name: 'Overwrite',
+				},
+				{
+					value: ANSWER_BACKUP,
+					name: 'Backup old file and proceed',
+				},
+				{
+					value: ANSWER_CANCEL,
+					name: 'Cancel',
+				},
 			],
 		},
 	];
@@ -181,6 +187,31 @@ export function promptNewProject(): Promise<inquirer.Answers> {
 			name: 'directory',
 			message: 'Missing argument <directory>. How do you want to name your Jovo project?',
 		},
+	];
+	return inquirer.prompt(questions);
+}
+
+export function promptOverwriteHandler(): Promise<inquirer.Answers> {
+	const questions = [
+		{
+			type: 'list',
+			name: 'overwriteHandler',
+			message: 'Found existing app.js file. Do you want to overwrite your existing handler?',
+			choices: [
+				{
+					value: ANSWER_OVERWRITE,
+					name: 'Overwrite',
+				},
+				{
+					value: ANSWER_SEPERATE,
+					name: 'Write into seperate file'
+				},
+				{
+					value: ANSWER_CANCEL,
+					name: 'Cancel',
+				},
+			],
+		}
 	];
 	return inquirer.prompt(questions);
 }
