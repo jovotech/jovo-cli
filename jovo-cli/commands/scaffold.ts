@@ -6,7 +6,9 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import { ListrOptionsExtended } from '../src';
 import { promptOverwriteHandler, ANSWER_SEPERATE, ANSWER_CANCEL } from '../utils/Prompts';
+import { getProject } from 'jovo-cli-core';
 
+const project = getProject();
 const srcPath = './models/';
 let destPath = './src/app.js';
 
@@ -15,7 +17,7 @@ module.exports = (vorpal: Vorpal) => {
         .command('scaffold')
         // @ts-ignore
         .description('Build a scaffold handler out of your existing language model.')
-        .option('--overwrite', 'Forces overwriting of an existing app.js.');
+        .option('--overwrite', 'Forces overwriting of an existing handler file.');
 
     addBaseCliOptions(vorpalInstance);
 
@@ -25,10 +27,19 @@ module.exports = (vorpal: Vorpal) => {
         })
         .action(async (args: Vorpal.Args) => {
 
-            if(!args.options.overwrite && existsSync('./src/app.js')) {
+            const isTs = await project.isTypeScriptProject();
+            if (isTs) {
+                destPath = './src/app.ts';
+            }
+
+            if (!args.options.overwrite && existsSync(destPath)) {
                 const answers = await promptOverwriteHandler();
-                if(answers.overwriteHandler === ANSWER_SEPERATE) {
-                    destPath = './src/app.scaffold.js';
+                if (answers.overwriteHandler === ANSWER_SEPERATE) {
+                    if (isTs) {
+                        destPath = './src/app.scaffold.ts';
+                    } else {
+                        destPath = './src/app.scaffold.js';
+                    }
                 }
 
                 if (answers.overwriteHandler === ANSWER_CANCEL) {
@@ -58,7 +69,7 @@ module.exports = (vorpal: Vorpal) => {
                             }
                             handler += '\n\n\tUnhandled() {\n\n\t},\n}';
 
-                            const model = scaffold({ handler });
+                            const model = scaffold({ handler, type: isTs ? 'ts' : 'js' });
 
                             writeFileSync(destPath, model);
                             res();
@@ -74,7 +85,7 @@ module.exports = (vorpal: Vorpal) => {
 
             try {
                 await tasks.run();
-                console.log(`\n\nSuccessfully scaffolded your handler in '${destPath}'`);
+                console.log(`\n\nSuccessfully scaffolded your handler in '${destPath}'.`);
             } catch (err) {
                 process.exit(1);
             }
@@ -87,6 +98,6 @@ function isValidModel() {
             return true;
         }
     }
-    console.log('No valid model available.');
+    console.log(`No language model available in '${srcPath}'. Please create at least one language model.`);
     return false;
 }

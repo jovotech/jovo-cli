@@ -37,7 +37,8 @@ module.exports = (vorpal: Vorpal) => {
                             title: 'Converting to .csv file',
                             async task(ctx: any) {    // tslint:disable-line:no-any
                                 ctx.csv = await new Promise((res) => setTimeout(() => {
-                                    res(toCsv(fromI18N(origin)))
+                                    const model = toCsv(fromI18N(origin));
+                                    res(model);
                                 }, 500));
                             }
                         },
@@ -69,11 +70,9 @@ module.exports = (vorpal: Vorpal) => {
                             async task(ctx: any) {    // tslint:disable-line:no-any
                                 await new Promise((res) => setTimeout(() => {
                                     const model = ctx.model;
-                                    for (const locale in model) {
-                                        if (!model.hasOwnProperty(locale)) {
-                                            continue;
-                                        }
 
+                                    // Write file for every locale in model.
+                                    for (const locale of Object.keys(model)) {
                                         const dest = target || './i18n/';
                                         if (!existsSync(dest)) {
                                             mkdirSync(dest);
@@ -107,6 +106,10 @@ module.exports = (vorpal: Vorpal) => {
         });
 };
 
+/**
+ * Checks if the given function is available or not.
+ * @param fn: The parameter function
+ */
 function isValidFunction(fn: string) {
     if (!['i18nToCsv', 'csvToI18n'].includes(fn)) {
         console.log(`The function ${fn} is not supported. Please use one of the following:`);
@@ -116,6 +119,10 @@ function isValidFunction(fn: string) {
     return true;
 }
 
+/**
+ * Checks if the given origin path is valid or not.
+ * @param origin
+ */
 function isValidOrigin(origin: string) {
     if (!origin) {
         console.log('The path from your originating files has to be set.\nYou can choose between setting a single file or an entire folder.');
@@ -124,11 +131,18 @@ function isValidOrigin(origin: string) {
     return true;
 }
 
-
+/**
+ * Converts a .csv file to a globally unique JSON-object.
+ * @param path: The path where the .csv file is originating from
+ */
 async function fromCsv(path: string) {
     return await csvToJson().fromFile(path);
 }
 
+/**
+ * Converts a unique JSON-object to a .csv file.
+ * @param model: The model to convert
+ */
 function toCsv(model: { [key: string]: string }[]) {    // tslint:disable-line:no-any
     if (!model) {
         throw new Error('Something went wrong!');
@@ -144,91 +158,10 @@ function toCsv(model: { [key: string]: string }[]) {    // tslint:disable-line:n
     return csv;
 }
 
-function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model: { [key: string]: string }[]): { [key: string]: string }[] {
-    for (const prop in i18nModel) {
-        if (!i18nModel.hasOwnProperty(prop)) {
-            continue;
-        }
-
-        if (prop === 'translation') {
-            for (const key in i18nModel[prop]) {
-                if (!i18nModel[prop].hasOwnProperty(key)) {
-                    continue;
-                }
-
-                const value = i18nModel[prop][key];
-                switch (value.constructor) {
-                    case Array: {
-                        for (const v of value) {
-                            writeToJson(locale, key, v, model);
-                        }
-                    } break;
-                    case String: {
-                        writeToJson(locale, key, value, model);
-                    } break;
-                    case Object: {
-                        for (const k in value) {
-                            writeToJson(locale, `${key}.${k}`, value[k], model);
-                        }
-                    }
-                }
-            }
-        } else {
-            parseI18nModel(`${locale}-${prop}`, i18nModel[prop], model);
-        }
-    }
-    return model;
-}
-
-function writeToJson(locale: string, key: string, value: any, model: { [key: string]: string }[]) {
-    // go through every entry, write an empty string there
-    // save index where to write the real value
-    if (value.includes(',')) {
-        value = `"${value}"`;
-    }
-
-    let index;
-    for (const [i, keyValue] of model.entries()) {
-        if (!keyValue[locale]) {
-            keyValue[locale] = '';
-        }
-
-        if (keyValue.key === key) {
-            index = i;
-            // Check if current locale already exists here
-            if (keyValue[locale] && keyValue[locale] !== '') {
-                // If so, look for another entry
-                index = undefined;
-                continue;
-            }
-        }
-    }
-
-    if (index) {
-        model[index][locale] = value;
-    } else {
-        const obj: any = {};
-        if (model[0]) {
-            for (const k in model[0]) {
-                if (!model[0].hasOwnProperty(k)) {
-                    continue;
-                }
-
-                if (k === 'key') {
-                    obj[k] = key;
-                } else {
-                    obj[k] = '';
-                }
-            }
-            obj[locale] = value;
-        } else {
-            obj.key = key
-            obj[locale] = value;
-        }
-        model.push(obj);
-    }
-}
-
+/**
+ * Converts one or multiple i18n files to a unique JSON-object.
+ * @param path: The path where the file(s) is/are originating from.
+ */
 function fromI18N(path: string) {
     let files: string[] = [];
 
@@ -243,30 +176,119 @@ function fromI18N(path: string) {
 
     const model: { [key: string]: string }[] = [];   // tslint:disable-line:no-any
 
+    // Read every file and feed it to a parse function.
     for (const entry of files) {
         const i18nModel = JSON.parse(readFileSync(`${path}/${entry}`, 'utf8'));
         const locale = entry.replace('.json', '');
         parseI18nModel(locale, i18nModel, model);
     }
 
-    // console.log(model);
     return model;
 }
 
-function toI18N(model: { [key: string]: string }[]) {
-    if (!model) {
-        throw new Error('Something went wrong!');
+/**
+ * Recursive function to process an i18n file to write to a unique JSON-object.
+ * @param locale: The current locale to work with, can be a language locale (e.g. en-US), or a locale with tags (e.g. en-US-RETURN_USER)
+ * @param i18nModel: The i18n model
+ * @param model: The resulting model to parse the i18n model too
+ */
+function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model: { [key: string]: string }[]): { [key: string]: string }[] {
+    for (const prop of Object.keys(i18nModel)) {
+        // If the current key is "translation", push its values to the model, otherwise go recursive with "${locale}-${key}" as the new locale.
+        if (prop === 'translation') {
+            for (const key of Object.keys(i18nModel[prop])) {
+                const value = i18nModel[prop][key];
+                switch (value.constructor) {
+                    case Array: {
+                        for (const v of value) {
+                            writeToJson(locale, key, v, model);
+                        }
+                    } break;
+                    case String: {
+                        writeToJson(locale, key, value, model);
+                    } break;
+                    case Object: {
+                        for (const subKey of Object.keys(value)) {
+                            writeToJson(locale, `${key}.${subKey}`, value[subKey], model);
+                        }
+                    }
+                }
+            }
+        } else {
+            parseI18nModel(`${locale}-${prop}`, i18nModel[prop], model);
+        }
     }
+    return model;
+}
+
+/**
+ * Function to write a value to a unique pattern JSON-object.
+ * @param locale: The current locale to use as the key. 
+ * @param key: The key to find the entry in the model.
+ * @param value: The value to write. 
+ * @param model: The model to write the locale and value into.
+ */
+function writeToJson(locale: string, key: string, value: string, model: { [key: string]: string }[]) {
+
+    // If the value includes a comma, surround it with ".
+    if (value.includes(',')) {
+        value = `"${value}"`;
+    }
+
+    // Go through every entry of the model and place an empty string for a new locale.
+    // Then save the index of the entry where to write the real value.
+    let index;
+    for (const [i, keyValue] of model.entries()) {
+        if (!keyValue[locale]) {
+            keyValue[locale] = '';
+        }
+
+        if (keyValue.key === key) {
+            index = i;
+            // If the locale already exists, this entry is already set and the search continues.
+            if (keyValue[locale] && keyValue[locale] !== '') {
+                index = undefined;
+                continue;
+            }
+        }
+    }
+
+    // If there is an index, write the value, else push a new entry onto the model.
+    if (index) {
+        model[index][locale] = value;
+    } else {
+        const entry: { [key: string]: string } = {};
+        // If there already exists an entry, take all keys and push empty values for each key onto the new entry.
+        if (model[0]) {
+            for (const k of Object.keys(model[0])) {
+                if (k === 'key') {
+                    entry[k] = key;
+                } else {
+                    entry[k] = '';
+                }
+            }
+            entry[locale] = value;
+        } else {
+            entry.key = key
+            entry[locale] = value;
+        }
+        model.push(entry);
+    }
+}
+
+/**
+ * Function to convert a unique pattern JSON-object to a JSON-object containing i18n friendly entries.
+ * @param model: The model to convert
+ */
+function toI18N(model: { [key: string]: string }[]) {
     const i18n: { [key: string]: any } = {};     // tslint:disable-line:no-any
 
     for (const keyValue of model) {
         const { key, ...locales } = keyValue;
 
-        for (const locale in locales) {
-            if (!locales.hasOwnProperty(locale)) {
-                continue;
-            }
+        for (const locale of Object.keys(locales)) {
 
+            // If the locale does not yet exist, push a new entry onto i18n.
             if (!i18n[locale]) {
                 i18n[locale] = {
                     translation: {}
@@ -285,6 +307,7 @@ function toI18N(model: { [key: string]: string }[]) {
             } else {
                 switch (existingValue.constructor) {
                     case String: {
+                        // If there already exists a value as a string, push it with the new one onto an array.
                         existingValue = [existingValue, value];
                     } break;
                     case Array: {
@@ -297,12 +320,8 @@ function toI18N(model: { [key: string]: string }[]) {
         }
     }
 
-    // TODO: Platform specific stuff, replace with Tags
-    for (const key in i18n) {
-        if (!i18n.hasOwnProperty(key)) {
-            continue;
-        }
-
+    // If there exists a platform-specific locale, push it onto the original locale.
+    for (const key of Object.keys(i18n)) {
         for (const platform of ['AlexaSkill', 'GoogleAction']) {
             const locale = `${key}-${platform}`;
             if (i18n[locale]) {
