@@ -143,7 +143,7 @@ async function fromCsv(path: string) {
  * Converts a unique JSON-object to a .csv file.
  * @param model: The model to convert
  */
-function toCsv(model: { [key: string]: string }[]) {    // tslint:disable-line:no-any
+function toCsv(model: Array<{ [key: string]: string }>) {    // tslint:disable-line:no-any
     if (!model) {
         throw new Error('Something went wrong!');
     }
@@ -174,7 +174,7 @@ function fromI18N(path: string) {
         files = readdirSync(path);
     }
 
-    const model: { [key: string]: string }[] = [];   // tslint:disable-line:no-any
+    const model: Array<{ [key: string]: string }> = [];   // tslint:disable-line:no-any
 
     // Read every file and feed it to a parse function.
     for (const entry of files) {
@@ -192,7 +192,7 @@ function fromI18N(path: string) {
  * @param i18nModel: The i18n model
  * @param model: The resulting model to parse the i18n model too
  */
-function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model: { [key: string]: string }[]): { [key: string]: string }[] {
+function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model: Array<{ [key: string]: string }>) {   // tslint:disable-line:no-any
     for (const prop of Object.keys(i18nModel)) {
         // If the current key is "translation", push its values to the model, otherwise go recursive with "${locale}-${key}" as the new locale.
         if (prop === 'translation') {
@@ -212,6 +212,7 @@ function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model
                             writeToJson(locale, `${key}.${subKey}`, value[subKey], model);
                         }
                     }
+                    default: { }
                 }
             }
         } else {
@@ -228,7 +229,7 @@ function parseI18nModel(locale: string, i18nModel: { [key: string]: any }, model
  * @param value: The value to write. 
  * @param model: The model to write the locale and value into.
  */
-function writeToJson(locale: string, key: string, value: string, model: { [key: string]: string }[]) {
+function writeToJson(locale: string, key: string, value: string, model: Array<{ [key: string]: string }>) {
 
     // If the value includes a comma, surround it with ".
     if (value.includes(',')) {
@@ -269,7 +270,7 @@ function writeToJson(locale: string, key: string, value: string, model: { [key: 
             }
             entry[locale] = value;
         } else {
-            entry.key = key
+            entry.key = key;
             entry[locale] = value;
         }
         model.push(entry);
@@ -280,7 +281,7 @@ function writeToJson(locale: string, key: string, value: string, model: { [key: 
  * Function to convert a unique pattern JSON-object to a JSON-object containing i18n friendly entries.
  * @param model: The model to convert
  */
-function toI18N(model: { [key: string]: string }[]) {
+function toI18N(model: Array<{ [key: string]: string }>) {
     const i18n: { [key: string]: any } = {};     // tslint:disable-line:no-any
 
     for (const keyValue of model) {

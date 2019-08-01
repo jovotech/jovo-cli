@@ -3,7 +3,7 @@ export interface IScaffoldParameters {
 	type: string;
 }
 
-export default function scaffold(params: IScaffoldParameters) {
+export function scaffold(params: IScaffoldParameters) {
 	switch (params.type) {
 		case 'js': return getJs(params);
 		case 'ts': return getTs(params);
@@ -31,7 +31,7 @@ app.use(
 	
 app.setHandler(${handler});
 	
-module.exports = { app };`
+module.exports = { app };`;
 }
 
 function getTs({ handler }: IScaffoldParameters) {
@@ -52,5 +52,5 @@ app.use(
 	
 app.setHandler(${handler});
 	
-module.exports = { app };`
+module.exports = { app };`;
 }

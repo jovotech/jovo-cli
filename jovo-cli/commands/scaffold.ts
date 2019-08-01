@@ -1,7 +1,7 @@
 import * as Listr from 'listr';
 import * as Vorpal from 'vorpal';
 import { addBaseCliOptions } from '../utils/Utils';
-import scaffold from '../utils/Scaffolder';
+import { scaffold } from '../utils/Scaffolder';
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'fs';
 import { JovoCliRenderer } from '../utils/JovoRenderer';
 import { ListrOptionsExtended } from '../src';
