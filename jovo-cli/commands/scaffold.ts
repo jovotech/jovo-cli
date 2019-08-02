@@ -67,7 +67,7 @@ module.exports = (vorpal: Vorpal) => {
                                     }
                                 }
                             }
-                            handler += '\n\n\tUnhandled() {\n\n\t},\n}';
+                            handler += '\n\n\tEND() {\n\n\t},\n}';
 
                             const model = scaffold({ handler, type: isTs ? 'ts' : 'js' });
 

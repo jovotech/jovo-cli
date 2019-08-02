@@ -1,6 +1,7 @@
 import * as Listr from 'listr';
 import * as Vorpal from 'vorpal';
 import * as csvToJson from 'csvtojson';
+import * as _ from 'lodash';
 import { addBaseCliOptions } from '../utils/Utils';
 import { readFileSync, readdirSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { JovoCliRenderer } from '../utils/JovoRenderer';
@@ -317,7 +318,7 @@ function toI18N(model: Array<{ [key: string]: string }>) {
                     default: { }
                 }
             }
-            i18n[locale].translation[key] = existingValue;
+            _.set(i18n[locale].translation, key, existingValue);
         }
     }
 
