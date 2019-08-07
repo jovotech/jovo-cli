@@ -104,14 +104,20 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
 	const packageFile = JSON.parse(content);
 
 	const packages: PackageVersions = {};
+	const versionNumberRegex = /^\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 	Object.keys(packageFile.dependencies).forEach((packageName) => {
+		const packageObj = packageFile.dependencies[packageName];
+
 		if (packageRegex && !packageName.match(packageRegex)) {
+			return;
+		}
+
+		if (!packageObj.version.match(versionNumberRegex)) {
 			return;
 		}
 
 		packages[packageName] = packageFile.dependencies[packageName].version;
 	});
-
 	return packages;
 }
 
