@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "2.2.11",
+	"version": "2.2.12",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
