@@ -26,7 +26,6 @@ const subHeadline = require('chalk').grey;
 const project = getProject();
 
 function addPlatfromToConfig(platform: JovoCliPlatform): Promise<void> {
-
 	return new Promise((resolve, reject) => {
 		const config = project.getConfig() || {};
 
