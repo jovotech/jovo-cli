@@ -192,26 +192,48 @@ export function promptNewProject(): Promise<inquirer.Answers> {
 }
 
 export function promptOverwriteHandler(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'overwriteHandler',
-			message: 'Found existing app.js file. Do you want to overwrite your existing handler?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite',
-				},
-				{
-					value: ANSWER_SEPERATE,
-					name: 'Write into seperate file'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel',
-				},
-			],
-		}
-	];
+	const questions = [{
+		type: 'list',
+		name: 'overwriteHandler',
+		message: 'Found existing app.js file. Do you want to overwrite your existing handler?',
+		choices: [
+			{
+				value: ANSWER_OVERWRITE,
+				name: 'Overwrite',
+			},
+			{
+				value: ANSWER_SEPERATE,
+				name: 'Write into seperate file'
+			},
+			{
+				value: ANSWER_CANCEL,
+				name: 'Cancel',
+			},
+		]
+	}];
+	return inquirer.prompt(questions);
+}
+
+export function promptOverwriteComponent(): Promise<inquirer.Answers> {
+	const questions = [{
+		type: 'list',
+		name: 'overwriteComponent',
+		message: 'Found existing component. How to proceed?',
+		choices: [
+			{
+				value: ANSWER_OVERWRITE,
+				name: 'Overwrite',
+			},
+			{
+				value: ANSWER_BACKUP,
+				name: 'Backup old component and proceed'
+			},
+			{
+				value: ANSWER_CANCEL,
+				name: 'Cancel',
+			},
+		]
+	}];
+
 	return inquirer.prompt(questions);
 }

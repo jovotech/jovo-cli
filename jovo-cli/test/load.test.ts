@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import * as childProcess from 'child_process';
-import * as path from 'path';
+import { join } from 'path';
 import { deleteFolderRecursive } from '../utils/Utils';
 import { runJovoCommand } from './Helpers';
 
@@ -29,7 +29,7 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = path.join(testFolder, projectName);
+		const projectFolder = join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Load component
@@ -52,7 +52,7 @@ describe('load', () => {
 			'--language', 'typescript'
 		];
 
-		const projectFolder = path.join(testFolder, projectName);
+		const projectFolder = join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Create fake component
@@ -60,9 +60,10 @@ describe('load', () => {
 		await exec('touch index.ts README.md package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
 		const packageJson = {
 			devDependencies: {
-				typescript: '^3.5.2'
+				typescript: '^1.0.0'
 			}
 		}
+
 		writeFileSync(`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`, JSON.stringify(packageJson));
 
 		// Load component
@@ -83,7 +84,7 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = path.join(testFolder, projectName);
+		const projectFolder = join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Create fake component
@@ -119,12 +120,13 @@ describe('load', () => {
 			'--language', 'typescript'
 		];
 
-		const projectFolder = path.join(testFolder, projectName);
+		const projectFolder = join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Create fake component
 		await exec('mkdir node_modules/jovo-component-email/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.js README.md package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('touch index.js README.md', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('echo {} > package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
 
 		// Load component
 		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
@@ -143,12 +145,13 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = path.join(testFolder, projectName);
+		const projectFolder = join(testFolder, projectName);
 		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
 
 		// Create fake component
 		await exec('mkdir node_modules/jovo-component-email/dist/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.js README.md package.json dist/index.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('touch index.js README.md dist/index.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('echo {} > package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
 
 		// Load component
 		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
