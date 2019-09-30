@@ -41,8 +41,7 @@ module.exports = (vorpal: Vorpal) => {
                     } break;
                     case ANSWER_BACKUP: {
                         // Remove old backup
-                        removeSync(`${dest}/${component}.backup`);
-                        moveSync(`${dest}/${component}`, `${dest}/${component}.backup`);
+                        moveSync(`${dest}/${component}`, `${dest}/${component}.backup.${+ new Date()}`);
                     } break;
                     default: return;
                 }
@@ -131,10 +130,11 @@ function load(component: string, dest: string, isTsProject: boolean) {
     }
 
     // Analyse package.json for nested component
-    const { devDependencies = {} } = JSON.parse(readFileSync(`${src}/package.json`, { encoding: 'utf-8' }));
+    const { devDependencies = {}, dependencies = {} } = JSON.parse(readFileSync(`${src}/package.json`, { encoding: 'utf-8' }));
+    const dependencyKeys = Object.keys(dependencies).concat(Object.keys(devDependencies));
 
     // If a nested component exists, call load recursively for said component
-    for (const dependencyKey of Object.keys(devDependencies)) {
+    for (const dependencyKey of dependencyKeys) {
         if (!dependencyKey.includes('jovo-component')) {
             continue;
         }
