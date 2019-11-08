@@ -23,5 +23,4 @@ export const ENDPOINT_NONE = 'none';
 
 
 export const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
-
 export const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/';

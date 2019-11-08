@@ -11,6 +11,7 @@ import * as Platforms from '../utils/Platforms';
 import {
 	addBaseCliOptions
 } from '../utils/Utils';
+
 import {
 	ANSWER_CANCEL,
 	promptForInit,
