@@ -566,13 +566,11 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			// Should actually never happen but who knows
 			throw new Error(`Could not build Dialogflow files for locale "${locale}"!`);
 		}
-
-		const writePromises = [];
 		for (const fileInformation of alexaModelFiles) {
-			writePromises.push(writeFile(pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path), JSON.stringify(fileInformation.content, null, '\t')));
+			await writeFile(pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path), JSON.stringify(fileInformation.content, null, '\t'));
 		}
 
-		return Promise.all(writePromises);
+		return Promise.resolve();
 	}
 
 }

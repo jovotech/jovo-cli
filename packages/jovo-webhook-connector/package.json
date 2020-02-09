@@ -24,7 +24,7 @@
 		"@types/node": "^10.10.1",
 		"@types/socket.io": "^1.4.38",
 		"@types/socket.io-client": "^1.4.32",
-		"jest": "^23.6.0",
+		"jest": "^24.9.0",
 		"rimraf": "^2.6.2",
 		"socket.io": "^2.1.1",
 		"ts-jest": "^23.10.4",
