@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import * as childProcess from 'child_process';
 import { join } from 'path';
-import { deleteFolderRecursive } from '../utils/Utils';
+import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
 const testFolder = 'tmpTestFolderLoad';
@@ -19,25 +19,37 @@ afterAll(() => {
 });
 
 describe('load', () => {
-	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Should fail if component doesn\'t exist', async () => {
+	it("jovo new <project> --build\n\tjovo load jovo-component-email\n\t>> Should fail if component doesn't exist", async () => {
 		const projectName = 'jovo-cli-unit-test';
 
 		const parameters = [
 			projectName,
-			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
+			'-t',
+			'helloworldtest',
+			'--build',
+			'alexaSkill',
 			'--skip-npminstall'
 		];
 
 		const projectFolder = join(testFolder, projectName);
-		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
+		await runJovoCommand(
+			'new',
+			parameters,
+			testFolder,
+			'Installation completed'
+		);
 
 		// Load component
-		const res = await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'The component \'jovo-component-email\' does not exist. Please check for spelling or install it with \'npm i jovo-component-email -s\'.');
+		const res = await runJovoCommand(
+			'load',
+			['jovo-component-email'],
+			projectFolder,
+			"The component 'jovo-component-email' does not exist. Please check for spelling or install it with 'npm i jovo-component-email -s'."
+		);
 
 		expect(res).toMatch(
-			'The component \'jovo-component-email\' does not exist. ' +
-			'Please check for spelling or install it with \'npm i jovo-component-email -s\'.'
+			"The component 'jovo-component-email' does not exist. " +
+				"Please check for spelling or install it with 'npm i jovo-component-email -s'."
 		);
 	}, 200000);
 
@@ -46,32 +58,62 @@ describe('load', () => {
 
 		const parameters = [
 			projectName,
-			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
+			'-t',
+			'helloworldtest',
+			'--build',
+			'alexaSkill',
 			'--skip-npminstall',
-			'--language', 'typescript'
+			'--language',
+			'typescript'
 		];
 
 		const projectFolder = join(testFolder, projectName);
-		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
+		await runJovoCommand(
+			'new',
+			parameters,
+			testFolder,
+			'Installation completed'
+		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.ts README.md package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('mkdir node_modules/jovo-component-email/dist/ -p', {
+			cwd: `${testFolder}/${projectName}`
+		});
+		await exec('touch index.ts README.md package.json', {
+			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		});
 		const packageJson = {
 			devDependencies: {
 				typescript: '^1.0.0'
 			}
-		}
+		};
 
-		writeFileSync(`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`, JSON.stringify(packageJson));
+		writeFileSync(
+			`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`,
+			JSON.stringify(packageJson)
+		);
 
 		// Load component
-		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
+		await runJovoCommand(
+			'load',
+			['jovo-component-email'],
+			projectFolder,
+			'Successfully copied jovo-component-email into ./src/components.'
+		);
 
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/dist`)).toBeFalsy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.ts`)).toBeTruthy();
+		expect(
+			existsSync(`${projectFolder}/src/components/jovo-component-email`)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/dist`
+			)
+		).toBeFalsy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/index.ts`
+			)
+		).toBeTruthy();
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Typescript Component', async () => {
@@ -79,34 +121,80 @@ describe('load', () => {
 
 		const parameters = [
 			projectName,
-			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
+			'-t',
+			'helloworldtest',
+			'--build',
+			'alexaSkill',
 			'--skip-npminstall'
 		];
 
 		const projectFolder = join(testFolder, projectName);
-		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
+		await runJovoCommand(
+			'new',
+			parameters,
+			testFolder,
+			'Installation completed'
+		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/src -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('mkdir node_modules/jovo-component-email/src/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.ts README.md package.json tsconfig.json src/handler.ts dist/index.js dist/src/handler.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('mkdir node_modules/jovo-component-email/dist/src -p', {
+			cwd: `${testFolder}/${projectName}`
+		});
+		await exec('mkdir node_modules/jovo-component-email/src/ -p', {
+			cwd: `${testFolder}/${projectName}`
+		});
+		await exec(
+			'touch index.ts README.md package.json tsconfig.json src/handler.ts dist/index.js dist/src/handler.js',
+			{
+				cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+			}
+		);
 		const packageJson = {
 			devDependencies: {
 				typescript: '^3.5.2'
 			}
-		}
-		writeFileSync(`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`, JSON.stringify(packageJson));
+		};
+		writeFileSync(
+			`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`,
+			JSON.stringify(packageJson)
+		);
 
 		// Load component
-		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
+		await runJovoCommand(
+			'load',
+			['jovo-component-email'],
+			projectFolder,
+			'Successfully copied jovo-component-email into ./src/components.'
+		);
 
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/src/handler.js`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/dist`)).toBeFalsy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/src/handler.ts`)).toBeFalsy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.ts`)).toBeFalsy();
+		expect(
+			existsSync(`${projectFolder}/src/components/jovo-component-email`)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/index.js`
+			)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/src/handler.js`
+			)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/dist`
+			)
+		).toBeFalsy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/src/handler.ts`
+			)
+		).toBeFalsy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/index.ts`
+			)
+		).toBeFalsy();
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Javascript Component', async () => {
@@ -114,25 +202,50 @@ describe('load', () => {
 
 		const parameters = [
 			projectName,
-			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
+			'-t',
+			'helloworldtest',
+			'--build',
+			'alexaSkill',
 			'--skip-npminstall',
-			'--language', 'typescript'
+			'--language',
+			'typescript'
 		];
 
 		const projectFolder = join(testFolder, projectName);
-		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
+		await runJovoCommand(
+			'new',
+			parameters,
+			testFolder,
+			'Installation completed'
+		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.js README.md', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
-		await exec('echo {} > package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('mkdir node_modules/jovo-component-email/ -p', {
+			cwd: `${testFolder}/${projectName}`
+		});
+		await exec('touch index.js README.md', {
+			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		});
+		await exec('echo {} > package.json', {
+			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		});
 
 		// Load component
-		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
+		await runJovoCommand(
+			'load',
+			['jovo-component-email'],
+			projectFolder,
+			'Successfully copied jovo-component-email into ./src/components.'
+		);
 
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
+		expect(
+			existsSync(`${projectFolder}/src/components/jovo-component-email`)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/index.js`
+			)
+		).toBeTruthy();
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Javascript Component', async () => {
@@ -140,24 +253,47 @@ describe('load', () => {
 
 		const parameters = [
 			projectName,
-			'-t', 'helloworldtest',
-			'--build', 'alexaSkill',
+			'-t',
+			'helloworldtest',
+			'--build',
+			'alexaSkill',
 			'--skip-npminstall'
 		];
 
 		const projectFolder = join(testFolder, projectName);
-		await runJovoCommand('new', parameters, testFolder, 'Installation completed');
+		await runJovoCommand(
+			'new',
+			parameters,
+			testFolder,
+			'Installation completed'
+		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/ -p', { cwd: `${testFolder}/${projectName}` });
-		await exec('touch index.js README.md dist/index.js', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
-		await exec('echo {} > package.json', { cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email` });
+		await exec('mkdir node_modules/jovo-component-email/dist/ -p', {
+			cwd: `${testFolder}/${projectName}`
+		});
+		await exec('touch index.js README.md dist/index.js', {
+			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		});
+		await exec('echo {} > package.json', {
+			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		});
 
 		// Load component
-		await runJovoCommand('load', ['jovo-component-email'], projectFolder, 'Successfully copied jovo-component-email into ./src/components.');
+		await runJovoCommand(
+			'load',
+			['jovo-component-email'],
+			projectFolder,
+			'Successfully copied jovo-component-email into ./src/components.'
+		);
 
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email`)).toBeTruthy();
-		expect(existsSync(`${projectFolder}/src/components/jovo-component-email/index.js`)).toBeTruthy();
+		expect(
+			existsSync(`${projectFolder}/src/components/jovo-component-email`)
+		).toBeTruthy();
+		expect(
+			existsSync(
+				`${projectFolder}/src/components/jovo-component-email/index.js`
+			)
+		).toBeTruthy();
 	}, 200000);
 });
-

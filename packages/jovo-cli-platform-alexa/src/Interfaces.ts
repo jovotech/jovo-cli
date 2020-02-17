@@ -1,13 +1,8 @@
-import {
-	AppFile,
-	JovoTaskContext,
-} from 'jovo-cli-core';
-
+import { AppFile, JovoTaskContext } from 'jovo-cli-core';
 
 export interface AlexaEventSubscription {
 	eventName: string;
 }
-
 
 export interface AlexaManifest {
 	events?: {
@@ -18,16 +13,14 @@ export interface AlexaManifest {
 	subscriptions?: AlexaEventSubscription[];
 }
 
-
 export interface AppFileAlexa extends AppFile {
 	alexaSkill?: {
 		nlu?: {
 			name: string;
-		}
+		};
 		manifest?: AlexaManifest;
 	};
 }
-
 
 export interface AskSkillList {
 	skills: [
@@ -35,13 +28,12 @@ export interface AskSkillList {
 			skillId: string;
 			stage: string | undefined;
 			nameByLocale: {
-				[key: string]: string
+				[key: string]: string;
 			};
 			lastUpdated: string;
 		}
 	];
 }
-
 
 export interface JovoTaskContextAlexa extends JovoTaskContext {
 	askProfile: string;

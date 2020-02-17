@@ -1,1 +1,1 @@
-export * from './Interfaces';
+export { run } from "@oclif/command";

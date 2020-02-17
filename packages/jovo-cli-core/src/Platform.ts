@@ -1,54 +1,47 @@
 import { AppFile, JovoCliDeploy, JovoTaskContext, Project } from './';
-import { JovoModelData } from 'jovo-model';
 import { ListrTask } from 'listr';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import Vorpal = require('vorpal');
-import { ArgOptions } from './Interfaces';
-
+import { JovoModelData } from 'jovo-model';
+import { InputFlags, OutputFlags } from './Interfaces';
 
 const project = require('./Project').getProject();
 
-
 export class JovoCliPlatform {
-
 	static PLATFORM_KEY = '';
 	static ID_KEY = '';
 
-	constructor() {
-	}
-
-
-	// START: Methods which need to get implemented by platfrom modules
-
+	// START: Methods which need to get implemented by platform modules
 
 	/**
-	 * Return platfrom specific config id
+	 * Return platform specific config id
 	 *
 	 * @param {Project} project The project
 	 * @param {ArgOptions} [argOptions] CLI arguments
 	 * @returns {object}
 	 * @memberof JovoCliPlatform
 	 */
-	getPlatformConfigIds(project: Project, argOptions: ArgOptions): object {
-		// @ts-ignore
-		throw new Error(`Method "getPlatformConfigIds" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	getPlatformConfigIds(project: Project, options: OutputFlags): object {
+		throw new Error(
+			// @ts-ignore
+			`Method "getPlatformConfigIds" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
 
-
 	/**
-	 * Return platfrom specific platfrom values
+	 * Return platform specific platform values
 	 *
 	 * @param {Project} project The project
 	 * @param {ArgOptions} [argOptions] CLI arguments
 	 * @returns {object}
 	 * @memberof JovoCliPlatform
 	 */
-	getPlatformConfigValues(project: Project, argOptions: ArgOptions): object {
-		// @ts-ignore
-		throw new Error(`Method "getPlatformConfigValues" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	getPlatformConfigValues(project: Project, options: OutputFlags): object {
+		throw new Error(
+			// @ts-ignore
+			`Method "getPlatformConfigValues" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Returns existing projects of user
@@ -58,41 +51,43 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getExistingProjects(config: AppFile): Promise<inquirer.ChoiceType[]> {
-		// @ts-ignore
-		throw new Error(`Method "getExistingProjects" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getExistingProjects" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
 
 	// ----------------------------------------------
 	// CLI Options
 	// ----------------------------------------------
 
-	getAdditionalCliOptions(command: string, vorpalCommand: Vorpal.Command): void {
-		// @ts-ignore
-		throw new Error(`Method "getAdditionalCliOptions" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	getAdditionalCliOptions(command: string, options: InputFlags): void {
+		throw new Error(
+			// @ts-ignore
+			`Method "getAdditionalCliOptions" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
 
-
-	validateAdditionalCliOptions(command: string, args: Vorpal.Args): boolean {
-		// @ts-ignore
-		throw new Error(`Method "validateAdditionalCliOptions" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	validateAdditionalCliOptions(
+		command: string,
+		options: OutputFlags
+	): boolean {
+		throw new Error(
+			// @ts-ignore
+			`Method "validateAdditionalCliOptions" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
 
 	getLocales(locale?: string | string[]): string[] {
-		// @ts-ignore
-		throw new Error(`Method "getLocales" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getLocales" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
-
 
 	// ----------------------------------------------
 	// Tasks
 	// ----------------------------------------------
-
 
 	/**
 	 * Get tasks to build Jovo language model from platform
@@ -103,11 +98,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getBuildReverseTasks(ctx: JovoTaskContext): ListrTask[] {
-		// @ts-ignore
-		throw new Error(`Method "getBuildReverseTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getBuildReverseTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
 
 	/**
 	 * Gets tasks to build platform specific language model
@@ -117,10 +112,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getBuildTasks(ctx: JovoTaskContext): ListrTask[] {
-		// @ts-ignore
-		throw new Error(`Method "getBuildTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getBuildTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Get tasks to deploy project
@@ -130,11 +126,15 @@ export class JovoCliPlatform {
 	 * @returns {ListrTask[]}
 	 * @memberof JovoCliPlatform
 	 */
-	getDeployTasks(ctx: JovoTaskContext, targets: JovoCliDeploy[]): ListrTask[] {
-		// @ts-ignore
-		throw new Error(`Method "getDeployTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	getDeployTasks(
+		ctx: JovoTaskContext,
+		targets: JovoCliDeploy[]
+	): ListrTask[] {
+		throw new Error(
+			// @ts-ignore
+			`Method "getDeployTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Get tasks to get existing platform project
@@ -144,12 +144,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getGetTasks(ctx: JovoTaskContext): ListrTask[] {
-		// @ts-ignore
-		throw new Error(`Method "getGetTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getGetTasks" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
-
 
 	/**
 	 * Returns if project already contains platform
@@ -158,11 +157,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	hasPlatform(): boolean {
-		// @ts-ignore
-		throw new Error(`Method "hasPlatform" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "hasPlatform" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
-
 
 	/**
 	 * Set platform defaults on model
@@ -172,10 +171,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	setPlatformDefaults(model: JovoModelData): JovoModelData {
-		// @ts-ignore
-		throw new Error(`Method "setPlatformDefaults" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "setPlatformDefaults" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Add platform to configuration file
@@ -184,11 +184,12 @@ export class JovoCliPlatform {
 	 * @returns {AppFile}
 	 * @memberof JovoCliPlatform
 	 */
-	addPlatfromToConfig(config: AppFile): AppFile {
-		// @ts-ignore
-		throw new Error(`Method "addPlatfromToConfig" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+	addPlatformToConfig(config: AppFile): AppFile {
+		throw new Error(
+			// @ts-ignore
+			`Method "addPlatformToConfig" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Validate the platform specific properties on model
@@ -197,10 +198,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	validateModel(model: JovoModelData): void {
-		// @ts-ignore
-		throw new Error(`Method "validateModel" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "validateModel" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
-
 
 	/**
 	 * Returns the validator to check if the platform specific properties are valid
@@ -209,14 +211,13 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getModelValidator(): tv4.JsonSchema {
-		// @ts-ignore
-		throw new Error(`Method "getModelValidator" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`);
+		throw new Error(
+			// @ts-ignore
+			`Method "getModelValidator" is not implemented for platform "${this.constructor.PLATFORM_KEY}"!`
+		);
 	}
 
-
 	// END: Methods which need to get implemented by platfrom modules
-
-
 
 	/**
 	 * Returns base path to platform
@@ -225,7 +226,11 @@ export class JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getPath(): string {
-		// @ts-ignore
-		return path.join(project.getProjectPath(), 'platforms', this.constructor.PLATFORM_KEY);
+		return path.join(
+			project.getProjectPath(),
+			'platforms',
+			// @ts-ignore
+			this.constructor.PLATFORM_KEY
+		);
 	}
 }

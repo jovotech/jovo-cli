@@ -125,7 +125,6 @@ module.exports = (vorpal: Vorpal) => {
 					});
 
 					if (Object.keys(platformConfigIds).length === 0) {
-						// If no project got found prompt user to select one
 						const choices = await platform.getExistingProjects(config);
 						const answers = await promptListForProjectId(choices);
 						// @ts-ignore
