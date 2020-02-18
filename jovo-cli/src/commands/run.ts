@@ -347,7 +347,7 @@ function jovoWebhook(
 						inputText = '';
 					} else if (key.charCodeAt(0) === 3) {
 						// Ctrl+C has been pressed, kill process.
-						childProcess!.kill();
+						process.exit();
 					} else {
 						// record it and write into terminal
 						inputText += key;
