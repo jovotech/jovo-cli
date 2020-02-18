@@ -1,26 +1,25 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import * as childProcess from 'child_process';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { exec } from 'child_process';
 import { join } from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
+import { promisify } from 'util';
 
-const testFolder = 'tmpTestFolderLoad';
-const exec = childProcess.exec;
+const tmpTestFolder = 'tmpTestFolderLoad';
+const execAsync = promisify(exec);
 
-beforeEach(() => {
-	deleteFolderRecursive(testFolder);
-	if (!existsSync(testFolder)) {
-		mkdirSync(testFolder);
-	}
+beforeAll(() => {
+	deleteFolderRecursive(tmpTestFolder);
+	mkdirSync(tmpTestFolder);
 });
 
 afterAll(() => {
-	deleteFolderRecursive(testFolder);
+	deleteFolderRecursive(tmpTestFolder);
 });
 
 describe('load', () => {
 	it("jovo new <project> --build\n\tjovo load jovo-component-email\n\t>> Should fail if component doesn't exist", async () => {
-		const projectName = 'jovo-cli-unit-test';
+		const projectName = 'jovo-cli-unit-test-load-fail';
 
 		const parameters = [
 			projectName,
@@ -31,11 +30,11 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = join(testFolder, projectName);
+		const projectFolder = join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'new',
 			parameters,
-			testFolder,
+			tmpTestFolder,
 			'Installation completed'
 		);
 
@@ -44,17 +43,19 @@ describe('load', () => {
 			'load',
 			['jovo-component-email'],
 			projectFolder,
-			"The component 'jovo-component-email' does not exist. Please check for spelling or install it with 'npm i jovo-component-email -s'."
+			'',
+			"Error: The component 'jovo-component-email' does not exist."
 		);
 
-		expect(res).toMatch(
-			"The component 'jovo-component-email' does not exist. " +
-				"Please check for spelling or install it with 'npm i jovo-component-email -s'."
-		);
+		expect(
+			res.indexOf(
+				"Error: The component 'jovo-component-email' does not exist."
+			) > -1
+		).toBeTruthy();
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Typescript Component', async () => {
-		const projectName = 'jovo-cli-unit-test';
+		const projectName = 'jovo-cli-unit-test-load-ts-ts';
 
 		const parameters = [
 			projectName,
@@ -67,21 +68,22 @@ describe('load', () => {
 			'typescript'
 		];
 
-		const projectFolder = join(testFolder, projectName);
+		const projectFolder = join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'new',
 			parameters,
-			testFolder,
+			tmpTestFolder,
 			'Installation completed'
 		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/ -p', {
-			cwd: `${testFolder}/${projectName}`
+		await execAsync('mkdir node_modules/jovo-component-email/dist/ -p', {
+			cwd: projectFolder
 		});
-		await exec('touch index.ts README.md package.json', {
-			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+		await execAsync('touch index.ts README.md package.json', {
+			cwd: `${projectFolder}/node_modules/jovo-component-email`
 		});
+
 		const packageJson = {
 			devDependencies: {
 				typescript: '^1.0.0'
@@ -89,7 +91,7 @@ describe('load', () => {
 		};
 
 		writeFileSync(
-			`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`,
+			`${projectFolder}/node_modules/jovo-component-email/package.json`,
 			JSON.stringify(packageJson)
 		);
 
@@ -117,7 +119,7 @@ describe('load', () => {
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Typescript Component', async () => {
-		const projectName = 'jovo-cli-unit-test';
+		const projectName = 'jovo-cli-unit-test-load-js-ts';
 
 		const parameters = [
 			projectName,
@@ -128,34 +130,36 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = join(testFolder, projectName);
+		const projectFolder = join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'new',
 			parameters,
-			testFolder,
+			tmpTestFolder,
 			'Installation completed'
 		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/src -p', {
-			cwd: `${testFolder}/${projectName}`
+		await execAsync('mkdir node_modules/jovo-component-email/dist/src -p', {
+			cwd: `${tmpTestFolder}/${projectName}`
 		});
-		await exec('mkdir node_modules/jovo-component-email/src/ -p', {
-			cwd: `${testFolder}/${projectName}`
+		await execAsync('mkdir node_modules/jovo-component-email/src/ -p', {
+			cwd: `${tmpTestFolder}/${projectName}`
 		});
-		await exec(
+		await execAsync(
 			'touch index.ts README.md package.json tsconfig.json src/handler.ts dist/index.js dist/src/handler.js',
 			{
-				cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+				cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 			}
 		);
+
 		const packageJson = {
 			devDependencies: {
 				typescript: '^3.5.2'
 			}
 		};
+
 		writeFileSync(
-			`${testFolder}/${projectName}/node_modules/jovo-component-email/package.json`,
+			`${tmpTestFolder}/${projectName}/node_modules/jovo-component-email/package.json`,
 			JSON.stringify(packageJson)
 		);
 
@@ -198,7 +202,7 @@ describe('load', () => {
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Javascript Component', async () => {
-		const projectName = 'jovo-cli-unit-test';
+		const projectName = 'jovo-cli-unit-test-load-ts-js';
 
 		const parameters = [
 			projectName,
@@ -211,23 +215,23 @@ describe('load', () => {
 			'typescript'
 		];
 
-		const projectFolder = join(testFolder, projectName);
+		const projectFolder = join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'new',
 			parameters,
-			testFolder,
+			tmpTestFolder,
 			'Installation completed'
 		);
 
 		// Create fake component
 		await exec('mkdir node_modules/jovo-component-email/ -p', {
-			cwd: `${testFolder}/${projectName}`
+			cwd: `${tmpTestFolder}/${projectName}`
 		});
 		await exec('touch index.js README.md', {
-			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
 		await exec('echo {} > package.json', {
-			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
 
 		// Load component
@@ -249,7 +253,7 @@ describe('load', () => {
 	}, 200000);
 
 	it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Javascript Component', async () => {
-		const projectName = 'jovo-cli-unit-test';
+		const projectName = 'jovo-cli-unit-test-load-js-js';
 
 		const parameters = [
 			projectName,
@@ -260,23 +264,23 @@ describe('load', () => {
 			'--skip-npminstall'
 		];
 
-		const projectFolder = join(testFolder, projectName);
+		const projectFolder = join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'new',
 			parameters,
-			testFolder,
+			tmpTestFolder,
 			'Installation completed'
 		);
 
 		// Create fake component
 		await exec('mkdir node_modules/jovo-component-email/dist/ -p', {
-			cwd: `${testFolder}/${projectName}`
+			cwd: `${tmpTestFolder}/${projectName}`
 		});
 		await exec('touch index.js README.md dist/index.js', {
-			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
 		await exec('echo {} > package.json', {
-			cwd: `${testFolder}/${projectName}/node_modules/jovo-component-email`
+			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
 
 		// Load component

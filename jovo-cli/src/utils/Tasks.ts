@@ -18,12 +18,6 @@ const parseJson = require('parse-json');
 
 const project = getProject();
 
-async function addPlatformToConfig(platform: JovoCliPlatform) {
-	const config = project.getConfig() || {};
-	platform.addPlatformToConfig(config);
-	writeFileSync(project.getConfigPath(), JSON.stringify(config, null, '\t'));
-}
-
 export function buildTask(ctx: JovoTaskContext) {
 	const platformsPath = project.getPlatformsPath();
 	if (!existsSync(platformsPath)) {

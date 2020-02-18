@@ -25,7 +25,9 @@ export function runJovoCommand(
 	}
 
 	return new Promise((resolve, reject) => {
-		const child = spawn('bin/run', parameters, { cwd });
+		const child = spawn(path.join(process.cwd(), 'bin/run'), parameters, {
+			cwd
+		});
 
 		child.stderr.on('data', data => {
 			child.kill();
@@ -37,12 +39,14 @@ export function runJovoCommand(
 		});
 
 		child.stdout.on('data', data => {
-			if (waitText !== null) {
-				for (const text of waitText) {
-					if (data.toString().indexOf(text) > -1) {
-						child.kill();
-						return resolve(data.toString());
-					}
+			if (!waitText) {
+				return;
+			}
+
+			for (const text of waitText) {
+				if (data.toString().indexOf(text) > -1) {
+					child.kill();
+					return resolve(data.toString());
 				}
 			}
 		});

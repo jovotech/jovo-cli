@@ -10,7 +10,7 @@ const opn = require('opn');
 const resolveBin = require('resolve-bin');
 import { accessSync, readFileSync } from 'fs-extra';
 import { BSTProxy } from 'bespoken-tools';
-import { getProject, JOVO_WEBHOOK_URL, Utils } from 'jovo-cli-core';
+import { getProject, JOVO_WEBHOOK_URL, Utils, InputFlags } from 'jovo-cli-core';
 import {
 	setUpdateMessageDisplayed,
 	shouldDisplayUpdateMessage,
@@ -26,7 +26,7 @@ const { getUserHome } = Utils;
 export default class Run extends Command {
 	static description = 'Runs a local development server (webhook).';
 
-	static flags = {
+	static flags: InputFlags = {
 		'bst-proxy': flags.boolean({
 			char: 'b',
 			description:
@@ -71,7 +71,7 @@ export default class Run extends Command {
 		})
 	};
 
-	static args = [{ name: 'webhookFile', required: false }];
+	static args = [{ name: 'webhookFile', required: false, default: 'index.js' }];
 
 	async run() {
 		platforms.addCliOptions('run', Run.flags);
@@ -79,7 +79,7 @@ export default class Run extends Command {
 
 		const { args, flags } = this.parse(Run);
 
-		if (!platforms.validateCliOptions('run', Run.flags)) {
+		if (!platforms.validateCliOptions('run', flags)) {
 			this.exit();
 		}
 
@@ -169,16 +169,13 @@ export default class Run extends Command {
 			this.log('TypeScript Compiling finished.');
 		}
 
-		// ToDo: do we need this? v3 backwards compatibility
-		if (project.frameworkVersion === 2) {
-			if (await project.isTypeScriptProject()) {
-				// If it is a typescript project look in "dist" folder
-				checkFolders.push('./dist/src/');
-				checkFolders.push('./dist/');
-			} else {
-				// In regular projects in "src" folder
-				checkFolders.push('./src/');
-			}
+		if (await project.isTypeScriptProject()) {
+			// If it is a typescript project look in "dist" folder
+			checkFolders.push('./dist/src/');
+			checkFolders.push('./dist/');
+		} else {
+			// In regular projects in "src" folder
+			checkFolders.push('./src/');
 		}
 
 		let projectFolder: string | undefined;
@@ -209,7 +206,7 @@ export default class Run extends Command {
 
 		if (flags.inspect) {
 			const inspectPort = _.isNumber(flags.inspect)
-				? parseInt(flags.inspect, 10)
+				? parseInt(flags.inspect.toString(), 10)
 				: 9229;
 			parameters.unshift(`--inspect=${inspectPort}`);
 		}

@@ -1,0 +1,45 @@
+{
+	"interactionModel": {
+		"languageModel": {
+			"invocationName": "my test app",
+			"types": [],
+			"intents": [
+				{
+					"name": "HelloWorldIntent",
+					"samples": [
+						"hello",
+						"say hello",
+						"say hello world"
+					]
+				},
+				{
+					"name": "MyNameIsIntent",
+					"samples": [
+						"{name}",
+						"my name is {name}",
+						"i am {name}",
+						"you can call me {name}"
+					],
+					"slots": [
+						{
+							"name": "name",
+							"type": "AMAZON.US_FIRST_NAME"
+						}
+					]
+				},
+				{
+					"name": "AMAZON.CancelIntent",
+					"samples": []
+				},
+				{
+					"name": "AMAZON.HelpIntent",
+					"samples": []
+				},
+				{
+					"name": "AMAZON.StopIntent",
+					"samples": []
+				}
+			]
+		}
+	}
+}

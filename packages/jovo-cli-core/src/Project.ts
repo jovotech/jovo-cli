@@ -222,10 +222,6 @@ export class Project {
 	 * @memberof Project
 	 */
 	getConfigFileName(): string {
-		if (this.frameworkVersion === 1) {
-			return 'app.json';
-		}
-
 		return 'project.js';
 	}
 

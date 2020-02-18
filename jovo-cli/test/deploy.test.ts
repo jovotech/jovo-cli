@@ -1,39 +1,22 @@
-'use strict';
-
-const tmpTestfolder = 'tmpTestfolderDeploy';
-
-import 'jest';
-import * as childProcess from 'child_process';
-import * as fs from 'fs';
+import { exec } from 'child_process';
+import { mkdirSync, readFileSync, existsSync, statSync } from 'fs';
 import * as path from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
-const exec = childProcess.exec;
+const tmpTestfolder = 'tmpTestFolderDeploy';
 
-const askProfile: string = (process.env && process.env.ASK_PROFILE) as
-	| string
-	| '';
-
-beforeAll(done => {
+beforeAll(() => {
 	deleteFolderRecursive(tmpTestfolder);
-	if (!fs.existsSync(tmpTestfolder)) {
-		fs.mkdirSync(tmpTestfolder);
-	}
-	done();
+	mkdirSync(tmpTestfolder);
 }, 5000);
 
 describe('deploy', () => {
 	it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
-		if (!askProfile) {
-			console.log('Skipping because no ask profile found');
-			return;
-		}
-
-		const projectName = 'jovo-cli-unit-test_v2';
+		const projectName = 'jovo-cli-unit-test';
 
 		// Create new project
-		const parameters = [
+		const newParameters = [
 			projectName,
 			'-t',
 			'helloworldtest',
@@ -42,38 +25,38 @@ describe('deploy', () => {
 		];
 		await runJovoCommand(
 			'new',
-			parameters,
+			newParameters,
 			tmpTestfolder,
 			'Installation completed.'
 		);
 
 		// Deploy project
+		const deployParameters = ['--platform', 'alexaSkill'];
+
+		if (process.env.ASK_PROFILE) {
+			deployParameters.push('--ask-profile', process.env.ASK_PROFILE);
+		}
+
 		const projectFolder = path.join(tmpTestfolder, projectName);
 		await runJovoCommand(
 			'deploy',
-			[
-				'--ask-profile',
-				askProfile.toString(),
-				'--platform',
-				'alexaSkill'
-			],
+			deployParameters,
 			projectFolder,
 			'Deployment completed.'
 		);
 
 		// Tests
 		const askConfig = JSON.parse(
-			fs
-				.readFileSync(
-					path.join(
-						projectFolder,
-						'platforms',
-						'alexaSkill',
-						'.ask',
-						'config'
-					)
-				)
-				.toString()
+			readFileSync(
+				path.join(
+					projectFolder,
+					'platforms',
+					'alexaSkill',
+					'.ask',
+					'config'
+				),
+				'utf-8'
+			)
 		);
 		expect(askConfig.deploy_settings.default.skill_id.length > 0).toBe(
 			true
@@ -83,7 +66,7 @@ describe('deploy', () => {
 	}, 200000);
 
 	it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
-		const projectName = 'jovo-cli-unit-test-zip_v2';
+		const projectName = 'jovo-cli-unit-test-zip';
 
 		// Create new project
 		const parameters = [
@@ -113,14 +96,14 @@ describe('deploy', () => {
 		const zipFilePath = path.join(projectFolder, 'bundle.zip');
 
 		// zip should exist
-		expect(fs.existsSync(zipFilePath)).toBe(true);
+		expect(existsSync(zipFilePath)).toBe(true);
 
 		// zip should not be empty
-		expect(fs.statSync(zipFilePath).size).not.toBe(0);
-	}, 200000);
+		expect(statSync(zipFilePath).size).not.toBe(0);
+	}, 100000);
 
-	it('jovo new <project> --build\n      jovo deploy', async () => {
-		const projectName = 'helloworldDeployGoogleAction_v2';
+	it('jovo new <project> --build\n      jovo deploy --platform googleAction', async () => {
+		const projectName = 'helloworldDeployGoogleAction';
 
 		// Create new project
 		const parameters = [
@@ -155,19 +138,12 @@ describe('deploy', () => {
 		);
 
 		// Dialogflow agent zip should exist
-		expect(fs.existsSync(dialogflowAgentZipPath)).toBe(true);
+		expect(existsSync(dialogflowAgentZipPath)).toBe(true);
 
 		// Dialogflow agent zip should not be empty
-		expect(fs.statSync(dialogflowAgentZipPath).size).not.toBe(0);
+		expect(statSync(dialogflowAgentZipPath).size).not.toBe(0);
 	}, 200000);
 });
-
-afterAll(done => {
-	setTimeout(() => {
-		deleteFolderRecursive(tmpTestfolder);
-		done();
-	}, 2000);
-}, 5000);
 
 /**
  * Deletes skill from ASK

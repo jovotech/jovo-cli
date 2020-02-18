@@ -12,7 +12,8 @@ import {
 	JovoTaskContext,
 	DEFAULT_TEMPLATE,
 	DEFAULT_LANGUAGE,
-	DEFAULT_ENDPOINT
+	DEFAULT_ENDPOINT,
+	InputFlags
 } from 'jovo-cli-core';
 import {
 	validators,
@@ -25,7 +26,7 @@ import {
 } from '../utils';
 const { ANSWER_CANCEL, promptNewProject, promptOverwriteProject } = prompts;
 const { isValidProjectName, isValidTemplate } = validators;
-const { buildTask, initTask, deployTask } = tasks;
+const { buildTask, deployTask } = tasks;
 
 export default class New extends Command {
 	// Prints out a description for this command.
@@ -35,7 +36,7 @@ export default class New extends Command {
 	static examples = ['jovo new jovo-example-project'];
 
 	// Defines flags for this command, such as --help.
-	static flags = {
+	static flags: InputFlags = {
 		template: flags.string({
 			char: 't',
 			description: 'Name of the template.',
@@ -48,11 +49,11 @@ export default class New extends Command {
 			default: 'en-US'
 		}),
 		build: flags.string({
-			description: 'Runs build after new/init',
+			description: 'Runs build after new',
 			options: platforms.getAllAvailable()
 		}),
 		deploy: flags.boolean({
-			description: 'Runs deploy after new/init/build.'
+			description: 'Runs deploy after new/build.'
 		}),
 		invocation: flags.string({
 			description: 'Sets the invocation name.'
@@ -92,7 +93,7 @@ export default class New extends Command {
 
 			const { args, flags } = this.parse(New);
 
-			if(!platforms.validateCliOptions('new', New.flags)) {
+			if (!platforms.validateCliOptions('new', flags)) {
 				this.exit();
 			}
 
@@ -138,8 +139,7 @@ export default class New extends Command {
 				}
 			}
 
-			const types = flags.build;
-			config.types = types ? [types] : [];
+			config.types = flags.build ? [flags.build] : [];
 
 			if (flags.deploy && !flags.build) {
 				this.log('Please use --build if you use --deploy');

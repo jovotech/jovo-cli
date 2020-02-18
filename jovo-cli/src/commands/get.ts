@@ -7,7 +7,8 @@ import {
 	TARGET_ZIP,
 	DEFAULT_TARGET,
 	getProject,
-	JovoTaskContext
+	JovoTaskContext,
+	InputFlags
 } from 'jovo-cli-core';
 import { deployTargets, platforms, JovoCliRenderer, addBaseCliOptions } from '../utils';
 import Listr = require('listr');
@@ -23,7 +24,7 @@ export class Get extends Command {
 	static description =
 		'Downloads an existing platform project into the platforms folder.';
 
-	static flags = {
+	static flags: InputFlags = {
 		locale: flags.string({
 			char: 'l',
 			description: 'Locale of the language model.\n<en-US|de-DE|etc>',
@@ -71,7 +72,7 @@ export class Get extends Command {
 
 			const { args, flags } = this.parse(Get);
 
-			if(!platforms.validateCliOptions('get', Get.flags)) {
+			if(!platforms.validateCliOptions('get', flags)) {
 				this.exit();
 			}
 

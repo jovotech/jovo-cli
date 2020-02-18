@@ -2,8 +2,6 @@ import { Command } from '@oclif/command';
 import {
 	JovoCliRenderer,
 	getPackageVersionsNpm,
-	platforms,
-	addBaseCliOptions
 } from '../utils';
 import Listr = require('listr');
 import chalk from 'chalk';
@@ -24,14 +22,7 @@ export default class Update extends Command {
 
 	async run() {
 		try {
-			platforms.addCliOptions('update', Update.flags);
-			addBaseCliOptions(Update.flags);
-
 			this.parse(Update);
-
-			if (!platforms.validateCliOptions('update', Update.flags)) {
-				this.exit();
-			}
 
 			const tasks = new Listr([], {
 				renderer: new JovoCliRenderer(),

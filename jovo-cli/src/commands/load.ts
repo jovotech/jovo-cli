@@ -24,18 +24,11 @@ export default class Load extends Command {
 
 	async run() {
 		try {
-			platforms.addCliOptions('load', Load.flags);
-			addBaseCliOptions(Load.flags);
-
 			const { args } = this.parse(Load);
-
-			if (!platforms.validateCliOptions('load', Load.flags)) {
-				this.exit();
-			}
 
 			const project = getProject();
 
-			if (!existsSync(args.component)) {
+			if (!existsSync(`./node_modules/${args.component}`)) {
 				this.error(
 					`The component '${args.component}' does not exist. Please check for spelling or install it with 'npm i ${args.component} -s'.`
 				);

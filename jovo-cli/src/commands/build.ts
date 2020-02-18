@@ -19,12 +19,12 @@ import {
 	getProject,
 	JovoTaskContext,
 	DEFAULT_ENDPOINT,
-	OutputFlags
+	InputFlags
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import { buildTask, deployTask } from '../utils/Tasks';
 
-const { initTask, buildReverseTask } = tasks;
+const { buildReverseTask } = tasks;
 const { isValidLocale, isValidPlatform } = validators;
 const { promptForInit, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
 
@@ -33,7 +33,7 @@ export default class Build extends Command {
 
 	static examples: ['jovo build --platform alexaSkill'];
 
-	static flags = {
+	static flags: InputFlags = {
 		locale: flags.string({
 			char: 'l',
 			description: 'Locale of the language model.\n<en-US|de-DE|etc>',
@@ -99,7 +99,6 @@ export default class Build extends Command {
 
 			const { flags } = this.parse(Build);
 
-			// @ts-ignore
 			if (!platforms.validateCliOptions('build', flags)) {
 				this.exit();
 			}
@@ -209,10 +208,6 @@ export default class Build extends Command {
 						config.reverse = answer.promptOverwriteReverseBuild;
 					}
 				}
-			}
-
-			if (!project.hasConfigFile() && !flags.reverse) {
-				tasks.add(initTask());
 			}
 
 			if (flags.reverse) {

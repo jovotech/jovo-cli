@@ -1,8 +1,6 @@
 import * as http from 'http';
-import * as querystring from 'querystring';
+import { ParsedUrlQueryInput, stringify } from 'querystring';
 import { merge } from 'lodash';
-
-
 
 /**
  * Options for post request
@@ -16,7 +14,6 @@ export interface PostOptions {
 	timeout?: number;
 }
 
-
 /**
  * Send post requests to local webhook
  *
@@ -27,10 +24,15 @@ export interface PostOptions {
  * @param {(PostOptions | undefined)} options The options for request
  * @returns {Promise<object>}
  */
-export function post(data: object, headers: object, queryParams: object, options: PostOptions | undefined): Promise<object> {
+export function post(
+	data: object,
+	headers: object,
+	queryParams: ParsedUrlQueryInput,
+	options: PostOptions | undefined
+): Promise<object> {
 	return new Promise((resolve, reject) => {
 		const defaultHeaders = {
-			'content-type': 'application/json',
+			'content-type': 'application/json'
 		};
 
 		options = options || {};
@@ -43,50 +45,55 @@ export function post(data: object, headers: object, queryParams: object, options
 		delete headers['host'];
 		// @ts-ignore
 		delete headers['content-length'];
-		const queryParamsString = querystring.stringify(queryParams);
+		const queryParamsString = stringify(queryParams);
 
 		const opt = {
 			hostname,
 			port,
 			path: '/webhook?' + queryParamsString,
 			method: 'POST',
-			headers,
+			headers
 		};
 
 		const postData = JSON.stringify(data);
 
-		// @ts-ignore
-		const req = http.request(opt, (res: http.IncomingMessage) => {
-			res.setEncoding('utf8');
+		const req = http
+			// @ts-ignore
+			.request(opt, (res: http.IncomingMessage) => {
+				res.setEncoding('utf8');
 
-			let rawData = '';
-			res.on('data', (chunk: string) => {
-				rawData += chunk;
-			});
-			res.on('end', () => {
-				try {
-					resolve(JSON.parse(rawData));
-				} catch (e) {
-					e.rawData = rawData;
-					reject(e);
+				let rawData = '';
+				res.on('data', (chunk: string) => {
+					rawData += chunk;
+				});
+				res.on('end', () => {
+					try {
+						resolve(JSON.parse(rawData));
+					} catch (e) {
+						e.rawData = rawData;
+						reject(e);
+					}
+				});
+			})
+			.on('error', (e: NodeJS.ErrnoException) => {
+				if (e.code === 'ECONNRESET') {
+					e.message =
+						'Timeout error: No response after ' +
+						timeout +
+						' milliseconds';
+				} else if (e.code === 'ECONNREFUSED') {
+					e.message =
+						'There is no Jovo instance running on ' + opt.hostname;
 				}
+				reject(e);
+			})
+			// @ts-ignore
+			.on('socket', socket => {
+				socket.setTimeout(timeout);
+				socket.on('timeout', () => {
+					req.abort();
+				});
 			});
-		})
-		.on('error', (e: NodeJS.ErrnoException) => {
-			if (e.code === 'ECONNRESET') {
-				e.message = 'Timeout error: No response after ' + timeout + ' milliseconds';
-			} else if (e.code === 'ECONNREFUSED') {
-				e.message = 'There is no Jovo instance running on ' + opt.hostname;
-			}
-			reject(e);
-		})
-		// @ts-ignore
-		.on('socket', (socket) => {
-			socket.setTimeout(timeout);
-			socket.on('timeout',() => {
-				req.abort();
-			});
-		});
 
 		req.write(postData);
 		req.end();
