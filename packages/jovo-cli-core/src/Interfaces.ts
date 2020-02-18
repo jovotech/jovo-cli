@@ -2,7 +2,7 @@ import { JovoConfig } from 'jovo-config';
 import { IFlag as Flag } from '@oclif/command/lib/flags';
 
 export interface InputFlags {
-	[key: string]: Flag<any>;
+	[key: string]: Flag<any>; // tslint:disable-line:no-any
 }
 
 export interface OutputFlags {

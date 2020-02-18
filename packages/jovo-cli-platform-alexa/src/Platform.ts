@@ -1136,8 +1136,8 @@ Endpoint: ${skillInfo.endpoint}`;
 	 */
 	buildLanguageModelAlexa(locale: string, stage: string) {
 		const concatArrays = function customizer(
-			objValue: any[],
-			srcValue: any
+			objValue: any[], // tslint:disable-line:no-any
+			srcValue: any // tslint:disable-line:no-any
 		) {
 			// tslint:disable-line:no-any
 			if (_.isArray(objValue)) {

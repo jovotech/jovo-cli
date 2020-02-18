@@ -615,8 +615,8 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 
 		const concatArrays = function customizer(
-			objValue: any[],
-			srcValue: any
+			objValue: any[], // tslint:disable-line:no-any
+			srcValue: any // tslint:disable-line:no-any
 		) {
 			// tslint:disable-line
 			if (_.isArray(objValue)) {

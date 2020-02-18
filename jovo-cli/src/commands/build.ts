@@ -28,7 +28,7 @@ const { buildReverseTask } = tasks;
 const { isValidLocale, isValidPlatform } = validators;
 const { promptForInit, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
 
-export default class Build extends Command {
+export class Build extends Command {
 	static description: 'Build platform-specific language models based on jovo models folder.';
 
 	static examples: ['jovo build --platform alexaSkill'];

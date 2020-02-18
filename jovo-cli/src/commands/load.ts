@@ -16,7 +16,7 @@ import {
 import Listr = require('listr');
 import { JovoCliRenderer, platforms, addBaseCliOptions } from '../utils';
 
-export default class Load extends Command {
+export class Load extends Command {
 	static description =
 		'Extracts the necessary files for a component from ./node_modules into your projects ./components folder.';
 

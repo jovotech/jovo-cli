@@ -23,7 +23,7 @@ import _ = require('lodash');
 
 const { getUserHome } = Utils;
 
-export default class Run extends Command {
+export class Run extends Command {
 	static description = 'Runs a local development server (webhook).';
 
 	static flags: InputFlags = {
@@ -84,7 +84,7 @@ export default class Run extends Command {
 		}
 
 		const project = getProject();
-		const port = parseInt(flags.port!) || 3000;
+		const port = parseInt(flags.port!, 10) || 3000;
 		const timeout = flags.timeout || 5000;
 		const stage = project.getStage(flags.stage!);
 

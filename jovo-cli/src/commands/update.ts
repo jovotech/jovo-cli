@@ -16,7 +16,7 @@ import { statSync } from 'fs-extra';
 const execAsync = promisify(exec);
 const rimrafAsync = promisify(rimraf);
 
-export default class Update extends Command {
+export class Update extends Command {
 	static description =
 		'Updates the Jovo modules in project to latest versions.';
 

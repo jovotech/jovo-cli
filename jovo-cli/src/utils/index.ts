@@ -35,10 +35,11 @@ const project = getProject();
 /**
  * From Listr utils
  */
+// ToDo: Refactor!
 // @ts-ignore
 const pointer = chalk.yellow(figures.pointer);
 
-export function isDefined(x: any) {
+export function isDefined(x: any) {	// tslint:disable-line:no-any
 	//tslint:disable-line
 	return x !== null && x !== undefined;
 }

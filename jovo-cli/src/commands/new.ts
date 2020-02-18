@@ -28,7 +28,7 @@ const { ANSWER_CANCEL, promptNewProject, promptOverwriteProject } = prompts;
 const { isValidProjectName, isValidTemplate } = validators;
 const { buildTask, deployTask } = tasks;
 
-export default class New extends Command {
+export class New extends Command {
 	// Prints out a description for this command.
 	static description = 'Creates a new Jovo project.';
 
