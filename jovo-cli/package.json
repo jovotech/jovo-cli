@@ -2,6 +2,24 @@
 	"name": "jovo-cli",
 	"version": "3.0.0",
 	"author": "jovotech",
+	"description": "jovo command line tool (beta)",
+	"main": "dist/src/index",
+	"types": "dist/src/index.d.ts",
+	"scripts": {
+		"test": "jest",
+		"test-debug": "jest --runInBand --detectOpenHandles --verbose",
+		"nodemon": "nodemon",
+		"eslint": "eslint index.js commands/ helper/ utils/ test/",
+		"eslint-fix": "eslint --fix  index.js commands/ helper/ utils/ test/",
+		"build": "tsc",
+		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
+		"tsc": "node_modules/.bin/tsc",
+		"tscw": "tsc --watch",
+		"rimraf": "rimraf ./dist",
+		"postpack": "rm -f oclif.manifest.json",
+		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
+		"version": "oclif-dev readme && git add README.md"
+	},
 	"bin": {
 		"jovo-cli": "./bin/run"
 	},
@@ -31,6 +49,10 @@
 		"nodemon": "^2.0.2",
 		"opn": "^6.0.0",
 		"parse-json": "^5.0.0",
+		"bespoken-tools": "^1.1.0",
+		"chalk": "^2.4.1",
+		"dotenv": "^5.0.1",
+		"jovo-model": "^0.1.3",
 		"resolve-bin": "^0.4.0",
 		"rimraf": "^3.0.2",
 		"tslib": "^1.10.0"
@@ -87,7 +109,6 @@
 		"jovo"
 	],
 	"license": "Apache-2.0",
-	"main": "dist/index.js",
 	"oclif": {
 		"commands": "./dist/commands",
 		"bin": "jovo-cli",
@@ -99,20 +120,5 @@
 		"type": "git",
 		"url": "git+https://github.com/jovotech/jovo-cli.git"
 	},
-	"scripts": {
-		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
-		"version": "oclif-dev readme && git add README.md",
-		"test": "jest",
-		"test-debug": "jest --runInBand --detectOpenHandles --verbose",
-		"nodemon": "nodemon",
-		"eslint": "eslint index.js commands/ helper/ utils/ test/",
-		"eslint-fix": "eslint --fix  index.js commands/ helper/ utils/ test/",
-		"build": "tsc",
-		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
-		"tsc": "node_modules/.bin/tsc",
-		"tscw": "tsc --watch",
-		"rimraf": "rimraf ./dist"
-	},
-	"types": "dist/index.d.ts"
+	"gitHead": "9b9a8220aba7fe7fd1cbe0f3ab6a7ff5a8f06388"
 }
