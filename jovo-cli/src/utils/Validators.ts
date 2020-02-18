@@ -1,12 +1,3 @@
-import {
-	ENDPOINT_BSTPROXY,
-	ENDPOINT_JOVOWEBHOOK,
-	ENDPOINT_NONE,
-	TARGET_ALL,
-	TARGET_ZIP,
-	TARGET_INFO,
-	TARGET_MODEL
-} from 'jovo-cli-core';
 import * as platforms from './Platforms';
 
 /**

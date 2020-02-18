@@ -4,7 +4,6 @@ import * as Listr from 'listr';
 import chalk from 'chalk';
 import * as _ from 'lodash';
 import {
-	ENDPOINT_BSTPROXY,
 	ENDPOINT_JOVOWEBHOOK,
 	ENDPOINT_NGROK,
 	ENDPOINT_NONE,
@@ -70,7 +69,6 @@ export class New extends Command {
 			description: 'Type of endpoint',
 			default: ENDPOINT_JOVOWEBHOOK,
 			options: [
-				ENDPOINT_BSTPROXY,
 				ENDPOINT_JOVOWEBHOOK,
 				ENDPOINT_NGROK,
 				ENDPOINT_NONE
