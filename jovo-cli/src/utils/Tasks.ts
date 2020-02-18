@@ -2,14 +2,13 @@ import * as _ from 'lodash';
 import {
 	getProject,
 	JovoTaskContext,
-	JovoCliPlatform,
 	JovoCliDeploy,
 	TARGET_ZIP,
 	TARGET_ALL
 } from 'jovo-cli-core';
 import { ListrTaskWrapper, ListrTask } from 'listr';
 import chalk from 'chalk';
-import { writeFileSync, existsSync, mkdirSync, exists } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import { platforms, deployTargets } from '.';
 import Listr = require('listr');
 import { ANSWER_BACKUP } from './Prompts';
@@ -87,7 +86,7 @@ export function buildTask(ctx: JovoTaskContext) {
 			const backupLocales: ListrTask[] = [];
 			backupLocales.push(
 				{
-					title: `Collecting platform configuration from project.js.\n${chalk.grey(
+					title: `Collecting platform configuration from project.js.\n   ${chalk.grey(
 						`Platforms: ${ctx.types.join(', ')}`
 					)}`,
 					task() {
@@ -96,7 +95,7 @@ export function buildTask(ctx: JovoTaskContext) {
 					}
 				},
 				{
-					title: `Collecting Jovo language model files from ./models folder.\n${chalk.grey(
+					title: `Collecting Jovo language model files from ./models folder.\n   ${chalk.grey(
 						`Locales: ${locales.join(', ')}`
 					)}`,
 					task() {

@@ -131,7 +131,7 @@ Learn more here: [App Configuration > Server Configuration](../03_app-configurat
 $ jovo run
 
 # Options
-$ jovo run [-b | --bst-proxy] [-w | --watch] [-p, --port <port>]
+$ jovo run [-w | --watch] [-p, --port <port>]
 ```
 
 You can also specify the file you want to run:
@@ -145,8 +145,6 @@ $ jovo run index.js
 $ node index.js
 ```
 
-You can also use other tools like [bst proxy](#bst-proxy) to tunnel to your local server.
-
 **Options**
 
 `--port`, `-p`: Defines the port that will be used to run the local development server. Default: `3000`.
@@ -159,23 +157,7 @@ Here is a list of integrations that work with `jovo run`:
 
 Command | Description 
 ------------ | ------------- 
-[`--bst-proxy`](#bst-proxy) | Creates a webhook URL for local testing and integrates with [Bespoken Analytics](../06_integrations/analytics)
 [`--watch`](#watch) | Uses `nodemon` to monitor changes and automatically restart the server
-
-
-##### bst proxy
-
-You can use the bst proxy to create a webhook URL easily:
-
-```sh
-$ jovo run --bst-proxy
-```
-
-The result should look like this:
-
-![Jovo and bst proxy](https://raw.githubusercontent.com/jovotech/jovo-framework-nodejs/master/docs/img/terminal-bst-proxy-1.jpg)
-
-The URL also comes with logging and analytics capabilities for prototyping and testing.
 
 ##### watch
 
@@ -210,7 +192,7 @@ To create it, use the following command:
 $ jovo init <alexaSkill | googleAction>
 
 # Options
-$ jovo init <alexaSkill | googleAction> [-e | --endpoint <jovo-webhook | ngrok | bst-proxy>]
+$ jovo init <alexaSkill | googleAction> [-e | --endpoint <jovo-webhook | ngrok>]
 ```
 The resulting `app.json` file looks like this:
 
@@ -236,7 +218,7 @@ The default `endpoint` uri is automatically generated and provides a simple solu
 
 **Options**
 
-`--enpoint`, `-e`: This specifies which endpoint you want to include in the `app.json` file. Options: `jovo-framework` (default), `bst-proxy` (see [`jovo run`](#bst-proxy)), and `ngrok` (will extract the url if ngrok is running in the background on port `3000`).
+`--enpoint`, `-e`: This specifies which endpoint you want to include in the `app.json` file. Options: `jovo-framework` (default) and `ngrok` (will extract the url if ngrok is running in the background on port `3000`).
 
 
 #### jovo build

@@ -48,8 +48,8 @@ export class Update extends Command {
 			}
 
 			if (outOfDatePackages.length === 0) {
-				this.log('All packages are already up to date!');
-				this.exit();
+				this.log('\n\nAll packages are already up to date!\n');
+				return;
 			}
 
 			const { update } = await promptUpdateVersions(

@@ -74,7 +74,7 @@ export class Build extends Command {
 		}),
 		endpoint: flags.string({
 			description: 'Type of endpoint.',
-			options: ['jovo-webhook', 'bst-proxy', 'ngrok', 'none'],
+			options: ['jovo-webhook', 'ngrok', 'none'],
 			default: 'jovo-webhook'
 		}),
 		overwrite: flags.boolean({
@@ -111,10 +111,12 @@ export class Build extends Command {
 			}
 
 			this.log(
-				' jovo build:  Create and update platform specific files in /platforms folder'
+				'\n jovo build:  Create and update platform specific files in /platforms folder'
 			);
 			this.log(
-				chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/build')
+				chalk.grey(
+					'   >> Learn more: https://jovo.tech/docs/cli/build\n'
+				)
 			);
 
 			const project = getProject();

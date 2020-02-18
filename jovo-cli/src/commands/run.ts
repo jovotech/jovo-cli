@@ -9,8 +9,7 @@ import * as spawn from 'cross-spawn';
 const opn = require('opn');
 const resolveBin = require('resolve-bin');
 import { accessSync, readFileSync } from 'fs-extra';
-import { BSTProxy } from 'bespoken-tools';
-import { getProject, JOVO_WEBHOOK_URL, Utils, InputFlags } from 'jovo-cli-core';
+import { getProject, JOVO_WEBHOOK_URL, InputFlags } from 'jovo-cli-core';
 import {
 	setUpdateMessageDisplayed,
 	shouldDisplayUpdateMessage,
@@ -21,17 +20,10 @@ import {
 import { ChildProcess } from 'child_process';
 import _ = require('lodash');
 
-const { getUserHome } = Utils;
-
 export class Run extends Command {
 	static description = 'Runs a local development server (webhook).';
 
 	static flags: InputFlags = {
-		'bst-proxy': flags.boolean({
-			char: 'b',
-			description:
-				'Proxies the HTTP service running at the specified port via bst.'
-		}),
 		port: flags.string({
 			char: 'p',
 			description: 'Port to local development webhook.'
@@ -71,7 +63,9 @@ export class Run extends Command {
 		})
 	};
 
-	static args = [{ name: 'webhookFile', required: false, default: 'index.js' }];
+	static args = [
+		{ name: 'webhookFile', required: false, default: 'index.js' }
+	];
 
 	async run() {
 		platforms.addCliOptions('run', Run.flags);
@@ -114,7 +108,6 @@ export class Run extends Command {
 					const text = `  - ${packageName}: ${
 						packageVersions[packageName].local
 					} ${chalk.grey(`-> ${packageVersions[packageName].npm}`)}`;
-					outOfDatePackages.push(packageName);
 					outputText.push(text);
 				}
 
@@ -211,8 +204,6 @@ export class Run extends Command {
 			parameters.unshift(`--inspect=${inspectPort}`);
 		}
 
-		parameters.push('--webhook');
-
 		// Add project path to parameters, if source path is not project path.
 		if (srcDir && srcDir.length > 0) {
 			parameters.push('--projectDir', process.cwd());
@@ -234,29 +225,6 @@ export class Run extends Command {
 			parameters.push('--port', flags['port']);
 		}
 
-		if (flags['bst-proxy']) {
-			const proxy = BSTProxy.http(port);
-
-			proxy.start(() => {
-				const data = readFileSync(
-					path.join(getUserHome(), '.bst/config')
-				);
-				const bstConfig = JSON.parse(data.toString());
-				const proxyUrl = `https://${bstConfig.sourceID}.bespoken.link/webhook`;
-				const dashboardUrl = `https://bespoken.tools/dashboard?id=${bstConfig.sourceID}&key=${bstConfig.secretKey}`;
-				const messageOutput =
-					'Your public URL for accessing your local service:\n' +
-					`${proxyUrl}\n\n` +
-					'Your URL for viewing requests/responses sent to your service:\n' +
-					`${dashboardUrl}\n\n` +
-					'Copy and paste this to your browser to view your transaction history and summary data.\n';
-				this.log(messageOutput);
-			});
-			parameters.push('--bst-proxy');
-		} else {
-			parameters.push('--jovo-webhook');
-		}
-
 		// Pass all parameters through to project process that gets set after "--"
 		// Example: "jovo run -- --log-level 5"
 		// ToDo: Refactor!
@@ -275,13 +243,11 @@ export class Run extends Command {
 			cwd: projectFolder
 		});
 
-		if (!flags['bst-proxy']) {
-			jovoWebhook({ port, timeout }, stage, ls);
-		}
+		jovoWebhook({ port, timeout }, stage, ls);
 
 		ls.on('close', code => {
 			if (code !== 0) {
-				this.exit(1);
+				process.exit(-1);
 			}
 		});
 
@@ -357,8 +323,8 @@ function jovoWebhook(
 			process.stdin.resume();
 			process.stdin.setEncoding('utf8');
 			let inputText = '';
-			process.stdin.on('data', async key => {
-				// @ts-ignore
+			process.stdin.on('data', async keyRaw => {
+				const key = keyRaw.toString();
 				if (key === '.') {
 					// When dot gets pressed open try to open the debugger in browser
 					try {
@@ -372,15 +338,16 @@ function jovoWebhook(
 					inputText = '';
 				} else {
 					// When anything else got pressed, record it and send it on enter into the child process
-					// @ts-ignore
 					if (key.charCodeAt(0) === 13) {
 						// send to child process and print in terminal
 						if (childProcess) {
-							// @ts-ignore
-							childProcess.stdin.write(inputText + '\n');
+							childProcess.stdin!.write(inputText + '\n');
 						}
 						process.stdout.write('\n');
 						inputText = '';
+					} else if (key.charCodeAt(0) === 3) {
+						// Ctrl+C has been pressed, kill process.
+						childProcess!.kill();
 					} else {
 						// record it and write into terminal
 						inputText += key;

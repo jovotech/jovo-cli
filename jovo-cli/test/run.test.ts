@@ -36,25 +36,6 @@ describe('run', () => {
 		);
 	}, 200000);
 
-	it('jovo run --bst-proxy', async () => {
-		const projectName = 'helloworldRun-proxy';
-		const projectFolder = path.join(tmpTestFolder, projectName);
-
-		// Create new project
-		const parameters = [projectName, '-t', 'helloworldtest'];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
-
-		return await runJovoCommand('run', ['--bst-proxy'], projectFolder, [
-			'Local server listening on port 3000.',
-			'info: CONFIG      No configuration. Creating one'
-		]);
-	}, 200000);
-
 	it('jovo run --webhook-standalone', async () => {
 		const projectName = 'helloworldRun-standalone';
 		const projectFolder = path.join(tmpTestFolder, projectName);
