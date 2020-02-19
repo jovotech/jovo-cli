@@ -32,7 +32,6 @@
 		"@types/parse-json": "^4.0.0",
 		"@types/request": "^2.48.1",
 		"@types/rimraf": "^2.0.3",
-		"@types/vorpal": "^1.11.0",
 		"fs-extra": "^8.1.0",
 		"jest": "^25.1.0",
 		"rimraf": "^2.6.2",
@@ -55,8 +54,7 @@
 		"opn": "^6.0.0",
 		"request": "^2.88.0",
 		"resolve-bin": "^0.4.0",
-		"rimraf": "^3.0.2",
-		"vorpal": "^1.12.0"
+		"rimraf": "^3.0.2"
 	},
 	"jest": {
 		"transform": {
