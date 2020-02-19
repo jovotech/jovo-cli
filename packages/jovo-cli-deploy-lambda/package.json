@@ -37,6 +37,7 @@
         "typescript": "^3.0.3"
     },
     "dependencies": {
+        "@types/figures": "^3.0.1",
         "aws-sdk": "^2.344.0",
         "jovo-cli-core": "^2.2.7",
         "listr": "^0.14.2",

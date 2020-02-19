@@ -38,6 +38,7 @@
 		"typescript": "^3.0.3"
 	},
 	"dependencies": {
+		"@types/figures": "^3.0.1",
 		"boxen": "^4.2.0",
 		"child-process": "^1.0.2",
 		"child_process": "^1.0.2",
