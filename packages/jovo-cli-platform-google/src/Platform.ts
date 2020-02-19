@@ -2,6 +2,7 @@
 
 import * as DialogFlowUtil from './DialogflowUtil';
 import * as GoogleActionUtil from './GoogleActionUtil';
+import { flags } from '@oclif/command';
 
 import { join as pathJoin, sep as pathSep } from 'path';
 const _ = require('lodash');
@@ -13,64 +14,59 @@ import { ListrTask, ListrTaskWrapper } from 'listr';
 const highlight = require('chalk').white.bold;
 const subHeadline = require('chalk').white.dim;
 
-import {
-	AppFileDialogFlow,
-	JovoTaskContextGoogle,
-} from './';
+import { AppFileDialogFlow, JovoTaskContextGoogle } from './';
 import {
 	AppFile,
-	ArgOptions,
 	JovoCliDeploy,
 	JovoCliPlatform,
 	Project,
 	Utils,
+	InputFlags,
+	OutputFlags
 } from 'jovo-cli-core';
-import {
-	JovoModelData,
-	NativeFileInformation,
-} from 'jovo-model';
-import {
-	JovoModelDialogflow,
-} from 'jovo-model-dialogflow';
-
+import { JovoModelData, NativeFileInformation } from 'jovo-model';
+import { JovoModelDialogflow } from 'jovo-model-dialogflow';
 
 import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
 
-
 const project: Project = require('jovo-cli-core').getProject();
 
 export class JovoCliPlatformGoogle extends JovoCliPlatform {
-
 	static PLATFORM_KEY = 'googleAction';
 	static ID_KEY = 'projectId';
 
-    /**
-     * Constructor
-     * Config with locale information
-     * @param {*} config
-     */
+	/**
+	 * Constructor
+	 * Config with locale information
+	 * @param {*} config
+	 */
 	constructor() {
 		super();
 	}
-
 
 	/**
 	 * Return platfrom specific config id
 	 *
 	 * @param {Project} project The project
-	 * @param {ArgOptions} [argOptions] CLI arguments
+	 * @param {ArgOptions} [options] CLI arguments
 	 * @returns {object}
 	 * @memberof JovoCliPlatform
 	 */
-	getPlatformConfigIds(project: Project, argOptions: ArgOptions): object {
-
+	getPlatformConfigIds(project: Project, options: OutputFlags): object {
 		try {
 			let projectId;
-			if (argOptions && argOptions.hasOwnProperty('project-id') && argOptions['project-id']) {
-				projectId = argOptions['project-id'];
+			if (
+				options &&
+				options.hasOwnProperty('project-id') &&
+				options['project-id']
+			) {
+				projectId = options['project-id'];
 			} else {
-				projectId = project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.projectId', argOptions && argOptions.stage);
+				projectId = project.jovoConfigReader!.getConfigParameter(
+					'googleAction.dialogflow.projectId',
+					options && (options.stage as string)
+				);
 			}
 
 			const returnValue = {};
@@ -85,30 +81,39 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 	}
 
-
 	/**
 	 * Return platfrom specific platfrom values
 	 *
 	 * @param {Project} project The project
-	 * @param {ArgOptions} [argOptions] CLI arguments
+	 * @param {ArgOptions} [options] CLI arguments
 	 * @returns {object}
 	 * @memberof JovoCliPlatform
 	 */
-	getPlatformConfigValues(project: Project, argOptions: ArgOptions): object {
+	getPlatformConfigValues(project: Project, options: OutputFlags): object {
 		// allow access to ASK profile (for lambda upload)
 		let askProfile;
-        if (argOptions && argOptions.hasOwnProperty('ask-profile') && argOptions['ask-profile']) {
-            askProfile = argOptions['ask-profile'];
-        }
+		if (
+			options &&
+			options.hasOwnProperty('ask-profile') &&
+			options['ask-profile']
+		) {
+			askProfile = options['ask-profile'];
+		}
 
-        return {
-            askProfile: askProfile ||
-            project.jovoConfigReader!.getConfigParameter('host.lambda.ask-Profile', argOptions && argOptions.stage) ||
-            project.jovoConfigReader!.getConfigParameter('host.lambda.askProfile', argOptions && argOptions.stage) ||
-            process.env.ASK_DEFAULT_PROFILE
-        };
+		return {
+			askProfile:
+				askProfile ||
+				project.jovoConfigReader!.getConfigParameter(
+					'host.lambda.ask-Profile',
+					options && (options.stage as string)
+				) ||
+				project.jovoConfigReader!.getConfigParameter(
+					'host.lambda.askProfile',
+					options && (options.stage as string)
+				) ||
+				process.env.ASK_DEFAULT_PROFILE
+		};
 	}
-
 
 	/**
 	 * Returns the validator to check if the platform specific properties are valid
@@ -119,7 +124,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	getModelValidator(): tv4.JsonSchema {
 		return JovoModelDialogflow.getValidator();
 	}
-
 
 	/**
 	 * Returns existing projects of user
@@ -132,25 +136,24 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		return DialogFlowUtil.v2.getProjects();
 	}
 
-
-	getAdditionalCliOptions(command: string, vorpalCommand: Vorpal.Command): void {
+	getAdditionalCliOptions(command: string, options: InputFlags): void {
 		if (['get', 'deploy'].includes(command)) {
-			vorpalCommand
-				.option('--project-id <projectId>',
-					'Google Cloud Project ID');
+			options['project-id'] = flags.string({
+				description: 'Google Cloud Project ID'
+			});
 		}
 
-        if (['deploy'].includes(command)) {
-            vorpalCommand
-                .option('--ask-profile <askProfile>',
-                    'Name of use ASK profile \n\t\t\t\tDefault: default');
-        }
+		if (['deploy'].includes(command)) {
+			options['ask-profile'] = flags.string({
+				description: 'Name of used ASK profile',
+				default: 'default'
+			});
+		}
 	}
 
 	validateAdditionalCliOptions(command: string, args: Vorpal.Args): boolean {
 		return true;
 	}
-
 
 	/**
 	 * Returns if project already contains Google
@@ -167,25 +170,25 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 	}
 
-
-    /**
-     * Returns project locales
-     *
-     * @param {(string | string[])} [locale]
-     * @returns {string[]}
-     * @memberof JovoCliPlatformAlexa
-     */
+	/**
+	 * Returns project locales
+	 *
+	 * @param {(string | string[])} [locale]
+	 * @returns {string[]}
+	 * @memberof JovoCliPlatformAlexa
+	 */
 	getLocales(locale?: string | string[]): string[] {
 		const agentJson = DialogFlowUtil.getAgentJson();
 		let supportedLanguages = [agentJson.language];
 
 		if (agentJson.supportedLanguages) {
-			supportedLanguages = supportedLanguages.concat(agentJson.supportedLanguages);
+			supportedLanguages = supportedLanguages.concat(
+				agentJson.supportedLanguages
+			);
 		}
 
 		return supportedLanguages;
 	}
-
 
 	/**
 	 * Set platform defaults on model
@@ -199,7 +202,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		return model;
 	}
 
-
 	/**
 	 * Add Google to configuration file
 	 *
@@ -212,15 +214,14 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			_.extend(config, {
 				googleAction: {
 					nlu: {
-						name: 'dialogflow',
-					},
-				},
+						name: 'dialogflow'
+					}
+				}
 			});
 		}
 
 		return config;
 	}
-
 
 	/**
 	 * Gets tasks to build platform specific language model
@@ -242,84 +243,118 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			fs.mkdirSync(dialogFlowPath);
 		}
 		const hasGoogleActionDialogflow = this.hasPlatform();
-		let title = 'Creating Google Action project files ' + Utils.printStage(ctx.stage);
+		let title =
+			'Creating Google Action project files ' +
+			Utils.printStage(ctx.stage);
 		let titleAgentJson = 'Creating Dialogflow Agent';
 		let titleInteractionModel = 'Creating Language Model';
 
 		if (hasGoogleActionDialogflow) {
-			title = 'Updating Google Action project files ' + Utils.printStage(ctx.stage);
+			title =
+				'Updating Google Action project files ' +
+				Utils.printStage(ctx.stage);
 			titleAgentJson = 'Updating Dialogflow Agent';
 			titleInteractionModel = 'Updating Language Model';
 		}
 		title += '\n' + subHeadline('   Path: ./platforms/googleAction');
-		titleAgentJson += '\n' + subHeadline('   Path: ./platforms/googleAction/dialogflow');
-		titleInteractionModel += '\n' + subHeadline('   Path: ./platforms/googleAction/dialogflow/intents, ./platforms/googleAction/dialogflow/entities');
+		titleAgentJson +=
+			'\n' + subHeadline('   Path: ./platforms/googleAction/dialogflow');
+		titleInteractionModel +=
+			'\n' +
+			subHeadline(
+				'   Path: ./platforms/googleAction/dialogflow/intents, ./platforms/googleAction/dialogflow/entities'
+			);
 
 		returnTasks.push({
 			title,
 			task: () => {
-				const buildSubTasks = [{
-					title: titleAgentJson,
-					task: (ctx: JovoTaskContextGoogle) => {
-						return new listr([
-							{
-								title: 'agent.json',
-								task: () => {
-									return Promise.resolve();
+				const buildSubTasks = [
+					{
+						title: titleAgentJson,
+						task: (ctx: JovoTaskContextGoogle) => {
+							return new listr([
+								{
+									title: 'agent.json',
+									task: () => {
+										return Promise.resolve();
+									}
 								},
-							},
-							{
-								title: 'package.json',
-								task: (ctx: JovoTaskContextGoogle) => {
-									return DialogFlowUtil.buildDialogFlowAgent(ctx)
-										.then(() => Utils.wait(500));
-								},
-							},
-						]);
+								{
+									title: 'package.json',
+									task: (ctx: JovoTaskContextGoogle) => {
+										return DialogFlowUtil.buildDialogFlowAgent(
+											ctx
+										).then(() => Utils.wait(500));
+									}
+								}
+							]);
+						}
 					},
-				}, {
-					title: titleInteractionModel,
-					task: (ctx: JovoTaskContextGoogle) => {
-						const buildLocalesTasks: ListrTask[] = [];
-						// delete old folder
-						if (fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
-							fs.readdirSync(DialogFlowUtil.getIntentsFolderPath()).forEach((file, index) => { //eslint-disable-line
-								const curPath = pathJoin(DialogFlowUtil.getIntentsFolderPath(), file); //eslint-disable-line
-								fs.unlinkSync(curPath);
-							});
-						}
-
-						if (fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
-							fs.readdirSync(DialogFlowUtil.getEntitiesFolderPath()).forEach((file, index) => { //eslint-disable-line
-								const curPath = pathJoin(DialogFlowUtil.getEntitiesFolderPath(), file); //eslint-disable-line
-								fs.unlinkSync(curPath);
-							});
-						}
-						if (ctx.locales) {
-							for (const locale of ctx.locales) {
-								buildLocalesTasks.push({
-									title: locale,
-									task: async () => {
-										await this.transform(locale, ctx.stage);
-										return Promise.resolve()
-											.then(() => Utils.wait(500));
-									},
+					{
+						title: titleInteractionModel,
+						task: (ctx: JovoTaskContextGoogle) => {
+							const buildLocalesTasks: ListrTask[] = [];
+							// delete old folder
+							if (
+								fs.existsSync(
+									DialogFlowUtil.getIntentsFolderPath()
+								)
+							) {
+								fs.readdirSync(
+									DialogFlowUtil.getIntentsFolderPath()
+								).forEach((file, index) => {
+									//eslint-disable-line
+									const curPath = pathJoin(
+										DialogFlowUtil.getIntentsFolderPath(),
+										file
+									); //eslint-disable-line
+									fs.unlinkSync(curPath);
 								});
 							}
+
+							if (
+								fs.existsSync(
+									DialogFlowUtil.getEntitiesFolderPath()
+								)
+							) {
+								fs.readdirSync(
+									DialogFlowUtil.getEntitiesFolderPath()
+								).forEach((file, index) => {
+									//eslint-disable-line
+									const curPath = pathJoin(
+										DialogFlowUtil.getEntitiesFolderPath(),
+										file
+									); //eslint-disable-line
+									fs.unlinkSync(curPath);
+								});
+							}
+							if (ctx.locales) {
+								for (const locale of ctx.locales) {
+									buildLocalesTasks.push({
+										title: locale,
+										task: async () => {
+											await this.transform(
+												locale,
+												ctx.stage
+											);
+											return Promise.resolve().then(() =>
+												Utils.wait(500)
+											);
+										}
+									});
+								}
+							}
+							return new listr(buildLocalesTasks);
 						}
-						return new listr(buildLocalesTasks);
-					},
-				}];
+					}
+				];
 				// return Promise.resolve();
 				return new listr(buildSubTasks);
-			},
+			}
 		});
 
 		return returnTasks;
 	}
-
-
-
 
 	/**
 	 * Get tasks to get existing platform project
@@ -329,12 +364,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getGetTasks(ctx: JovoTaskContextGoogle): ListrTask[] {
-
 		const googleActionPath = GoogleActionUtil.getPath();
 		if (!fs.existsSync(googleActionPath)) {
 			fs.mkdirSync(googleActionPath);
 		}
-
 
 		const dialogflowPath = DialogFlowUtil.getPath();
 		if (!fs.existsSync(dialogflowPath)) {
@@ -343,27 +376,34 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 		return [
 			{
-				title: 'Getting Dialogflow Agent files and saving to /platforms/googleAction/dialogflow',
+				title:
+					'Getting Dialogflow Agent files and saving to /platforms/googleAction/dialogflow',
 				task: (ctx: JovoTaskContextGoogle) => {
-					const keyFile = project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.keyFile', ctx.stage);
+					const keyFile = project.jovoConfigReader!.getConfigParameter(
+						'googleAction.dialogflow.keyFile',
+						ctx.stage
+					);
 					let p = Promise.resolve();
 					if (keyFile) {
 						if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
 							throw new Error(
-								`Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+								`Keyfile ${process.cwd() +
+									pathSep +
+									keyFile} does not exist.`
+							);
 						}
 						ctx.keyFile = process.cwd() + pathSep + keyFile;
-						p = p.then(() => DialogFlowUtil.v2.activateServiceAccount(ctx));
+						p = p.then(() =>
+							DialogFlowUtil.v2.activateServiceAccount(ctx)
+						);
 					}
-
 
 					p = p.then(() => DialogFlowUtil.getAgentFiles(ctx));
 					return p;
-				},
-			},
+				}
+			}
 		];
 	}
-
 
 	/**
 	 * Get tasks to build Jovo language model from platform
@@ -374,7 +414,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @memberof JovoCliPlatform
 	 */
 	getBuildReverseTasks(ctx: JovoTaskContextGoogle): ListrTask[] {
-
 		const returnTasks: ListrTask[] = [];
 
 		returnTasks.push({
@@ -385,30 +424,28 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 				const supportedLanguages = this.getLocales();
 
 				for (let locale of supportedLanguages) {
-
 					// transform en-us to en-US
 					if (locale.length === 5) {
-						locale = locale.substr(0, 2) + '-' + locale.substr(3).toUpperCase();
+						locale =
+							locale.substr(0, 2) +
+							'-' +
+							locale.substr(3).toUpperCase();
 					}
 
 					reverseLocales.push({
 						title: locale,
 						task: async () => {
 							const jovoModel = await this.reverse(locale);
-							return project.saveModel(
-								jovoModel,
-								locale);
-						},
+							return project.saveModel(jovoModel, locale);
+						}
 					});
 				}
 				return new listr(reverseLocales);
-			},
+			}
 		});
 
 		return returnTasks;
 	}
-
-
 
 	/**
 	 * Get tasks to deploy project
@@ -418,20 +455,28 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 	 * @returns {ListrTask[]}
 	 * @memberof JovoCliPlatform
 	 */
-	getDeployTasks(ctx: JovoTaskContextGoogle, targets: JovoCliDeploy[]): ListrTask[] {
-
+	getDeployTasks(
+		ctx: JovoTaskContextGoogle,
+		targets: JovoCliDeploy[]
+	): ListrTask[] {
 		const config = project.getConfig(ctx.stage);
 
 		const returnTasks: ListrTask[] = [];
 
 		returnTasks.push({
-			title: 'Deploying Google Action ' + Utils.printStage(ctx.stage) + (ctx.projectId ? ' ' + ctx.projectId : ''),
+			title:
+				'Deploying Google Action ' +
+				Utils.printStage(ctx.stage) +
+				(ctx.projectId ? ' ' + ctx.projectId : ''),
 			task: (ctx: JovoTaskContextGoogle) => {
-
 				const deployTasks: ListrTask[] = [
 					{
-						title: 'Creating file /googleAction/dialogflow_agent.zip',
-						task: (ctx: JovoTaskContextGoogle, task: ListrTaskWrapper) => {
+						title:
+							'Creating file /googleAction/dialogflow_agent.zip',
+						task: (
+							ctx: JovoTaskContextGoogle,
+							task: ListrTaskWrapper
+						) => {
 							return DialogFlowUtil.zip().then(() => {
 								let info = 'Info: ';
 
@@ -440,61 +485,93 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 									info += `${locale} `;
 								}
 								info += '\n';
-								info += `Fulfillment Endpoint: ${DialogFlowUtil.getAgentJson().webhook.url}`; // eslint-disable-line
+								info += `Fulfillment Endpoint: ${
+									DialogFlowUtil.getAgentJson().webhook.url
+								}`; // eslint-disable-line
 								task.skip(info);
 							});
-						},
+						}
 					},
 					{
-						title: `Uploading and restoring agent for project ${highlight(ctx.projectId)}`, // eslint-disable-line
-						enabled: (ctx: JovoTaskContextGoogle) => !!ctx.projectId,
-						task: (ctx: JovoTaskContextGoogle, task: ListrTaskWrapper) => {
-							ctx.pathToZip = GoogleActionUtil.getPath() + '/dialogflow_agent.zip';
+						title: `Uploading and restoring agent for project ${highlight(
+							ctx.projectId
+						)}`, // eslint-disable-line
+						enabled: (ctx: JovoTaskContextGoogle) =>
+							!!ctx.projectId,
+						task: (
+							ctx: JovoTaskContextGoogle,
+							task: ListrTaskWrapper
+						) => {
+							ctx.pathToZip =
+								GoogleActionUtil.getPath() +
+								'/dialogflow_agent.zip';
 
-							const keyFile = project.jovoConfigReader!.getConfigParameter('googleAction.dialogflow.keyFile', ctx.stage);
+							const keyFile = project.jovoConfigReader!.getConfigParameter(
+								'googleAction.dialogflow.keyFile',
+								ctx.stage
+							);
 							let p = Promise.resolve();
 							if (keyFile) {
-								if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
+								if (
+									!fs.existsSync(
+										process.cwd() + pathSep + keyFile
+									)
+								) {
 									throw new Error(
-										`Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+										`Keyfile ${process.cwd() +
+											pathSep +
+											keyFile} does not exist.`
+									);
 								}
 								ctx.keyFile = process.cwd() + pathSep + keyFile;
-								p = p.then(() => DialogFlowUtil.v2.activateServiceAccount(ctx));
+								p = p.then(() =>
+									DialogFlowUtil.v2.activateServiceAccount(
+										ctx
+									)
+								);
 							}
 
-							p = p.then(() => DialogFlowUtil.v2.checkGcloud())
-								.then(() => DialogFlowUtil.v2.restoreAgent(ctx));
+							p = p
+								.then(() => DialogFlowUtil.v2.checkGcloud())
+								.then(() =>
+									DialogFlowUtil.v2.restoreAgent(ctx)
+								);
 							return p;
-						},
+						}
 					},
 					{
 						title: 'Training started',
-						enabled: (ctx: JovoTaskContextGoogle) => !!ctx.projectId,
-						task: (ctx: JovoTaskContextGoogle, task: ListrTaskWrapper) => {
+						enabled: (ctx: JovoTaskContextGoogle) =>
+							!!ctx.projectId,
+						task: (
+							ctx: JovoTaskContextGoogle,
+							task: ListrTaskWrapper
+						) => {
 							return DialogFlowUtil.v2.trainAgent(ctx);
-						},
+						}
 					}
 				];
 
 				// Add the deploy target tasks
-				targets.forEach((target) => {
-					deployTasks.push.apply(deployTasks, target.execute(ctx, project));
+				targets.forEach(target => {
+					deployTasks.push.apply(
+						deployTasks,
+						target.execute(ctx, project)
+					);
 				});
 
 				return new listr(deployTasks);
-			},
+			}
 		});
 
 		return returnTasks;
 	}
 
-
-
-    /**
-     * Transforms Dialogflow data into a Jovo model
-     * @param {string} locale
-     * @return {{}}
-     */
+	/**
+	 * Transforms Dialogflow data into a Jovo model
+	 * @param {string} locale
+	 * @return {{}}
+	 */
 	async reverse(locale: string): Promise<JovoModelData> {
 		const platformFiles: NativeFileInformation[] = await DialogFlowUtil.getPlatformFiles();
 
@@ -506,7 +583,6 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 		}
 		return nativeData;
 	}
-
 
 	async transform(locale: string, stage: string | undefined) {
 		let model;
@@ -538,25 +614,45 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 			}
 		}
 
-		const concatArrays = function customizer(objValue: any[], srcValue: any) { // tslint:disable-line
+		const concatArrays = function customizer(
+			objValue: any[], // tslint:disable-line:no-any
+			srcValue: any // tslint:disable-line:no-any
+		) {
+			// tslint:disable-line
 			if (_.isArray(objValue)) {
 				return objValue.concat(srcValue);
 			}
 		};
 
-		if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
-			model = _.mergeWith(
-				model,
-				project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
-				concatArrays);
-		}
-		if (project.jovoConfigReader!.getConfigParameter(
-			`googleAction.dialogflow.languageModel.${locale}`, stage)) {
+		if (
+			project.jovoConfigReader!.getConfigParameter(
+				`languageModel.${locale}`,
+				stage
+			)
+		) {
 			model = _.mergeWith(
 				model,
 				project.jovoConfigReader!.getConfigParameter(
-					`googleAction.dialogflow.languageModel.${locale}`, stage),
-				concatArrays);
+					`languageModel.${locale}`,
+					stage
+				),
+				concatArrays
+			);
+		}
+		if (
+			project.jovoConfigReader!.getConfigParameter(
+				`googleAction.dialogflow.languageModel.${locale}`,
+				stage
+			)
+		) {
+			model = _.mergeWith(
+				model,
+				project.jovoConfigReader!.getConfigParameter(
+					`googleAction.dialogflow.languageModel.${locale}`,
+					stage
+				),
+				concatArrays
+			);
 		}
 
 		const jovoModel = new JovoModelDialogflow(model, outputLocale);
@@ -564,13 +660,17 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
 		if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
 			// Should actually never happen but who knows
-			throw new Error(`Could not build Dialogflow files for locale "${locale}"!`);
+			throw new Error(
+				`Could not build Dialogflow files for locale "${locale}"!`
+			);
 		}
 		for (const fileInformation of alexaModelFiles) {
-			await writeFile(pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path), JSON.stringify(fileInformation.content, null, '\t'));
+			await writeFile(
+				pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path),
+				JSON.stringify(fileInformation.content, null, '\t')
+			);
 		}
 
 		return Promise.resolve();
 	}
-
 }

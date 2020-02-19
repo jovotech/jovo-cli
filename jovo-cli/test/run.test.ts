@@ -1,90 +1,59 @@
-import * as fs from 'fs';
+import { mkdirSync } from 'fs';
 import * as path from 'path';
-import { deleteFolderRecursive } from '../utils/Utils';
+import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
-const tmpTestfolder = 'tmpTestfolderRun';
+const tmpTestFolder = 'tmpTestFolderRun';
 
+beforeAll(() => {
+	deleteFolderRecursive(tmpTestFolder);
+	mkdirSync(tmpTestFolder);
+});
 
-describe('run v1', () => {
-	const projectName = 'helloworldRun_v1';
-	const projectFolder = path.join(tmpTestfolder, projectName);
+afterAll(() => {
+	// deleteFolderRecursive(tmpTestfolder);
+});
 
-	beforeAll(async () => {
-		deleteFolderRecursive(tmpTestfolder);
-		if (!fs.existsSync(tmpTestfolder)) {
-			fs.mkdirSync(tmpTestfolder);
-		}
+describe('run', () => {
+	it('jovo run', async () => {
+		const projectName = 'helloworldRun';
+		const projectFolder = path.join(tmpTestFolder, projectName);
 
 		// Create new project
-		const parameters = [
-			projectName,
-			'-t', 'helloworldtest',
-			'--v1'];
-		return await runJovoCommand('new', parameters, tmpTestfolder, 'Installation completed.');
-	}, 60000);
+		const parameters = [projectName, '-t', 'helloworldtest'];
+		await runJovoCommand(
+			'new',
+			parameters,
+			tmpTestFolder,
+			'Installation completed.'
+		);
 
-
-	it('jovo run', async () => {
-		return await runJovoCommand('run', [], projectFolder, 'Example server listening on port 3000!');
-	}, 200000);
-
-	it('jovo run --bst-proxy', async () => {
-		return await runJovoCommand('run', ['--bst-proxy'], projectFolder, [
-			'Example server listening on port 3000!',
-			'info: CONFIG      No configuration. Creating one',
-		]);
+		return await runJovoCommand(
+			'run',
+			[],
+			projectFolder,
+			'Local server listening on port 3000.'
+		);
 	}, 200000);
 
 	it('jovo run --webhook-standalone', async () => {
-		return await runJovoCommand('run', ['--webhook-standalone'], projectFolder, 'Example server listening on port 3000!');
-	}, 200000);
-
-});
-
-
-
-describe('run v2', () => {
-	const projectName = 'helloworldRun_v2';
-	const projectFolder = path.join(tmpTestfolder, projectName);
-
-	beforeAll(async () => {
-		deleteFolderRecursive(tmpTestfolder);
-		if (!fs.existsSync(tmpTestfolder)) {
-			fs.mkdirSync(tmpTestfolder);
-		}
+		const projectName = 'helloworldRun-standalone';
+		const projectFolder = path.join(tmpTestFolder, projectName);
 
 		// Create new project
-		const parameters = [
-			projectName,
-			'-t', 'helloworldtest'];
-		return await runJovoCommand('new', parameters, tmpTestfolder, 'Installation completed.');
-	}, 60000);
+		const parameters = [projectName, '-t', 'helloworldtest'];
+		await runJovoCommand(
+			'new',
+			parameters,
+			tmpTestFolder,
+			'Installation completed.'
+		);
 
-
-	it('jovo run', async () => {
-		return await runJovoCommand('run', [], projectFolder, 'Local server listening on port 3000.');
+		return await runJovoCommand(
+			'run',
+			['--webhook-only'],
+			projectFolder,
+			'This is your webhook url:'
+		);
 	}, 200000);
-
-
-	it('jovo run --bst-proxy', async () => {
-		return await runJovoCommand('run', ['--bst-proxy'], projectFolder, [
-			'Local server listening on port 3000.',
-			'info: CONFIG      No configuration. Creating one',
-		]);
-	}, 200000);
-
-
-	it('jovo run --webhook-standalone', async () => {
-		return await runJovoCommand('run', ['--webhook-standalone'], projectFolder, 'Local server listening on port 3000.');
-	}, 200000);
-
 });
-
-
-afterAll((done) => {
-	setTimeout(() => {
-        deleteFolderRecursive(tmpTestfolder);
-        done();
-    }, 2000);
-}, 5000);

@@ -1,22 +1,22 @@
-import {
-	JovoConfig,
-} from 'jovo-config';
+import { JovoConfig } from 'jovo-config';
+import { IFlag as Flag } from '@oclif/command/lib/flags';
 
-export interface ArgOptions {
-	[key: string]: string;
+export interface InputFlags {
+	[key: string]: Flag<any>; // tslint:disable-line:no-any
 }
 
+export interface OutputFlags {
+	[key: string]: string | boolean | undefined;
+}
 
 export interface GenericData {
 	[key: string]: string | number | GenericData | object;
 }
 
-
 export interface AppFile extends JovoConfig {
 	deploy?: DeployConfiguration;
 	endpoint?: string;
 }
-
 
 export interface DeployConfiguration {
 	target?: string[];
@@ -29,7 +29,7 @@ export interface JovoTaskContext {
 	projectId?: string;
 	endpoint?: string;
 	targets?: string[];
-	projectname?: string;
+	projectName?: string;
 	template?: string;
 	src?: string;
 	stage?: string;
@@ -43,8 +43,8 @@ export interface JovoUserConfig {
 	webhook: {
 		uuid: string;
 	};
+	timeLastUpdateMessage?: string | number;
 }
-
 
 export interface PackageVersion {
 	major: number;

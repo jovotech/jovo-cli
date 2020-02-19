@@ -1,14 +1,3 @@
-import * as Listr from 'listr';
-
-// The Listr interface definitions are incomplete so add own
-// ones temporary here
-export interface ListrOptionsExtended extends Listr.ListrOptions {
-	clearOutput: boolean;
-	collapse: boolean;
-	showSubtasks: boolean;
-	separateTopTasks: boolean;
-}
-
 export interface ListrTaskHelper {
 	title: string;
 	output: string;
@@ -30,4 +19,13 @@ export interface PackageVersionsNpm {
 		local: string;
 		npm: string;
 	};
+}
+
+declare module 'listr' {
+	interface ListrOptions {
+		clearOutput?: boolean;
+		collapse?: boolean;
+		showSubtasks?: boolean;
+		seperateTopTasks?: boolean;
+	}
 }
