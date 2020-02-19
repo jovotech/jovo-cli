@@ -1,6 +1,6 @@
 {
     "name": "jovo-cli-deploy-lambda",
-    "version": "2.2.8",
+    "version": "3.0.0",
     "description": "Lamdbda specific deploy CLI code",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
@@ -39,7 +39,7 @@
     "dependencies": {
         "@types/figures": "^3.0.1",
         "aws-sdk": "^2.344.0",
-        "jovo-cli-core": "^2.2.7",
+        "jovo-cli-core": "^3.0.0",
         "listr": "^0.14.2",
         "lodash": "^4.17.11",
         "opn": "^6.0.0",
