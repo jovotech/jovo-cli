@@ -12,43 +12,43 @@ import * as path from 'path';
  * @returns
  */
 export function runJovoCommand(
-	command: string,
-	parameters: string[],
-	cwd: string,
-	waitText: string[] | string | null,
-	errorText?: string
+  command: string,
+  parameters: string[],
+  cwd: string,
+  waitText: string[] | string | null,
+  errorText?: string,
 ): Promise<string> {
-	parameters.unshift(command);
+  parameters.unshift(command);
 
-	if (waitText && !Array.isArray(waitText)) {
-		waitText = [waitText];
-	}
+  if (waitText && !Array.isArray(waitText)) {
+    waitText = [waitText];
+  }
 
-	return new Promise((resolve, reject) => {
-		const child = spawn(path.join(process.cwd(), 'bin/run'), parameters, {
-			cwd
-		});
+  return new Promise((resolve, reject) => {
+    const child = spawn(path.join(process.cwd(), 'bin/run'), parameters, {
+      cwd,
+    });
 
-		child.stderr.on('data', data => {
-			child.kill();
-			if (errorText && data.toString().indexOf(errorText) > -1) {
-				return resolve(data.toString());
-			}
+    child.stderr.on('data', (data) => {
+      child.kill();
+      if (errorText && data.toString().indexOf(errorText) > -1) {
+        return resolve(data.toString());
+      }
 
-			reject(new Error(data.toString()));
-		});
+      reject(new Error(data.toString()));
+    });
 
-		child.stdout.on('data', data => {
-			if (!waitText) {
-				return;
-			}
+    child.stdout.on('data', (data) => {
+      if (!waitText) {
+        return;
+      }
 
-			for (const text of waitText) {
-				if (data.toString().indexOf(text) > -1) {
-					child.kill();
-					return resolve(data.toString());
-				}
-			}
-		});
-	});
+      for (const text of waitText) {
+        if (data.toString().indexOf(text) > -1) {
+          child.kill();
+          return resolve(data.toString());
+        }
+      }
+    });
+  });
 }

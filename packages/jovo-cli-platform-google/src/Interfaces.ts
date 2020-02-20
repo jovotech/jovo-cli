@@ -1,19 +1,14 @@
-import {
-	AppFile,
-	JovoTaskContext,
-} from 'jovo-cli-core';
-
+import { AppFile, JovoTaskContext } from 'jovo-cli-core';
 
 export interface AppFileDialogFlow extends AppFile {
-	googleAction?: {
-		nlu?: {
-			name: string;
-		}
-	};
+  googleAction?: {
+    nlu?: {
+      name: string;
+    };
+  };
 }
 
-
 export interface JovoTaskContextGoogle extends JovoTaskContext {
-	pathToZip: string;
-	keyFile: string;
+  pathToZip: string;
+  keyFile: string;
 }

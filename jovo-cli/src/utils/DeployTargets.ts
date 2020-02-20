@@ -1,10 +1,5 @@
+import { JovoCliDeploy, TARGET_INFO, TARGET_MODEL, TARGET_ZIP } from 'jovo-cli-core';
 import { JovoCliDeployLambda } from 'jovo-cli-deploy-lambda';
-import {
-	TARGET_MODEL,
-	TARGET_INFO,
-	TARGET_ZIP,
-	JovoCliDeploy
-} from 'jovo-cli-core';
 
 // All deploy targets that should be available to be used
 const AVAILABLE_DEPLOY_TARGETS = [JovoCliDeployLambda];
@@ -19,7 +14,7 @@ const instances: { [key: string]: JovoCliDeploy } = {};
  * @returns {string[]}
  */
 export function getAllPluginTargets(): string[] {
-	return AVAILABLE_DEPLOY_TARGETS.map(platform => platform.TARGET_KEY);
+  return AVAILABLE_DEPLOY_TARGETS.map((platform) => platform.TARGET_KEY);
 }
 
 /**
@@ -29,9 +24,9 @@ export function getAllPluginTargets(): string[] {
  * @returns {string[]}
  */
 export function getAllAvailable(): string[] {
-	const targetNames: string[] = [TARGET_MODEL, TARGET_INFO, TARGET_ZIP];
-	targetNames.push(...getAllPluginTargets());
-	return targetNames;
+  const targetNames: string[] = [TARGET_MODEL, TARGET_INFO, TARGET_ZIP];
+  targetNames.push(...getAllPluginTargets());
+  return targetNames;
 }
 
 /**
@@ -42,11 +37,11 @@ export function getAllAvailable(): string[] {
  * @returns {JovoCliPlatform}
  */
 export function get(target: string): JovoCliDeploy {
-	if (!instances.hasOwnProperty(target)) {
-		instances[target] = createDeployInstance(target);
-	}
+  if (!instances.hasOwnProperty(target)) {
+    instances[target] = createDeployInstance(target);
+  }
 
-	return instances[target];
+  return instances[target];
 }
 
 /**
@@ -56,11 +51,11 @@ export function get(target: string): JovoCliDeploy {
  * @returns {JovoCliPlatform}
  */
 function createDeployInstance(name: string): JovoCliDeploy {
-	for (const target of AVAILABLE_DEPLOY_TARGETS) {
-		if (target.TARGET_KEY === name) {
-			return new target();
-		}
-	}
+  for (const target of AVAILABLE_DEPLOY_TARGETS) {
+    if (target.TARGET_KEY === name) {
+      return new target();
+    }
+  }
 
-	throw new Error(`The deploy target "${name}" is not supported!`);
+  throw new Error(`The deploy target "${name}" is not supported!`);
 }

@@ -1,10 +1,7 @@
 import * as io from 'socket.io-client';
-import { PostOptions, post } from './HttpPost';
-
+import { post, PostOptions } from './HttpPost';
 
 let socketInstance: SocketIOClient.Socket;
-
-
 
 /**
  * Connection options for open method
@@ -13,9 +10,8 @@ let socketInstance: SocketIOClient.Socket;
  * @interface ConnectionOptions
  */
 export interface ConnectionOptions {
-	post?: PostOptions;
+  post?: PostOptions;
 }
-
 
 /**
  * Opens the socket connection to redirect requests from Webhook
@@ -27,41 +23,44 @@ export interface ConnectionOptions {
  * @param {ConnectionOptions} options Additional opions for connection
  * @returns {SocketIOClient.Socket}
  */
-export function open(id: string, webhookBaseUrl: string, options: ConnectionOptions): SocketIOClient.Socket {
-	options = options || {};
+export function open(
+  id: string,
+  webhookBaseUrl: string,
+  options: ConnectionOptions,
+): SocketIOClient.Socket {
+  options = options || {};
 
-	socketInstance = io.connect(webhookBaseUrl, {
-		secure: true,
-		query: {
-			id,
-		},
-	});
+  socketInstance = io.connect(webhookBaseUrl, {
+    secure: true,
+    query: {
+      id,
+    },
+  });
 
-	socketInstance.on('connect', () => {
-		console.log(`This is your webhook url: ${webhookBaseUrl}/${id}`);
-	});
+  socketInstance.on('connect', () => {
+    console.log(`This is your webhook url: ${webhookBaseUrl}/${id}`);
+  });
 
-	socketInstance.on('connect_error', (error: NodeJS.ErrnoException) => {
-		console.error('Sorry, there seems to be an issue with the connection!');
-		console.error(error);
-	});
+  socketInstance.on('connect_error', (error: NodeJS.ErrnoException) => {
+    console.error('Sorry, there seems to be an issue with the connection!');
+    console.error(error);
+  });
 
-	// @ts-ignore
-	socketInstance.on(`request-${id}`, (data) => {
-		post(data.request, data.headers, data.params, options.post)
-			.then((result) => {
-				socketInstance.emit(`response-${id}`, result);
-			})
-			.catch((error) => {
-				console.error('Local server did not return a valid JSON response:');
-				console.error(error.rawData);
-				socketInstance.emit(`response-${id}`, null);
-			});
-	});
+  // @ts-ignore
+  socketInstance.on(`request-${id}`, (data) => {
+    post(data.request, data.headers, data.params, options.post)
+      .then((result) => {
+        socketInstance.emit(`response-${id}`, result);
+      })
+      .catch((error) => {
+        console.error('Local server did not return a valid JSON response:');
+        console.error(error.rawData);
+        socketInstance.emit(`response-${id}`, null);
+      });
+  });
 
-	return socketInstance;
+  return socketInstance;
 }
-
 
 /**
  * Closes the socket connection
@@ -70,5 +69,5 @@ export function open(id: string, webhookBaseUrl: string, options: ConnectionOpti
  * @returns {SocketIOClient.Socket}
  */
 export function close(): SocketIOClient.Socket {
-	return socketInstance.close();
+  return socketInstance.close();
 }

@@ -5,343 +5,233 @@ import { runJovoCommand } from './Helpers';
 const tmpTestFolder = 'tmpTestFolderBuild';
 
 beforeAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
-	mkdirSync(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
+  mkdirSync(tmpTestFolder);
 });
 
 afterAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
 }, 5000);
 
 describe('build', () => {
-	it('jovo new <project>\n      jovo build --platform alexaSkill', async () => {
-		const projectName = 'helloworld';
+  it('jovo new <project>\n      jovo build --platform alexaSkill', async () => {
+    const projectName = 'helloworld';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--skip-npminstall'
-		];
+    // Create new project
+    const parameters = [projectName, '-t', 'helloworldtest', '--skip-npminstall'];
 
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		// Build project
-		const projectFolder = path.join(tmpTestFolder, projectName);
-		await runJovoCommand(
-			'build',
-			['--platform', 'alexaSkill'],
-			projectFolder,
-			'Build completed.'
-		);
+    // Build project
+    const projectFolder = path.join(tmpTestFolder, projectName);
+    await runJovoCommand('build', ['--platform', 'alexaSkill'], projectFolder, 'Build completed.');
 
-		expect(existsSync(path.join(projectFolder, 'platforms'))).toBe(true);
-		expect(
-			existsSync(path.join(projectFolder, 'platforms', 'alexaSkill'))
-		).toBe(true);
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'alexaSkill',
-					'skill.json'
-				)
-			)
-		).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms'))).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms', 'alexaSkill'))).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'skill.json'))).toBe(
+      true,
+    );
 
-		const skillJson = JSON.parse(
-			readFileSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'alexaSkill',
-					'skill.json'
-				),
-				'utf-8'
-			)
-		);
+    const skillJson = JSON.parse(
+      readFileSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'skill.json'), 'utf-8'),
+    );
 
-		expect(
-			skillJson.manifest.publishingInformation.locales['en-US'].name
-		).toBe(projectName);
-		expect(skillJson.manifest.apis.custom.endpoint.uri.substr(0, 27)).toBe(
-			'https://webhook.jovo.cloud/'
-		);
+    expect(skillJson.manifest.publishingInformation.locales['en-US'].name).toBe(projectName);
+    expect(skillJson.manifest.apis.custom.endpoint.uri.substr(0, 27)).toBe(
+      'https://webhook.jovo.cloud/',
+    );
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'alexaSkill',
-					'models',
-					'en-US.json'
-				)
-			)
-		).toBe(true);
-		const modelFile = JSON.parse(
-			readFileSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'alexaSkill',
-					'models',
-					'en-US.json'
-				),
-				'utf-8'
-			)
-		);
+    expect(
+      existsSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'models', 'en-US.json')),
+    ).toBe(true);
+    const modelFile = JSON.parse(
+      readFileSync(
+        path.join(projectFolder, 'platforms', 'alexaSkill', 'models', 'en-US.json'),
+        'utf-8',
+      ),
+    );
 
-		expect(modelFile.interactionModel.languageModel.invocationName).toBe(
-			'my test app'
-		);
-	}, 12000);
+    expect(modelFile.interactionModel.languageModel.invocationName).toBe('my test app');
+  }, 12000);
 
-	it('jovo new <project>\n      jovo build --platform googleAction', async () => {
-		const projectName = 'helloworld2';
+  it('jovo new <project>\n      jovo build --platform googleAction', async () => {
+    const projectName = 'helloworld2';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--skip-npminstall'
-		];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const parameters = [projectName, '-t', 'helloworldtest', '--skip-npminstall'];
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		// Build project
-		const projectFolder = path.join(tmpTestFolder, projectName);
-		await runJovoCommand(
-			'build',
-			['--platform', 'googleAction'],
-			projectFolder,
-			'Build completed.'
-		);
+    // Build project
+    const projectFolder = path.join(tmpTestFolder, projectName);
+    await runJovoCommand(
+      'build',
+      ['--platform', 'googleAction'],
+      projectFolder,
+      'Build completed.',
+    );
 
-		expect(existsSync(path.join(projectFolder, 'platforms'))).toBe(true);
-		expect(
-			existsSync(path.join(projectFolder, 'platforms', 'googleAction'))
-		).toBe(true);
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow'
-				)
-			)
-		).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms'))).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms', 'googleAction'))).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'platforms', 'googleAction', 'dialogflow'))).toBe(
+      true,
+    );
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'agent.json'
-				)
-			)
-		).toBe(true);
-		const agentJson = JSON.parse(
-			readFileSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'agent.json'
-				),
-				'utf-8'
-			)
-		);
+    expect(
+      existsSync(path.join(projectFolder, 'platforms', 'googleAction', 'dialogflow', 'agent.json')),
+    ).toBe(true);
+    const agentJson = JSON.parse(
+      readFileSync(
+        path.join(projectFolder, 'platforms', 'googleAction', 'dialogflow', 'agent.json'),
+        'utf-8',
+      ),
+    );
 
-		expect(agentJson.webhook.url.substr(0, 27)).toBe(
-			'https://webhook.jovo.cloud/'
-		);
+    expect(agentJson.webhook.url.substr(0, 27)).toBe('https://webhook.jovo.cloud/');
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(path.join(projectFolder, 'platforms', 'googleAction', 'dialogflow', 'intents')),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'Default Fallback Intent.json'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'Default Fallback Intent.json',
+        ),
+      ),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'Default Welcome Intent.json'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'Default Welcome Intent.json',
+        ),
+      ),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'HelloWorldIntent.json'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'HelloWorldIntent.json',
+        ),
+      ),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'HelloWorldIntent_usersays_en.json'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'HelloWorldIntent_usersays_en.json',
+        ),
+      ),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'MyNameIsIntent.json'
-				)
-			)
-		).toBe(true);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'MyNameIsIntent.json',
+        ),
+      ),
+    ).toBe(true);
 
-		expect(
-			existsSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'googleAction',
-					'dialogflow',
-					'intents',
-					'MyNameIsIntent_usersays_en.json'
-				)
-			)
-		).toBe(true);
-	}, 12000);
+    expect(
+      existsSync(
+        path.join(
+          projectFolder,
+          'platforms',
+          'googleAction',
+          'dialogflow',
+          'intents',
+          'MyNameIsIntent_usersays_en.json',
+        ),
+      ),
+    ).toBe(true);
+  }, 12000);
 
-	it('jovo new <project> --build \n      jovo build --platform alexaSkill --reverse --overwrite', async () => {
-		const projectName = 'helloworld_reverse_alexaSkill';
+  it('jovo new <project> --build \n      jovo build --platform alexaSkill --reverse --overwrite', async () => {
+    const projectName = 'helloworld_reverse_alexaSkill';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--build',
-			'alexaSkill',
-			'--skip-npminstall'
-		];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const parameters = [
+      projectName,
+      '-t',
+      'helloworldtest',
+      '--build',
+      'alexaSkill',
+      '--skip-npminstall',
+    ];
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		const projectFolder = path.join(tmpTestFolder, projectName);
+    const projectFolder = path.join(tmpTestFolder, projectName);
 
-		// Build project
-		await runJovoCommand(
-			'build',
-			['--platform', 'alexaSkill', '--reverse', '--overwrite'],
-			projectFolder,
-			'Build completed.'
-		);
+    // Build project
+    await runJovoCommand(
+      'build',
+      ['--platform', 'alexaSkill', '--reverse', '--overwrite'],
+      projectFolder,
+      'Build completed.',
+    );
 
-		expect(
-			existsSync(path.join(projectFolder, 'models', 'en-US.json'))
-		).toBe(true);
+    expect(existsSync(path.join(projectFolder, 'models', 'en-US.json'))).toBe(true);
 
-		const modelJson = JSON.parse(
-			readFileSync(
-				path.join(projectFolder, 'models', 'en-US.json'),
-				'utf-8'
-			)
-		);
-		expect(modelJson.invocation).toBe('my test app');
-	}, 12000);
+    const modelJson = JSON.parse(
+      readFileSync(path.join(projectFolder, 'models', 'en-US.json'), 'utf-8'),
+    );
+    expect(modelJson.invocation).toBe('my test app');
+  }, 12000);
 
-	it('jovo new <project> --build \n      jovo build --platform googleAction --reverse --overwrite', async () => {
-		const projectName = 'helloworld_reverse_googleAction';
+  it('jovo new <project> --build \n      jovo build --platform googleAction --reverse --overwrite', async () => {
+    const projectName = 'helloworld_reverse_googleAction';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--build',
-			'googleAction',
-			'--skip-npminstall'
-		];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const parameters = [
+      projectName,
+      '-t',
+      'helloworldtest',
+      '--build',
+      'googleAction',
+      '--skip-npminstall',
+    ];
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		const projectFolder = path.join(tmpTestFolder, projectName);
+    const projectFolder = path.join(tmpTestFolder, projectName);
 
-		// Build project
-		await runJovoCommand(
-			'build',
-			['--platform', 'googleAction', '--reverse', '--overwrite'],
-			projectFolder,
-			'Build completed.'
-		);
+    // Build project
+    await runJovoCommand(
+      'build',
+      ['--platform', 'googleAction', '--reverse', '--overwrite'],
+      projectFolder,
+      'Build completed.',
+    );
 
-		expect(existsSync(path.join(projectFolder, 'models', 'en.json'))).toBe(
-			true
-		);
+    expect(existsSync(path.join(projectFolder, 'models', 'en.json'))).toBe(true);
 
-		const modelJson = JSON.parse(
-			readFileSync(path.join(projectFolder, 'models', 'en.json'), 'utf-8')
-		);
-		expect(modelJson.invocation.length === 0).toBe(true);
-	}, 12000);
+    const modelJson = JSON.parse(
+      readFileSync(path.join(projectFolder, 'models', 'en.json'), 'utf-8'),
+    );
+    expect(modelJson.invocation.length === 0).toBe(true);
+  }, 12000);
 });
