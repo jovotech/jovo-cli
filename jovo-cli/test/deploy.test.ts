@@ -5,6 +5,7 @@ import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
 const tmpTestFolder = 'tmpTestFolderDeploy';
+const askProfile = process.env.ASK_PROFILE;
 
 beforeAll(() => {
 	deleteFolderRecursive(tmpTestFolder);
@@ -17,6 +18,11 @@ afterAll(() => {
 
 describe('deploy', () => {
 	it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
+		if (!process.env.ASK_PROFILE) {
+			console.log('Skipping because no ask profile found');
+			return;
+		}
+
 		const projectName = 'jovo-cli-unit-test';
 
 		// Create new project
