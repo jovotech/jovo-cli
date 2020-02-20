@@ -72,7 +72,6 @@ export class Update extends Command {
               throw new Error(stderr);
             }
           } catch (err) {
-          	console.log(err);
             this.error(err);
           }
         },
