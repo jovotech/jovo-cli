@@ -7,146 +7,92 @@ import { runJovoCommand } from './Helpers';
 const tmpTestFolder = 'tmpTestFolderDeploy';
 
 beforeAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
-	mkdirSync(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
+  mkdirSync(tmpTestFolder);
 });
 
 afterAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
 });
 
 describe('deploy', () => {
-	it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
-		const projectName = 'jovo-cli-unit-test';
+  it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
+    const projectName = 'jovo-cli-unit-test';
 
-		// Create new project
-		const newParameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--build',
-			'alexaSkill'
-		];
-		await runJovoCommand(
-			'new',
-			newParameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const newParameters = [projectName, '-t', 'helloworldtest', '--build', 'alexaSkill'];
+    await runJovoCommand('new', newParameters, tmpTestFolder, 'Installation completed.');
 
-		// Deploy project
-		const deployParameters = ['--platform', 'alexaSkill'];
+    // Deploy project
+    const deployParameters = ['--platform', 'alexaSkill'];
 
-		if (process.env.ASK_PROFILE) {
-			deployParameters.push('--ask-profile', process.env.ASK_PROFILE);
-		}
+    if (process.env.ASK_PROFILE) {
+      deployParameters.push('--ask-profile', process.env.ASK_PROFILE);
+    }
 
-		const projectFolder = path.join(tmpTestFolder, projectName);
-		await runJovoCommand(
-			'deploy',
-			deployParameters,
-			projectFolder,
-			'Deployment completed.'
-		);
+    const projectFolder = path.join(tmpTestFolder, projectName);
+    await runJovoCommand('deploy', deployParameters, projectFolder, 'Deployment completed.');
 
-		// Tests
-		const askConfig = JSON.parse(
-			readFileSync(
-				path.join(
-					projectFolder,
-					'platforms',
-					'alexaSkill',
-					'.ask',
-					'config'
-				),
-				'utf-8'
-			)
-		);
-		expect(askConfig.deploy_settings.default.skill_id.length > 0).toBe(
-			true
-		);
+    // Tests
+    const askConfig = JSON.parse(
+      readFileSync(path.join(projectFolder, 'platforms', 'alexaSkill', '.ask', 'config'), 'utf-8'),
+    );
+    expect(askConfig.deploy_settings.default.skill_id.length > 0).toBe(true);
 
-		await deleteSkill(askConfig.deploy_settings.default.skill_id);
-	}, 200000);
+    await deleteSkill(askConfig.deploy_settings.default.skill_id);
+  }, 200000);
 
-	it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
-		const projectName = 'jovo-cli-unit-test-zip';
+  it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
+    const projectName = 'jovo-cli-unit-test-zip';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--build',
-			'alexaSkill'
-		];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const parameters = [projectName, '-t', 'helloworldtest', '--build', 'alexaSkill'];
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		// Deploy project
-		const projectFolder = path.join(tmpTestFolder, projectName);
-		await runJovoCommand(
-			'deploy',
-			['--target', 'zip'],
-			projectFolder,
-			'Deployment completed.'
-		);
+    // Deploy project
+    const projectFolder = path.join(tmpTestFolder, projectName);
+    await runJovoCommand('deploy', ['--target', 'zip'], projectFolder, 'Deployment completed.');
 
-		// Tests
-		const zipFilePath = path.join(projectFolder, 'bundle.zip');
+    // Tests
+    const zipFilePath = path.join(projectFolder, 'bundle.zip');
 
-		// zip should exist
-		expect(existsSync(zipFilePath)).toBe(true);
+    // zip should exist
+    expect(existsSync(zipFilePath)).toBe(true);
 
-		// zip should not be empty
-		expect(statSync(zipFilePath).size).not.toBe(0);
-	}, 100000);
+    // zip should not be empty
+    expect(statSync(zipFilePath).size).not.toBe(0);
+  }, 100000);
 
-	it('jovo new <project> --build\n      jovo deploy --platform googleAction', async () => {
-		const projectName = 'helloworldDeployGoogleAction';
+  it('jovo new <project> --build\n      jovo deploy --platform googleAction', async () => {
+    const projectName = 'helloworldDeployGoogleAction';
 
-		// Create new project
-		const parameters = [
-			projectName,
-			'-t',
-			'helloworldtest',
-			'--build',
-			'googleAction'
-		];
-		await runJovoCommand(
-			'new',
-			parameters,
-			tmpTestFolder,
-			'Installation completed.'
-		);
+    // Create new project
+    const parameters = [projectName, '-t', 'helloworldtest', '--build', 'googleAction'];
+    await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-		// Deploy project
-		const projectFolder = path.join(tmpTestFolder, projectName);
-		await runJovoCommand(
-			'deploy',
-			['--platform', 'googleAction'],
-			projectFolder,
-			'Deployment completed.'
-		);
+    // Deploy project
+    const projectFolder = path.join(tmpTestFolder, projectName);
+    await runJovoCommand(
+      'deploy',
+      ['--platform', 'googleAction'],
+      projectFolder,
+      'Deployment completed.',
+    );
 
-		// Tests
-		const dialogflowAgentZipPath = path.join(
-			projectFolder,
-			'platforms',
-			'googleAction',
-			'dialogflow_agent.zip'
-		);
+    // Tests
+    const dialogflowAgentZipPath = path.join(
+      projectFolder,
+      'platforms',
+      'googleAction',
+      'dialogflow_agent.zip',
+    );
 
-		// Dialogflow agent zip should exist
-		expect(existsSync(dialogflowAgentZipPath)).toBe(true);
+    // Dialogflow agent zip should exist
+    expect(existsSync(dialogflowAgentZipPath)).toBe(true);
 
-		// Dialogflow agent zip should not be empty
-		expect(statSync(dialogflowAgentZipPath).size).not.toBe(0);
-	}, 200000);
+    // Dialogflow agent zip should not be empty
+    expect(statSync(dialogflowAgentZipPath).size).not.toBe(0);
+  }, 200000);
 });
 
 /**
@@ -155,22 +101,18 @@ describe('deploy', () => {
  * @param {function} callback
  */
 async function deleteSkill(skillId: string) {
-	return new Promise((resolve, reject) => {
-		exec(
-			'ask api delete-skill --skill-id ' + skillId,
-			{},
-			(error, stdout, stderr) => {
-				if (error) {
-					console.log(error);
-					if (stderr) {
-						console.log(stderr);
-					}
-					reject(error);
-				}
-				if (stdout.indexOf('Skill deleted successfully.') > -1) {
-					resolve();
-				}
-			}
-		);
-	});
+  return new Promise((resolve, reject) => {
+    exec('ask api delete-skill --skill-id ' + skillId, {}, (error, stdout, stderr) => {
+      if (error) {
+        console.log(error);
+        if (stderr) {
+          console.log(stderr);
+        }
+        reject(error);
+      }
+      if (stdout.indexOf('Skill deleted successfully.') > -1) {
+        resolve();
+      }
+    });
+  });
 }

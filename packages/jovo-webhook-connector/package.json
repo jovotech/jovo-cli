@@ -5,6 +5,8 @@
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
+		"prettier": "prettier --config ./.prettierrc.js --write \"{test,src}/**/*\" --list-different",
+
 		"build": "tsc",
 		"tslint": "tslint -p tsconfig.json -c tslint.json",
 		"tsc": "tsc",
@@ -20,6 +22,7 @@
 	"devDependencies": {
 		"@types/cross-spawn": "^6.0.1",
 		"@types/es6-promise": "^3.3.0",
+		"@types/figures": "^3.0.1",
 		"@types/fs-extra": "^8.0.1",
 		"@types/jest": "^25.1.2",
 		"@types/lodash.merge": "^4.6.4",
@@ -31,14 +34,16 @@
 		"@types/socket.io-client": "^1.4.32",
 		"fs-extra": "^8.1.0",
 		"jest": "^25.1.0",
-		"rimraf": "^2.6.2",
+		"prettier": "1.19.1",
+
+		"rimraf": "^3.0.2",
 		"socket.io": "^2.1.1",
 		"ts-jest": "^25.2.0",
-		"tslint": "^5.11.0",
-		"typescript": "^3.0.3"
+		"tslint": "^5.19.0",
+		"tslint-config-prettier": "^1.18.0",
+		"typescript": "^3.7.5"
 	},
 	"dependencies": {
-		"@types/figures": "^3.0.1",
 		"boxen": "^4.2.0",
 		"child-process": "^1.0.2",
 		"child_process": "^1.0.2",

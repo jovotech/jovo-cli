@@ -8,5 +8,5 @@ const project = require('jovo-cli-core').getProject();
  * @return {string}
  */
 export function getPath() {
-	return pathJoin(project.getProjectPath() + 'platforms', 'googleAction');
+  return pathJoin(project.getProjectPath() + 'platforms', 'googleAction');
 }

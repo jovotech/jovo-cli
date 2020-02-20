@@ -9,200 +9,202 @@ const proxyAgent = require('proxy-agent');
 import { JovoCliDeploy, Utils, Project, TARGET_ZIP } from 'jovo-cli-core';
 import { JovoTaskContextLambda } from '.';
 
-
 export class JovoCliDeployLambda extends JovoCliDeploy {
+  static TARGET_KEY = 'lambda';
+  static PRE_DEPLOY_TASKS = [TARGET_ZIP];
 
-	static TARGET_KEY = 'lambda';
-	static PRE_DEPLOY_TASKS = [ TARGET_ZIP ];
+  constructor() {
+    super();
+  }
 
-	constructor() {
-		super();
-	}
+  execute(ctx: JovoTaskContextLambda, project: Project): ListrTask[] {
+    const config = project.getConfig(ctx.stage);
 
+    let arn = _.get(config, 'alexaSkill.host.lambda.arn') || _.get(config, 'host.lambda.arn');
 
-	execute(ctx: JovoTaskContextLambda, project: Project): ListrTask[] {
+    if (!arn) {
+      arn = _.get(config, 'alexaSkill.endpoint') || _.get(config, 'endpoint');
+      arn = _.startsWith(arn, 'arn') ? arn : undefined;
+    }
 
-		const config = project.getConfig(ctx.stage);
+    return [
+      {
+        title: 'Uploading to AWS Lambda',
+        enabled: (ctx: JovoTaskContextLambda) =>
+          (!ctx.newSkill && _.isUndefined(arn) === false) ||
+          // If specifically lambda got defined to be the target execute
+          // even when no arn is defined. So that we can display an error
+          // so that user knows exactly what is wrong
+          (_.isUndefined(arn) === true && ctx.targets!.includes('lambda')),
+        task: async (ctx: JovoTaskContextLambda, task) => {
+          try {
+            if (_.isUndefined(arn)) {
+              const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';
+              return Promise.reject(new Error('Error: ' + errorMessage));
+            }
 
-		let arn = _.get(config, 'alexaSkill.host.lambda.arn') ||
-			_.get(config, 'host.lambda.arn');
+            const projectConfig = project.getConfig(ctx.stage);
+            ctx.lambdaArn = arn;
 
-		if (!arn) {
-			arn = _.get(config, 'alexaSkill.endpoint') ||
-				_.get(config, 'endpoint');
-			arn = _.startsWith(arn, 'arn') ? arn : undefined;
-		}
+            // special use case
+            // copy app.json/project.js if src directory is not default and config
+            // was set in projectConfig
+            if (
+              project.jovoConfigReader!.getConfigParameter('src', ctx.stage) &&
+              projectConfig.config
+            ) {
+              await project.moveTempJovoConfig(
+                project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string,
+              );
+            }
 
-		return [
-			{
-				title: 'Uploading to AWS Lambda',
-				enabled: (ctx: JovoTaskContextLambda) => !ctx.newSkill &&
-					_.isUndefined(arn) === false ||
-					// If specifically lambda got defined to be the target execute
-					// even when no arn is defined. So that we can display an error
-					// so that user knows exactly what is wrong
-					(_.isUndefined(arn) === true && ctx.targets!.includes('lambda')),
-				task: async (ctx: JovoTaskContextLambda, task) => {
-					try {
-						if (_.isUndefined(arn)) {
-							const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';
-							return Promise.reject(new Error('Error: ' + errorMessage));
-						}
+            await this.checkAsk();
+            await this.upload(ctx, project);
 
-						const projectConfig = project.getConfig(ctx.stage);
-						ctx.lambdaArn = arn;
+            if (
+              project.jovoConfigReader!.getConfigParameter('src', ctx.stage) &&
+              projectConfig.config
+            ) {
+              await project.deleteTempJovoConfig(
+                project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string,
+              );
+            }
 
-						// special use case
-						// copy app.json/project.js if src directory is not default and config
-						// was set in projectConfig
-						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.moveTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
-						}
+            let info = 'Info: ';
 
-						await this.checkAsk();
-						await this.upload(ctx, project);
+            info += `Deployed to lambda function: ${arn}`;
+            task.skip(info);
 
-						if (project.jovoConfigReader!.getConfigParameter('src', ctx.stage) && projectConfig.config) {
-							await project.deleteTempJovoConfig(project.jovoConfigReader!.getConfigParameter('src', ctx.stage) as string);
-						}
+            return Promise.resolve();
+          } catch (err) {
+            throw err;
+          }
+        },
+      },
+    ];
+  }
 
-						let info = 'Info: ';
+  async upload(ctx: JovoTaskContextLambda, project: Project): Promise<void> {
+    ctx.src = ctx.src.replace(/\\/g, '\\\\');
 
-						info += `Deployed to lambda function: ${arn}`;
-						task.skip(info);
+    if (
+      process.env.AWS_ACCESS_KEY_ID === undefined ||
+      process.env.AWS_SECRET_ACCESS_KEY === undefined
+    ) {
+      // Only set profile when special AWS environment variables are not set
 
-						return Promise.resolve();
-					} catch (err) {
-						throw err;
-					}
-				},
-			}
-		];
-	}
+      let awsProfile = 'default';
+      if (ctx.askProfile) {
+        awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
+      }
+      if (ctx.awsProfile) {
+        awsProfile = ctx.awsProfile;
+      }
 
+      AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
+    }
 
-	async upload(ctx: JovoTaskContextLambda, project: Project): Promise<void> {
-		ctx.src = ctx.src.replace(/\\/g, '\\\\');
+    const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
+    if (!region) {
+      return Promise.reject(new Error(`No region found in "${ctx.lambdaArn}"!`));
+    }
+    AWS.config.region = region[0];
 
-		if (process.env.AWS_ACCESS_KEY_ID === undefined || process.env.AWS_SECRET_ACCESS_KEY === undefined) {
-			// Only set profile when special AWS environment variables are not set
+    const proxyServer =
+      process.env.http_proxy ||
+      process.env.HTTP_PROXY ||
+      process.env.https_proxy ||
+      process.env.HTTPS_PROXY;
 
-			let awsProfile = 'default';
-			if (ctx.askProfile) {
-				awsProfile = this.getAWSCredentialsFromAskProfile(ctx.askProfile);
-			}
-			if (ctx.awsProfile) {
-				awsProfile = ctx.awsProfile;
-			}
+    if (proxyServer) {
+      AWS.config.update({
+        httpOptions: {
+          agent: proxyAgent(proxyServer),
+        },
+      });
+    }
 
-			AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: awsProfile });
-		}
+    const lambda = new AWS.Lambda(ctx.awsConfig || {});
 
-		const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
-		if (!region) {
-			return Promise.reject(new Error(`No region found in "${ctx.lambdaArn}"!`));
-		}
-		AWS.config.region = region[0];
+    const pathToZip = await project.getZipBundlePath(ctx);
 
-		const proxyServer = process.env.http_proxy ||
-			process.env.HTTP_PROXY ||
-			process.env.https_proxy ||
-			process.env.HTTPS_PROXY;
+    await this.updateFunction(lambda, pathToZip, ctx.lambdaArn, ctx.lambdaConfig || {});
 
-		if (proxyServer) {
-			AWS.config.update({
-				httpOptions: {
-					agent: proxyAgent(proxyServer)
-				}
-			});
-		}
+    return this.deleteLambdaZip(pathToZip);
+  }
 
-		const lambda = new AWS.Lambda(ctx.awsConfig || {});
+  checkAsk(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      exec('ask -v', (error, stdout: string) => {
+        if (error) {
+          const msg =
+            'Jovo requires ASK CLI\n' +
+            'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
+          return reject(new Error(msg));
+        }
+        const version: string[] = stdout.split('.');
 
-		const pathToZip = await project.getZipBundlePath(ctx);
+        if (Number(version[0]) >= 1 && Number(version[1]) >= 1) {
+          return resolve();
+        }
 
-		await this.updateFunction(
-			lambda,
-			pathToZip,
-			ctx.lambdaArn,
-			ctx.lambdaConfig || {}
-		);
+        return reject(new Error('Please update ask-cli to version >= 1.1.0'));
+      });
+    });
+  }
 
-		return this.deleteLambdaZip(pathToZip);
-	}
+  updateFunction(
+    lambda: AWS.Lambda,
+    pathToZip: string,
+    lambdaArn: string,
+    lambdaParams: object | undefined,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const zipdata = fs.readFileSync(pathToZip);
 
+      let params = {
+        FunctionName: lambdaArn,
+        ZipFile: new Buffer(zipdata),
+      };
 
-	checkAsk(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			exec('ask -v', (error, stdout: string) => {
-				if (error) {
-					const msg = 'Jovo requires ASK CLI\n' +
-						'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
-					return reject(new Error(msg));
-				}
-				const version: string[] = stdout.split('.');
+      params = _.merge(params, lambdaParams);
 
-				if (parseInt(version[0], 10) >= 1 && parseInt(version[1], 10) >= 1) {
-					return resolve();
-				}
+      lambda.updateFunctionCode(params, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 
-				return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-			});
-		});
-	}
+  deleteLambdaZip(pathToZip: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      fs.unlink(pathToZip, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 
+  getAWSCredentialsFromAskProfile(askProfile: string) {
+    const askCliConfig = path.join(Utils.getUserHome(), '.ask', 'cli_config');
+    try {
+      const data = fs.readFileSync(askCliConfig);
+      const askProfiles = JSON.parse(data.toString()).profiles;
 
-	updateFunction(lambda: AWS.Lambda, pathToZip: string, lambdaArn: string, lambdaParams: object | undefined): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const zipdata = fs.readFileSync(pathToZip);
-
-			let params = {
-				FunctionName: lambdaArn,
-				ZipFile: new Buffer(zipdata),
-			};
-
-			params = _.merge(params, lambdaParams);
-
-			lambda.updateFunctionCode(params, (err, data) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
-
-
-	deleteLambdaZip(pathToZip: string): Promise<void> {
-		return new Promise((resolve, reject) => {
-			fs.unlink(pathToZip, (err) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
-
-
-	getAWSCredentialsFromAskProfile(askProfile: string) {
-		const askCliConfig = path.join(Utils.getUserHome(), '.ask', 'cli_config');
-		try {
-			const data = fs.readFileSync(askCliConfig);
-			const askProfiles = JSON.parse(data.toString()).profiles;
-
-			for (const profileKey of Object.keys(askProfiles)) {
-				const profile = askProfiles[profileKey];
-				if (profileKey === askProfile && _.get(profile, 'aws_profile')) {
-					return _.get(profile, 'aws_profile');
-				}
-			}
-		} catch (e) {
-			throw e;
-		}
-
-	}
-
+      for (const profileKey of Object.keys(askProfiles)) {
+        const profile = askProfiles[profileKey];
+        if (profileKey === askProfile && _.get(profile, 'aws_profile')) {
+          return _.get(profile, 'aws_profile');
+        }
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
 }

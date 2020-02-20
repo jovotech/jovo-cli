@@ -1,12 +1,6 @@
+import { AppFile, getProject, InputFlags, JovoCliPlatform, OutputFlags } from 'jovo-cli-core';
 import { JovoCliPlatformAlexa } from 'jovo-cli-platform-alexa';
 import { JovoCliPlatformGoogle } from 'jovo-cli-platform-google';
-import {
-	InputFlags,
-	OutputFlags,
-	JovoCliPlatform,
-	getProject,
-	AppFile
-} from 'jovo-cli-core';
 
 // All platforms that should be available to be used
 const AVAILABLE_PLATFORMS = [JovoCliPlatformAlexa, JovoCliPlatformGoogle];
@@ -22,14 +16,14 @@ const project = getProject();
  * @returns {string[]}
  */
 export function getAllAvailable() {
-	return AVAILABLE_PLATFORMS.map(platform => platform.PLATFORM_KEY);
+  return AVAILABLE_PLATFORMS.map((platform) => platform.PLATFORM_KEY);
 }
 
 export function get(platform: string): JovoCliPlatform {
-	if (!instances.hasOwnProperty(platform)) {
-		instances[platform] = createPlatformInstance(platform);
-	}
-	return instances[platform];
+  if (!instances.hasOwnProperty(platform)) {
+    instances[platform] = createPlatformInstance(platform);
+  }
+  return instances[platform];
 }
 
 /**
@@ -42,27 +36,27 @@ export function get(platform: string): JovoCliPlatform {
  * @returns {string[]}
  */
 export function getAll(platform?: string, stage?: string): string[] {
-	if (platform) {
-		return [platform];
-	}
+  if (platform) {
+    return [platform];
+  }
 
-	const projectPlatforms: string[] = [];
-	const config: AppFile = project.getConfig(stage);
+  const projectPlatforms: string[] = [];
+  const config: AppFile = project.getConfig(stage);
 
-	for (const platformName of getAllAvailable()) {
-		const platformInstance = get(platformName);
-		try {
-			if (config.hasOwnProperty(platformName)) {
-				projectPlatforms.push(platformName);
-			}
-		} catch (err) {
-			if (platformInstance.hasPlatform()) {
-				projectPlatforms.push(platformName);
-			}
-		}
-	}
+  for (const platformName of getAllAvailable()) {
+    const platformInstance = get(platformName);
+    try {
+      if (config.hasOwnProperty(platformName)) {
+        projectPlatforms.push(platformName);
+      }
+    } catch (err) {
+      if (platformInstance.hasPlatform()) {
+        projectPlatforms.push(platformName);
+      }
+    }
+  }
 
-	return projectPlatforms;
+  return projectPlatforms;
 }
 
 /**
@@ -72,13 +66,13 @@ export function getAll(platform?: string, stage?: string): string[] {
  * @returns {JovoCliPlatform}
  */
 function createPlatformInstance(name: string): JovoCliPlatform {
-	for (let i = 0; i < AVAILABLE_PLATFORMS.length; i++) {
-		if (AVAILABLE_PLATFORMS[i].PLATFORM_KEY === name) {
-			return new AVAILABLE_PLATFORMS[i]() as JovoCliPlatform;
-		}
-	}
+  for (let i = 0; i < AVAILABLE_PLATFORMS.length; i++) {
+    if (AVAILABLE_PLATFORMS[i].PLATFORM_KEY === name) {
+      return new AVAILABLE_PLATFORMS[i]() as JovoCliPlatform;
+    }
+  }
 
-	throw new Error(`The platform "${name}" is not supported!`);
+  throw new Error(`The platform "${name}" is not supported!`);
 }
 
 /**
@@ -88,10 +82,10 @@ function createPlatformInstance(name: string): JovoCliPlatform {
  * @param {*} command The command to load the options for
  */
 export function addCliOptions(command: string, options: InputFlags) {
-	for (const platform of getAllAvailable()) {
-		const instance = get(platform);
-		instance.getAdditionalCliOptions(command, options);
-	}
+  for (const platform of getAllAvailable()) {
+    const instance = get(platform);
+    instance.getAdditionalCliOptions(command, options);
+  }
 }
 
 /**
@@ -102,11 +96,11 @@ export function addCliOptions(command: string, options: InputFlags) {
  * @returns {boolean}
  */
 export function validateCliOptions(command: string, options: OutputFlags) {
-	for (const platform of getAllAvailable()) {
-		const instance = get(platform);
-		if (!instance.validateAdditionalCliOptions(command, options)) {
-			return false;
-		}
-	}
-	return true;
+  for (const platform of getAllAvailable()) {
+    const instance = get(platform);
+    if (!instance.validateAdditionalCliOptions(command, options)) {
+      return false;
+    }
+  }
+  return true;
 }

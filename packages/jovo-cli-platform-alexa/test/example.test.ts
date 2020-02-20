@@ -1,3 +1,1 @@
-test.skip('test()', () => {
-
-});
+test.skip('test()', () => {});
