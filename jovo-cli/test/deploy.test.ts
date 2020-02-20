@@ -5,7 +5,6 @@ import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
 const tmpTestFolder = 'tmpTestFolderDeploy';
-const askProfile = process.env.ASK_PROFILE;
 
 beforeAll(() => {
 	deleteFolderRecursive(tmpTestFolder);
