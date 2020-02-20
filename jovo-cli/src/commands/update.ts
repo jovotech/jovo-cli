@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import chalk from 'chalk';
 import { exec } from 'child_process';
-import { statSync } from 'fs-extra';
+import { statSync, writeFile } from 'fs-extra';
 import { getProject } from 'jovo-cli-core';
 import Listr = require('listr');
 import { join as pathJoin } from 'path';
@@ -9,8 +9,10 @@ import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 import { getPackageVersionsNpm, JovoCliRenderer } from '../utils';
 import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
+import { writeFileSync } from 'fs';
 
 const execAsync = promisify(exec);
+
 const rimrafAsync = promisify(rimraf);
 
 export class Update extends Command {
@@ -54,13 +56,14 @@ export class Update extends Command {
       }
 
       let npmUpdateOutput = '';
-      tasks.add({
+
+		tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
-          const updateCommand = `npm update ${outOfDatePackages.join(' ')}`;
+          const updateCommand = `npm install ${outOfDatePackages.join(' ')} --loglevel=error`;
 
           try {
-            const { stdout, stderr } = await execAsync(updateCommand, {
+			  const { stdout, stderr } = await execAsync(updateCommand, {
               cwd: project.getProjectPath(),
             });
             npmUpdateOutput = stdout;
@@ -69,6 +72,7 @@ export class Update extends Command {
               throw new Error(stderr);
             }
           } catch (err) {
+          	console.log(err);
             this.error(err);
           }
         },
@@ -85,7 +89,7 @@ export class Update extends Command {
         statSync(bundleNodeDirectoryPath);
 
         tasks.add({
-          title: 'Deleting "node_modules" in bunle directory...',
+          title: 'Deleting "node_modules" in bundle directory...',
           async task() {
             await rimrafAsync(bundleNodeDirectoryPath);
           },
