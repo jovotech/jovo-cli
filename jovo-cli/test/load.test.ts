@@ -224,14 +224,14 @@ describe('load', () => {
 		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/ -p', {
-			cwd: `${tmpTestFolder}/${projectName}`
+		await execAsync('mkdir node_modules/jovo-component-email/ -p', {
+			cwd: projectFolder
 		});
-		await exec('touch index.js README.md', {
-			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
+		await execAsync('touch index.js README.md', {
+			cwd: `${projectFolder}/node_modules/jovo-component-email`
 		});
-		await exec('echo {} > package.json', {
-			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
+		await execAsync('echo {} > package.json', {
+			cwd: `${projectFolder}/node_modules/jovo-component-email`
 		});
 
 		// Load component
@@ -273,13 +273,13 @@ describe('load', () => {
 		);
 
 		// Create fake component
-		await exec('mkdir node_modules/jovo-component-email/dist/ -p', {
+		await execAsync('mkdir node_modules/jovo-component-email/dist/ -p', {
 			cwd: `${tmpTestFolder}/${projectName}`
 		});
-		await exec('touch index.js README.md dist/index.js', {
+		await execAsync('touch index.js README.md dist/index.js', {
 			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
-		await exec('echo {} > package.json', {
+		await execAsync('echo {} > package.json', {
 			cwd: `${tmpTestFolder}/${projectName}/node_modules/jovo-component-email`
 		});
 

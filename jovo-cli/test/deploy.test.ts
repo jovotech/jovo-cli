@@ -4,12 +4,16 @@ import * as path from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
 
-const tmpTestfolder = 'tmpTestFolderDeploy';
+const tmpTestFolder = 'tmpTestFolderDeploy';
 
 beforeAll(() => {
-	deleteFolderRecursive(tmpTestfolder);
-	mkdirSync(tmpTestfolder);
-}, 5000);
+	deleteFolderRecursive(tmpTestFolder);
+	mkdirSync(tmpTestFolder);
+});
+
+afterAll(() => {
+	deleteFolderRecursive(tmpTestFolder);
+});
 
 describe('deploy', () => {
 	it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
@@ -26,7 +30,7 @@ describe('deploy', () => {
 		await runJovoCommand(
 			'new',
 			newParameters,
-			tmpTestfolder,
+			tmpTestFolder,
 			'Installation completed.'
 		);
 
@@ -37,7 +41,7 @@ describe('deploy', () => {
 			deployParameters.push('--ask-profile', process.env.ASK_PROFILE);
 		}
 
-		const projectFolder = path.join(tmpTestfolder, projectName);
+		const projectFolder = path.join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'deploy',
 			deployParameters,
@@ -79,12 +83,12 @@ describe('deploy', () => {
 		await runJovoCommand(
 			'new',
 			parameters,
-			tmpTestfolder,
+			tmpTestFolder,
 			'Installation completed.'
 		);
 
 		// Deploy project
-		const projectFolder = path.join(tmpTestfolder, projectName);
+		const projectFolder = path.join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'deploy',
 			['--target', 'zip'],
@@ -116,12 +120,12 @@ describe('deploy', () => {
 		await runJovoCommand(
 			'new',
 			parameters,
-			tmpTestfolder,
+			tmpTestFolder,
 			'Installation completed.'
 		);
 
 		// Deploy project
-		const projectFolder = path.join(tmpTestfolder, projectName);
+		const projectFolder = path.join(tmpTestFolder, projectName);
 		await runJovoCommand(
 			'deploy',
 			['--platform', 'googleAction'],

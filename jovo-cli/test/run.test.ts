@@ -11,7 +11,7 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-	// deleteFolderRecursive(tmpTestfolder);
+	deleteFolderRecursive(tmpTestFolder);
 });
 
 describe('run', () => {
@@ -32,7 +32,7 @@ describe('run', () => {
 			'run',
 			[],
 			projectFolder,
-			'Local server listening on port 3000.'
+			'This is your webhook url:'
 		);
 	}, 200000);
 

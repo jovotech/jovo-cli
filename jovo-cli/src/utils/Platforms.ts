@@ -86,7 +86,6 @@ function createPlatformInstance(name: string): JovoCliPlatform {
  *
  * @export
  * @param {*} command The command to load the options for
- * @param {*} vorpalCommand The vorpal command instance to add the options to
  */
 export function addCliOptions(command: string, options: InputFlags) {
 	for (const platform of getAllAvailable()) {
@@ -100,7 +99,6 @@ export function addCliOptions(command: string, options: InputFlags) {
  *
  * @export
  * @param {*} command The command to check the options for
- * @param {*} args The vorpal args object
  * @returns {boolean}
  */
 export function validateCliOptions(command: string, options: OutputFlags) {

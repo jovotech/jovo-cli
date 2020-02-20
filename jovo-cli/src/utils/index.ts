@@ -75,7 +75,6 @@ export function getSymbol(task: ListrTaskHelper, options: ListrOptions) {
  * Adds CLI options for all commands
  *
  * @export
- * @param {Vorpal.Command} vorpalInstance
  */
 export function addBaseCliOptions(options: InputFlags): void {
 	options.debug = flags.boolean({

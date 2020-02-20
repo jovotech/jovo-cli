@@ -190,7 +190,9 @@ export class Run extends Command {
 			'--ignore',
 			'db/*',
 			'--ignore',
-			'test/*'
+			'test/*',
+			'--webhook',
+			'--jovo-webhook'
 		];
 
 		if (flags.record) {
