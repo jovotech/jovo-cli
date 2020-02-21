@@ -31,7 +31,7 @@ const { promptForInit, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
 export class Build extends Command {
   static description: 'Build platform-specific language models based on jovo models folder.';
 
-  static examples: ['jovo build --platform alexaSkill'];
+  static examples: ['jovo build --platform alexaSkill', 'jovo build --target zip'];
 
   static flags: InputFlags = {
     locale: flags.string({

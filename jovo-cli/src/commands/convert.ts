@@ -9,6 +9,11 @@ import { JovoCliRenderer } from '../utils';
 export class Convert extends Command {
   static description = 'Converts .csv-files to i18n.json-files and vice versa.';
 
+  static examples = [
+    'jovo convert i18nToCsv --from ./i18n/',
+    'jovo convert csvToI18n --from ./responses.csv',
+  ];
+
   static flags = {
     from: flags.string({
       description: 'The path to your src file.',
@@ -18,14 +23,14 @@ export class Convert extends Command {
     }),
   };
 
-  static args = [{ name: 'fn', options: ['i18nToCsv', 'csvToI18n'] }];
+  static args = [{ name: 'fn', options: ['i18nToCsv', 'csvToI18n'], required: true }];
 
   async run() {
     const { args, flags } = this.parse(Convert);
     const origin = flags.from;
     let target = flags.to;
 
-    if (isValidOrigin(origin)) {
+    if (!isValidOrigin(origin)) {
       return;
     }
 
@@ -91,7 +96,7 @@ export class Convert extends Command {
 
                     // Write file for every locale in model.
                     for (const locale of Object.keys(model)) {
-                      const dest = target || './i18n/';
+                      const dest = target || './src/i18n/';
                       if (!existsSync(dest)) {
                         mkdirSync(dest);
                       }
@@ -138,7 +143,7 @@ export class Convert extends Command {
 function isValidOrigin(origin: string | undefined) {
   if (!origin) {
     console.log(
-      'The path from your originating files has to be set.\nYou can choose between setting a single file or an entire folder.',
+      '\nThe path from your originating files has to be set.\n\nYou can choose between setting a single file or an entire folder.',
     );
     return false;
   }

@@ -13,6 +13,8 @@ let destPath = './src/app.js';
 export class Scaffold extends Command {
   static description = 'Build a scaffold handler out of your existing language model.';
 
+  static examples = ['jovo scaffold', 'jovo scaffold --overwrite'];
+
   static flags = {
     overwrite: flags.boolean({
       description: 'Forces overwriting of an existing handler file.',

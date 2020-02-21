@@ -23,6 +23,11 @@ import { buildReverseTask, getTask } from '../utils/Tasks';
 export class Get extends Command {
   static description = 'Downloads an existing platform project into the platforms folder.';
 
+  static examples = [
+    'jovo get alexaSkill --skill-id amzn1.ask.skill.xxxxxxxx',
+    'jovo get googleAction --project-id testproject-xxxxxx',
+  ];
+
   static flags: InputFlags = {
     locale: flags.string({
       char: 'l',

@@ -16,6 +16,8 @@ const rimrafAsync = promisify(rimraf);
 export class Update extends Command {
   static description = 'Updates the Jovo modules in project to latest versions.';
 
+  static examples = ['jovo update'];
+
   async run() {
     try {
       this.parse(Update);

@@ -32,7 +32,10 @@ export class New extends Command {
   static description = 'Creates a new Jovo project.';
 
   // Prints out examples for this command.
-  static examples = ['jovo new jovo-example-project'];
+  static examples = [
+    'jovo new jovo-example-project',
+    'jovo new jovo-example-project --locale de-DE --language typescript',
+  ];
 
   // Defines flags for this command, such as --help.
   static flags: InputFlags = {
