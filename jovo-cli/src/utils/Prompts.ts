@@ -11,24 +11,24 @@ export const ANSWER_SEPERATE = 'seperate_file';
  * @return {Promise}
  */
 export function promptForPlatform(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'platform',
-			message: 'Choose your platform',
-			choices: [
-				{
-					value: 'alexaSkill',
-					name: 'Alexa Skill (alexaSkill)'
-				},
-				{
-					value: 'googleAction',
-					name: 'GoogleAction with DialogFlow (googleAction)'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'platform',
+      message: 'Choose your platform',
+      choices: [
+        {
+          value: 'alexaSkill',
+          name: 'Alexa Skill (alexaSkill)',
+        },
+        {
+          value: 'googleAction',
+          name: 'GoogleAction with DialogFlow (googleAction)',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -36,24 +36,24 @@ export function promptForPlatform(): Promise<inquirer.Answers> {
  * @return {Promise}
  */
 export function promptForInit(message: string): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'platform',
-			message,
-			choices: [
-				{
-					value: 'alexaSkill',
-					name: 'Alexa Skill (alexaSkill)'
-				},
-				{
-					value: 'googleAction',
-					name: 'GoogleAction with DialogFlow (googleAction)'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'platform',
+      message,
+      choices: [
+        {
+          value: 'alexaSkill',
+          name: 'Alexa Skill (alexaSkill)',
+        },
+        {
+          value: 'googleAction',
+          name: 'GoogleAction with DialogFlow (googleAction)',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -61,19 +61,17 @@ export function promptForInit(message: string): Promise<inquirer.Answers> {
  * @param {Array<*>} choices
  * @return {Promise}
  */
-export function promptListForProjectId(
-	choices: inquirer.ChoiceType[]
-): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'id',
-			message: 'Select your project:',
-			paginated: true,
-			choices
-		}
-	];
-	return inquirer.prompt(questions);
+export function promptListForProjectId(choices: inquirer.ChoiceType[]): Promise<inquirer.Answers> {
+  const questions = [
+    {
+      type: 'list',
+      name: 'id',
+      message: 'Select your project:',
+      paginated: true,
+      choices,
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -81,52 +79,49 @@ export function promptListForProjectId(
  * @return {*}
  */
 export function promptOverwriteProject(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'overwrite',
-			message:
-				'There is a folder with a same name. What would you like to do?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'overwrite',
+      message: 'There is a folder with a same name. What would you like to do?',
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
  * Asks for overwrite confirmation
  * @return {*}
  */
-export function promptUpdateVersions(
-	numPackages: number
-): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'update',
-			message: `Currently ${numPackages} packages are out of date. What would you like to do?`,
-			choices: [
-				{
-					value: ANSWER_UPDATE,
-					name: 'Update all packages to the newest version'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+export function promptUpdateVersions(numPackages: number): Promise<inquirer.Answers> {
+  const questions = [
+    {
+      type: 'list',
+      name: 'update',
+      message: `Currently ${numPackages} packages are out of date. What would you like to do?`,
+      choices: [
+        {
+          value: ANSWER_UPDATE,
+          name: 'Update all packages to the newest version',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -134,24 +129,24 @@ export function promptUpdateVersions(
  * @return {*}
  */
 export function promptOverwriteProjectFiles(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'overwrite',
-			message: 'Found existing project files. How to proceed?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'overwrite',
+      message: 'Found existing project files. How to proceed?',
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -159,28 +154,28 @@ export function promptOverwriteProjectFiles(): Promise<inquirer.Answers> {
  * @return {*}
  */
 export function promptOverwriteReverseBuild(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'promptOverwriteReverseBuild',
-			message: 'Found existing model files. How to proceed?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite'
-				},
-				{
-					value: ANSWER_BACKUP,
-					name: 'Backup old file and proceed'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'promptOverwriteReverseBuild',
+      message: 'Found existing model files. How to proceed?',
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_BACKUP,
+          name: 'Backup old file and proceed',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 /**
@@ -188,65 +183,63 @@ export function promptOverwriteReverseBuild(): Promise<inquirer.Answers> {
  * @return {*}
  */
 export function promptNewProject(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'input',
-			name: 'directory',
-			message:
-				'Missing argument <directory>. How do you want to name your Jovo project?'
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'input',
+      name: 'directory',
+      message: 'Missing argument <directory>. How do you want to name your Jovo project?',
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 export function promptOverwriteHandler(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'overwriteHandler',
-			message:
-				'Found existing app.js file. Do you want to overwrite your existing handler?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite'
-				},
-				{
-					value: ANSWER_SEPERATE,
-					name: 'Write into seperate file'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
-	return inquirer.prompt(questions);
+  const questions = [
+    {
+      type: 'list',
+      name: 'overwriteHandler',
+      message: 'Found existing app.js file. Do you want to overwrite your existing handler?',
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_SEPERATE,
+          name: 'Write into seperate file',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
+  return inquirer.prompt(questions);
 }
 
 export function promptOverwriteComponent(): Promise<inquirer.Answers> {
-	const questions = [
-		{
-			type: 'list',
-			name: 'overwriteComponent',
-			message: 'Found existing component. How to proceed?',
-			choices: [
-				{
-					value: ANSWER_OVERWRITE,
-					name: 'Overwrite'
-				},
-				{
-					value: ANSWER_BACKUP,
-					name: 'Backup old component and proceed'
-				},
-				{
-					value: ANSWER_CANCEL,
-					name: 'Cancel'
-				}
-			]
-		}
-	];
+  const questions = [
+    {
+      type: 'list',
+      name: 'overwriteComponent',
+      message: 'Found existing component. How to proceed?',
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_BACKUP,
+          name: 'Backup old component and proceed',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+    },
+  ];
 
-	return inquirer.prompt(questions);
+  return inquirer.prompt(questions);
 }

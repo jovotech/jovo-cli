@@ -1,31 +1,27 @@
-import * as _ from 'lodash';
-import * as inquirer from 'inquirer';
+import { flags } from '@oclif/command';
 import * as fs from 'fs';
-import * as path from 'path';
-import * as ask from './Ask';
+import * as inquirer from 'inquirer';
 import * as listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
-import { flags } from '@oclif/command';
+import * as _ from 'lodash';
+import * as path from 'path';
+import * as ask from './Ask';
 
-import { AppFileAlexa, JovoTaskContextAlexa } from '.';
 import {
-	DEFAULT_LOCALE,
-	JovoCliDeploy,
-	JovoCliPlatform,
-	Project,
-	TARGET_ALL,
-	TARGET_INFO,
-	TARGET_MODEL,
-	Utils,
-	InputFlags,
-	OutputFlags
+  DEFAULT_LOCALE,
+  InputFlags,
+  JovoCliDeploy,
+  JovoCliPlatform,
+  OutputFlags,
+  Project,
+  TARGET_ALL,
+  TARGET_INFO,
+  TARGET_MODEL,
+  Utils,
 } from 'jovo-cli-core';
-import {
-	AlexaLMIntent,
-	JovoModelAlexa,
-	JovoModelAlexaData
-} from 'jovo-model-alexa';
 import { Intent, JovoModelData } from 'jovo-model';
+import { AlexaLMIntent, JovoModelAlexa, JovoModelAlexaData } from 'jovo-model-alexa';
+import { AppFileAlexa, JovoTaskContextAlexa } from '.';
 
 const highlight = require('chalk').white.bold;
 const subHeadline = require('chalk').white.dim;
@@ -33,1422 +29,1232 @@ const subHeadline = require('chalk').white.dim;
 const project: Project = require('jovo-cli-core').getProject();
 
 export class JovoCliPlatformAlexa extends JovoCliPlatform {
-	static PLATFORM_KEY = 'alexaSkill';
-	static ID_KEY = 'skillId';
+  static PLATFORM_KEY = 'alexaSkill';
+  static ID_KEY = 'skillId';
 
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	/**
-	 * Return platfrom specific config id
-	 *
-	 * @param {Project} project The project
-	 * @param {ArgOptions} [argOptions] CLI arguments
-	 * @returns {object}
-	 * @memberof JovoCliPlatform
-	 */
-	getPlatformConfigIds(project: Project, options: OutputFlags): object {
-		try {
-			let skillId;
-			if (
-				options &&
-				options.hasOwnProperty('skill-id') &&
-				options['skill-id']
-			) {
-				skillId = options['skill-id'];
-			} else {
-				skillId =
-					project.jovoConfigReader!.getConfigParameter(
-						'alexaSkill.skillId',
-						options && (options.stage as string)
-					) || this.getSkillId();
-			}
+  /**
+   * Return platfrom specific config id
+   *
+   * @param {Project} project The project
+   * @param {ArgOptions} [argOptions] CLI arguments
+   * @returns {object}
+   * @memberof JovoCliPlatform
+   */
+  getPlatformConfigIds(project: Project, options: OutputFlags): object {
+    try {
+      let skillId;
+      if (options && options.hasOwnProperty('skill-id') && options['skill-id']) {
+        skillId = options['skill-id'];
+      } else {
+        skillId =
+          project.jovoConfigReader!.getConfigParameter(
+            'alexaSkill.skillId',
+            options && (options.stage as string),
+          ) || this.getSkillId();
+      }
 
-			const returnValue = {};
-			if (skillId) {
-				// @ts-ignore
-				returnValue.skillId = skillId;
-			}
+      const returnValue = {};
+      if (skillId) {
+        // @ts-ignore
+        returnValue.skillId = skillId;
+      }
 
-			return returnValue;
-		} catch (error) {
-			return {};
-		}
-	}
+      return returnValue;
+    } catch (error) {
+      return {};
+    }
+  }
 
-	/**
-	 * Return platfrom specific platfrom values
-	 *
-	 * @param {Project} project The project
-	 * @param {ArgOptions} [argOptions] CLI arguments
-	 * @returns {object}
-	 * @memberof JovoCliPlatform
-	 */
-	getPlatformConfigValues(project: Project, options: OutputFlags): object {
-		let askProfile;
-		if (
-			options &&
-			options.hasOwnProperty('ask-profile') &&
-			options['ask-profile']
-		) {
-			askProfile = options['ask-profile'];
-		}
+  /**
+   * Return platfrom specific platfrom values
+   *
+   * @param {Project} project The project
+   * @param {ArgOptions} [argOptions] CLI arguments
+   * @returns {object}
+   * @memberof JovoCliPlatform
+   */
+  getPlatformConfigValues(project: Project, options: OutputFlags): object {
+    let askProfile;
+    if (options && options.hasOwnProperty('ask-profile') && options['ask-profile']) {
+      askProfile = options['ask-profile'];
+    }
 
-		return {
-			askProfile:
-				askProfile ||
-				project.jovoConfigReader!.getConfigParameter(
-					'alexaSkill.ask-profile',
-					options && (options.stage as string)
-				) ||
-				project.jovoConfigReader!.getConfigParameter(
-					'alexaSkill.askProfile',
-					options && (options.stage as string)
-				) ||
-				project.jovoConfigReader!.getConfigParameter(
-					'host.lambda.ask-Profile',
-					options && (options.stage as string)
-				) ||
-				project.jovoConfigReader!.getConfigParameter(
-					'host.lambda.askProfile',
-					options && (options.stage as string)
-				) ||
-				process.env.ASK_DEFAULT_PROFILE ||
-				ask.DEFAULT_ASK_PROFILE
-		};
-	}
+    return {
+      askProfile:
+        askProfile ||
+        project.jovoConfigReader!.getConfigParameter(
+          'alexaSkill.ask-profile',
+          options && (options.stage as string),
+        ) ||
+        project.jovoConfigReader!.getConfigParameter(
+          'alexaSkill.askProfile',
+          options && (options.stage as string),
+        ) ||
+        project.jovoConfigReader!.getConfigParameter(
+          'host.lambda.ask-Profile',
+          options && (options.stage as string),
+        ) ||
+        project.jovoConfigReader!.getConfigParameter(
+          'host.lambda.askProfile',
+          options && (options.stage as string),
+        ) ||
+        process.env.ASK_DEFAULT_PROFILE ||
+        ask.DEFAULT_ASK_PROFILE,
+    };
+  }
 
-	/**
-	 * Returns existing projects of user
-	 *
-	 * @param {JovoTaskContextAlexa} config Configuration file
-	 * @returns {Promise<object>}
-	 * @memberof JovoCliPlatform
-	 */
-	getExistingProjects(
-		config: JovoTaskContextAlexa
-	): Promise<inquirer.ChoiceType[]> {
-		return ask.checkAsk().then(() => ask.askApiListSkills(config));
-	}
+  /**
+   * Returns existing projects of user
+   *
+   * @param {JovoTaskContextAlexa} config Configuration file
+   * @returns {Promise<object>}
+   * @memberof JovoCliPlatform
+   */
+  getExistingProjects(config: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
+    return ask.checkAsk().then(() => ask.askApiListSkills(config));
+  }
 
-	getAdditionalCliOptions(command: string, options: InputFlags): void {
-		if (command === 'get') {
-			options['skill-id'] = flags.string({
-				char: 's',
-				description: 'Alexa Skill ID'
-			});
-		}
+  getAdditionalCliOptions(command: string, options: InputFlags): void {
+    if (command === 'get') {
+      options['skill-id'] = flags.string({
+        char: 's',
+        description: 'Alexa Skill ID',
+      });
+    }
 
-		if (['build', 'deploy', 'get', 'init', 'new'].includes(command)) {
-			options['ask-profile'] = flags.string({
-				description: 'Name of used ASK profile',
-				default: 'default'
-			});
-		}
-	}
+    if (['build', 'deploy', 'get', 'init', 'new'].includes(command)) {
+      options['ask-profile'] = flags.string({
+        description: 'Name of used ASK profile',
+        default: 'default',
+      });
+    }
+  }
 
-	validateAdditionalCliOptions(
-		command: string,
-		options: OutputFlags
-	): boolean {
-		if (['build', 'deploy', 'get', 'init', 'new'].includes(command)) {
-			return this.isValidAskProfile(options['ask-profile'] as string);
-		}
+  validateAdditionalCliOptions(command: string, options: OutputFlags): boolean {
+    if (['build', 'deploy', 'get', 'init', 'new'].includes(command)) {
+      return this.isValidAskProfile(options['ask-profile'] as string);
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	/**
-	 * Returns true if project has alexa skill files
-	 *
-	 * @returns {boolean}
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	hasPlatform(): boolean {
-		try {
-			const filePath = this.getSkillJsonPath();
-			require(filePath);
-			return true;
-		} catch (err) {
-			return false;
-		}
-	}
+  /**
+   * Returns true if project has alexa skill files
+   *
+   * @returns {boolean}
+   * @memberof JovoCliPlatformAlexa
+   */
+  hasPlatform(): boolean {
+    try {
+      const filePath = this.getSkillJsonPath();
+      require(filePath);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 
-	/**
-	 * Set platform defaults on model
-	 *
-	 * @param {JovoModelAlexaData} model The model to set the data on
-	 * @returns {JovoModel}
-	 * @memberof JovoCliPlatform
-	 */
-	setPlatformDefaults(model: JovoModelAlexaData): JovoModelData {
-		if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
-			const result = _.unionBy(
-				_.get(model, 'alexa.interactionModel.languageModel.intents'),
-				this.getDefaultIntents(),
-				'name'
-			);
-			_.set(
-				model,
-				'alexa.interactionModel.languageModel.intents',
-				result
-			);
-		} else {
-			_.set(
-				model,
-				'alexa.interactionModel.languageModel.intents',
-				this.getDefaultIntents()
-			);
-		}
+  /**
+   * Set platform defaults on model
+   *
+   * @param {JovoModelAlexaData} model The model to set the data on
+   * @returns {JovoModel}
+   * @memberof JovoCliPlatform
+   */
+  setPlatformDefaults(model: JovoModelAlexaData): JovoModelData {
+    if (_.get(model, 'alexa.interactionModel.languageModel.intents')) {
+      const result = _.unionBy(
+        _.get(model, 'alexa.interactionModel.languageModel.intents'),
+        this.getDefaultIntents(),
+        'name',
+      );
+      _.set(model, 'alexa.interactionModel.languageModel.intents', result);
+    } else {
+      _.set(model, 'alexa.interactionModel.languageModel.intents', this.getDefaultIntents());
+    }
 
-		// let jovoIntent: AlexaLMTypeValue;
-		let jovoIntent: Intent;
-		if (model.intents) {
-			for (jovoIntent of model.intents) {
-				if (_.get(jovoIntent, 'alexa.name')) {
-					_.remove(
-						_.get(
-							model,
-							'alexa.interactionModel.languageModel.intents'
-						),
-						(currentObject: AlexaLMIntent) => {
-							// @ts-ignore
-							return currentObject.name === jovoIntent.alexa.name;
-						}
-					);
-				}
-			}
-		}
+    // let jovoIntent: AlexaLMTypeValue;
+    let jovoIntent: Intent;
+    if (model.intents) {
+      for (jovoIntent of model.intents) {
+        if (_.get(jovoIntent, 'alexa.name')) {
+          _.remove(
+            _.get(model, 'alexa.interactionModel.languageModel.intents'),
+            (currentObject: AlexaLMIntent) => {
+              // @ts-ignore
+              return currentObject.name === jovoIntent.alexa.name;
+            },
+          );
+        }
+      }
+    }
 
-		if (
-			_.get(model, 'alexa.interactionModel.languageModel.intents')
-				.length === 0
-		) {
-			// @ts-ignore
-			delete model.alexa.interactionModel.languageModel.intents;
+    if (_.get(model, 'alexa.interactionModel.languageModel.intents').length === 0) {
+      // @ts-ignore
+      delete model.alexa.interactionModel.languageModel.intents;
 
-			if (
-				_.keys(_.get(model, 'alexa.interactionModel.languageModel'))
-					.length === 0
-			) {
-				// @ts-ignore
-				delete model.alexa.interactionModel.languageModel;
-			}
-			if (_.keys(_.get(model, 'alexa.interactionModel')).length === 0) {
-				// @ts-ignore
-				delete model.alexa['interactionModel'];
-			}
-			if (_.keys(_.get(model, 'alexa')).length === 0) {
-				delete model.alexa;
-			}
-		}
+      if (_.keys(_.get(model, 'alexa.interactionModel.languageModel')).length === 0) {
+        // @ts-ignore
+        delete model.alexa.interactionModel.languageModel;
+      }
+      if (_.keys(_.get(model, 'alexa.interactionModel')).length === 0) {
+        // @ts-ignore
+        delete model.alexa.interactionModel;
+      }
+      if (_.keys(_.get(model, 'alexa')).length === 0) {
+        delete model.alexa;
+      }
+    }
 
-		return model;
-	}
+    return model;
+  }
 
-	/**
-	 * Add Alexa to configuration file
-	 *
-	 * @param {AppFileAlexa} config
-	 * @returns {AppFile}
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	addPlatfromToConfig(config: AppFileAlexa): AppFileAlexa {
-		if (!config.alexaSkill) {
-			_.extend(config, {
-				alexaSkill: {
-					nlu: {
-						name: 'alexa'
-					}
-				}
-			});
-		}
+  /**
+   * Add Alexa to configuration file
+   *
+   * @param {AppFileAlexa} config
+   * @returns {AppFile}
+   * @memberof JovoCliPlatformAlexa
+   */
+  addPlatfromToConfig(config: AppFileAlexa): AppFileAlexa {
+    if (!config.alexaSkill) {
+      _.extend(config, {
+        alexaSkill: {
+          nlu: {
+            name: 'alexa',
+          },
+        },
+      });
+    }
 
-		return config;
-	}
+    return config;
+  }
 
-	/**
-	 * Returns the validator to check if the platform specific properties are valid
-	 *
-	 * @returns {tv4.JsonSchema}
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	getModelValidator(): tv4.JsonSchema {
-		return JovoModelAlexa.getValidator();
-	}
+  /**
+   * Returns the validator to check if the platform specific properties are valid
+   *
+   * @returns {tv4.JsonSchema}
+   * @memberof JovoCliPlatformAlexa
+   */
+  getModelValidator(): tv4.JsonSchema {
+    return JovoModelAlexa.getValidator();
+  }
 
-	/**
-	 * Checks validity of ask profile
-	 * @param {string} askProfile
-	 * @return {boolean}
-	 */
-	isValidAskProfile(askProfile: string): boolean {
-		if (askProfile) {
-			if (askProfile.length === 0) {
-				console.log('--ask profile cannot be empty');
-				return false;
-			}
-		}
-		return true;
-	}
+  /**
+   * Checks validity of ask profile
+   * @param {string} askProfile
+   * @return {boolean}
+   */
+  isValidAskProfile(askProfile: string): boolean {
+    if (askProfile) {
+      if (askProfile.length === 0) {
+        console.log('--ask profile cannot be empty');
+        return false;
+      }
+    }
+    return true;
+  }
 
-	/**
-	 * Default Alexa Intents
-	 *
-	 * @returns {Array<object>}
-	 * @memberof Platform
-	 */
-	getDefaultIntents(): Intent[] {
-		return [
-			{
-				name: 'AMAZON.CancelIntent',
-				samples: []
-			},
-			{
-				name: 'AMAZON.HelpIntent',
-				samples: []
-			},
-			{
-				name: 'AMAZON.StopIntent',
-				samples: []
-			}
-		];
-	}
+  /**
+   * Default Alexa Intents
+   *
+   * @returns {Array<object>}
+   * @memberof Platform
+   */
+  getDefaultIntents(): Intent[] {
+    return [
+      {
+        name: 'AMAZON.CancelIntent',
+        samples: [],
+      },
+      {
+        name: 'AMAZON.HelpIntent',
+        samples: [],
+      },
+      {
+        name: 'AMAZON.StopIntent',
+        samples: [],
+      },
+    ];
+  }
 
-	/**
-	 * Gets tasks to build platform specific language model
-	 *
-	 * @param {JovoTaskContextAlexa} ctx The Context
-	 * @returns {ListrTask[]}
-	 * @memberof JovoCliPlatform
-	 */
-	getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
-		let title =
-			'Creating Alexa Skill project files ' + Utils.printStage(ctx.stage);
+  /**
+   * Gets tasks to build platform specific language model
+   *
+   * @param {JovoTaskContextAlexa} ctx The Context
+   * @returns {ListrTask[]}
+   * @memberof JovoCliPlatform
+   */
+  getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    let title = 'Creating Alexa Skill project files ' + Utils.printStage(ctx.stage);
 
-		const hasAlexaSkill = this.hasPlatform();
+    const hasAlexaSkill = this.hasPlatform();
 
-		if (hasAlexaSkill) {
-			title =
-				'Updating Alexa Skill project files ' +
-				Utils.printStage(ctx.stage);
-		}
+    if (hasAlexaSkill) {
+      title = 'Updating Alexa Skill project files ' + Utils.printStage(ctx.stage);
+    }
 
-		title += '\n' + subHeadline('   Path: ./platforms/alexaSkill');
+    title += '\n' + subHeadline('   Path: ./platforms/alexaSkill');
 
-		const buildPlatformTasks: ListrTask[] = [];
+    const buildPlatformTasks: ListrTask[] = [];
 
-		buildPlatformTasks.push({
-			title,
-			task: () => {
-				let titleInteractionModel = 'Creating Alexa Interaction Model';
-				if (hasAlexaSkill) {
-					titleInteractionModel = 'Updating Alexa Interaction Model';
-				}
-				titleInteractionModel +=
-					'\n' +
-					subHeadline('   Path: ./platforms/alexaSkill/models');
+    buildPlatformTasks.push({
+      title,
+      task: () => {
+        let titleInteractionModel = 'Creating Alexa Interaction Model';
+        if (hasAlexaSkill) {
+          titleInteractionModel = 'Updating Alexa Interaction Model';
+        }
+        titleInteractionModel += '\n' + subHeadline('   Path: ./platforms/alexaSkill/models');
 
-				return new listr([
-					{
-						title: 'Creating Alexa project files',
-						enabled: () => !hasAlexaSkill,
-						task: () => {
-							return new listr([
-								{
-									title: 'skill.json',
-									task: (ctx, task) => {
-										return this.createAlexaSkill(ctx)
-											.then(() => {
-												if (ctx.invocation) {
-													return project.updateInvocation(
-														ctx.invocation,
-														ctx.locales[0]
-													);
-												}
-												return Promise.resolve();
-											})
-											.then(() =>
-												this.buildSkillAlexa(ctx.stage)
-											)
-											.then(() => Utils.wait(500));
-									}
-								}
-							]);
-						}
-					},
-					{
-						title:
-							'Updating Skill Manifest\n' +
-							subHeadline(
-								'   Path: ./platforms/alexaSkill/skill.json'
-							),
-						enabled: () => hasAlexaSkill,
-						task: (ctx, task) => {
-							return this.buildSkillAlexa(ctx.stage).then(() =>
-								Utils.wait(500)
-							);
-						}
-					},
-					{
-						title: titleInteractionModel,
-						enabled: () => project.hasModelFiles(ctx.locales),
-						task: ctx => {
-							const buildLocalesTasks: ListrTask[] = [];
-							let buildLocales: string[];
-							let sublocales: string[];
+        return new listr([
+          {
+            title: 'Creating Alexa project files',
+            enabled: () => !hasAlexaSkill,
+            task: () => {
+              return new listr([
+                {
+                  title: 'skill.json',
+                  task: (ctx, task) => {
+                    return this.createAlexaSkill(ctx)
+                      .then(() => {
+                        if (ctx.invocation) {
+                          return project.updateInvocation(ctx.invocation, ctx.locales[0]);
+                        }
+                        return Promise.resolve();
+                      })
+                      .then(() => this.buildSkillAlexa(ctx.stage))
+                      .then(() => Utils.wait(500));
+                  },
+                },
+              ]);
+            },
+          },
+          {
+            title:
+              'Updating Skill Manifest\n' +
+              subHeadline('   Path: ./platforms/alexaSkill/skill.json'),
+            enabled: () => hasAlexaSkill,
+            task: (ctx, task) => {
+              return this.buildSkillAlexa(ctx.stage).then(() => Utils.wait(500));
+            },
+          },
+          {
+            title: titleInteractionModel,
+            enabled: () => project.hasModelFiles(ctx.locales),
+            task: (ctx) => {
+              const buildLocalesTasks: ListrTask[] = [];
+              let buildLocales: string[];
+              let sublocales: string[];
 
-							for (const mainLocale of ctx.locales) {
-								buildLocales = [];
+              for (const mainLocale of ctx.locales) {
+                buildLocales = [];
 
-								if (mainLocale.length === 2) {
-									sublocales = this.getSubLocales(mainLocale);
-									if (sublocales) {
-										buildLocales.push.apply(
-											buildLocales,
-											sublocales
-										);
-									}
-								}
+                if (mainLocale.length === 2) {
+                  sublocales = this.getSubLocales(mainLocale);
+                  if (sublocales) {
+                    buildLocales.push.apply(buildLocales, sublocales);
+                  }
+                }
 
-								if (buildLocales.length === 0) {
-									buildLocales.push(mainLocale);
-								}
+                if (buildLocales.length === 0) {
+                  buildLocales.push(mainLocale);
+                }
 
-								buildLocales.forEach(locale => {
-									buildLocalesTasks.push({
-										title: locale,
-										task: () => {
-											return this.buildLanguageModelAlexa(
-												mainLocale,
-												ctx.stage
-											).then(() => {
-												// Refresh the model data else it uses the old previously cached one
-												this.getModel(locale, true);
-												return Utils.wait(500);
-											});
-										}
-									});
-								});
-							}
-							return new listr(buildLocalesTasks);
-						}
-					}
-				]);
-			}
-		});
+                buildLocales.forEach((locale) => {
+                  buildLocalesTasks.push({
+                    title: locale,
+                    task: () => {
+                      return this.buildLanguageModelAlexa(mainLocale, ctx.stage).then(() => {
+                        // Refresh the model data else it uses the old previously cached one
+                        this.getModel(locale, true);
+                        return Utils.wait(500);
+                      });
+                    },
+                  });
+                });
+              }
+              return new listr(buildLocalesTasks);
+            },
+          },
+        ]);
+      },
+    });
 
-		return buildPlatformTasks;
-	}
+    return buildPlatformTasks;
+  }
 
-	/**
-	 * Get tasks to get existing platform project
-	 *
-	 * @param {JovoTaskContextAlexa} ctx The Context
-	 * @returns {ListrTask[]}
-	 * @memberof JovoCliPlatform
-	 */
-	getGetTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
-		const alexaSkillPath = this.getPath();
-		if (!fs.existsSync(alexaSkillPath)) {
-			fs.mkdirSync(alexaSkillPath);
-		}
+  /**
+   * Get tasks to get existing platform project
+   *
+   * @param {JovoTaskContextAlexa} ctx The Context
+   * @returns {ListrTask[]}
+   * @memberof JovoCliPlatform
+   */
+  getGetTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    const alexaSkillPath = this.getPath();
+    if (!fs.existsSync(alexaSkillPath)) {
+      fs.mkdirSync(alexaSkillPath);
+    }
 
-		return [
-			{
-				title:
-					'Getting Alexa Skill project for ASK profile ' +
-					highlight(ctx.askProfile),
-				enabled: (ctx: JovoTaskContextAlexa) =>
-					ctx.targets!.includes(TARGET_ALL) ||
-					ctx.targets!.includes(TARGET_INFO),
-				task: (ctx: JovoTaskContextAlexa, task) => {
-					let p = Promise.resolve();
-					ctx.info = 'Info: ';
+    return [
+      {
+        title: 'Getting Alexa Skill project for ASK profile ' + highlight(ctx.askProfile),
+        enabled: (ctx: JovoTaskContextAlexa) =>
+          ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO),
+        task: (ctx: JovoTaskContextAlexa, task) => {
+          let p = Promise.resolve();
+          ctx.info = 'Info: ';
 
-					p = p
-						.then(() => ask.checkAsk())
-						.then(() =>
-							ask.askApiGetSkill(ctx, this.getSkillJsonPath())
-						)
-						.then(() => this.setAlexaSkillId(ctx.skillId!))
-						.then(() => ask.askApiGetAccountLinking(ctx))
-						.then(accountLinkingJson => {
-							if (accountLinkingJson) {
-								fs.writeFile(
-									this.getAccountLinkingPath(),
-									accountLinkingJson,
-									err => {
-										if (err) {
-											return Promise.reject(err);
-										}
-										ctx.info +=
-											'Account Linking Information saved to ' +
-											this.getAccountLinkingPath();
-										return Promise.resolve();
-									}
-								);
-							} else {
-								return Promise.resolve();
-							}
-						})
-						.then(() => {
-							let info = 'Info: ';
-							const skillInfo = this.getSkillSimpleInformation();
-							info += `Skill Name: ${skillInfo.name}
+          p = p
+            .then(() => ask.checkAsk())
+            .then(() => ask.askApiGetSkill(ctx, this.getSkillJsonPath()))
+            .then(() => this.setAlexaSkillId(ctx.skillId!))
+            .then(() => ask.askApiGetAccountLinking(ctx))
+            .then((accountLinkingJson) => {
+              if (accountLinkingJson) {
+                fs.writeFile(this.getAccountLinkingPath(), accountLinkingJson, (err) => {
+                  if (err) {
+                    return Promise.reject(err);
+                  }
+                  ctx.info +=
+                    'Account Linking Information saved to ' + this.getAccountLinkingPath();
+                  return Promise.resolve();
+                });
+              } else {
+                return Promise.resolve();
+              }
+            })
+            .then(() => {
+              let info = 'Info: ';
+              const skillInfo = this.getSkillSimpleInformation();
+              info += `Skill Name: ${skillInfo.name}
 Skill ID: ${skillInfo.skillId}
 Endpoint: ${skillInfo.endpoint}`;
-							task.skip(info);
-						});
-					return p;
-				}
-			},
-			{
-				title:
-					'Getting Alexa Skill model files and saving to /platforms/alexaSkill/models',
-				enabled: (ctx: JovoTaskContextAlexa) =>
-					ctx.targets!.includes(TARGET_ALL) ||
-					ctx.targets!.includes(TARGET_MODEL),
-				task: (ctx: JovoTaskContextAlexa) => {
-					const alexaModelPath = this.getModelsPath();
-					if (!fs.existsSync(alexaModelPath)) {
-						fs.mkdirSync(alexaModelPath);
-					}
-					const skillJson = this.getSkillJson();
+              task.skip(info);
+            });
+          return p;
+        },
+      },
+      {
+        title: 'Getting Alexa Skill model files and saving to /platforms/alexaSkill/models',
+        enabled: (ctx: JovoTaskContextAlexa) =>
+          ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_MODEL),
+        task: (ctx: JovoTaskContextAlexa) => {
+          const alexaModelPath = this.getModelsPath();
+          if (!fs.existsSync(alexaModelPath)) {
+            fs.mkdirSync(alexaModelPath);
+          }
+          const skillJson = this.getSkillJson();
 
-					let locales = Object.keys(
-						skillJson.manifest.publishingInformation.locales
-					);
+          let locales = Object.keys(skillJson.manifest.publishingInformation.locales);
 
-					if (ctx.locales && ctx.targets!.includes(TARGET_MODEL)) {
-						locales = ctx.locales;
-					}
+          if (ctx.locales && ctx.targets!.includes(TARGET_MODEL)) {
+            locales = ctx.locales;
+          }
 
-					const getLocaleSubtasks: ListrTask[] = [];
-					for (const locale of locales) {
-						getLocaleSubtasks.push({
-							title: locale,
-							task: (ctx: JovoTaskContextAlexa) => {
-								return ask.askApiGetModel(
-									ctx,
-									this.getModelPath(locale),
-									locale
-								);
-							}
-						});
-					}
-					return new listr(getLocaleSubtasks);
-				}
-			}
-		];
-	}
+          const getLocaleSubtasks: ListrTask[] = [];
+          for (const locale of locales) {
+            getLocaleSubtasks.push({
+              title: locale,
+              task: (ctx: JovoTaskContextAlexa) => {
+                return ask.askApiGetModel(ctx, this.getModelPath(locale), locale);
+              },
+            });
+          }
+          return new listr(getLocaleSubtasks);
+        },
+      },
+    ];
+  }
 
-	/**
-	 * Get tasks to build Jovo language model from platform
-	 * specific language model
-	 *
-	 * @param {JovoTaskContextAlexa} ctx The Context
-	 * @returns {ListrTask[]}
-	 * @memberof JovoCliPlatform
-	 */
-	getBuildReverseTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
-		const returnTasks: ListrTask[] = [];
+  /**
+   * Get tasks to build Jovo language model from platform
+   * specific language model
+   *
+   * @param {JovoTaskContextAlexa} ctx The Context
+   * @returns {ListrTask[]}
+   * @memberof JovoCliPlatform
+   */
+  getBuildReverseTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    const returnTasks: ListrTask[] = [];
 
-		returnTasks.push({
-			title: 'Reversing model files',
-			task: (ctx: JovoTaskContextAlexa) => {
-				const reverseLocales: ListrTask[] = [];
-				const locales = this.getLocales(ctx.locales);
-				for (const locale of locales) {
-					reverseLocales.push({
-						title: locale.toString(),
-						task: async () => {
-							const alexaModelFiles = [
-								{
-									path: ['${locale}.json'],
-									content: this.getModel(locale)
-								}
-							];
+    returnTasks.push({
+      title: 'Reversing model files',
+      task: (ctx: JovoTaskContextAlexa) => {
+        const reverseLocales: ListrTask[] = [];
+        const locales = this.getLocales(ctx.locales);
+        for (const locale of locales) {
+          reverseLocales.push({
+            title: locale.toString(),
+            task: async () => {
+              const alexaModelFiles = [
+                {
+                  path: ['${locale}.json'],
+                  content: this.getModel(locale),
+                },
+              ];
 
-							const jovoModel = new JovoModelAlexa();
-							jovoModel.importNative(
-								alexaModelFiles,
-								locale.toString()
-							);
+              const jovoModel = new JovoModelAlexa();
+              jovoModel.importNative(alexaModelFiles, locale.toString());
 
-							// Apply the changes to the current model-file if one exists
-							let modelFile;
-							try {
-								modelFile = await project.getModel(locale);
-							} catch (e) {
-								// Currently no model file exists so there is
-								// nothing to merge it with
+              // Apply the changes to the current model-file if one exists
+              let modelFile;
+              try {
+                modelFile = await project.getModel(locale);
+              } catch (e) {
+                // Currently no model file exists so there is
+                // nothing to merge it with
 
-								modelFile = {
-									invocation: ''
-								};
-							}
+                modelFile = {
+                  invocation: '',
+                };
+              }
 
-							const nativeData = jovoModel.exportJovoModel();
-							if (nativeData === undefined) {
-								throw new Error(
-									'Alexa files did not contain any valid data.'
-								);
-							}
+              const nativeData = jovoModel.exportJovoModel();
+              if (nativeData === undefined) {
+                throw new Error('Alexa files did not contain any valid data.');
+              }
 
-							_.merge(modelFile, nativeData);
+              _.merge(modelFile, nativeData);
 
-							return project.saveModel(modelFile, locale);
-						}
-					});
-				}
-				return new listr(reverseLocales);
-			}
-		});
+              return project.saveModel(modelFile, locale);
+            },
+          });
+        }
+        return new listr(reverseLocales);
+      },
+    });
 
-		return returnTasks;
-	}
+    return returnTasks;
+  }
 
-	/**
-	 * Get tasks to deploy project
-	 *
-	 * @param {JovoTaskContextAlexa} ctx The Context
-	 * @param {JovoCliDeploy[]} targets The additional deploy targets
-	 * @returns {ListrTask[]}
-	 * @memberof JovoCliPlatform
-	 */
-	getDeployTasks(
-		ctx: JovoTaskContextAlexa,
-		targets: JovoCliDeploy[]
-	): ListrTask[] {
-		const returnTasks: ListrTask[] = [];
+  /**
+   * Get tasks to deploy project
+   *
+   * @param {JovoTaskContextAlexa} ctx The Context
+   * @param {JovoCliDeploy[]} targets The additional deploy targets
+   * @returns {ListrTask[]}
+   * @memberof JovoCliPlatform
+   */
+  getDeployTasks(ctx: JovoTaskContextAlexa, targets: JovoCliDeploy[]): ListrTask[] {
+    const returnTasks: ListrTask[] = [];
 
-		ctx.targets = ctx.targets || [];
+    ctx.targets = ctx.targets || [];
 
-		const additionalTargetKeys: string[] = targets.map(
-			// @ts-ignore
-			target => target.constructor.TARGET_KEY
-		);
+    const additionalTargetKeys: string[] = targets.map(
+      // @ts-ignore
+      (target) => target.constructor.TARGET_KEY,
+    );
 
-		try {
-			ctx.skillId = this.getSkillId();
-		} catch (error) {
-			if (
-				ctx.targets.length === 0 ||
-				(ctx.targets.length &&
-					!additionalTargetKeys.some(targetName =>
-						ctx.targets!.includes(targetName)
-					))
-			) {
-				console.log(
-					`Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`
-				);
-				return [];
-			}
-		}
+    try {
+      ctx.skillId = this.getSkillId();
+    } catch (error) {
+      if (
+        ctx.targets.length === 0 ||
+        (ctx.targets.length &&
+          !additionalTargetKeys.some((targetName) => ctx.targets!.includes(targetName)))
+      ) {
+        console.log(
+          `Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`,
+        );
+        return [];
+      }
+    }
 
-		returnTasks.push({
-			title: 'Deploying Alexa Skill ' + Utils.printStage(ctx.stage),
-			task: (ctx: JovoTaskContextAlexa, task: ListrTaskWrapper) => {
-				const deployTasks: ListrTask[] = [
-					{
-						title: `Creating Alexa Skill project for ASK profile ${highlight(
-							ctx.askProfile
-						)}`, // eslint-disable-line
-						enabled: (ctx: JovoTaskContextAlexa) =>
-							_.isUndefined(ctx.skillId) &&
-							(ctx.targets === undefined ||
-								targets.length === 0 ||
-								(!!ctx.targets.length &&
-									!additionalTargetKeys.some(targetName =>
-										ctx.targets!.includes(targetName)
-									))),
-						task: (ctx: JovoTaskContextAlexa) => {
-							ctx.targets = [TARGET_ALL];
-							return ask.checkAsk().then(() => {
-								return ask
-									.askApiCreateSkill(
-										ctx,
-										this.getSkillJsonPath()
-									)
-									.then(skillId => {
-										ctx.skillId = skillId;
-										ctx.newSkill = true;
-										return this.setAlexaSkillId(skillId);
-									})
-									.then(() => ask.getSkillStatus(ctx))
-									.then(() => {
-										let info = 'Info: ';
-										const skillInfo = this.getSkillInformation();
-										info += `Skill Name: ${skillInfo.name}
+    returnTasks.push({
+      title: 'Deploying Alexa Skill ' + Utils.printStage(ctx.stage),
+      task: (ctx: JovoTaskContextAlexa, task: ListrTaskWrapper) => {
+        const deployTasks: ListrTask[] = [
+          {
+            title: `Creating Alexa Skill project for ASK profile ${highlight(ctx.askProfile)}`, // eslint-disable-line
+            enabled: (ctx: JovoTaskContextAlexa) =>
+              _.isUndefined(ctx.skillId) &&
+              (ctx.targets === undefined ||
+                targets.length === 0 ||
+                (!!ctx.targets.length &&
+                  !additionalTargetKeys.some((targetName) => ctx.targets!.includes(targetName)))),
+            task: (ctx: JovoTaskContextAlexa) => {
+              ctx.targets = [TARGET_ALL];
+              return ask.checkAsk().then(() => {
+                return ask
+                  .askApiCreateSkill(ctx, this.getSkillJsonPath())
+                  .then((skillId) => {
+                    ctx.skillId = skillId;
+                    ctx.newSkill = true;
+                    return this.setAlexaSkillId(skillId);
+                  })
+                  .then(() => ask.getSkillStatus(ctx))
+                  .then(() => {
+                    let info = 'Info: ';
+                    const skillInfo = this.getSkillInformation();
+                    info += `Skill Name: ${skillInfo.name}
 Skill ID: ${skillInfo.skillId}
 Invocation Name: ${skillInfo.invocationName}
 Endpoint: ${skillInfo.endpoint}`;
-										task.skip(info);
-									});
-							});
-						}
-					},
-					{
-						title:
-							'Updating Alexa Skill project for ASK profile ' +
-							ctx.askProfile,
-						enabled: (ctx: JovoTaskContextAlexa) =>
-							!_.isUndefined(ctx.skillId) &&
-							_.isUndefined(ctx.newSkill) &&
-							(ctx.targets!.includes(TARGET_ALL) ||
-								ctx.targets!.includes(TARGET_INFO)),
-						task: (
-							ctx: JovoTaskContextAlexa,
-							task: ListrTaskWrapper
-						) => {
-							return ask
-								.askApiUpdateSkill(ctx, this.getSkillJsonPath())
-								.then(() => ask.getSkillStatus(ctx))
-								.then(() => {
-									let info = 'Info: ';
-									const skillInfo = this.getSkillInformation();
-									info += `Skill Name: ${skillInfo.name}
+                    task.skip(info);
+                  });
+              });
+            },
+          },
+          {
+            title: 'Updating Alexa Skill project for ASK profile ' + ctx.askProfile,
+            enabled: (ctx: JovoTaskContextAlexa) =>
+              !_.isUndefined(ctx.skillId) &&
+              _.isUndefined(ctx.newSkill) &&
+              (ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO)),
+            task: (ctx: JovoTaskContextAlexa, task: ListrTaskWrapper) => {
+              return ask
+                .askApiUpdateSkill(ctx, this.getSkillJsonPath())
+                .then(() => ask.getSkillStatus(ctx))
+                .then(() => {
+                  let info = 'Info: ';
+                  const skillInfo = this.getSkillInformation();
+                  info += `Skill Name: ${skillInfo.name}
 Skill ID: ${skillInfo.skillId}
 Invocation Name: ${skillInfo.invocationName}
 Endpoint: ${skillInfo.endpoint}`;
-									task.skip(info);
-									return Promise.resolve();
-								});
-						}
-					},
-					{
-						title: 'Deploying Interaction Model, waiting for build',
-						enabled: (ctx: JovoTaskContextAlexa) =>
-							ctx.targets!.includes(TARGET_ALL) ||
-							ctx.targets!.includes(TARGET_MODEL),
-						task: (ctx: JovoTaskContextAlexa) => {
-							const deployLocaleTasks: ListrTask[] = [];
+                  task.skip(info);
+                  return Promise.resolve();
+                });
+            },
+          },
+          {
+            title: 'Deploying Interaction Model, waiting for build',
+            enabled: (ctx: JovoTaskContextAlexa) =>
+              ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_MODEL),
+            task: (ctx: JovoTaskContextAlexa) => {
+              const deployLocaleTasks: ListrTask[] = [];
 
-							let deployLocales: string[];
-							let sublocales: string[];
-							for (const mainLocale of this.getLocales(
-								ctx.locales
-							)) {
-								deployLocales = [];
+              let deployLocales: string[];
+              let sublocales: string[];
+              for (const mainLocale of this.getLocales(ctx.locales)) {
+                deployLocales = [];
 
-								if (mainLocale.length === 2) {
-									sublocales = this.getSubLocales(mainLocale);
-									if (sublocales) {
-										deployLocales.push.apply(
-											deployLocales,
-											sublocales
-										);
-									}
-								}
+                if (mainLocale.length === 2) {
+                  sublocales = this.getSubLocales(mainLocale);
+                  if (sublocales) {
+                    deployLocales.push.apply(deployLocales, sublocales);
+                  }
+                }
 
-								if (deployLocales.length === 0) {
-									deployLocales.push(mainLocale);
-								}
+                if (deployLocales.length === 0) {
+                  deployLocales.push(mainLocale);
+                }
 
-								deployLocales.forEach(locale => {
-									deployLocaleTasks.push({
-										title: locale,
-										task: (ctx: JovoTaskContextAlexa) => {
-											const config = _.cloneDeep(ctx);
-											config.locales = [locale];
-											return ask
-												.askApiUpdateModel(
-													config,
-													this.getModelPath(locale),
-													locale
-												)
-												.then(() =>
-													ask.getModelStatus(config)
-												);
-										}
-									});
-								});
-							}
-							return new listr(deployLocaleTasks);
-						}
-					}
-				];
+                deployLocales.forEach((locale) => {
+                  deployLocaleTasks.push({
+                    title: locale,
+                    task: (ctx: JovoTaskContextAlexa) => {
+                      const config = _.cloneDeep(ctx);
+                      config.locales = [locale];
+                      return ask
+                        .askApiUpdateModel(config, this.getModelPath(locale), locale)
+                        .then(() => ask.getModelStatus(config));
+                    },
+                  });
+                });
+              }
+              return new listr(deployLocaleTasks);
+            },
+          },
+        ];
 
-				// Add the deploy target tasks
-				if (!ctx.newSkill) {
-					targets.forEach(target => {
-						deployTasks.push.apply(
-							deployTasks,
-							target.execute(ctx, project)
-						);
-					});
-				}
+        // Add the deploy target tasks
+        if (!ctx.newSkill) {
+          targets.forEach((target) => {
+            deployTasks.push.apply(deployTasks, target.execute(ctx, project));
+          });
+        }
 
-				deployTasks.push({
-					title: 'Enabling skill for testing',
-					enabled: (ctx: JovoTaskContextAlexa) =>
-						!_.isUndefined(ctx.newSkill),
-					task: (ctx: JovoTaskContextAlexa) => {
-						return ask.askApiEnableSkill(ctx);
-					}
-				});
+        deployTasks.push({
+          title: 'Enabling skill for testing',
+          enabled: (ctx: JovoTaskContextAlexa) => !_.isUndefined(ctx.newSkill),
+          task: (ctx: JovoTaskContextAlexa) => {
+            return ask.askApiEnableSkill(ctx);
+          },
+        });
 
-				return new listr(deployTasks);
-			}
-		});
+        return new listr(deployTasks);
+      },
+    });
 
-		return returnTasks;
-	}
+    return returnTasks;
+  }
 
-	/**
-	 * Returns path to Alexa model files
-	 * @return {string}
-	 */
-	getModelsPath(): string {
-		return path.join(this.getPath(), 'models');
-	}
+  /**
+   * Returns path to Alexa model files
+   * @return {string}
+   */
+  getModelsPath(): string {
+    return path.join(this.getPath(), 'models');
+  }
 
-	/**
-	 * Returns path to Alexa Model file
-	 * @param {string} locale
-	 * @return {string}
-	 */
-	getModelPath(locale: string): string {
-		return path.join(this.getModelsPath(), locale + '.json');
-	}
+  /**
+   * Returns path to Alexa Model file
+   * @param {string} locale
+   * @return {string}
+   */
+  getModelPath(locale: string): string {
+    return path.join(this.getModelsPath(), locale + '.json');
+  }
 
-	/**
-	 * Returns project locales
-	 *
-	 * @param {(string | string[])} [locale]
-	 * @returns {string[]}
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	getLocales(locale?: string | string[]): string[] {
-		try {
-			if (locale) {
-				if (Array.isArray(locale)) {
-					return locale;
-				} else {
-					return [locale];
-				}
-			}
-			const files = fs.readdirSync(this.getModelsPath());
+  /**
+   * Returns project locales
+   *
+   * @param {(string | string[])} [locale]
+   * @returns {string[]}
+   * @memberof JovoCliPlatformAlexa
+   */
+  getLocales(locale?: string | string[]): string[] {
+    try {
+      if (locale) {
+        if (Array.isArray(locale)) {
+          return locale;
+        } else {
+          return [locale];
+        }
+      }
+      const files = fs.readdirSync(this.getModelsPath());
 
-			if (files.length === 0) {
-				return [DEFAULT_LOCALE];
-			}
-			const locales: string[] = [];
-			for (const file of files) {
-				if (file.length === 10) {
-					locales.push(file.substr(0, 5));
-				}
-			}
-			return locales;
-		} catch (err) {
-			throw err;
-		}
-	}
+      if (files.length === 0) {
+        return [DEFAULT_LOCALE];
+      }
+      const locales: string[] = [];
+      for (const file of files) {
+        if (file.length === 10) {
+          locales.push(file.substr(0, 5));
+        }
+      }
+      return locales;
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	/**
-	 * Returns path to AlexaSkill account linking json
-	 * @return {string}
-	 */
-	getAccountLinkingPath(): string {
-		return path.join(this.getPath(), 'accountLinking.json');
-	}
+  /**
+   * Returns path to AlexaSkill account linking json
+   * @return {string}
+   */
+  getAccountLinkingPath(): string {
+    return path.join(this.getPath(), 'accountLinking.json');
+  }
 
-	/**
-	 * Returns project skill id extracted from
-	 * Alexa Skill config
-	 * @return {string}
-	 */
-	getSkillId() {
-		try {
-			const skillId = _.get(
-				this.getAskConfig(),
-				'deploy_settings.default.skill_id'
-			);
-			if (skillId && skillId.length > 0) {
-				return skillId;
-			}
-		} catch (err) {
-			throw err;
-		}
-	}
+  /**
+   * Returns project skill id extracted from
+   * Alexa Skill config
+   * @return {string}
+   */
+  getSkillId() {
+    try {
+      const skillId = _.get(this.getAskConfig(), 'deploy_settings.default.skill_id');
+      if (skillId && skillId.length > 0) {
+        return skillId;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 
-	/**
-	 * Returns path to skill.json
-	 * @return {string}
-	 */
-	getSkillJsonPath(): string {
-		return path.join(this.getPath(), 'skill.json');
-	}
+  /**
+   * Returns path to skill.json
+   * @return {string}
+   */
+  getSkillJsonPath(): string {
+    return path.join(this.getPath(), 'skill.json');
+  }
 
-	/**
-	 * Returns path to .ask/
-	 * @return {string}
-	 */
-	getAskConfigFolderPath(): string {
-		return path.join(this.getPath(), '.ask');
-	}
+  /**
+   * Returns path to .ask/
+   * @return {string}
+   */
+  getAskConfigFolderPath(): string {
+    return path.join(this.getPath(), '.ask');
+  }
 
-	/**
-	 * Returns path to .ask/config file
-	 * @return {string}
-	 */
-	getAskConfigPath(): string {
-		return path.join(this.getAskConfigFolderPath(), 'config');
-	}
+  /**
+   * Returns path to .ask/config file
+   * @return {string}
+   */
+  getAskConfigPath(): string {
+    return path.join(this.getAskConfigFolderPath(), 'config');
+  }
 
-	/**
-	 * Returns skill.json object
-	 * @return {*}
-	 */
-	getSkillJson() {
-		try {
-			return require(this.getSkillJsonPath());
-		} catch (error) {
-			throw error;
-		}
-	}
+  /**
+   * Returns skill.json object
+   * @return {*}
+   */
+  getSkillJson() {
+    try {
+      return require(this.getSkillJsonPath());
+    } catch (error) {
+      throw error;
+    }
+  }
 
-	/**
-	 * Returns .ask/config object
-	 * @return {any}
-	 */
-	getAskConfig() {
-		try {
-			return JSON.parse(fs.readFileSync(this.getAskConfigPath(), 'utf8'));
-		} catch (error) {
-			throw error;
-		}
-	}
+  /**
+   * Returns .ask/config object
+   * @return {any}
+   */
+  getAskConfig() {
+    try {
+      return JSON.parse(fs.readFileSync(this.getAskConfigPath(), 'utf8'));
+    } catch (error) {
+      throw error;
+    }
+  }
 
-	/**
-	 * Returns Alexa model object
-	 *
-	 * @param {string} locale The locale to load
-	 * @param {boolean} [refresh] If the file cache should be refreshed
-	 * @returns
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	getModel(locale: string, refresh?: boolean) {
-		try {
-			const path = this.getModelPath(locale);
-			if (refresh === true) {
-				// Delete the cache so that it gets read new from disk
-				delete require.cache[path];
-			}
-			return require(path);
-		} catch (error) {
-			throw error;
-		}
-	}
+  /**
+   * Returns Alexa model object
+   *
+   * @param {string} locale The locale to load
+   * @param {boolean} [refresh] If the file cache should be refreshed
+   * @returns
+   * @memberof JovoCliPlatformAlexa
+   */
+  getModel(locale: string, refresh?: boolean) {
+    try {
+      const path = this.getModelPath(locale);
+      if (refresh === true) {
+        // Delete the cache so that it gets read new from disk
+        delete require.cache[path];
+      }
+      return require(path);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-	/**
-	 * Returns the defined sub locales for the given locale
-	 *
-	 * @param {string} locale The locale to return sub locals for
-	 * @returns {string[]}
-	 * @memberof JovoCliPlatformAlexa
-	 */
-	getSubLocales(locale: string): string[] {
-		const appJson = project.getConfig();
+  /**
+   * Returns the defined sub locales for the given locale
+   *
+   * @param {string} locale The locale to return sub locals for
+   * @returns {string[]}
+   * @memberof JovoCliPlatformAlexa
+   */
+  getSubLocales(locale: string): string[] {
+    const appJson = project.getConfig();
 
-		const sublocales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
+    const sublocales = _.get(appJson, `alexaSkill.nlu.lang.${locale}`);
 
-		if (!sublocales) {
-			return [];
-		}
+    if (!sublocales) {
+      return [];
+    }
 
-		return sublocales;
-	}
+    return sublocales;
+  }
 
-	/**
-	 * Creates empty skill.json
-	 * @param {string} skillName
-	 * @param {Array<string>} locales
-	 * @return {*}
-	 */
-	createEmptySkillJson(skillName: string, locales: string[] | undefined) {
-		const skillJson = {
-			manifest: {
-				publishingInformation: {
-					locales: {},
-					isAvailableWorldwide: true,
-					testingInstructions: 'Sample Testing Instructions.',
-					category: 'EDUCATION_AND_REFERENCE',
-					distributionCountries: []
-				},
-				apis: {},
-				manifestVersion: '1.0',
-				privacyAndCompliance: {
-					allowsPurchases: false,
-					locales: {},
-					isExportCompliant: true,
-					containsAds: false,
-					isChildDirected: false,
-					usesPersonalInfo: false
-				}
-			}
-		};
+  /**
+   * Creates empty skill.json
+   * @param {string} skillName
+   * @param {Array<string>} locales
+   * @return {*}
+   */
+  createEmptySkillJson(skillName: string, locales: string[] | undefined) {
+    const skillJson = {
+      manifest: {
+        publishingInformation: {
+          locales: {},
+          isAvailableWorldwide: true,
+          testingInstructions: 'Sample Testing Instructions.',
+          category: 'EDUCATION_AND_REFERENCE',
+          distributionCountries: [],
+        },
+        apis: {},
+        manifestVersion: '1.0',
+        privacyAndCompliance: {
+          allowsPurchases: false,
+          locales: {},
+          isExportCompliant: true,
+          containsAds: false,
+          isChildDirected: false,
+          usesPersonalInfo: false,
+        },
+      },
+    };
 
-		if (locales) {
-			for (const locale of locales) {
-				if (locale.length === 2) {
-					try {
-						const sublocales = this.getSubLocales(locale);
+    if (locales) {
+      for (const locale of locales) {
+        if (locale.length === 2) {
+          try {
+            const sublocales = this.getSubLocales(locale);
 
-						if (!sublocales) {
-							throw new Error();
-						}
+            if (!sublocales) {
+              throw new Error();
+            }
 
-						for (const sublocale of sublocales) {
-							_.set(
-								skillJson,
-								`manifest.publishingInformation.locales.${sublocale}`,
-								{
-									summary: 'Sample Short Description',
-									examplePhrases: ['Alexa open hello world'],
-									keywords: ['hello', 'world'],
-									name: skillName,
-									description: 'Sample Full Description',
-									smallIconUri:
-										'https://via.placeholder.com/108/09f/09f.png',
-									largeIconUri:
-										'https://via.placeholder.com/512/09f/09f.png'
-								}
-							);
+            for (const sublocale of sublocales) {
+              _.set(skillJson, `manifest.publishingInformation.locales.${sublocale}`, {
+                summary: 'Sample Short Description',
+                examplePhrases: ['Alexa open hello world'],
+                keywords: ['hello', 'world'],
+                name: skillName,
+                description: 'Sample Full Description',
+                smallIconUri: 'https://via.placeholder.com/108/09f/09f.png',
+                largeIconUri: 'https://via.placeholder.com/512/09f/09f.png',
+              });
 
-							_.set(
-								skillJson,
-								`manifest.privacyAndCompliance.locales.${sublocale}`,
-								{
-									privacyPolicyUrl:
-										'http://example.com/policy',
-									termsOfUseUrl: ''
-								}
-							);
-						}
-					} catch (error) {
-						throw new Error(
-							'Could not retrieve locales mapping for language ' +
-								locale
-						);
-					}
-				} else {
-					_.set(
-						skillJson,
-						`manifest.publishingInformation.locales.${locale}`,
-						{
-							summary: 'Sample Short Description',
-							examplePhrases: ['Alexa open hello world'],
-							keywords: ['hello', 'world'],
-							name: skillName,
-							description: 'Sample Full Description',
-							smallIconUri:
-								'https://via.placeholder.com/108/09f/09f.png',
-							largeIconUri:
-								'https://via.placeholder.com/512/09f/09f.png'
-						}
-					);
+              _.set(skillJson, `manifest.privacyAndCompliance.locales.${sublocale}`, {
+                privacyPolicyUrl: 'http://example.com/policy',
+                termsOfUseUrl: '',
+              });
+            }
+          } catch (error) {
+            throw new Error('Could not retrieve locales mapping for language ' + locale);
+          }
+        } else {
+          _.set(skillJson, `manifest.publishingInformation.locales.${locale}`, {
+            summary: 'Sample Short Description',
+            examplePhrases: ['Alexa open hello world'],
+            keywords: ['hello', 'world'],
+            name: skillName,
+            description: 'Sample Full Description',
+            smallIconUri: 'https://via.placeholder.com/108/09f/09f.png',
+            largeIconUri: 'https://via.placeholder.com/512/09f/09f.png',
+          });
 
-					_.set(
-						skillJson,
-						`manifest.privacyAndCompliance.locales.${locale}`,
-						{
-							privacyPolicyUrl: 'http://example.com/policy',
-							termsOfUseUrl: ''
-						}
-					);
-				}
-			}
-		}
+          _.set(skillJson, `manifest.privacyAndCompliance.locales.${locale}`, {
+            privacyPolicyUrl: 'http://example.com/policy',
+            termsOfUseUrl: '',
+          });
+        }
+      }
+    }
 
-		return skillJson;
-	}
+    return skillJson;
+  }
 
-	/**
-	 * Creates empty skill project files
-	 * @param {*} config
-	 * @return {Promise<any>}
-	 */
-	createAlexaSkill(ctx: JovoTaskContextAlexa) {
-		return new Promise((resolve, reject) => {
-			const alexaSkillPath = this.getPath();
+  /**
+   * Creates empty skill project files
+   * @param {*} config
+   * @return {Promise<any>}
+   */
+  createAlexaSkill(ctx: JovoTaskContextAlexa) {
+    return new Promise((resolve, reject) => {
+      const alexaSkillPath = this.getPath();
 
-			if (!fs.existsSync(alexaSkillPath)) {
-				fs.mkdirSync(alexaSkillPath);
-			}
+      if (!fs.existsSync(alexaSkillPath)) {
+        fs.mkdirSync(alexaSkillPath);
+      }
 
-			const alexaModelPath = this.getModelsPath();
-			if (!fs.existsSync(alexaModelPath)) {
-				fs.mkdirSync(alexaModelPath);
-			}
+      const alexaModelPath = this.getModelsPath();
+      if (!fs.existsSync(alexaModelPath)) {
+        fs.mkdirSync(alexaModelPath);
+      }
 
-			const askConfigPath = this.getAskConfigFolderPath();
-			if (!fs.existsSync(askConfigPath)) {
-				fs.mkdirSync(askConfigPath);
-			}
+      const askConfigPath = this.getAskConfigFolderPath();
+      if (!fs.existsSync(askConfigPath)) {
+        fs.mkdirSync(askConfigPath);
+      }
 
-			const skillJson = this.createEmptySkillJson(
-				project.getProjectName() as string,
-				ctx.locales
-			);
+      const skillJson = this.createEmptySkillJson(project.getProjectName() as string, ctx.locales);
 
-			_.set(skillJson, 'manifest.apis.custom', {});
+      _.set(skillJson, 'manifest.apis.custom', {});
 
-			fs.writeFile(
-				this.getSkillJsonPath(),
-				JSON.stringify(skillJson, null, '\t'),
-				err => {
-					if (err) {
-						reject(err);
-						return;
-					}
-					const askConfig = {
-						deploy_settings: {
-							default: {
-								skill_id: '',
-								was_cloned: false
-							}
-						}
-					};
-					fs.writeFile(
-						this.getAskConfigPath(),
-						JSON.stringify(askConfig, null, '\t'),
-						err => {
-							if (err) {
-								reject(err);
-								return;
-							}
-							resolve();
-						}
-					);
-				}
-			);
-		});
-	}
+      fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        const askConfig = {
+          deploy_settings: {
+            default: {
+              skill_id: '',
+              was_cloned: false,
+            },
+          },
+        };
+        fs.writeFile(this.getAskConfigPath(), JSON.stringify(askConfig, null, '\t'), (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
+      });
+    });
+  }
 
-	/**
-	 * Builds and saves Alexa Skill model from jovo model
-	 * @param {string} locale
-	 * @param {string} stage
-	 * @return {Promise<any>}
-	 */
-	buildLanguageModelAlexa(locale: string, stage: string) {
-		const concatArrays = function customizer(
-			objValue: any[], // tslint:disable-line:no-any
-			srcValue: any // tslint:disable-line:no-any
-		) {
-			// tslint:disable-line:no-any
-			if (_.isArray(objValue)) {
-				return objValue.concat(srcValue);
-			}
-		};
+  /**
+   * Builds and saves Alexa Skill model from jovo model
+   * @param {string} locale
+   * @param {string} stage
+   * @return {Promise<any>}
+   */
+  buildLanguageModelAlexa(locale: string, stage: string) {
+    const concatArrays = function customizer(
+      objValue: any[], // tslint:disable-line:no-any
+      srcValue: any, // tslint:disable-line:no-any
+    ) {
+      // tslint:disable-line:no-any
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    };
 
-		return new Promise((resolve, reject) => {
-			try {
-				let model: JovoModelData;
-				try {
-					model = project.getModel(locale);
-				} catch (e) {
-					console.log(e);
-					return;
-				}
+    return new Promise((resolve, reject) => {
+      try {
+        let model: JovoModelData;
+        try {
+          model = project.getModel(locale);
+        } catch (e) {
+          console.log(e);
+          return;
+        }
 
-				if (
-					project.jovoConfigReader!.getConfigParameter(
-						`languageModel.${locale}`,
-						stage
-					)
-				) {
-					model = _.mergeWith(
-						model,
-						project.jovoConfigReader!.getConfigParameter(
-							`languageModel.${locale}`,
-							stage
-						),
-						concatArrays
-					);
-				}
-				if (
-					project.jovoConfigReader!.getConfigParameter(
-						`alexaSkill.languageModel.${locale}`,
-						stage
-					)
-				) {
-					model = _.mergeWith(
-						model,
-						project.jovoConfigReader!.getConfigParameter(
-							`alexaSkill.languageModel.${locale}`,
-							stage
-						),
-						concatArrays
-					);
-				}
+        if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
+          model = _.mergeWith(
+            model,
+            project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
+            concatArrays,
+          );
+        }
+        if (
+          project.jovoConfigReader!.getConfigParameter(`alexaSkill.languageModel.${locale}`, stage)
+        ) {
+          model = _.mergeWith(
+            model,
+            project.jovoConfigReader!.getConfigParameter(
+              `alexaSkill.languageModel.${locale}`,
+              stage,
+            ),
+            concatArrays,
+          );
+        }
 
-				const jovoModel = new JovoModelAlexa(model, locale);
-				const alexaModelFiles = jovoModel.exportNative();
+        const jovoModel = new JovoModelAlexa(model, locale);
+        const alexaModelFiles = jovoModel.exportNative();
 
-				if (
-					alexaModelFiles === undefined ||
-					alexaModelFiles.length === 0
-				) {
-					// Should actually never happen but who knows
-					throw new Error(
-						`Could not build Alexa files for locale "${locale}"!`
-					);
-				}
+        if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
+          // Should actually never happen but who knows
+          throw new Error(`Could not build Alexa files for locale "${locale}"!`);
+        }
 
-				let locales: string[] = [];
-				if (locale.length === 2) {
-					try {
-						if (
-							!project.jovoConfigReader!.getConfigParameter(
-								`alexaSkill.nlu.lang.${locale}`,
-								stage
-							)
-						) {
-							throw new Error();
-						}
-						locales = project.jovoConfigReader!.getConfigParameter(
-							`alexaSkill.nlu.lang.${locale}`,
-							stage
-						) as string[];
-					} catch (error) {
-						throw new Error(
-							'Could not retrieve locales mapping for language ' +
-								locale
-						);
-					}
-				} else {
-					locales = [locale];
-				}
+        let locales: string[] = [];
+        if (locale.length === 2) {
+          try {
+            if (
+              !project.jovoConfigReader!.getConfigParameter(`alexaSkill.nlu.lang.${locale}`, stage)
+            ) {
+              throw new Error();
+            }
+            locales = project.jovoConfigReader!.getConfigParameter(
+              `alexaSkill.nlu.lang.${locale}`,
+              stage,
+            ) as string[];
+          } catch (error) {
+            throw new Error('Could not retrieve locales mapping for language ' + locale);
+          }
+        } else {
+          locales = [locale];
+        }
 
-				for (const targetLocale of locales) {
-					fs.writeFileSync(
-						this.getModelPath(targetLocale),
-						JSON.stringify(alexaModelFiles[0].content, null, '\t')
-					);
-				}
+        for (const targetLocale of locales) {
+          fs.writeFileSync(
+            this.getModelPath(targetLocale),
+            JSON.stringify(alexaModelFiles[0].content, null, '\t'),
+          );
+        }
 
-				resolve();
-			} catch (error) {
-				reject(error);
-			}
-		});
-	}
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
 
-	/**
-	 * Builds and saves Alexa Skill model from jovo model
-	 * @param {string} stage
-	 * @return {Promise<any>}
-	 */
-	buildSkillAlexa(stage: string) {
-		return new Promise((resolve, reject) => {
-			try {
-				const config = project.getConfig(stage) as AppFileAlexa;
-				const skillJson = this.getSkillJson();
-				// endpoint
-				if (_.get(config, 'endpoint')) {
-					// create basic https endpoint from wildcard ssl
-					if (_.isString(_.get(config, 'endpoint'))) {
-						_.set(skillJson, 'manifest.apis.custom.endpoint', {
-							sslCertificateType: 'Wildcard',
-							uri: project.getEndpointFromConfig(
-								_.get(config, 'endpoint') as string
-							)
-						});
-					} else if (
-						_.isObject(_.get(config, 'endpoint')) &&
-						_.get(config, 'endpoint.alexaSkill')
-					) {
-						// get full object
-						_.set(
-							skillJson,
-							'manifest.apis.custom.endpoint',
-							project.getEndpointFromConfig(
-								_.get(config, 'endpoint.alexaSkill')
-							)
-						);
-					}
-				} else {
-					let arn = _.get(config, 'alexaSkill.endpoint');
+  /**
+   * Builds and saves Alexa Skill model from jovo model
+   * @param {string} stage
+   * @return {Promise<any>}
+   */
+  buildSkillAlexa(stage: string) {
+    return new Promise((resolve, reject) => {
+      try {
+        const config = project.getConfig(stage) as AppFileAlexa;
+        const skillJson = this.getSkillJson();
+        // endpoint
+        if (_.get(config, 'endpoint')) {
+          // create basic https endpoint from wildcard ssl
+          if (_.isString(_.get(config, 'endpoint'))) {
+            _.set(skillJson, 'manifest.apis.custom.endpoint', {
+              sslCertificateType: 'Wildcard',
+              uri: project.getEndpointFromConfig(_.get(config, 'endpoint') as string),
+            });
+          } else if (
+            _.isObject(_.get(config, 'endpoint')) &&
+            _.get(config, 'endpoint.alexaSkill')
+          ) {
+            // get full object
+            _.set(
+              skillJson,
+              'manifest.apis.custom.endpoint',
+              project.getEndpointFromConfig(_.get(config, 'endpoint.alexaSkill')),
+            );
+          }
+        } else {
+          let arn = _.get(config, 'alexaSkill.endpoint');
 
-					if (!arn) {
-						arn =
-							_.get(config, 'alexaSkill.host.lambda.arn') ||
-							_.get(config, 'host.lambda.arn');
-					}
+          if (!arn) {
+            arn = _.get(config, 'alexaSkill.host.lambda.arn') || _.get(config, 'host.lambda.arn');
+          }
 
-					if (arn) {
-						arn = project.getEndpointFromConfig(arn);
-						if (_.startsWith(arn, 'arn')) {
-							_.set(skillJson, 'manifest.apis.custom.endpoint', {
-								uri: arn
-							});
-						} else {
-							_.set(skillJson, 'manifest.apis.custom.endpoint', {
-								sslCertificateType: 'Wildcard',
-								uri: arn
-							});
-						}
-					}
-				}
-				if (_.get(config, 'alexaSkill.manifest')) {
-					_.merge(skillJson.manifest, config.alexaSkill!.manifest);
-				}
+          if (arn) {
+            arn = project.getEndpointFromConfig(arn);
+            if (_.startsWith(arn, 'arn')) {
+              _.set(skillJson, 'manifest.apis.custom.endpoint', {
+                uri: arn,
+              });
+            } else {
+              _.set(skillJson, 'manifest.apis.custom.endpoint', {
+                sslCertificateType: 'Wildcard',
+                uri: arn,
+              });
+            }
+          }
+        }
+        if (_.get(config, 'alexaSkill.manifest')) {
+          _.merge(skillJson.manifest, config.alexaSkill!.manifest);
+        }
 
-				fs.writeFile(
-					this.getSkillJsonPath(),
-					JSON.stringify(skillJson, null, '\t'),
-					err => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						if (
-							typeof project.jovoConfigReader!.getConfigParameter(
-								'alexaSkill.skillId',
-								stage
-							) !== 'undefined'
-						) {
-							this.setAlexaSkillId(
-								project.jovoConfigReader!.getConfigParameter(
-									'alexaSkill.skillId',
-									stage
-								) as string
-							).then(() => resolve());
-						} else {
-							resolve();
-						}
-					}
-				);
-			} catch (err) {
-				return reject(err);
-			}
-		});
-	}
+        fs.writeFile(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'), (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          if (
+            typeof project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', stage) !==
+            'undefined'
+          ) {
+            this.setAlexaSkillId(
+              project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', stage) as string,
+            ).then(() => resolve());
+          } else {
+            resolve();
+          }
+        });
+      } catch (err) {
+        return reject(err);
+      }
+    });
+  }
 
-	/**
-	 * Returns skill id promise
-	 * @return {Promise<any>}
-	 */
-	getSkillIdPromise() {
-		return new Promise(resolve => {
-			fs.readFile(this.getAskConfigPath(), 'utf-8', (err, data) => {
-				if (err) {
-					resolve();
-					return;
-				}
-				resolve(
-					_.get(JSON.parse(data), 'deploy_settings.default.skill_id')
-				);
-			});
-		});
-	}
+  /**
+   * Returns skill id promise
+   * @return {Promise<any>}
+   */
+  getSkillIdPromise() {
+    return new Promise((resolve) => {
+      fs.readFile(this.getAskConfigPath(), 'utf-8', (err, data) => {
+        if (err) {
+          resolve();
+          return;
+        }
+        resolve(_.get(JSON.parse(data), 'deploy_settings.default.skill_id'));
+      });
+    });
+  }
 
-	/**
-	 * Returns skill information
-	 * @return {*}
-	 */
-	getSkillInformation() {
-		const skillJson = this.getSkillJson();
-		const info = {
-			name: '',
-			invocationName: '',
-			skillId: this.getSkillId(),
-			endpoint: skillJson.manifest.apis.custom.endpoint.uri
-		};
+  /**
+   * Returns skill information
+   * @return {*}
+   */
+  getSkillInformation() {
+    const skillJson = this.getSkillJson();
+    const info = {
+      name: '',
+      invocationName: '',
+      skillId: this.getSkillId(),
+      endpoint: skillJson.manifest.apis.custom.endpoint.uri,
+    };
 
-		const locales = skillJson.manifest.publishingInformation.locales;
-		for (const locale of Object.keys(locales)) {
-			info.name += locales[locale].name + ' (' + locale + ') ';
-			info.invocationName +=
-				this.getInvocationName(locale) + ' (' + locale + ') ';
-		}
-		return info;
-	}
+    const locales = skillJson.manifest.publishingInformation.locales;
+    for (const locale of Object.keys(locales)) {
+      info.name += locales[locale].name + ' (' + locale + ') ';
+      info.invocationName += this.getInvocationName(locale) + ' (' + locale + ') ';
+    }
+    return info;
+  }
 
-	/**
-	 * Returns simple skill information
-	 * @return {*}
-	 */
-	getSkillSimpleInformation() {
-		const skillJson = this.getSkillJson();
+  /**
+   * Returns simple skill information
+   * @return {*}
+   */
+  getSkillSimpleInformation() {
+    const skillJson = this.getSkillJson();
 
-		const info = {
-			name: '',
-			skillId: this.getSkillId(),
-			endpoint: _.get(skillJson, 'manifest.apis.custom.endpoint.uri', '')
-		};
+    const info = {
+      name: '',
+      skillId: this.getSkillId(),
+      endpoint: _.get(skillJson, 'manifest.apis.custom.endpoint.uri', ''),
+    };
 
-		const locales = skillJson.manifest.publishingInformation.locales;
-		for (const locale of Object.keys(locales)) {
-			info.name += locales[locale].name + ' (' + locale + ') ';
-		}
+    const locales = skillJson.manifest.publishingInformation.locales;
+    for (const locale of Object.keys(locales)) {
+      info.name += locales[locale].name + ' (' + locale + ') ';
+    }
 
-		return info;
-	}
+    return info;
+  }
 
-	/**
-	 * Returns true if endpoint is a lambda function arn
-	 * @return {boolean}
-	 */
-	isLambdaEndpoint() {
-		const skillJson = this.getSkillJson();
-		return _.startsWith(skillJson.manifest.apis.custom.endpoint.uri, 'arn');
-	}
+  /**
+   * Returns true if endpoint is a lambda function arn
+   * @return {boolean}
+   */
+  isLambdaEndpoint() {
+    const skillJson = this.getSkillJson();
+    return _.startsWith(skillJson.manifest.apis.custom.endpoint.uri, 'arn');
+  }
 
-	/**
-	 * Returns invocationName for given locale
-	 * @param {string} locale
-	 * @return {{}|interactionModel.languageModel}
-	 */
-	getInvocationName(locale: string) {
-		return this.getModel(locale).interactionModel.languageModel
-			.invocationName;
-	}
+  /**
+   * Returns invocationName for given locale
+   * @param {string} locale
+   * @return {{}|interactionModel.languageModel}
+   */
+  getInvocationName(locale: string) {
+    return this.getModel(locale).interactionModel.languageModel.invocationName;
+  }
 
-	/**
-	 * Saves Skill ID to .ask/config
-	 * @param {string} skillId
-	 * @return {Promise<any>}
-	 */
-	setAlexaSkillId(skillId: string) {
-		return new Promise((resolve, reject) => {
-			if (!fs.existsSync(this.getAskConfigFolderPath())) {
-				fs.mkdirSync(this.getAskConfigFolderPath());
-			}
+  /**
+   * Saves Skill ID to .ask/config
+   * @param {string} skillId
+   * @return {Promise<any>}
+   */
+  setAlexaSkillId(skillId: string) {
+    return new Promise((resolve, reject) => {
+      if (!fs.existsSync(this.getAskConfigFolderPath())) {
+        fs.mkdirSync(this.getAskConfigFolderPath());
+      }
 
-			fs.readFile(this.getAskConfigPath(), 'utf-8', (err, data) => {
-				let askConfig;
-				if (err) {
-					if (err.code === 'ENOENT') {
-						askConfig = {
-							deploy_settings: {
-								default: {
-									skill_id: skillId,
-									was_cloned: false
-								}
-							}
-						};
-					}
-				} else {
-					askConfig = JSON.parse(data);
-				}
-				_.set(askConfig, 'deploy_settings.default.skill_id', skillId);
-				fs.writeFile(
-					this.getAskConfigPath(),
-					JSON.stringify(askConfig, null, '\t'),
-					err => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						resolve(skillId);
-					}
-				);
-			});
-		});
-	}
+      fs.readFile(this.getAskConfigPath(), 'utf-8', (err, data) => {
+        let askConfig;
+        if (err) {
+          if (err.code === 'ENOENT') {
+            askConfig = {
+              deploy_settings: {
+                default: {
+                  skill_id: skillId,
+                  was_cloned: false,
+                },
+              },
+            };
+          }
+        } else {
+          askConfig = JSON.parse(data);
+        }
+        _.set(askConfig, 'deploy_settings.default.skill_id', skillId);
+        fs.writeFile(this.getAskConfigPath(), JSON.stringify(askConfig, null, '\t'), (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(skillId);
+        });
+      });
+    });
+  }
 }

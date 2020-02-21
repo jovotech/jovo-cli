@@ -6,18 +6,17 @@
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
-		"test": "jest",
+	  "prettier": "prettier --config ./.prettierrc.js --write \"{test,src}/**/*\" --list-different",
+	  "test": "jest",
 		"test-debug": "jest --runInBand --detectOpenHandles --verbose",
 		"nodemon": "nodemon",
-		"eslint": "eslint index.js commands/ helper/ utils/ test/",
-		"eslint-fix": "eslint --fix  index.js commands/ helper/ utils/ test/",
 		"build": "tsc",
 		"tslint": "node_modules/.bin/tslint -p tsconfig.json -c tslint.json",
 		"tsc": "node_modules/.bin/tsc",
 		"tscw": "tsc --watch",
 		"rimraf": "rimraf ./dist",
-		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
+		"postpack": "rimraf ./oclif.manifest.json",
+		"prepack": "rimraf ./dist && tsc -b && oclif-dev manifest && oclif-dev readme",
 		"version": "oclif-dev readme && git add README.md"
 	},
 	"bin": {
@@ -28,12 +27,12 @@
 		"@oclif/command": "^1.5.19",
 		"@oclif/config": "^1.14.0",
 		"@oclif/plugin-help": "^2.2.3",
-		"bespoken-tools": "^1.1.0",
 		"boxen": "^4.2.0",
 		"chalk": "^2.4.1",
 		"child_process": "^1.0.2",
 		"cli-truncate": "^2.1.0",
 		"cross-spawn": "^7.0.1",
+		"csvtojson": "^2.0.10",
 		"dotenv": "^5.0.1",
 		"elegant-spinner": "^2.0.0",
 		"fs-extra": "^8.1.0",
@@ -68,14 +67,15 @@
 		"@types/opn": "^5.5.0",
 		"@types/parse-json": "^4.0.0",
 		"@types/rimraf": "^2.0.3",
-		"eslint": "^3.19.0",
-		"eslint-config-google": "^0.8.0",
 		"globby": "^10.0.2",
 		"jest": "^25.1.0",
-		"ts-jest": "^25.2.0",
+		  "prettier": "1.19.1",
+
+		  "ts-jest": "^25.2.0",
 		"ts-node": "^8.6.2",
-		"tslint": "^5.11.0",
-		"typescript": "^3.0.3"
+		"tslint": "^5.19.0",
+	  	"tslint-config-prettier": "^1.18.0",
+	  	"typescript": "^3.7.5"
 	},
 	"engines": {
 		"node": ">=8.0.0"

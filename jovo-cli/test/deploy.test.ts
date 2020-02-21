@@ -7,12 +7,12 @@ import { runJovoCommand } from './Helpers';
 const tmpTestFolder = 'tmpTestFolderDeploy';
 
 beforeAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
-	mkdirSync(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
+  mkdirSync(tmpTestFolder);
 });
 
 afterAll(() => {
-	deleteFolderRecursive(tmpTestFolder);
+  deleteFolderRecursive(tmpTestFolder);
 });
 
 describe('deploy', () => {
@@ -160,22 +160,18 @@ describe('deploy', () => {
  * @param {function} callback
  */
 async function deleteSkill(skillId: string) {
-	return new Promise((resolve, reject) => {
-		exec(
-			'ask api delete-skill --skill-id ' + skillId,
-			{},
-			(error, stdout, stderr) => {
-				if (error) {
-					console.log(error);
-					if (stderr) {
-						console.log(stderr);
-					}
-					reject(error);
-				}
-				if (stdout.indexOf('Skill deleted successfully.') > -1) {
-					resolve();
-				}
-			}
-		);
-	});
+  return new Promise((resolve, reject) => {
+    exec('ask api delete-skill --skill-id ' + skillId, {}, (error, stdout, stderr) => {
+      if (error) {
+        console.log(error);
+        if (stderr) {
+          console.log(stderr);
+        }
+        reject(error);
+      }
+      if (stdout.indexOf('Skill deleted successfully.') > -1) {
+        resolve();
+      }
+    });
+  });
 }
