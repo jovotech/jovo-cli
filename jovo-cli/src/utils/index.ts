@@ -16,8 +16,9 @@ import * as platforms from './Platforms';
 import * as prompts from './Prompts';
 import * as tasks from './Tasks';
 import * as validators from './Validators';
+import * as scaffolder from './Scaffolder';
 
-export { platforms, prompts, tasks, validators, deployTargets };
+export { platforms, prompts, tasks, validators, deployTargets, scaffolder };
 export * from './Interfaces';
 export { JovoCliRenderer } from './JovoCliRenderer';
 

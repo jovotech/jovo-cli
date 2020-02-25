@@ -32,6 +32,7 @@
 		"child_process": "^1.0.2",
 		"cli-truncate": "^2.1.0",
 		"cross-spawn": "^7.0.1",
+		"csvtojson": "^2.0.10",
 		"dotenv": "^5.0.1",
 		"elegant-spinner": "^2.0.0",
 		"fs-extra": "^8.1.0",

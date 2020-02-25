@@ -23,6 +23,8 @@ import {
 export class Run extends Command {
   static description = 'Runs a local development server (webhook).';
 
+  static examples = ['jovo run --watch', 'jovo run --port 8008'];
+
   static flags: InputFlags = {
     'port': flags.string({
       char: 'p',

@@ -16,6 +16,12 @@ import { deployTask } from '../utils/Tasks';
 
 export class Deploy extends Command {
   static description = 'Deploys the project to the voice platform.';
+
+  static examples = [
+    'jovo deploy --locale en-US --platform alexaSkill --stage dev',
+    'jovo deploy --target zip',
+  ];
+
   static flags: InputFlags = {
     locale: flags.string({
       char: 'l',
