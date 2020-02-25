@@ -40,7 +40,7 @@ export class Update extends Command {
         for (const [name, pkg] of Object.entries(packageVersions)) {
           let text = `  ${name}: ${pkg.local}`;
           if (pkg.local !== pkg.npm) {
-			  outOfDatePackages.push(name);
+            outOfDatePackages.push(name);
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -59,19 +59,17 @@ export class Update extends Command {
 
       let npmUpdateOutput = '';
 
+      for (let i = 0; i < outOfDatePackages.length; i++) {
+        outOfDatePackages[i] = outOfDatePackages[i] + '@latest';
+      }
 
-		for (let i = 0; i < outOfDatePackages.length; i++) {
-			outOfDatePackages[i] = outOfDatePackages[i] + '@latest';
-		}
-
-
-		tasks.add({
+      tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
           const updateCommand = `npm install ${outOfDatePackages.join(' ')} --loglevel=error`;
 
           try {
-			  const { stdout, stderr } = await execAsync(updateCommand, {
+            const { stdout, stderr } = await execAsync(updateCommand, {
               cwd: project.getProjectPath(),
             });
             npmUpdateOutput = stdout;

@@ -320,11 +320,11 @@ export const v2 = {
         exec('gcloud -v', (error, stdout: string, stderr: string) => {
           if (error) {
             if (stderr) {
-              return reject(new Error('Your Google Cloud SDK isn\'t installed properly'));
+              return reject(new Error("Your Google Cloud SDK isn't installed properly"));
             }
           }
           if (!_.startsWith(stdout, 'Google Cloud SDK')) {
-            return reject(new Error('Your Google Cloud SDK isn\'t installed properly'));
+            return reject(new Error("Your Google Cloud SDK isn't installed properly"));
           }
 
           resolve();
