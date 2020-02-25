@@ -9,7 +9,6 @@ import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 import { getPackageVersionsNpm, JovoCliRenderer } from '../utils';
 import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
-import { writeFileSync } from 'fs';
 
 const execAsync = promisify(exec);
 
@@ -39,6 +38,7 @@ export class Update extends Command {
         for (const [name, pkg] of Object.entries(packageVersions)) {
           let text = `  ${name}: ${pkg.local}`;
           if (pkg.local !== pkg.npm) {
+			  outOfDatePackages.push(name);
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -56,6 +56,12 @@ export class Update extends Command {
       }
 
       let npmUpdateOutput = '';
+
+
+		for (let i = 0; i < outOfDatePackages.length; i++) {
+			outOfDatePackages[i] = outOfDatePackages[i] + '@latest';
+		}
+
 
 		tasks.add({
         title: 'Updating Jovo packages...',
