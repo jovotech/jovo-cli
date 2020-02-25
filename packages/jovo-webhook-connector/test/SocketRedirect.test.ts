@@ -176,7 +176,7 @@ describe('webhook tests', () => {
             // @ts-ignore
             if (webhookTest.data.query.hasOwnProperty(key)) {
               queryString += `${encodeURIComponent(key)}=${encodeURIComponent(
-				  // @ts-ignore
+                // @ts-ignore
                 webhookTest.data.query[key],
               )}&`;
             }
