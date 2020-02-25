@@ -9,6 +9,8 @@ export class Load extends Command {
   static description =
     'Extracts the necessary files for a component from ./node_modules into your projects ./components folder.';
 
+  static examples = ['jovo load jovo-component-get-email'];
+
   static args = [{ name: 'component' }];
 
   async run() {

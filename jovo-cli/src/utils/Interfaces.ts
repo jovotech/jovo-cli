@@ -21,6 +21,11 @@ export interface PackageVersionsNpm {
   };
 }
 
+export interface IScaffoldParameters {
+  handler: string;
+  type: string;
+}
+
 declare module 'listr' {
   interface ListrOptions {
     clearOutput?: boolean;
