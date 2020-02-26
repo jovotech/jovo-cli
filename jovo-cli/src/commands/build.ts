@@ -37,7 +37,6 @@ export class Build extends Command {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en-US|de-DE|etc>',
-      default: 'en-US',
     }),
     platform: flags.string({
       char: 'p',

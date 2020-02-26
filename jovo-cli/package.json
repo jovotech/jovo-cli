@@ -50,7 +50,7 @@
 		"log-symbols": "^3.0.0",
 		"log-update": "^3.4.0",
 		"nodemon": "^2.0.2",
-		"opn": "^6.0.0",
+		"open": "^7.0.2",
 		"parse-json": "^5.0.0",
 		"resolve-bin": "^0.4.0",
 		"rimraf": "^3.0.2",
@@ -64,7 +64,7 @@
 		"@types/jest": "^25.1.2",
 		"@types/lodash": "^4.14.149",
 		"@types/node": "^13.7.1",
-		"@types/opn": "^5.5.0",
+		"@types/open": "^6.2.1",
 		"@types/parse-json": "^4.0.0",
 		"@types/rimraf": "^2.0.3",
 		"globby": "^10.0.2",
@@ -113,7 +113,13 @@
 		"bin": "jovo-cli",
 		"plugins": [
 			"@oclif/plugin-help"
-		]
+		],
+		"hooks": {
+			"init": [
+				"./dist/hooks/ProjectHook",
+				"./dist/hooks/VersionHook"
+			]
+		}
 	},
 	"repository": {
 		"type": "git",

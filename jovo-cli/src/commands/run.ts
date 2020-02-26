@@ -4,9 +4,7 @@ import chalk from 'chalk';
 import * as spawn from 'cross-spawn';
 import * as JovoWebhookConnector from 'jovo-webhook-connector';
 import * as path from 'path';
-// import * as opn from 'opn';
-// import resolveBin from 'resolve-bin';
-const opn = require('opn');
+import * as open from 'open';
 const resolveBin = require('resolve-bin');
 import { ChildProcess } from 'child_process';
 import { accessSync, readFileSync } from 'fs-extra';
@@ -304,7 +302,7 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
         if (key === '.') {
           // When dot gets pressed open try to open the debugger in browser
           try {
-            await opn(debuggerUrl);
+            await open(debuggerUrl);
           } catch (e) {
             console.log(
               '\nCould not open browser. Please open debugger manually by visiting this url:',
