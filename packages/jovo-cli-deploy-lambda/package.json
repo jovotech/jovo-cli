@@ -43,7 +43,7 @@
         "aws-sdk": "^2.344.0",
         "jovo-cli-core": "^3.0.0",
         "listr": "^0.14.2",
-        "lodash": "^4.17.15",
+        "lodash": "^4.17.13",
         "proxy-agent": "^3.0.3",
         "resolve-bin": "^0.4.0",
         "rimraf": "^3.0.2"
