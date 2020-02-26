@@ -118,7 +118,7 @@
 		"hooks": {
 			"init": [
 				"./dist/hooks/ProjectHook",
-                "./dist/hooks/VersionHook"
+				"./dist/hooks/VersionHook"
             ]
 		}
 	},
