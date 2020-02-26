@@ -29,7 +29,6 @@
 		"@types/listr": "^0.13.0",
 		"@types/lodash": "^4.14.149",
 		"@types/node": "^13.7.1",
-		"@types/opn": "^5.5.0",
 		"@types/parse-json": "^4.0.0",
 		"@types/rimraf": "^2.0.3",
 		"fs-extra": "^8.1.0",
@@ -52,7 +51,6 @@
 		"jovo-webhook-connector": "^3.0.0",
 		"listr": "^0.14.2",
 		"lodash": "^4.17.15",
-		"opn": "^6.0.0",
 		"resolve-bin": "^0.4.0",
 		"rimraf": "^3.0.2"
 	},
