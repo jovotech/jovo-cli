@@ -1,6 +1,6 @@
 {
 	"name": "jovo-webhook-connector",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Establishes connection between localhost and Jovo Cloud Webhook",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
