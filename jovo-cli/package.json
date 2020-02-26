@@ -119,7 +119,7 @@
 			"init": [
 				"./dist/hooks/ProjectHook",
 				"./dist/hooks/VersionHook"
-            ]
+			]
 		}
 	},
 	"repository": {
