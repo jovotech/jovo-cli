@@ -2,7 +2,6 @@ import { Command, flags } from '@oclif/command';
 import {
   DEFAULT_TARGET,
   getProject,
-  InputFlags,
   JovoTaskContext,
   TARGET_ALL,
   TARGET_INFO,
@@ -28,11 +27,10 @@ export class Get extends Command {
     'jovo get googleAction --project-id testproject-xxxxxx',
   ];
 
-  static flags: InputFlags = {
+  static flags = {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en-US|de-DE|etc>',
-      default: 'en-US',
     }),
     target: flags.string({
       char: 't',
@@ -130,11 +128,11 @@ export class Get extends Command {
 
         _.merge(config, platformConfigIds);
         // Apply platform specific config values
-        _.merge(config, platform.getPlatformConfigValues(project, args.options));
+        _.merge(config, platform.getPlatformConfigValues(project, flags));
         _.merge(config, {
-          locales: project.getLocales(args.options.locale),
-          targets: project.getTargets('get', args.options.target, args.options.stage),
-          stage: project.getStage(args.options.stage),
+          locales: project.getLocales(flags.locale),
+          targets: project.getTargets('get', flags.target, flags.stage),
+          stage: project.getStage(flags.stage!),
         });
 
         // If no project got found prompt user to select one
