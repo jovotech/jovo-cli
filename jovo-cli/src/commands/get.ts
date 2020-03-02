@@ -31,8 +31,7 @@ export class Get extends Command {
   static flags: InputFlags = {
     locale: flags.string({
       char: 'l',
-      description: 'Locale of the language model.\n<en-US|de-DE|etc>',
-      default: 'en-US',
+      description: 'Locale of the language model.\n<en-US|de-DE|etc>'
     }),
     target: flags.string({
       char: 't',
