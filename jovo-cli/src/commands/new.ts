@@ -152,7 +152,7 @@ export class New extends Command {
       // Apply platform specific config values
       for (const type of config.types) {
         const platform = platforms.get(type);
-        _.merge(config, platform.getPlatformConfigValues(project, args.options));
+        _.merge(config, platform.getPlatformConfigValues(project, flags));
       }
 
       project.setProjectPath(args.directory);
