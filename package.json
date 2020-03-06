@@ -4,8 +4,8 @@
 	"scripts": {
 		"lerna": "lerna",
 		"init": "lerna bootstrap",
-	  "prettier": "lerna exec npm run prettier",
-	  "tsc": "lerna exec npm run tsc",
+	  	"prettier": "lerna exec npm run prettier",
+	  	"tsc": "lerna exec npm run tsc",
 		"tslint": "lerna exec npm run tslint",
 		"test": "lerna exec npm test",
 		"clean": "lerna clean",
@@ -13,7 +13,7 @@
 		"rimraf": "lerna exec npm run rimraf",
 		"typedoc": "npm run lerna exec npm run typedoc",
 		"preparePublish": "npm run rimraf && npm run tsc && npm run tslint",
-		"publish": "lerna publish --registry http://localhost:4873 --no-push"
+		"publish": "lerna publish --no-push"
 	},
 	"devDependencies": {
 		"@types/es6-promise": "^3.3.0",

@@ -14,9 +14,9 @@ import * as deployTargets from './DeployTargets';
 import { ListrTaskHelper, PackageVersions, PackageVersionsNpm } from './Interfaces';
 import * as platforms from './Platforms';
 import * as prompts from './Prompts';
+import * as scaffolder from './Scaffolder';
 import * as tasks from './Tasks';
 import * as validators from './Validators';
-import * as scaffolder from './Scaffolder';
 
 export { platforms, prompts, tasks, validators, deployTargets, scaffolder };
 export * from './Interfaces';

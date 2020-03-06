@@ -19,7 +19,7 @@ export function isValidProjectName(directory: string) {
  * @return {boolean}
  */
 export function isValidTemplate(template: string | undefined) {
-  if (template && !/^[0-9a-zA-Z-_]+$/.test(template)) {
+  if (template && !/^[0-9a-zA-Z-/_]+$/.test(template)) {
     console.log('Please use a valid template name.');
     return false;
   }

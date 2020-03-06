@@ -1,13 +1,12 @@
 {
     "name": "jovo-cli-deploy-lambda",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "Lamdbda specific deploy CLI code",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
     "scripts": {
-	  "prettier": "prettier --config ./.prettierrc.js --write \"{test,src}/**/*\" --list-different",
-
-	  "build": "tsc",
+        "prettier": "prettier --config ./.prettierrc.js --write \"{test,src}/**/*\" --list-different",
+        "build": "tsc",
         "tslint": "tslint -p tsconfig.json -c tslint.json",
         "tsc": "tsc",
         "tscw": "tsc --watch",
@@ -23,7 +22,7 @@
         "@types/archiver": "^2.1.2",
         "@types/cross-spawn": "^6.0.1",
         "@types/es6-promise": "^3.3.0",
-	  	"@types/figures": "^3.0.1",
+        "@types/figures": "^3.0.1",
         "@types/fs-extra": "^8.0.1",
         "@types/jest": "^25.1.2",
         "@types/listr": "^0.13.0",
@@ -33,17 +32,16 @@
         "@types/rimraf": "^2.0.3",
         "fs-extra": "^8.1.0",
         "jest": "^25.1.0",
-	  "prettier": "1.19.1",
-
-	  "rimraf": "^3.0.2",
+        "prettier": "1.19.1",
+        "rimraf": "^3.0.2",
         "ts-jest": "^25.2.0",
-	  	"tslint": "^5.19.0",
-	  	"tslint-config-prettier": "^1.18.0",
+        "tslint": "^5.19.0",
+        "tslint-config-prettier": "^1.18.0",
         "typescript": "^3.7.5"
     },
     "dependencies": {
         "aws-sdk": "^2.344.0",
-        "jovo-cli-core": "^3.0.0",
+        "jovo-cli-core": "^3.0.1",
         "listr": "^0.14.2",
         "lodash": "^4.17.15",
         "proxy-agent": "^3.0.3",

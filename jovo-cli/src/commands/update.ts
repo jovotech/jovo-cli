@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import chalk from 'chalk';
 import { exec } from 'child_process';
-import { statSync } from 'fs-extra';
+import { statSync, writeFile } from 'fs-extra';
 import { getProject } from 'jovo-cli-core';
 import Listr = require('listr');
 import { join as pathJoin } from 'path';
@@ -11,6 +11,7 @@ import { getPackageVersionsNpm, JovoCliRenderer } from '../utils';
 import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
 
 const execAsync = promisify(exec);
+
 const rimrafAsync = promisify(rimraf);
 
 export class Update extends Command {
@@ -39,6 +40,7 @@ export class Update extends Command {
         for (const [name, pkg] of Object.entries(packageVersions)) {
           let text = `  ${name}: ${pkg.local}`;
           if (pkg.local !== pkg.npm) {
+            outOfDatePackages.push(name);
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -56,10 +58,15 @@ export class Update extends Command {
       }
 
       let npmUpdateOutput = '';
+
+      for (let i = 0; i < outOfDatePackages.length; i++) {
+        outOfDatePackages[i] = outOfDatePackages[i] + '@latest';
+      }
+
       tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
-          const updateCommand = `npm update ${outOfDatePackages.join(' ')}`;
+          const updateCommand = `npm install ${outOfDatePackages.join(' ')} --loglevel=error`;
 
           try {
             const { stdout, stderr } = await execAsync(updateCommand, {
@@ -87,7 +94,7 @@ export class Update extends Command {
         statSync(bundleNodeDirectoryPath);
 
         tasks.add({
-          title: 'Deleting "node_modules" in bunle directory...',
+          title: 'Deleting "node_modules" in bundle directory...',
           async task() {
             await rimrafAsync(bundleNodeDirectoryPath);
           },

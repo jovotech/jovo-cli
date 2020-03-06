@@ -134,11 +134,11 @@ export class JovoCliRenderer implements ListrRenderer {
     this.nonTTY = false;
     this._tasks = tasks;
     this._options = {
-        showSubtasks: true,
-        collapse: true,
-        clearOutput: false,
-		// @ts-ignore
-        separateTopTasks: false,
+      showSubtasks: true,
+      collapse: true,
+      clearOutput: false,
+      // @ts-ignore
+      separateTopTasks: false,
       ...options,
     };
   }

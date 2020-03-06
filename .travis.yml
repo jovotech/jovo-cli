@@ -7,9 +7,8 @@ install:
   - "npm run test"
 
 node_js:
+  - "12"
   - "10"
-  - "9"
-  - "8"
 
 
 notifications:
