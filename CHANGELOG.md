@@ -1,6 +1,15 @@
 # Jovo CLI Changelog
 
 
+## 3.0.4 (2020-03-06)
+
+#### :bug: Bug Fix
+ * `jovo-cli` Fixed regex in template validator
+
+ #### Committers: 1
+- Alex ([@aswetlow](https://github.com/aswetlow))
+
+
 ## 3.0.3 (2020-03-04)
 
 #### :bug: Bug Fix
