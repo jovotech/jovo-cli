@@ -6,7 +6,7 @@ import { prompts, scaffolder, JovoCliRenderer } from '../utils';
 
 const { promptOverwriteHandler, ANSWER_SEPERATE, ANSWER_CANCEL } = prompts;
 const { scaffold } = scaffolder;
-const project = getProject();
+
 const srcPath = './models/';
 let destPath = './src/app.js';
 
@@ -27,6 +27,9 @@ export class Scaffold extends Command {
     if (!isValidModel()) {
       return;
     }
+
+    const project = getProject();
+    await project.init();
 
     const isTsProject = await project.isTypeScriptProject();
     if (isTsProject) {

@@ -74,11 +74,11 @@ export class Run extends Command {
     }
 
     const project = getProject();
+    await project.init();
+
     const port = Number(flags.port!) || 3000;
     const timeout = flags.timeout || 5000;
     const stage = project.getStage(flags.stage!);
-
-    await project.init();
 
     // Update message should be displayed in case old packages get used
     if (shouldDisplayUpdateMessage(24)) {
@@ -186,8 +186,7 @@ export class Run extends Command {
     }
 
     if (flags.inspect) {
-      const inspectPort = _.isNumber(flags.inspect) ? Number(flags.inspect.toString()) : 9229;
-      parameters.unshift(`--inspect=${inspectPort}`);
+      parameters.unshift(`--inspect=${flags.inspect}`);
     }
 
     // Add project path to parameters, if source path is not project path.

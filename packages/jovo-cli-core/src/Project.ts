@@ -46,7 +46,7 @@ export class Project {
 
   constructor() {
     this.projectPath = process.cwd();
-    this.frameworkVersion = 2;
+    this.frameworkVersion = 3;
   }
 
   /**
@@ -64,7 +64,7 @@ export class Project {
         this.frameworkVersion = packageVersion.major;
       } catch (e) {
         // When no package-lock file got found expect it to be version 2 as it is the default
-        this.frameworkVersion = 2;
+        this.frameworkVersion = 3;
       }
     } else {
       this.frameworkVersion = frameworkVersion;
