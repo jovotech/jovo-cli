@@ -1,6 +1,16 @@
 # Jovo CLI Changelog
 
 
+## 3.0.5 (2020-03-20)
+
+#### :bug: Bug Fix
+ * `jovo-cli` [#128](https://github.com/jovotech/jovo-cli/pull/128) Remove default values for Targets and Ask-Profiles ([@rubenaeg](https://github.com/rubenaeg))
+
+ #### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+
 ## 3.0.4 (2020-03-06)
 
 #### :bug: Bug Fix
