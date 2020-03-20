@@ -61,7 +61,6 @@ export class Build extends Command {
         TARGET_ZIP,
         ...deployTargets.getAllPluginTargets(),
       ],
-      default: DEFAULT_TARGET,
     }),
     src: flags.string({
       char: 's',
@@ -101,7 +100,7 @@ export class Build extends Command {
       }
 
       if (!isValidLocale(flags.locale) || !isValidPlatform(flags.platform)) {
-        this.exit(1);
+        return;
       }
 
       this.log('\n jovo build:  Create and update platform specific files in /platforms folder');

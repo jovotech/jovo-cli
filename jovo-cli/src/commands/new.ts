@@ -43,6 +43,9 @@ export class New extends Command {
       char: 't',
       description: 'Name of the template.',
       default: 'helloworld',
+      parse(template: string) {
+        return template.replace('/', '-');
+      },
     }),
     'locale': flags.string({
       char: 'l',
@@ -114,18 +117,13 @@ export class New extends Command {
         debug: flags.debug,
       };
 
-      if (!args.directory) {
-        const { directory } = await promptNewProject();
-        if (!isValidProjectName(directory)) {
-          this.error(`The folder name "${directory}" is not valid.`);
-        }
-        args.directory = directory;
-      }
+      // Default value for directory
+      args.directory = args.directory || flags.template;
 
       if (project.hasExistingProject(args.directory)) {
         const { overwrite } = await promptOverwriteProject();
         if (overwrite === ANSWER_CANCEL) {
-          this.exit();
+          return;
         } else {
           deleteFolderRecursive(path.join(process.cwd(), args.directory));
         }
@@ -156,7 +154,6 @@ export class New extends Command {
       }
 
       project.setProjectPath(args.directory);
-      config.template = config.template!.replace('/', '-');
 
       tasks.add({
         title: `Creating new directory /${chalk.white.bold(config.projectName!)}`,
@@ -167,7 +164,7 @@ export class New extends Command {
       });
 
       tasks.add({
-        title: `Downloading and extracting template ${chalk.white.bold(config.template)}`,
+        title: `Downloading and extracting template ${chalk.white.bold(config.template!)}`,
         async task(ctx) {
           // TODO: ctx should be empty?
           await project.downloadAndExtract(

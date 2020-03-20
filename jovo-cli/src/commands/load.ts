@@ -18,6 +18,7 @@ export class Load extends Command {
       const { args } = this.parse(Load);
 
       const project = getProject();
+      await project.init();
 
       if (!existsSync(`./node_modules/${args.component}`)) {
         this.error(

@@ -136,8 +136,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
     if (['deploy'].includes(command)) {
       options['ask-profile'] = flags.string({
-        description: 'Name of used ASK profile',
-        default: 'default',
+        description: 'Name of used ASK profile'
       });
     }
   }
