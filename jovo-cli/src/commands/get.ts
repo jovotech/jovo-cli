@@ -42,7 +42,6 @@ export class Get extends Command {
         TARGET_ZIP,
         ...deployTargets.getAllPluginTargets(),
       ],
-      default: DEFAULT_TARGET,
     }),
     stage: flags.string({
       description: 'Takes configuration from specified stage.',

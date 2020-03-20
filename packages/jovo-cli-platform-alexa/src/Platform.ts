@@ -129,7 +129,6 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
     if (['build', 'deploy', 'get', 'init', 'new'].includes(command)) {
       options['ask-profile'] = flags.string({
         description: 'Name of used ASK profile',
-        default: 'default',
       });
     }
   }
