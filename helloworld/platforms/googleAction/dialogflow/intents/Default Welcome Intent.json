@@ -1,0 +1,10 @@
+{
+	"name": "Default Welcome Intent",
+	"auto": true,
+	"webhookUsed": true,
+	"events": [
+		{
+			"name": "WELCOME"
+		}
+	]
+}

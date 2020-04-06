@@ -1,0 +1,17 @@
+{
+	"name": "MyNameIsIntent",
+	"auto": true,
+	"webhookUsed": true,
+	"responses": [
+		{
+			"parameters": [
+				{
+					"isList": false,
+					"name": "name",
+					"value": "$name",
+					"dataType": "@sys.given-name"
+				}
+			]
+		}
+	]
+}
