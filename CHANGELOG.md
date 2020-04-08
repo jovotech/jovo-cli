@@ -3,11 +3,15 @@
 
 ## 3.0.6 (2020-04-08)
 
-#### :recycle: Enhancements
+#### :nail_care: Enhancements
+ * `jovo-cli` [#132](https://github.com/jovotech/jovo-cli/pull/132) Add --clean Flag for Build Command ([@rubenaeg](https://github.com/rubenaeg))
  * `jovo-cli` Pass endpoint path to Jovo Debugger
 
- #### Committers: 1
+ #### Committers: 2
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
 - Alex ([@aswetlow](https://github.com/aswetlow))
+
+
 
 ## 3.0.5 (2020-03-20)
 
