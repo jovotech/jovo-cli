@@ -39,6 +39,7 @@ export function post(
     const hostname: string = options.hostname || 'localhost';
     const port: string = options.port || '3000';
     const timeout: number = options.timeout || 5000;
+	const webhook_path = (headers as any).webhook_path || '';
 
     headers = merge(defaultHeaders, headers);
     // @ts-ignore
@@ -47,10 +48,12 @@ export function post(
     delete headers['content-length'];
     const queryParamsString = stringify(queryParams);
 
+
+
     const opt = {
       hostname,
       port,
-      path: '/webhook?' + queryParamsString,
+      path: `/webhook${webhook_path}?${queryParamsString}`,
       method: 'POST',
       headers,
     };
