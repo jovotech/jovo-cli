@@ -2,7 +2,6 @@ import { Command, flags } from '@oclif/command';
 import chalk from 'chalk';
 import {
   DEFAULT_ENDPOINT,
-  DEFAULT_TARGET,
   getProject,
   InputFlags,
   JovoTaskContext,
@@ -16,6 +15,7 @@ import * as _ from 'lodash';
 import {
   addBaseCliOptions,
   deployTargets,
+  deleteFolderRecursive,
   JovoCliRenderer,
   platforms,
   prompts,
@@ -74,13 +74,21 @@ export class Build extends Command {
       options: ['jovo-webhook', 'ngrok', 'none'],
       default: 'jovo-webhook',
     }),
+    force: flags.boolean({
+      description: 'Forces overwrite of existing project for reverse build.',
+    }),
     overwrite: flags.boolean({
       description: 'Forces overwrite of existing project for reverse build.',
+      hidden: true,
     }),
     ignore: flags.string({
       description: 'Task which should be ignored.',
       options: ['model-validation', 'none'],
       default: 'none',
+    }),
+    clean: flags.boolean({
+      description:
+        'Deletes all platform folders and executes a clean build. If --platform is specified, it deletes only the respective platforms folder.',
     }),
     debug: flags.boolean({
       hidden: true,
@@ -101,6 +109,11 @@ export class Build extends Command {
 
       if (!isValidLocale(flags.locale) || !isValidPlatform(flags.platform)) {
         return;
+      }
+
+      // @ts-ignore
+      if (flags.overwrite) {
+        this.warn('Flag --overwrite is deprecated. Consider using --clean instead.');
       }
 
       this.log('\n jovo build:  Create and update platform specific files in /platforms folder');
@@ -176,7 +189,7 @@ export class Build extends Command {
 
         if (flags.reverse) {
           config.locales = platform.getLocales(flags.locale);
-          if (flags.overwrite) {
+          if (flags.force) {
             config.reverse = true;
           } else if (project.hasModelFiles(config.locales)) {
             const answer = await promptOverwriteReverseBuild();
@@ -185,6 +198,18 @@ export class Build extends Command {
             }
             config.reverse = answer.promptOverwriteReverseBuild;
           }
+        }
+      }
+
+      // If --clean has been set, delete the respective platform folders before building.
+      if (flags.clean) {
+        for (const type of types) {
+          if (type === 'bixbyCapsule') {
+            continue;
+          }
+
+          const platformsPath = `${project.getPlatformsPath()}/${type}`;
+          deleteFolderRecursive(platformsPath);
         }
       }
 

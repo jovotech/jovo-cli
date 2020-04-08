@@ -171,7 +171,7 @@ describe('build', () => {
     ).toBe(true);
   }, 12000);
 
-  it('jovo new <project> --build \n      jovo build --platform alexaSkill --reverse --overwrite', async () => {
+  it('jovo new <project> --build \n      jovo build --platform alexaSkill --reverse --force', async () => {
     const projectName = 'helloworld_reverse_alexaSkill';
 
     // Create new project
@@ -190,7 +190,7 @@ describe('build', () => {
     // Build project
     await runJovoCommand(
       'build',
-      ['--platform', 'alexaSkill', '--reverse', '--overwrite'],
+      ['--platform', 'alexaSkill', '--reverse', '--force'],
       projectFolder,
       'Build completed.',
     );
@@ -203,7 +203,7 @@ describe('build', () => {
     expect(modelJson.invocation).toBe('my test app');
   }, 12000);
 
-  it('jovo new <project> --build \n      jovo build --platform googleAction --reverse --overwrite', async () => {
+  it('jovo new <project> --build \n      jovo build --platform googleAction --reverse --force', async () => {
     const projectName = 'helloworld_reverse_googleAction';
 
     // Create new project
@@ -222,7 +222,7 @@ describe('build', () => {
     // Build project
     await runJovoCommand(
       'build',
-      ['--platform', 'googleAction', '--reverse', '--overwrite'],
+      ['--platform', 'googleAction', '--reverse', '--force'],
       projectFolder,
       'Build completed.',
     );
