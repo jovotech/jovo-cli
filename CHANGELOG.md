@@ -1,6 +1,14 @@
 # Jovo CLI Changelog
 
 
+## 3.0.6 (2020-04-08)
+
+#### :recycle: Enhancements
+ * `jovo-cli` Pass endpoint path to Jovo Debugger
+
+ #### Committers: 1
+- Alex ([@aswetlow](https://github.com/aswetlow))
+
 ## 3.0.5 (2020-03-20)
 
 #### :bug: Bug Fix
