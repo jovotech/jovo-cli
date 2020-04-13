@@ -12,22 +12,22 @@ const mkdirAsync = promisify(fs.mkdir);
 const unlinkAsync = promisify(fs.unlink);
 const writeFileAsync = promisify(fs.writeFile);
 
-import { join as pathJoin, sep as pathSep, parse as pathParse } from 'path';
 import * as AdmZip from 'adm-zip';
 import * as archiver from 'archiver';
-import * as request from 'request';
 import { exec } from 'child_process';
+import { ListrTask, ListrTaskWrapper } from 'listr';
+import * as Listr from 'listr';
 // TODO: Import only what is needed from lodash!
 import * as _ from 'lodash';
+import { join as pathJoin, parse as pathParse, sep as pathSep } from 'path';
+import * as request from 'request';
+import * as tv4 from 'tv4';
 import * as uuidv4 from 'uuid/v4';
 import * as Utils from './Utils';
-import * as Listr from 'listr';
-import { ListrTask, ListrTaskWrapper } from 'listr';
-import * as tv4 from 'tv4';
 
-import { AppFile, JovoCliPlatform, JovoTaskContext, JovoUserConfig, PackageVersion } from './';
-import { ModelValidationError, JovoModelData } from 'jovo-model';
 import { JovoConfigReader } from 'jovo-config';
+import { JovoModelData, ModelValidationError } from 'jovo-model';
+import { AppFile, JovoCliPlatform, JovoTaskContext, JovoUserConfig, PackageVersion } from './';
 
 import {
   DEFAULT_LOCALE,
@@ -99,7 +99,7 @@ export class Project {
     language: string,
   ): Promise<string> {
     const pathToZip = await this.downloadTemplate(projectName, template, locale, language);
-    return await this.unzip(pathToZip, projectName);
+    return this.unzip(pathToZip, projectName);
   }
 
   /**
@@ -178,7 +178,7 @@ export class Project {
     try {
       appJsonConfig = this.getConfigContent();
 
-      let stg = stage;
+      let stg = this.getStage(stage);
 
       if (stg === undefined && _.get(appJsonConfig, 'defaultStage')) {
         stg = _.get(appJsonConfig, 'defaultStage');
@@ -648,7 +648,7 @@ export class Project {
     }
   }
 
-  getStage(stage: string): string {
+  getStage(stage?: string): string {
     if (stage) {
       // If a stage is given always use it no matter what is defined
       // in environment or config
@@ -662,6 +662,9 @@ export class Project {
     if (process.env.STAGE) {
       stg = process.env.STAGE;
     }
+	  if (process.env.JOVO_STAGE) {
+		  stg = process.env.JOVO_STAGE;
+	  }
     try {
       const appJsonConfig = this.getConfigContent();
       if (_.get(appJsonConfig, 'defaultStage')) {
@@ -802,7 +805,7 @@ export class Project {
         throw new Error('Could not get model!');
       }
       await platform.setPlatformDefaults(model);
-      return await this.saveModel(model, locale);
+      return this.saveModel(model, locale);
     }
   }
 
