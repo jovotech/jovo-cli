@@ -662,9 +662,9 @@ export class Project {
     if (process.env.STAGE) {
       stg = process.env.STAGE;
     }
-	  if (process.env.JOVO_STAGE) {
-		  stg = process.env.JOVO_STAGE;
-	  }
+    if (process.env.JOVO_STAGE) {
+      stg = process.env.JOVO_STAGE;
+    }
     try {
       const appJsonConfig = this.getConfigContent();
       if (_.get(appJsonConfig, 'defaultStage')) {

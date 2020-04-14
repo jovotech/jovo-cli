@@ -66,7 +66,7 @@ export class Run extends Command {
   async run() {
     platforms.addCliOptions('run', Run.flags);
     addBaseCliOptions(Run.flags);
-	  this.log(' ');
+    this.log(' ');
 
     const { args, flags } = this.parse(Run);
 
@@ -155,14 +155,14 @@ export class Run extends Command {
       checkFolders.push('./dist/');
 
       try {
-		  accessSync(path.join('./dist/'))
-	  } catch(e) {
-		  this.log('Cannot find /dist folder. Start compiling TypeScript...');
-		  await project.compileTypeScriptProject(srcDir);
-		  this.log('TypeScript Compiling finished.');
-		  this.log(' ');
-	  }
-	} else {
+        accessSync(path.join('./dist/'));
+      } catch (e) {
+        this.log('Cannot find /dist folder. Start compiling TypeScript...');
+        await project.compileTypeScriptProject(srcDir);
+        this.log('TypeScript Compiling finished.');
+        this.log(' ');
+      }
+    } else {
       // In regular projects in "src" folder
       checkFolders.push('./src/');
     }
