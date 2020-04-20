@@ -46,9 +46,15 @@ export function checkAsk(): Promise<void> {
   return new Promise((resolve, reject) => {
     exec('ask -v', (error, stdout: string) => {
       if (error) {
-        const msg =
-          'Jovo requires ASK CLI\n' +
-          'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
+        let msg;
+        if (error.code === 1) {
+          // @ts-ignore
+          msg = chalk.bgYellow('[WARN] jovo-cli does not yet work with ask-cli@version 2. Please downgrade to ask-cli@version 1.7.23 using npm i -g ask-cli@1.7.23');
+        } else {
+          msg =
+            'Jovo requires ASK CLI\n' +
+            'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
+        }
         return reject(new Error(msg));
       }
       const version: string[] = stdout.split('.');
