@@ -1,8 +1,9 @@
 import * as chalk from 'chalk';
-import { exec } from 'child_process';
+import { execSync, exec } from 'child_process';
 import * as inquirer from 'inquirer';
 import { Utils } from 'jovo-cli-core';
 import * as _ from 'lodash';
+
 import { AskSkillList, JovoTaskContextAlexa } from '.';
 
 export const DEFAULT_ASK_PROFILE = 'default';
@@ -39,30 +40,26 @@ export function getAskError(method: string, stderr: string) {
 }
 
 /**
- * Checks if ask cli is installed
+ * Checks if ask cli is installed and returns version.
  * @return {Promise<any>}
  */
-export function checkAsk(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    exec('ask -v', (error, stdout: string) => {
-      if (error) {
-        const msg =
-          'Jovo requires ASK CLI\n' +
-          'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
-        return reject(new Error(msg));
-      }
-      const version: string[] = stdout.split('.');
-      // if (version.length < 3) {
-      //     return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-      // }
-
-      if (Number(version[0]) >= 1 && Number(version[1]) >= 1) {
-        return resolve();
-      }
-
-      return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-    });
-  });
+export function checkAsk() {
+  try {
+    // Check for ask-cli@v2
+    const version = execSync('ask -V').toString();
+    return version[0];
+  } catch (err) {
+    try {
+      // If ask-cli@v2 fails, check for v1
+      const version = execSync('ask -v').toString();
+      return version[0];
+    } catch (err) {
+      const msg =
+        'Jovo requires ASK CLI\n' +
+        'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
+      throw new Error(msg);
+    }
+  }
 }
 
 /**

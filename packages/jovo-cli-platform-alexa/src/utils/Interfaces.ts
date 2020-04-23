@@ -37,8 +37,30 @@ export interface AskSkillList {
 
 export interface JovoTaskContextAlexa extends JovoTaskContext {
   askProfile: string;
+  accessToken: string;
   lambdaArn?: string;
   skillId?: string;
   info?: string;
   newSkill?: boolean;
+}
+
+export interface SMAPIResponse {
+  data: any;
+  headers: any;
+  statusCode: number;
+}
+
+export interface RequestOptions {
+  method: string;
+  hostname: string;
+  path: string;
+  headers?: {
+    'Content-Length'?: number;
+    'Content-Type'?: string;
+    'Authorization'?: string;
+  };
+}
+
+export interface RequestBody {
+  [key: string]: any;
 }
