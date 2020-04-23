@@ -63,7 +63,7 @@ export class Get extends Command {
     }),
   };
 
-  static args = [{ name: 'platform', options: platforms.getAllAvailable() }];
+  static args = [{ name: 'platform', options: platforms.getAllAvailable(), required: true }];
 
   async run() {
     try {
@@ -176,6 +176,7 @@ export class Get extends Command {
         });
       }
 
+      console.log('HEY');
       await tasks.run(config);
       this.log();
       this.log('  Build completed.');

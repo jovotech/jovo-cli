@@ -1,20 +1,11 @@
 import { Utils } from 'jovo-cli-core';
-import {
-  request,
-  RequestOptions,
-  SMAPI_ENDPOINT,
-  STATUS,
-  refreshToken,
-  JovoTaskContextAlexa,
-} from '../utils';
+import { writeFileSync } from 'fs-extra';
+
+import { request, RequestOptions, STATUS, JovoTaskContextAlexa, getVendorId } from '../utils';
 
 export async function getSkillStatus(ctx: JovoTaskContextAlexa) {
   try {
     const options: RequestOptions = {
-      headers: {
-        Authorization: ctx.accessToken,
-      },
-      hostname: SMAPI_ENDPOINT,
       method: 'GET',
       path: `/v1/skills/${ctx.skillId}/status`,
     };
@@ -43,7 +34,7 @@ export async function getSkillStatus(ctx: JovoTaskContextAlexa) {
     }
   } catch (err) {
     throw new Error(
-      `Something ewnt wrong with your skill. Please see the logs below: ${err.message}`,
+      `Something went wrong with your skill. Please see the logs below: ${err.message}`,
     );
   }
 }
@@ -55,14 +46,10 @@ export async function createSkill(
   try {
     // ToDo: outsource!
     const bodyData = {
-      vendorId: 'MABP11QQSDL7E',
+      vendorId: getVendorId(),
       ...require(skillJsonPath),
     };
     const options: RequestOptions = {
-      headers: {
-        Authorization: ctx.accessToken,
-      },
-      hostname: SMAPI_ENDPOINT,
       method: 'POST',
       path: '/v1/skills',
     };
@@ -84,10 +71,6 @@ export async function createSkill(
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
     const options: RequestOptions = {
-      headers: {
-        Authorization: ctx.accessToken,
-      },
-      hostname: SMAPI_ENDPOINT,
       method: 'PUT',
       // ToDo: different stages?
       path: `/v1/skills/${ctx.skillId}/stages/development/manifest`,
@@ -103,4 +86,44 @@ export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: stri
       `Something went wrong while updating your skill. Please see the logs below:${err.message}`,
     );
   }
+}
+
+export async function getSkillInformation(
+  ctx: JovoTaskContextAlexa,
+  skillJsonPath: string,
+  stage: string,
+) {
+  try {
+    const options = {
+      method: 'GET',
+      path: `/v1/skills/${ctx.skillId}/stages/${stage}/manifest`,
+    };
+
+    const response = await request(ctx, options);
+
+    if (response.statusCode === STATUS.OK) {
+      writeFileSync(skillJsonPath, response.data);
+    } else {
+      throw new Error(response.data.message);
+    }
+  } catch (err) {
+    throw new Error(
+      `Something went wrong while getting your skill information. Please see the logs below:${err.message}`,
+    );
+  }
+}
+
+export async function listSkills(ctx: JovoTaskContextAlexa) {
+  try {
+    // ToDo: profile in ctx?
+    const vendorId = getVendorId();
+    const options = {
+      method: 'GET',
+      path: `/v1/skills?vendorId=${vendorId}`
+    };
+
+    const response = await request(ctx, options);
+
+
+  } catch(err) {}
 }

@@ -121,7 +121,12 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   getExistingProjects(config: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
     // Check if ask-cli is installed.
     ask.checkAsk();
-    return ask.askApiListSkills(config);
+
+    if(ASK_VERSION === '2') {
+
+    } else {
+      return ask.askApiListSkills(config);
+    }
   }
 
   getAdditionalCliOptions(command: string, options: InputFlags): void {
@@ -257,7 +262,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   isValidAskProfile(askProfile: string): boolean {
     if (askProfile) {
       if (askProfile.length === 0) {
-        console.log('--ask profile cannot be empty');
+        console.log('--ask-profile cannot be empty');
         return false;
       }
     }
@@ -415,43 +420,43 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
       fs.mkdirSync(alexaSkillPath);
     }
 
+    ctx.accessToken = getAccessToken();
+
     return [
       {
         title: 'Getting Alexa Skill project for ASK profile ' + highlight(ctx.askProfile),
         enabled: (ctx: JovoTaskContextAlexa) =>
           ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO),
-        task: (ctx: JovoTaskContextAlexa, task) => {
-          let p = Promise.resolve();
+        task: async (ctx: JovoTaskContextAlexa, task) => {
           ctx.info = 'Info: ';
 
-          p = p
-            .then(() => ask.checkAsk())
-            .then(() => ask.askApiGetSkill(ctx, this.getSkillJsonPath()))
-            .then(() => this.setAlexaSkillId(ctx.skillId!))
-            .then(() => ask.askApiGetAccountLinking(ctx))
-            .then((accountLinkingJson) => {
-              if (accountLinkingJson) {
-                fs.writeFile(this.getAccountLinkingPath(), accountLinkingJson, (err) => {
-                  if (err) {
-                    return Promise.reject(err);
-                  }
-                  ctx.info +=
-                    'Account Linking Information saved to ' + this.getAccountLinkingPath();
-                  return Promise.resolve();
-                });
-              } else {
-                return Promise.resolve();
-              }
-            })
-            .then(() => {
-              let info = 'Info: ';
-              const skillInfo = this.getSkillSimpleInformation();
-              info += `Skill Name: ${skillInfo.name}
+          ask.checkAsk();
+
+          if (ASK_VERSION === '2') {
+            // ToDo: Stage configurable?
+            await smapi.getSkillInformation(ctx, this.getSkillJsonPath(), 'development');
+            this.setAlexaSkillId(ctx.skillId!);
+            const accountLinkingJson = await smapi.getAccountLinkingInformation(ctx);
+            if (accountLinkingJson) {
+              fs.writeFileSync(this.getAccountLinkingPath(), accountLinkingJson);
+              ctx.info += 'Account Linking Information saved to ' + this.getAccountLinkingPath();
+            }
+          } else {
+            await ask.askApiGetSkill(ctx, this.getSkillJsonPath());
+            this.setAlexaSkillId(ctx.skillId!);
+            const accountLinkingJson = await ask.askApiGetAccountLinking(ctx);
+            if (accountLinkingJson) {
+              fs.writeFileSync(this.getAccountLinkingPath(), accountLinkingJson);
+              ctx.info += 'Account Linking Information saved to ' + this.getAccountLinkingPath();
+            }
+          }
+
+          let info = 'Info: ';
+          const skillInfo = this.getSkillSimpleInformation();
+          info += `Skill Name: ${skillInfo.name}
 Skill ID: ${skillInfo.skillId}
 Endpoint: ${skillInfo.endpoint}`;
-              task.skip(info);
-            });
-          return p;
+          task.skip(info);
         },
       },
       {
@@ -797,6 +802,7 @@ Endpoint: ${skillInfo.endpoint}`;
   getSkillId() {
     try {
       const askConfig = this.getAskConfig();
+      // ToDo: profile as argument, so deploy_settings.${profile}.skill_id
       // prettier-ignore
       const skillId = _.get(askConfig, ASK_VERSION === '2' ? 'profiles.default.skillId' : 'deploy_settings.default.skill_id')
       if (skillId && skillId.length > 0) {

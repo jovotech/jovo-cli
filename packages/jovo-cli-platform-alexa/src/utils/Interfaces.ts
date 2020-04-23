@@ -52,8 +52,8 @@ export interface SMAPIResponse {
 
 export interface RequestOptions {
   method: string;
-  hostname: string;
   path: string;
+  hostname?: string;
   headers?: {
     'Content-Length'?: number;
     'Content-Type'?: string;

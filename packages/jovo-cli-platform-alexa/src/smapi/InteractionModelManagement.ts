@@ -15,10 +15,6 @@ export async function updateInteractionModel(
 ): Promise<void> {
   try {
     const options: RequestOptions = {
-      headers: {
-        Authorization: ctx.accessToken,
-      },
-      hostname: SMAPI_ENDPOINT,
       method: 'PUT',
       path: `/v1/skills/${ctx.skillId}/stages/${stage}/interactionModel/locales/${locale}`,
     };
