@@ -1,4 +1,4 @@
-import { RequestOptions, JovoTaskContextAlexa, SMAPI_ENDPOINT, request, STATUS } from '../utils';
+import { RequestOptions, JovoTaskContextAlexa, request, STATUS } from '../utils';
 
 export async function getAccountLinkingInformation(
   ctx: JovoTaskContextAlexa,
@@ -12,10 +12,16 @@ export async function getAccountLinkingInformation(
 
     const response = await request(ctx, options);
 
-    if (response.statusCode === STATUS.OK) {
-      return response.data;
-    } else {
-      throw new Error(response.data.message);
+    switch (response.statusCode) {
+      case STATUS.OK: {
+        return response.data;
+      }
+      case STATUS.NOT_FOUND: {
+        return;
+      }
+      default: {
+        throw new Error(response.data.message);
+      }
     }
   } catch (err) {
     throw new Error(

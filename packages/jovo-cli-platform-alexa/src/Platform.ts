@@ -114,18 +114,20 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   /**
    * Returns existing projects of user
    *
-   * @param {JovoTaskContextAlexa} config Configuration file
+   * @param {JovoTaskContextAlexa} ctx Configuration file
    * @returns {Promise<object>}
    * @memberof JovoCliPlatform
    */
-  getExistingProjects(config: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
+  getExistingProjects(ctx: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
     // Check if ask-cli is installed.
     ask.checkAsk();
 
-    if(ASK_VERSION === '2') {
-
+    if (ASK_VERSION === '2') {
+      // Get Access Token for SMAPI
+      ctx.accessToken = getAccessToken();
+      return smapi.listSkills(ctx);
     } else {
-      return ask.askApiListSkills(config);
+      return ask.askApiListSkills(ctx);
     }
   }
 
@@ -436,9 +438,14 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
             // ToDo: Stage configurable?
             await smapi.getSkillInformation(ctx, this.getSkillJsonPath(), 'development');
             this.setAlexaSkillId(ctx.skillId!);
+            // ToDo: Deploy Account Linking!
             const accountLinkingJson = await smapi.getAccountLinkingInformation(ctx);
             if (accountLinkingJson) {
-              fs.writeFileSync(this.getAccountLinkingPath(), accountLinkingJson);
+              // ToDo: Test!
+              fs.writeFileSync(
+                this.getAccountLinkingPath(),
+                JSON.stringify(accountLinkingJson, null, '\t'),
+              );
               ctx.info += 'Account Linking Information saved to ' + this.getAccountLinkingPath();
             }
           } else {

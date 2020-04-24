@@ -19,15 +19,15 @@ export function request(
   if (!options.headers) {
     options.headers = {};
   }
-  options.headers.Authorization = ctx.accessToken;
+  options.headers.Authorization = ctx.accessToken || '';
   options.hostname = options.hostname || SMAPI_ENDPOINT;
 
   return new Promise((res, rej) => {
     const req = https.request(options, async (response) => {
       if (response.statusCode === STATUS.UNAUTHORIZED) {
-        const token = await refreshToken(ctx);
-        ctx.accessToken = token;
-        return await request(ctx, options, body);
+        ctx.accessToken = await refreshToken(ctx);
+        const response = await request(ctx, options, body);
+        return res(response);
       }
 
       let data = '';
@@ -83,7 +83,7 @@ export async function refreshToken(
 
     // Write new token into config file.
     if (response.statusCode === 200) {
-      const askConfigPath = path.join(os.homedir(), '.ask', 'cli_config');
+      const askConfigPath = getAskConfigPath();
       const askConfig = getAskConfig();
 
       askConfig.profiles[profile].token.access_token = response.data.access_token;

@@ -1,11 +1,4 @@
-import {
-  SMAPI_ENDPOINT,
-  STATUS,
-  refreshToken,
-  RequestOptions,
-  request,
-  JovoTaskContextAlexa,
-} from '../utils';
+import { STATUS, RequestOptions, request, JovoTaskContextAlexa } from '../utils';
 
 export async function updateInteractionModel(
   ctx: JovoTaskContextAlexa,

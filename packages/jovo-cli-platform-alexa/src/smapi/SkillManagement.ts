@@ -1,7 +1,16 @@
 import { Utils } from 'jovo-cli-core';
 import { writeFileSync } from 'fs-extra';
+import { ChoiceType } from 'inquirer';
 
-import { request, RequestOptions, STATUS, JovoTaskContextAlexa, getVendorId } from '../utils';
+import {
+  request,
+  RequestOptions,
+  STATUS,
+  JovoTaskContextAlexa,
+  getVendorId,
+  AskSkillList,
+} from '../utils';
+import { prepareSkillList } from '../Ask';
 
 export async function getSkillStatus(ctx: JovoTaskContextAlexa) {
   try {
@@ -20,10 +29,13 @@ export async function getSkillStatus(ctx: JovoTaskContextAlexa) {
       }
     }
 
+    // ToDo: Just quick build? -> faster!
     if (response.data.interactionModel) {
       const values: any[] = Object.values(response.data.interactionModel);
       for (const model of values) {
-        const status = model.lastUpdateRequest.status;
+        // const status = model.lastUpdateRequest.status;
+        const status =
+          model.lastUpdateRequest.buildDetails?.steps[0]?.status || model.lastUpdateRequest.status;
         if (status === 'SUCCEEDED') {
           continue;
         } else if (status === 'IN_PROGRESS') {
@@ -102,7 +114,7 @@ export async function getSkillInformation(
     const response = await request(ctx, options);
 
     if (response.statusCode === STATUS.OK) {
-      writeFileSync(skillJsonPath, response.data);
+      writeFileSync(skillJsonPath, JSON.stringify(response.data, null, '\t'));
     } else {
       throw new Error(response.data.message);
     }
@@ -113,17 +125,23 @@ export async function getSkillInformation(
   }
 }
 
-export async function listSkills(ctx: JovoTaskContextAlexa) {
+export async function listSkills(ctx: JovoTaskContextAlexa): Promise<ChoiceType[]> {
   try {
     // ToDo: profile in ctx?
-    const vendorId = getVendorId();
+    const vendorId = getVendorId('default');
     const options = {
       method: 'GET',
-      path: `/v1/skills?vendorId=${vendorId}`
+      path: `/v1/skills?vendorId=${vendorId}`,
     };
 
     const response = await request(ctx, options);
 
-
-  } catch(err) {}
+    if (response.statusCode === STATUS.OK) {
+      return Promise.resolve(prepareSkillList(response.data as AskSkillList));
+    } else {
+      throw new Error(response.data.message);
+    }
+  } catch (err) {
+    throw err;
+  }
 }
