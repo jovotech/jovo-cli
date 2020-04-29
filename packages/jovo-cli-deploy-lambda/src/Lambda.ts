@@ -3,10 +3,10 @@ import * as _ from 'lodash';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ListrTask } from 'listr';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 const proxyAgent = require('proxy-agent');
 
-import { JovoCliDeploy, Utils, Project, TARGET_ZIP } from 'jovo-cli-core';
+import { JovoCliDeploy, Utils, Project, TARGET_ZIP, JovoCliError, ERROR_TYPE } from 'jovo-cli-core';
 import { JovoTaskContextLambda } from '.';
 
 export class JovoCliDeployLambda extends JovoCliDeploy {
@@ -40,7 +40,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
           try {
             if (_.isUndefined(arn)) {
               const errorMessage = 'Please add a Lambda Endpoint to your project.js file.';
-              return Promise.reject(new Error('Error: ' + errorMessage));
+              return Promise.reject(new JovoCliError(errorMessage, 'jovo-cli-deploy-lambda'));
             }
 
             const projectConfig = project.getConfig(ctx.stage);
@@ -58,7 +58,7 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
               );
             }
 
-            await this.checkAsk();
+            this.checkAsk();
             await this.upload(ctx, project);
 
             if (
@@ -106,7 +106,9 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
     const region = ctx.lambdaArn.match(/([a-z]{2})-([a-z]{4})([a-z]*)-\d{1}/g);
     if (!region) {
-      return Promise.reject(new Error(`No region found in "${ctx.lambdaArn}"!`));
+      return Promise.reject(
+        new JovoCliError(`No region found in "${ctx.lambdaArn}"!`, 'jovo-cli-deploy-lambda'),
+      );
     }
     AWS.config.region = region[0];
 
@@ -133,24 +135,29 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
     return this.deleteLambdaZip(pathToZip);
   }
 
-  checkAsk(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      exec('ask -v', (error, stdout: string) => {
-        if (error) {
-          const msg =
-            'Jovo requires ASK CLI\n' +
-            'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
-          return reject(new Error(msg));
-        }
-        const version: string[] = stdout.split('.');
-
-        if (Number(version[0]) >= 1 && Number(version[1]) >= 1) {
-          return resolve();
-        }
-
-        return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-      });
-    });
+  /**
+   * Checks if ask cli is installed and returns version.
+   * @return {Promise<any>}
+   */
+  checkAsk() {
+    try {
+      // Check for ask-cli@v2
+      const version = execSync('ask -V').toString();
+      return version[0];
+    } catch (err) {
+      try {
+        // If ask-cli@v2 fails, check for v1
+        const version = execSync('ask -v').toString();
+        return version[0];
+      } catch (err) {
+        throw new JovoCliError(
+          'Jovo requires ASK CLI',
+          'jovo-cli-platform-alexa',
+          'Install the ask-cli with npm install ask-cli -g. Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
+          ERROR_TYPE.WARN,
+        );
+      }
+    }
   }
 
   updateFunction(

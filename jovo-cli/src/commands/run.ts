@@ -73,6 +73,9 @@ export class Run extends Command {
       this.exit();
     }
 
+    this.log(`\n jovo run: ${Run.description}`);
+    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
+
     const project = getProject();
     await project.init();
 

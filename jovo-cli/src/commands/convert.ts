@@ -1,4 +1,5 @@
 import { Command, flags } from '@oclif/command';
+import chalk from 'chalk';
 import { ListrTask } from 'listr';
 import * as csvToJson from 'csvtojson';
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs-extra';
@@ -34,6 +35,9 @@ export class Convert extends Command {
     if (!isValidOrigin(origin)) {
       return;
     }
+
+    this.log(`\n jovo convert: ${Convert.description}`);
+    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/convert\n'));
 
     // If target does not end with "/", place a "/" to the end of it.
     target = target ? target.replace(/\/?$/, '/') : target;
@@ -132,9 +136,6 @@ export class Convert extends Command {
       this.log(successMsg);
       this.log();
     } catch (err) {
-      if (err instanceof JovoCliError) {
-        throw err;
-      }
       this.error(failMsg);
     }
   }

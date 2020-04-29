@@ -103,9 +103,11 @@ export class New extends Command {
         this.exit(1);
       }
 
+      this.log(`\n jovo new: ${New.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/new\n'));
+
       // Start project initialization
       const project = getProject();
-      // TODO: framework version?
       await project.init();
 
       const tasks = new Listr([], {
@@ -215,9 +217,6 @@ export class New extends Command {
       this.log('Installation completed.');
       this.log();
     } catch (err) {
-      if (err instanceof JovoCliError) {
-        throw err;
-      }
       this.error(`There was a problem:\n${err}`);
     }
   }

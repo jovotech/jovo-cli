@@ -4,6 +4,7 @@ import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { addBaseCliOptions, JovoCliRenderer, platforms } from '../utils';
 import { ANSWER_BACKUP, ANSWER_OVERWRITE, promptOverwriteComponent } from '../utils/Prompts';
+import chalk from 'chalk';
 
 export class Load extends Command {
   static description =
@@ -25,6 +26,9 @@ export class Load extends Command {
           `The component '${args.component}' does not exist. Please check for spelling or install it with 'npm i ${args.component} -s'.`,
         );
       }
+
+      this.log(`\n jovo load: ${Load.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/load\n'));
 
       const dest = existsSync('./src') ? './src/components' : './components';
       const isTsProject = await project.isTypeScriptProject();
@@ -80,9 +84,6 @@ export class Load extends Command {
       );
       this.log();
     } catch (err) {
-      if (err instanceof JovoCliError) {
-        throw err;
-      }
       this.error(`There was a problem:\n${err}`);
     }
   }

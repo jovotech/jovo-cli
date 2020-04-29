@@ -23,6 +23,9 @@ export class Update extends Command {
     try {
       this.parse(Update);
 
+      this.log(`\n jovo update: ${Update.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/update\n'));
+
       const tasks = new Listr([], {
         renderer: new JovoCliRenderer(),
         collapse: false,
@@ -78,9 +81,6 @@ export class Update extends Command {
               throw new JovoCliError(stderr, 'jovo-cli');
             }
           } catch (err) {
-            if (err instanceof JovoCliError) {
-              throw err;
-            }
             this.error(err);
           }
         },
@@ -116,9 +116,6 @@ export class Update extends Command {
         'Changelog: https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md',
       );
     } catch (err) {
-      if (err instanceof JovoCliError) {
-        throw err;
-      }
       this.error(`There was a problem:\n${err}`);
     }
   }

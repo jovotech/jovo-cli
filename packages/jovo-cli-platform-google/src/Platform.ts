@@ -567,23 +567,27 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
       );
     }
 
-    const jovoModel = new JovoModelDialogflow(model, outputLocale);
-    const alexaModelFiles = jovoModel.exportNative();
+    try {
+      const jovoModel = new JovoModelDialogflow(model, outputLocale);
+      const alexaModelFiles = jovoModel.exportNative();
 
-    if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
-      // Should actually never happen but who knows
-      throw new JovoCliError(
-        `Could not build Dialogflow files for locale "${locale}"!`,
-        'jovo-cli-platform-google',
-      );
-    }
-    for (const fileInformation of alexaModelFiles) {
-      await writeFile(
-        pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path),
-        JSON.stringify(fileInformation.content, null, '\t'),
-      );
-    }
+      if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
+        // Should actually never happen but who knows
+        throw new JovoCliError(
+          `Could not build Dialogflow files for locale "${locale}"!`,
+          'jovo-cli-platform-google',
+        );
+      }
+      for (const fileInformation of alexaModelFiles) {
+        await writeFile(
+          pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path),
+          JSON.stringify(fileInformation.content, null, '\t'),
+        );
+      }
 
-    return Promise.resolve();
+      return Promise.resolve();
+    } catch (err) {
+      throw new JovoCliError(err.message, 'jovo-cli-platform-google');
+    }
   }
 }

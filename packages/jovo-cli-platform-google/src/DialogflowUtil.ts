@@ -19,6 +19,7 @@ const readFile = promisify(fs.readFile);
 const project = require('jovo-cli-core').getProject();
 
 import { JovoTaskContextGoogle } from '.';
+import { JovoCliError } from 'jovo-cli-core';
 
 /**
  * Returns the Dialogflow language files
@@ -320,11 +321,21 @@ export const v2 = {
         exec('gcloud -v', (error, stdout: string, stderr: string) => {
           if (error) {
             if (stderr) {
-              return reject(new Error("Your Google Cloud SDK isn't installed properly"));
+              return reject(
+                new JovoCliError(
+                  "Your Google Cloud SDK isn't installed properly",
+                  'jovo-cli-platform-google',
+                ),
+              );
             }
           }
           if (!_.startsWith(stdout, 'Google Cloud SDK')) {
-            return reject(new Error("Your Google Cloud SDK isn't installed properly"));
+            return reject(
+              new JovoCliError(
+                "Your Google Cloud SDK isn't installed properly",
+                'jovo-cli-platform-google',
+              ),
+            );
           }
 
           resolve();
@@ -348,7 +359,12 @@ export const v2 = {
           (error, stdout: string, stderr: string) => {
             if (error) {
               if (stderr || error) {
-                return reject(new Error('Could not activate your service account: ' + stderr));
+                return reject(
+                  new JovoCliError(
+                    'Could not activate your service account: ' + stderr,
+                    'jovo-cli-platform-google',
+                  ),
+                );
               }
             }
             resolve();
@@ -402,7 +418,9 @@ export const v2 = {
             return reject(error);
           }
           if (response.body.error) {
-            return reject(new Error(response.body.error.message));
+            return reject(
+              new JovoCliError(response.body.error.message, 'jovo-cli-platform-google'),
+            );
           }
 
           try {
@@ -418,7 +436,9 @@ export const v2 = {
 
             return resolve(returnData);
           } catch (e) {
-            return reject(new Error(`Can't parse response object`));
+            return reject(
+              new JovoCliError(`Can't parse response object`, 'jovo-cli-platform-google'),
+            );
           }
         });
       });
@@ -446,20 +466,24 @@ export const v2 = {
             return reject(error);
           }
           if (response.body.error) {
-            return reject(new Error(response.body.error.message));
+            return reject(
+              new JovoCliError(response.body.error.message, 'jovo-cli-platform-google'),
+            );
           }
 
           try {
             const res = JSON.parse(body);
 
             if (res.error) {
-              return reject(new Error(res.error.message));
+              return reject(new JovoCliError(res.error.message, 'jovo-cli-platform-google'));
             }
             const buf = Buffer.from(res.response.agentContent, 'base64');
 
             resolve(buf);
           } catch (e) {
-            return reject(new Error(`Can't parse response object`));
+            return reject(
+              new JovoCliError(`Can't parse response object`, 'jovo-cli-platform-google'),
+            );
           }
         });
       });
@@ -495,7 +519,9 @@ export const v2 = {
             return reject(error);
           }
           if (response.body.error) {
-            return reject(new Error(response.body.error.message));
+            return reject(
+              new JovoCliError(response.body.error.message, 'jovo-cli-platform-google'),
+            );
           }
           resolve();
         });
@@ -525,7 +551,9 @@ export const v2 = {
             return reject(error);
           }
           if (response.body.error) {
-            return reject(new Error(response.body.error.message));
+            return reject(
+              new JovoCliError(response.body.error.message, 'jovo-cli-platform-google'),
+            );
           }
           resolve(body);
         });

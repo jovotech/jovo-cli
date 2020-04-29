@@ -15,11 +15,11 @@ export class JovoCliError extends Error {
   }
 
   logError() {
-    this.errorMsg.push(chalk.bgRed.bold(`[${this.type}] ${this.msg}`));
+    this.errorMsg.push(chalk.bgRed.bold(`[${this.type}] ${this.msg}\n`));
   }
 
   logWarning() {
-    this.errorMsg.push(chalk.bgYellow.bold(`[${this.type}] ${this.msg}`));
+    this.errorMsg.push(chalk.bgYellow.bold(`[${this.type}] ${this.msg}\n`));
   }
 
   logProperty(key: string, value: string) {

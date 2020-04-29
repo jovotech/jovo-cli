@@ -133,9 +133,9 @@ export class Project {
             resolve(pathJoin(projectPath, templateName));
           });
         } else if (res.statusCode === 404) {
-          reject(new Error('Could not find template.'));
+          reject(new JovoCliError('Could not find template.', 'jovo-cli'));
         } else {
-          reject(new Error('Could not download template.'));
+          reject(new JovoCliError('Could not download template.', 'jovo-cli'));
         }
       });
     });
@@ -956,7 +956,9 @@ export class Project {
     }
 
     if (!major) {
-      return Promise.reject(new Error('Could not get "jovo-framework" version!'));
+      return Promise.reject(
+        new JovoCliError('Could not get "jovo-framework" version!', 'jovo-cli'),
+      );
     }
 
     return {

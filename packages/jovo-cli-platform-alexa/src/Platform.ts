@@ -439,10 +439,8 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
             // ToDo: Stage configurable?
             await smapi.getSkillInformation(ctx, this.getSkillJsonPath(), 'development');
             this.setAlexaSkillId(ctx.skillId!);
-            // ToDo: Deploy Account Linking!
             const accountLinkingJson = await smapi.getAccountLinkingInformation(ctx, 'development');
             if (accountLinkingJson) {
-              // ToDo: Test!
               fs.writeFileSync(
                 this.getAccountLinkingPath(),
                 JSON.stringify(accountLinkingJson, null, '\t'),
@@ -468,8 +466,11 @@ Endpoint: ${skillInfo.endpoint}`;
         },
       },
       {
-        // ToDo: Different location for v2!
-        title: 'Getting Alexa Skill model files and saving to /platforms/alexaSkill/models',
+        title: `Getting Alexa Skill model files and saving to ${
+          this.askVersion === '2'
+            ? '/platforms/alexaSkill/skill-package/interactionModels/custom'
+            : '/platforms/alexaSkill/models'
+        }`,
         enabled: (ctx: JovoTaskContextAlexa) =>
           ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_MODEL),
         task: (ctx: JovoTaskContextAlexa) => {
@@ -830,7 +831,6 @@ Endpoint: ${skillInfo.endpoint}`;
   getSkillId() {
     try {
       const askConfig = this.getAskConfig();
-      // ToDo: profile as argument, so deploy_settings.${profile}.skill_id
       // prettier-ignore
       const skillId = _.get(askConfig, this.askVersion === '2' ? 'profiles.default.skillId' : 'deploy_settings.default.skill_id')
       if (skillId && skillId.length > 0) {

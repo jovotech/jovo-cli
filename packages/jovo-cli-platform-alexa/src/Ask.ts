@@ -9,7 +9,7 @@ import { AskSkillList, JovoTaskContextAlexa } from '.';
 export const DEFAULT_ASK_PROFILE = 'default';
 
 /**
- * Returns ask error object
+ * Returns ask error object for ask-cli@v1.
  * @param {string} method
  * @param {*} stderr
  * @return {Error}
@@ -397,7 +397,10 @@ export function getSkillStatus(config: JovoTaskContextAlexa): Promise<void> {
           _.get(status, `manifest.lastUpdateRequest.errors[0].message`)
         ) {
           return Promise.reject(
-            new Error(_.get(status, `manifest.lastUpdateRequest.errors[0].message`)),
+            new JovoCliError(
+              _.get(status, `manifest.lastUpdateRequest.errors[0].message`),
+              'jovo-cli-platform-alexa',
+            ),
           );
         }
       }

@@ -19,6 +19,7 @@ import {
   promptOverwriteReverseBuild,
 } from '../utils/Prompts';
 import { buildReverseTask, getTask } from '../utils/Tasks';
+import chalk from 'chalk';
 
 export class Get extends Command {
   static description = 'Downloads an existing platform project into the platforms folder.';
@@ -76,6 +77,9 @@ export class Get extends Command {
       if (!platforms.validateCliOptions('get', flags)) {
         this.exit();
       }
+
+      this.log(`\n jovo get: ${Get.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/get\n'));
 
       const project = getProject();
       await project.init();
@@ -182,9 +186,6 @@ export class Get extends Command {
       this.log('  Build completed.');
       this.log();
     } catch (err) {
-      if (err instanceof JovoCliError) {
-        throw err;
-      }
       this.error(`There was a problem:\n${err}`);
     }
   }
