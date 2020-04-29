@@ -1,6 +1,6 @@
 import Command from '@oclif/command';
 import { copySync, existsSync, mkdirSync, moveSync, readFileSync, removeSync } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { addBaseCliOptions, JovoCliRenderer, platforms } from '../utils';
 import { ANSWER_BACKUP, ANSWER_OVERWRITE, promptOverwriteComponent } from '../utils/Prompts';
@@ -80,6 +80,9 @@ export class Load extends Command {
       );
       this.log();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }
@@ -144,9 +147,10 @@ function load(component: string, dest: string, isTsProject: boolean) {
 
     // Throw an error, if the nested component somehow does not exist in node_modules
     if (!existsSync(`./node_modules/${dependencyKey}`)) {
-      throw new Error(
-        `The component ${component} depends on the nested component ${dependencyKey}, which does not exist in ./node_modules. ` +
-          `Please install it with npm i ${dependencyKey} -s and reload your component.`,
+      throw new JovoCliError(
+        `The component ${component} depends on the nested component ${dependencyKey}, which does not exist in ./node_modules.`,
+        'jovo-cli',
+        `Please install it with npm i ${dependencyKey} -s and reload your component.`,
       );
     }
 

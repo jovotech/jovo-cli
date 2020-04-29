@@ -21,6 +21,7 @@ import {
   OutputFlags,
   Project,
   Utils,
+  JovoCliError,
 } from 'jovo-cli-core';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 import { JovoModelDialogflow } from 'jovo-model-dialogflow';
@@ -136,7 +137,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
     if (['deploy'].includes(command)) {
       options['ask-profile'] = flags.string({
-        description: 'Name of used ASK profile'
+        description: 'Name of used ASK profile',
       });
     }
   }
@@ -343,7 +344,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
           let p = Promise.resolve();
           if (keyFile) {
             if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
-              throw new Error(`Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+              throw new JovoCliError(
+                `Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`,
+                'jovo-cli-platform-google',
+              );
             }
             ctx.keyFile = process.cwd() + pathSep + keyFile;
             p = p.then(() => DialogFlowUtil.v2.activateServiceAccount(ctx));
@@ -444,7 +448,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
               let p = Promise.resolve();
               if (keyFile) {
                 if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
-                  throw new Error(`Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`);
+                  throw new JovoCliError(
+                    `Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`,
+                    'jovo-cli-platform-alexa',
+                  );
                 }
                 ctx.keyFile = process.cwd() + pathSep + keyFile;
                 p = p.then(() => DialogFlowUtil.v2.activateServiceAccount(ctx));
@@ -489,7 +496,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
     jovoModel.importNative(platformFiles, locale);
     const nativeData = jovoModel.exportJovoModel();
     if (nativeData === undefined) {
-      throw new Error('Dialogflow files did not contain any valid data.');
+      throw new JovoCliError(
+        'Dialogflow files did not contain any valid data.',
+        'jovo-cli-platform-google',
+      );
     }
     return nativeData;
   }
@@ -562,7 +572,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
     if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
       // Should actually never happen but who knows
-      throw new Error(`Could not build Dialogflow files for locale "${locale}"!`);
+      throw new JovoCliError(
+        `Could not build Dialogflow files for locale "${locale}"!`,
+        'jovo-cli-platform-google',
+      );
     }
     for (const fileInformation of alexaModelFiles) {
       await writeFile(

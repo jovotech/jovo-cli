@@ -2,6 +2,7 @@ import { mkdirSync, existsSync, readFileSync } from 'fs';
 import * as path from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
+import { ask } from 'jovo-cli-platform-alexa';
 const tmpTestFolder = 'tmpTestFolderBuild';
 
 beforeAll(() => {
@@ -28,28 +29,29 @@ describe('build', () => {
 
     expect(existsSync(path.join(projectFolder, 'platforms'))).toBe(true);
     expect(existsSync(path.join(projectFolder, 'platforms', 'alexaSkill'))).toBe(true);
-    expect(existsSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'skill.json'))).toBe(
-      true,
-    );
 
-    const skillJson = JSON.parse(
-      readFileSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'skill.json'), 'utf-8'),
-    );
+    const askVersion = ask.checkAsk();
+    let skillJsonPath: string, modelPath: string;
+    if (askVersion === '2') {
+      // prettier-ignore
+      skillJsonPath = path.join(projectFolder, 'platforms', 'alexaSkill', 'skill-package', 'skill.json');
+      // prettier-ignore
+      modelPath = path.join(projectFolder, 'platforms', 'alexaSkill', 'skill-package', 'interactionModels', 'custom', 'en-US.json');
+    } else {
+      skillJsonPath = path.join(projectFolder, 'platforms', 'alexaSkill', 'skill.json');
+      modelPath = path.join(projectFolder, 'platforms', 'alexaSkill', 'models', 'en-US.json');
+    }
+
+    expect(existsSync(skillJsonPath)).toBeTruthy();
+    const skillJson = JSON.parse(readFileSync(skillJsonPath, 'utf-8'));
 
     expect(skillJson.manifest.publishingInformation.locales['en-US'].name).toBe(projectName);
     expect(skillJson.manifest.apis.custom.endpoint.uri.substr(0, 27)).toBe(
       'https://webhook.jovo.cloud/',
     );
 
-    expect(
-      existsSync(path.join(projectFolder, 'platforms', 'alexaSkill', 'models', 'en-US.json')),
-    ).toBe(true);
-    const modelFile = JSON.parse(
-      readFileSync(
-        path.join(projectFolder, 'platforms', 'alexaSkill', 'models', 'en-US.json'),
-        'utf-8',
-      ),
-    );
+    expect(existsSync(modelPath)).toBe(true);
+    const modelFile = JSON.parse(readFileSync(modelPath, 'utf-8'));
 
     expect(modelFile.interactionModel.languageModel.invocationName).toBe('my test app');
   }, 12000);

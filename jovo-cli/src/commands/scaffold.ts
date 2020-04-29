@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { prompts, scaffolder, JovoCliRenderer } from '../utils';
 
@@ -98,6 +98,9 @@ export class Scaffold extends Command {
       this.log(`\n\nSuccessfully scaffolded your handler in '${destPath}'.`);
       this.log();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }

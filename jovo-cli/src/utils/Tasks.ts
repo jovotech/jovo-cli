@@ -1,5 +1,12 @@
 import * as _ from 'lodash';
-import { getProject, JovoTaskContext, JovoCliDeploy, TARGET_ZIP, TARGET_ALL } from 'jovo-cli-core';
+import {
+  getProject,
+  JovoTaskContext,
+  JovoCliDeploy,
+  TARGET_ZIP,
+  TARGET_ALL,
+  JovoCliError,
+} from 'jovo-cli-core';
 import { ListrTaskWrapper, ListrTask } from 'listr';
 import chalk from 'chalk';
 import { existsSync, mkdirSync } from 'fs';
@@ -37,9 +44,7 @@ export function buildTask(ctx: JovoTaskContext) {
               return task.skip('Model file is of type .js, not .json, so check got skipped.');
             }
 
-            throw new Error(
-              `Language model file could not be found. Expected location: "${err.path}".`,
-            );
+            throw new JovoCliError('Language model file could not be found.', 'jovo-cli', err.path);
           }
           throw err;
         }
@@ -48,7 +53,7 @@ export function buildTask(ctx: JovoTaskContext) {
         try {
           parseJson(modelFileContent);
         } catch (err) {
-          throw new Error(`Model-File is not valid JSON: ${err.message}.`);
+          throw new JovoCliError(`Model file is not valid JSON: ${err.message}`, 'jovo-cli');
         }
 
         // Do not validate the model file if it should be ignored.

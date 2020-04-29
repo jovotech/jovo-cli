@@ -1,25 +1,35 @@
-import { STATUS, RequestOptions, request, JovoTaskContextAlexa } from '../utils';
+import { writeFileSync } from 'fs-extra';
+
+import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
 
 export async function updateInteractionModel(
   ctx: JovoTaskContextAlexa,
-  stage: string,
   locale: string,
   interactionModelPath: string,
+  stage: string,
 ): Promise<void> {
   try {
-    const options: RequestOptions = {
-      method: 'PUT',
-      path: `/v1/skills/${ctx.skillId}/stages/${stage}/interactionModel/locales/${locale}`,
-    };
-
-    const response = await request(ctx, options, require(interactionModelPath));
-
-    if (response.statusCode !== STATUS.ACCEPTED) {
-      throw new Error(response.data.message);
-    }
-  } catch (err) {
-    throw new Error(
-      `Something went wrong while updating your language model for locale ${locale}. Please see the logs below:${err.message}`,
+    await execAsync(
+      `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model "$(cat ${interactionModelPath})"`,
     );
+  } catch (err) {
+    throw getAskErrorV2('smapiUpdateInteractionModel', err.message);
+  }
+}
+
+export async function getInteractionModel(
+  ctx: JovoTaskContextAlexa,
+  locale: string,
+  modelPath: string,
+  stage: string,
+) {
+  try {
+    const stdout = await execAsync(
+      `ask smapi get-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile}`,
+    );
+    const response = JSON.parse(stdout);
+    writeFileSync(modelPath, JSON.stringify(response, null, '\t'));
+  } catch (err) {
+    throw getAskErrorV2('smapiGetInteractionModel', err.message);
   }
 }

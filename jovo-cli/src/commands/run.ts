@@ -8,7 +8,7 @@ import * as open from 'open';
 const resolveBin = require('resolve-bin');
 import { ChildProcess } from 'child_process';
 import { accessSync, readFileSync } from 'fs-extra';
-import { getProject, InputFlags, JOVO_WEBHOOK_URL } from 'jovo-cli-core';
+import { getProject, InputFlags, JOVO_WEBHOOK_URL, JovoCliError, ERROR_TYPE } from 'jovo-cli-core';
 import _ = require('lodash');
 import {
   addBaseCliOptions,
@@ -272,8 +272,11 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
     if (
       _.startsWith(project.jovoConfigReader!.getConfigParameter('endpoint', stage) as string, 'arn')
     ) {
-      throw new Error(
-        "Warning: Your endpoint is a lambda endpoint. Lambda isn't supported with jovo webhook",
+      throw new JovoCliError(
+        "Warning: Your endpoint is a lambda endpoint. Lambda isn't supported with jovo webhook.",
+        'jovo-cli',
+        '',
+        ERROR_TYPE.WARN,
       );
     }
   } catch (err) {

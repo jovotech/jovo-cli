@@ -7,6 +7,7 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   TARGET_ZIP,
+  JovoCliError,
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import * as _ from 'lodash';
@@ -155,7 +156,7 @@ export class Get extends Command {
           } else if (project.hasModelFiles(config.locales)) {
             const answers = await promptOverwriteReverseBuild();
             if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-              this.exit();
+              return;
             } else {
               config.reverse = answers.promptOverwriteReverseBuild;
             }
@@ -181,6 +182,9 @@ export class Get extends Command {
       this.log('  Build completed.');
       this.log();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }

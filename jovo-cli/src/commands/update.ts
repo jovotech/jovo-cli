@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 import chalk from 'chalk';
 import { exec } from 'child_process';
 import { statSync, writeFile } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { join as pathJoin } from 'path';
 import * as rimraf from 'rimraf';
@@ -75,9 +75,12 @@ export class Update extends Command {
             npmUpdateOutput = stdout;
 
             if (stderr) {
-              throw new Error(stderr);
+              throw new JovoCliError(stderr, 'jovo-cli');
             }
           } catch (err) {
+            if (err instanceof JovoCliError) {
+              throw err;
+            }
             this.error(err);
           }
         },
@@ -113,6 +116,9 @@ export class Update extends Command {
         'Changelog: https://raw.githubusercontent.com/jovotech/jovo-framework/master/CHANGELOG.md',
       );
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }

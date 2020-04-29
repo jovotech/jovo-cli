@@ -10,6 +10,7 @@ import {
   getProject,
   InputFlags,
   JovoTaskContext,
+  JovoCliError,
 } from 'jovo-cli-core';
 import * as Listr from 'listr';
 import * as _ from 'lodash';
@@ -214,6 +215,9 @@ export class New extends Command {
       this.log('Installation completed.');
       this.log();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }

@@ -1,31 +1,38 @@
-import { RequestOptions, JovoTaskContextAlexa, request, STATUS } from '../utils';
+import { pathExistsSync } from 'fs-extra';
+import { JovoCliError } from 'jovo-cli-core';
 
-export async function getAccountLinkingInformation(
+import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
+
+export async function getAccountLinkingInformation(ctx: JovoTaskContextAlexa, stage: string) {
+  try {
+    const stdout = await execAsync(
+      `ask smapi get-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile}`,
+    );
+    const response = JSON.parse(stdout);
+    return response.accountLinkingResponse;
+  } catch (err) {
+    if (err.code === 1) {
+      return;
+    }
+
+    throw getAskErrorV2('smapiGetAccountLinkingInformation', err.message);
+  }
+}
+
+export async function updateAccountLinkingInformation(
   ctx: JovoTaskContextAlexa,
-  stage: string = 'development',
+  accountLinkingJsonPath: string,
+  stage: string,
 ) {
   try {
-    const options: RequestOptions = {
-      method: 'GET',
-      path: `/v1/skills/${ctx.skillId}/stages/${stage}/accountLinkingClient`,
-    };
-
-    const response = await request(ctx, options);
-
-    switch (response.statusCode) {
-      case STATUS.OK: {
-        return response.data;
-      }
-      case STATUS.NOT_FOUND: {
-        return;
-      }
-      default: {
-        throw new Error(response.data.message);
-      }
+    if (!pathExistsSync(accountLinkingJsonPath)) {
+      return;
     }
-  } catch (err) {
-    throw new Error(
-      `Something went wrong while fetching information about account linking. Please see the logs below: ${err.message}`,
+
+    await execAsync(
+      `ask smapi update-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile} --account-linking-request "$(cat ${accountLinkingJsonPath})"`,
     );
+  } catch (err) {
+    throw getAskErrorV2('smapiUpdateAccountLinkingInformation', err.message);
   }
 }

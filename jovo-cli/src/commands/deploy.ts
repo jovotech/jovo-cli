@@ -8,6 +8,7 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   TARGET_ZIP,
+  JovoCliError,
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import * as _ from 'lodash';
@@ -115,6 +116,9 @@ export class Deploy extends Command {
       this.log('Deployment completed.');
       this.log();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
       this.error(`There was a problem:\n${err}`);
     }
   }

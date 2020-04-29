@@ -1,23 +1,13 @@
-import { STATUS, RequestOptions, request, JovoTaskContextAlexa } from '../utils';
+import { JovoCliError } from 'jovo-cli-core';
 
-export async function enableSkill(
-  ctx: JovoTaskContextAlexa,
-  stage: string = 'development',
-): Promise<void> {
+import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
+
+export async function enableSkill(ctx: JovoTaskContextAlexa, stage: string): Promise<void> {
   try {
-    const options: RequestOptions = {
-      method: 'PUT',
-      path: `/v1/skills/${ctx.skillId}/stages/${stage}/enablement`,
-    };
-
-    const response = await request(ctx, options);
-
-    if (response.statusCode !== STATUS.NO_CONTENT) {
-      throw new Error(response.data.message);
-    }
-  } catch (err) {
-    throw new Error(
-      `Something went wrong while enabling your skill. Please see the logs below:${err.message}`,
+    await execAsync(
+      `ask smapi set-skill-enablement -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile}`,
     );
+  } catch (err) {
+    throw getAskErrorV2('smapiEnableSkill', err.message);
   }
 }

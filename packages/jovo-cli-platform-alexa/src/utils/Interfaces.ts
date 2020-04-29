@@ -43,24 +43,3 @@ export interface JovoTaskContextAlexa extends JovoTaskContext {
   info?: string;
   newSkill?: boolean;
 }
-
-export interface SMAPIResponse {
-  data: any;
-  headers: any;
-  statusCode: number;
-}
-
-export interface RequestOptions {
-  method: string;
-  path: string;
-  hostname?: string;
-  headers?: {
-    'Content-Length'?: number;
-    'Content-Type'?: string;
-    'Authorization'?: string;
-  };
-}
-
-export interface RequestBody {
-  [key: string]: any;
-}
