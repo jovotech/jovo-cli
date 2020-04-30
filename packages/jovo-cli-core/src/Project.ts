@@ -152,7 +152,7 @@ export class Project {
     } else {
       // Is JavaScript file
 
-      // Add JOVO_WEBHOOK_URL asg global variable that it does not cause an error when
+      // Add JOVO_WEBHOOK_URL as global variable that it does not cause an error when
       // used with backtick
 
       // @ts-ignore
