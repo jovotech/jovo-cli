@@ -406,14 +406,3 @@ export function getSkillStatus(config: JovoTaskContextAlexa): Promise<void> {
       }
     });
 }
-
-export function deployV2(cwd: string) {
-  console.log(cwd);
-  try {
-    const v = execSync('ask deploy', { cwd });
-    console.log(v);
-  } catch (err) {
-    console.log(err);
-    console.log(err.code);
-  }
-}
