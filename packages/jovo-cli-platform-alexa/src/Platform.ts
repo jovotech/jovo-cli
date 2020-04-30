@@ -21,10 +21,12 @@ import {
   TARGET_MODEL,
   Utils,
   JovoCliError,
+  ERROR_TYPE,
 } from 'jovo-cli-core';
 import { Intent, JovoModelData } from 'jovo-model';
 import { AlexaLMIntent, JovoModelAlexa, JovoModelAlexaData } from 'jovo-model-alexa';
 import { AppFileAlexa, JovoTaskContextAlexa } from '.';
+import chalk from 'chalk';
 
 const highlight = require('chalk').white.bold;
 const subHeadline = require('chalk').white.dim;
@@ -303,6 +305,9 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
     const hasAlexaSkill = this.hasPlatform();
 
+    // Check for folder structure for ask-cli@v2.
+    this.checkDeprecatedFolderStructure();
+
     let title = 'Creating Alexa Skill project files ' + Utils.printStage(ctx.stage);
     if (hasAlexaSkill) {
       title = 'Updating Alexa Skill project files ' + Utils.printStage(ctx.stage);
@@ -356,7 +361,11 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
           {
             title:
               'Updating Skill Manifest\n' +
-              subHeadline('   Path: ./platforms/alexaSkill/skill.json'),
+              subHeadline(
+                `   Path: ./platforms/alexaSkill/${
+                  this.askVersion === '2' ? 'skill-package/' : ''
+                }skill.json`,
+              ),
             enabled: () => hasAlexaSkill,
             task: async (ctx) => {
               this.buildSkillAlexa(ctx.stage);
@@ -416,6 +425,9 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
    * @memberof JovoCliPlatform
    */
   getGetTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    // Check for folder structure for ask-cli@v2.
+    this.checkDeprecatedFolderStructure();
+
     const alexaSkillPath = this.getPath();
     if (!fs.existsSync(alexaSkillPath)) {
       fs.mkdirSync(alexaSkillPath);
@@ -443,7 +455,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
             if (accountLinkingJson) {
               fs.writeFileSync(
                 this.getAccountLinkingPath(),
-                JSON.stringify(accountLinkingJson, null, '\t'),
+                JSON.stringify({ accountLinkingRequest: accountLinkingJson }, null, '\t'),
               );
               ctx.info += 'Account Linking Information saved to ' + this.getAccountLinkingPath();
             }
@@ -466,10 +478,8 @@ Endpoint: ${skillInfo.endpoint}`;
         },
       },
       {
-        title: `Getting Alexa Skill model files and saving to ${
-          this.askVersion === '2'
-            ? '/platforms/alexaSkill/skill-package/interactionModels/custom'
-            : '/platforms/alexaSkill/models'
+        title: `Getting Alexa Skill model files and saving to ./platforms/alexaSkill/${
+          this.askVersion === '2' ? 'skill-package/interactionModels/custom' : 'models'
         }`,
         enabled: (ctx: JovoTaskContextAlexa) =>
           ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_MODEL),
@@ -583,6 +593,9 @@ Endpoint: ${skillInfo.endpoint}`;
    * @memberof JovoCliPlatform
    */
   getDeployTasks(ctx: JovoTaskContextAlexa, targets: JovoCliDeploy[]): ListrTask[] {
+    // Check for folder structure for ask-cli@v2.
+    this.checkDeprecatedFolderStructure();
+
     const returnTasks: ListrTask[] = [];
     ctx.targets = ctx.targets || [];
 
@@ -820,7 +833,10 @@ Endpoint: ${skillInfo.endpoint}`;
    * @return {string}
    */
   getAccountLinkingPath(): string {
-    return path.join(this.getPath(), 'accountLinking.json');
+    return path.join(
+      this.askVersion === '2' ? this.getSkillPackagePath() : this.getPath(),
+      'accountLinking.json',
+    );
   }
 
   /**
@@ -837,7 +853,10 @@ Endpoint: ${skillInfo.endpoint}`;
         return skillId;
       }
     } catch (err) {
-      throw err;
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+      throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
     }
   }
   /**
@@ -894,8 +913,8 @@ Endpoint: ${skillInfo.endpoint}`;
   getAskConfig() {
     try {
       return JSON.parse(fs.readFileSync(this.getAskConfigPath(), 'utf8'));
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
     }
   }
 
@@ -1349,7 +1368,10 @@ Endpoint: ${skillInfo.endpoint}`;
       if (err.code === 'ENOENT') {
         askConfig = this.createEmptyAskConfig();
       } else {
-        throw err;
+        if (err instanceof JovoCliError) {
+          throw err;
+        }
+        throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
       }
     }
 
@@ -1360,5 +1382,25 @@ Endpoint: ${skillInfo.endpoint}`;
     }
 
     fs.writeFileSync(this.getAskConfigPath(), JSON.stringify(askConfig, null, '\t'));
+  }
+
+  /**
+   * Checks for deprecated platforms folder structure, e.g. when using ask-cli@v2, before migrating.
+   */
+  checkDeprecatedFolderStructure() {
+    if (
+      this.askVersion === '2' &&
+      fs.existsSync(path.join(this.getAskConfigFolderPath(), 'config'))
+    ) {
+      throw new JovoCliError(
+        "You're currently using the ask-cli@v2 with deprecated folder structure from ask-cli@v1.",
+        'jovo-cli-platform-alexa',
+        'Upgrade to the current platform folder structure by running "$ ask util upgrade-project" inside "platforms/alexaSkill".' +
+          `\n${chalk.grey(
+            '>> Read more here: https://developer.amazon.com/en-US/docs/alexa/smapi/ask-cli-v1-to-v2-migration-guide.html',
+          )}`,
+        ERROR_TYPE.WARN,
+      );
+    }
   }
 }

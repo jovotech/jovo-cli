@@ -77,7 +77,10 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
 
             return Promise.resolve();
           } catch (err) {
-            throw err;
+            if (err instanceof JovoCliError) {
+              throw err;
+            }
+            throw new JovoCliError(err.message, 'jovo-cli-deploy-lambda');
           }
         },
       },
@@ -210,8 +213,8 @@ export class JovoCliDeployLambda extends JovoCliDeploy {
           return _.get(profile, 'aws_profile');
         }
       }
-    } catch (e) {
-      throw e;
+    } catch (err) {
+      throw new JovoCliError(err.message, 'jovo-cli-deploy-lambda');
     }
   }
 }
