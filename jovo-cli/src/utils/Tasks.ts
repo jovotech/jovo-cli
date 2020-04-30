@@ -44,7 +44,11 @@ export function buildTask(ctx: JovoTaskContext) {
               return task.skip('Model file is of type .js, not .json, so check got skipped.');
             }
 
-            throw new JovoCliError('Language model file could not be found.', 'jovo-cli', err.path);
+            throw new JovoCliError(
+              'Language model file could not be found.',
+              'jovo-cli',
+              `Expected location: ${err.path}`,
+            );
           }
           throw err;
         }

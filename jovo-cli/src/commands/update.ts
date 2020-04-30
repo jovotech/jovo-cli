@@ -81,7 +81,10 @@ export class Update extends Command {
               throw new JovoCliError(stderr, 'jovo-cli');
             }
           } catch (err) {
-            this.error(err);
+            if (err instanceof JovoCliError) {
+              throw err;
+            }
+            throw new JovoCliError(err.message, 'jovo-cli');
           }
         },
       });
