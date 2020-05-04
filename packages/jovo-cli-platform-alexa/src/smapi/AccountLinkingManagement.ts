@@ -38,7 +38,7 @@ export async function updateAccountLinkingInformation(
       // To make this work, json properties' double quotes need to be escaped.
       // To achieve this, we call JSON.stringify() twice.
       const accountLinkingFlag = JSON.stringify(JSON.stringify(accountLinkingJson));
-      cmd += `--account-linking-request '${accountLinkingFlag}`;
+      cmd += `--account-linking-request ${accountLinkingFlag}`;
     } else {
       cmd += `--account-linking-request "$(cat ${accountLinkingJsonPath})"`;
     }

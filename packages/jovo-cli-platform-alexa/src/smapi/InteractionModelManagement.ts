@@ -18,7 +18,7 @@ export async function updateInteractionModel(
       // To make this work, json properties' double quotes need to be escaped.
       // To achieve this, we call JSON.stringify() twice.
       const interactionModelFlag = JSON.stringify(JSON.stringify(interactionModelJson));
-      cmd += `--interaction-model '${interactionModelFlag}`;
+      cmd += `--interaction-model ${interactionModelFlag}`;
     } else {
       cmd += `--interaction-model "$(cat ${interactionModelPath})"`;
     }

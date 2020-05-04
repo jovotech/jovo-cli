@@ -53,7 +53,7 @@ export async function createSkill(
       // To make this work, json properties' double quotes need to be escaped.
       // To achieve this, we call JSON.stringify() twice.
       const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
-      cmd += `--manifest '${manifestFlag}`;
+      cmd += `--manifest ${manifestFlag}`;
     } else {
       cmd += `--manifest "$(cat ${skillJsonPath})"`;
     }
@@ -78,7 +78,7 @@ export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: stri
       // To make this work, json properties' double quotes need to be escaped.
       // To achieve this, we call JSON.stringify() twice.
       const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
-      cmd += `--manifest '${manifestFlag}`;
+      cmd += `--manifest ${manifestFlag}`;
     } else {
       cmd += `--manifest "$(cat ${skillJsonPath})"`;
     }
