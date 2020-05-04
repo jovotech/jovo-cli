@@ -15,12 +15,12 @@ afterAll(() => {
 });
 
 describe('run', () => {
-  if (!process.env.ASK_PROFILE) {
-    console.log('Skipping because no ask profile found');
-    return;
-  }
-
   it('jovo run', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworldRun';
     const projectFolder = path.join(tmpTestFolder, projectName);
 
@@ -32,6 +32,11 @@ describe('run', () => {
   }, 200000);
 
   it('jovo run --webhook-standalone', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworldRun-standalone';
     const projectFolder = path.join(tmpTestFolder, projectName);
 
