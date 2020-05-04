@@ -69,6 +69,7 @@ export async function createSkill(
 
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
+<<<<<<< HEAD
     let cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development -p ${ctx.askProfile} `;
 
     if (process.platform === 'win32') {
@@ -84,6 +85,12 @@ export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: stri
     }
 
     await execAsync(cmd);
+=======
+    const manifest = readFileSync(skillJsonPath).toString();
+    await execAsync(
+      `ask smapi update-skill-manifest -s ${ctx.skillId} -g development --manifest '${manifest}' -p ${ctx.askProfile}`,
+    );
+>>>>>>> 3f92ca0991e8609272f647d7e53bc57f10b4409a
   } catch (err) {
     throw getAskErrorV2('smapiUpdateSkill', err.message);
   }
