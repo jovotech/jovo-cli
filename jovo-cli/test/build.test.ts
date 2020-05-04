@@ -15,12 +15,12 @@ afterAll(() => {
 }, 5000);
 
 describe('build', () => {
-  if (!process.env.ASK_PROFILE) {
-    console.log('Skipping because no ask profile found');
-    return;
-  }
-
   it('jovo new <project>\n      jovo build --platform alexaSkill', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworld';
 
     // Create new project
@@ -62,6 +62,11 @@ describe('build', () => {
   }, 12000);
 
   it('jovo new <project>\n      jovo build --platform googleAction', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworld2';
 
     // Create new project
@@ -179,6 +184,11 @@ describe('build', () => {
   }, 12000);
 
   it('jovo new <project> --build \n      jovo build --platform alexaSkill --reverse --force', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworld_reverse_alexaSkill';
 
     // Create new project
@@ -211,6 +221,11 @@ describe('build', () => {
   }, 12000);
 
   it('jovo new <project> --build \n      jovo build --platform googleAction --reverse --force', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworld_reverse_googleAction';
 
     // Create new project
