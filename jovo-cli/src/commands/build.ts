@@ -9,6 +9,7 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   TARGET_ZIP,
+  JovoCliError,
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import * as _ from 'lodash';
@@ -29,9 +30,9 @@ const { isValidLocale, isValidPlatform } = validators;
 const { promptForInit, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
 
 export class Build extends Command {
-  static description: 'Build platform-specific language models based on jovo models folder.';
+  static description = 'Build platform-specific language models based on jovo models folder.';
 
-  static examples: ['jovo build --platform alexaSkill', 'jovo build --target zip'];
+  static examples = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
 
   static flags: InputFlags = {
     locale: flags.string({
@@ -116,7 +117,7 @@ export class Build extends Command {
         this.warn('Flag --overwrite is deprecated. Consider using --clean instead.');
       }
 
-      this.log('\n jovo build:  Create and update platform specific files in /platforms folder');
+      this.log(`\n jovo build: ${Build.description}`);
       this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/build\n'));
 
       const project = getProject();

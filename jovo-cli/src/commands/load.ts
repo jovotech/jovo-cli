@@ -1,9 +1,10 @@
 import Command from '@oclif/command';
 import { copySync, existsSync, mkdirSync, moveSync, readFileSync, removeSync } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { addBaseCliOptions, JovoCliRenderer, platforms } from '../utils';
 import { ANSWER_BACKUP, ANSWER_OVERWRITE, promptOverwriteComponent } from '../utils/Prompts';
+import chalk from 'chalk';
 
 export class Load extends Command {
   static description =
@@ -25,6 +26,9 @@ export class Load extends Command {
           `The component '${args.component}' does not exist. Please check for spelling or install it with 'npm i ${args.component} -s'.`,
         );
       }
+
+      this.log(`\n jovo load: ${Load.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/load\n'));
 
       const dest = existsSync('./src') ? './src/components' : './components';
       const isTsProject = await project.isTypeScriptProject();
@@ -144,9 +148,10 @@ function load(component: string, dest: string, isTsProject: boolean) {
 
     // Throw an error, if the nested component somehow does not exist in node_modules
     if (!existsSync(`./node_modules/${dependencyKey}`)) {
-      throw new Error(
-        `The component ${component} depends on the nested component ${dependencyKey}, which does not exist in ./node_modules. ` +
-          `Please install it with npm i ${dependencyKey} -s and reload your component.`,
+      throw new JovoCliError(
+        `The component ${component} depends on the nested component ${dependencyKey}, which does not exist in ./node_modules.`,
+        'jovo-cli',
+        `Please install it with npm i ${dependencyKey} -s and reload your component.`,
       );
     }
 

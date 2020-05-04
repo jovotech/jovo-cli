@@ -7,6 +7,7 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   TARGET_ZIP,
+  JovoCliError,
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import * as _ from 'lodash';
@@ -18,6 +19,7 @@ import {
   promptOverwriteReverseBuild,
 } from '../utils/Prompts';
 import { buildReverseTask, getTask } from '../utils/Tasks';
+import chalk from 'chalk';
 
 export class Get extends Command {
   static description = 'Downloads an existing platform project into the platforms folder.';
@@ -63,7 +65,7 @@ export class Get extends Command {
     }),
   };
 
-  static args = [{ name: 'platform', options: platforms.getAllAvailable() }];
+  static args = [{ name: 'platform', options: platforms.getAllAvailable(), required: true }];
 
   async run() {
     try {
@@ -75,6 +77,9 @@ export class Get extends Command {
       if (!platforms.validateCliOptions('get', flags)) {
         this.exit();
       }
+
+      this.log(`\n jovo get: ${Get.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/get\n'));
 
       const project = getProject();
       await project.init();
@@ -155,7 +160,7 @@ export class Get extends Command {
           } else if (project.hasModelFiles(config.locales)) {
             const answers = await promptOverwriteReverseBuild();
             if (answers.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-              this.exit();
+              return;
             } else {
               config.reverse = answers.promptOverwriteReverseBuild;
             }

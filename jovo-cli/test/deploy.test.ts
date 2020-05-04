@@ -21,7 +21,7 @@ describe('deploy', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-
+    
     const projectName = 'jovo-cli-unit-test';
 
     // Create new project
@@ -48,6 +48,11 @@ describe('deploy', () => {
   }, 200000);
 
   it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-zip';
 
     // Create new project
@@ -69,6 +74,11 @@ describe('deploy', () => {
   }, 100000);
 
   it('jovo new <project> --build\n      jovo deploy --platform googleAction', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'helloworldDeployGoogleAction';
 
     // Create new project

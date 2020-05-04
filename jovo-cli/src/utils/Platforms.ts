@@ -1,4 +1,11 @@
-import { AppFile, getProject, InputFlags, JovoCliPlatform, OutputFlags } from 'jovo-cli-core';
+import {
+  AppFile,
+  getProject,
+  InputFlags,
+  JovoCliPlatform,
+  OutputFlags,
+  JovoCliError,
+} from 'jovo-cli-core';
 import { JovoCliPlatformAlexa } from 'jovo-cli-platform-alexa';
 import { JovoCliPlatformGoogle } from 'jovo-cli-platform-google';
 
@@ -72,7 +79,7 @@ function createPlatformInstance(name: string): JovoCliPlatform {
     }
   }
 
-  throw new Error(`The platform "${name}" is not supported!`);
+  throw new JovoCliError(`The platform ${name} is not supported!`, 'jovo-cli');
 }
 
 /**

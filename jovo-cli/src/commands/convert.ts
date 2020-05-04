@@ -1,10 +1,12 @@
 import { Command, flags } from '@oclif/command';
+import chalk from 'chalk';
 import { ListrTask } from 'listr';
 import * as csvToJson from 'csvtojson';
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs-extra';
 import * as _ from 'lodash';
 import Listr = require('listr');
 import { JovoCliRenderer } from '../utils';
+import { JovoCliError } from 'jovo-cli-core';
 
 export class Convert extends Command {
   static description = 'Converts .csv-files to i18n.json-files and vice versa.';
@@ -33,6 +35,9 @@ export class Convert extends Command {
     if (!isValidOrigin(origin)) {
       return;
     }
+
+    this.log(`\n jovo convert: ${Convert.description}`);
+    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/convert\n'));
 
     // If target does not end with "/", place a "/" to the end of it.
     target = target ? target.replace(/\/?$/, '/') : target;

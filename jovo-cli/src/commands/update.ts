@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 import chalk from 'chalk';
 import { exec } from 'child_process';
 import { statSync, writeFile } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { join as pathJoin } from 'path';
 import * as rimraf from 'rimraf';
@@ -22,6 +22,9 @@ export class Update extends Command {
   async run() {
     try {
       this.parse(Update);
+
+      this.log(`\n jovo update: ${Update.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/update\n'));
 
       const tasks = new Listr([], {
         renderer: new JovoCliRenderer(),
@@ -75,10 +78,13 @@ export class Update extends Command {
             npmUpdateOutput = stdout;
 
             if (stderr) {
-              throw new Error(stderr);
+              throw new JovoCliError(stderr, 'jovo-cli');
             }
           } catch (err) {
-            this.error(err);
+            if (err instanceof JovoCliError) {
+              throw err;
+            }
+            throw new JovoCliError(err.message, 'jovo-cli');
           }
         },
       });
