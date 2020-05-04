@@ -1,6 +1,16 @@
 # Jovo CLI Changelog
 
 
+## 3.0.9 (2020-05-04)
+
+#### :nail_care: Enhancements
+* `jovo-cli` [#137](https://github.com/jovotech/jovo-cli/pull/137) Migrate ask-cli@v1 -> ask-cli@v2 ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+
 ## 3.0.6 (2020-04-08)
 
 #### :nail_care: Enhancements
