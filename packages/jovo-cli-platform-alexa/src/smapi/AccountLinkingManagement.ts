@@ -1,4 +1,4 @@
-import { pathExistsSync } from 'fs-extra';
+import { pathExistsSync, readFileSync } from 'fs-extra';
 import { JovoCliError } from 'jovo-cli-core';
 
 import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
@@ -29,8 +29,10 @@ export async function updateAccountLinkingInformation(
       return;
     }
 
+    const accountLinkingJson = readFileSync(accountLinkingJsonPath).toString();
+
     await execAsync(
-      `ask smapi update-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile} --account-linking-request "$(cat ${accountLinkingJsonPath})"`,
+      `ask smapi update-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile} --account-linking-request '${accountLinkingJson}'`,
     );
   } catch (err) {
     throw getAskErrorV2('smapiUpdateAccountLinkingInformation', err.message);

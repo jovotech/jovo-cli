@@ -1,5 +1,5 @@
 import { Utils, JovoCliError } from 'jovo-cli-core';
-import { writeFileSync } from 'fs-extra';
+import { writeFileSync, readFileSync } from 'fs-extra';
 import { ChoiceType } from 'inquirer';
 
 import { JovoTaskContextAlexa, AskSkillList, execAsync, getAskErrorV2 } from '../utils';
@@ -44,8 +44,9 @@ export async function createSkill(
   skillJsonPath: string,
 ): Promise<string> {
   try {
+    const manifest = readFileSync(skillJsonPath).toString();
     const stdout = await execAsync(
-      `ask smapi create-skill-for-vendor --manifest "$(cat ${skillJsonPath})" -p ${ctx.askProfile}`,
+      `ask smapi create-skill-for-vendor --manifest '${manifest}' -p ${ctx.askProfile}`,
     );
 
     const { skillId } = JSON.parse(stdout);
@@ -57,8 +58,9 @@ export async function createSkill(
 
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
+    const manifest = readFileSync(skillJsonPath).toString();
     await execAsync(
-      `ask smapi update-skill-manifest -s ${ctx.skillId} -g development --manifest "$(cat ${skillJsonPath})" -p ${ctx.askProfile}`,
+      `ask smapi update-skill-manifest -s ${ctx.skillId} -g development --manifest '${manifest}' -p ${ctx.askProfile}`,
     );
   } catch (err) {
     throw getAskErrorV2('smapiUpdateSkill', err.message);

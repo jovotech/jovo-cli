@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs-extra';
+import { writeFileSync, readFileSync } from 'fs-extra';
 
 import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
 
@@ -9,8 +9,9 @@ export async function updateInteractionModel(
   stage: string,
 ): Promise<void> {
   try {
+    const interactionModel = readFileSync(interactionModelPath).toString();
     await execAsync(
-      `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model "$(cat ${interactionModelPath})"`,
+      `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model '${interactionModel}'`,
     );
   } catch (err) {
     throw getAskErrorV2('smapiUpdateInteractionModel', err.message);
