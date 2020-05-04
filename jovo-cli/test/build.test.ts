@@ -15,6 +15,11 @@ afterAll(() => {
 }, 5000);
 
 describe('build', () => {
+  if (!process.env.ASK_PROFILE) {
+    console.log('Skipping because no ask profile found');
+    return;
+  }
+
   it('jovo new <project>\n      jovo build --platform alexaSkill', async () => {
     const projectName = 'helloworld';
 

@@ -16,12 +16,12 @@ afterAll(() => {
 });
 
 describe('deploy', () => {
-  it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
-    if (!process.env.ASK_PROFILE) {
-      console.log('Skipping because no ask profile found');
-      return;
-    }
+  if (!process.env.ASK_PROFILE) {
+    console.log('Skipping because no ask profile found');
+    return;
+  }
 
+  it('jovo new <project> --build\n      jovo deploy --platform alexaSkill', async () => {
     const projectName = 'jovo-cli-unit-test';
 
     // Create new project

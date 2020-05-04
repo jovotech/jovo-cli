@@ -15,6 +15,11 @@ afterAll(() => {
 });
 
 describe('new', () => {
+  if (!process.env.ASK_PROFILE) {
+    console.log('Skipping because no ask profile found');
+    return;
+  }
+
   it('jovo new <project>', async () => {
     const projectName = 'helloworld';
     const projectFolder = path.join(tmpTestfolder, projectName);

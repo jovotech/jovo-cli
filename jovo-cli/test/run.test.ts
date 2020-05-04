@@ -15,6 +15,11 @@ afterAll(() => {
 });
 
 describe('run', () => {
+  if (!process.env.ASK_PROFILE) {
+    console.log('Skipping because no ask profile found');
+    return;
+  }
+
   it('jovo run', async () => {
     const projectName = 'helloworldRun';
     const projectFolder = path.join(tmpTestFolder, projectName);

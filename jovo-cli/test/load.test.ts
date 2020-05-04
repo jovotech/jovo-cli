@@ -18,6 +18,11 @@ afterAll(() => {
 });
 
 describe('load', () => {
+  if (!process.env.ASK_PROFILE) {
+    console.log('Skipping because no ask profile found');
+    return;
+  }
+
   it("jovo new <project> --build\n\tjovo load jovo-component-email\n\t>> Should fail if component doesn't exist", async () => {
     const projectName = 'jovo-cli-unit-test-load-fail';
 
