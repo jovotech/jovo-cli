@@ -1,8 +1,9 @@
 import { Command, flags } from '@oclif/command';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs-extra';
-import { getProject } from 'jovo-cli-core';
+import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { prompts, scaffolder, JovoCliRenderer } from '../utils';
+import chalk from 'chalk';
 
 const { promptOverwriteHandler, ANSWER_SEPERATE, ANSWER_CANCEL } = prompts;
 const { scaffold } = scaffolder;
@@ -27,6 +28,9 @@ export class Scaffold extends Command {
     if (!isValidModel()) {
       return;
     }
+
+    this.log(`\n jovo scaffold: ${Scaffold.description}`);
+    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/scaffold\n'));
 
     const project = getProject();
     await project.init();

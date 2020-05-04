@@ -1,74 +1,67 @@
 import * as chalk from 'chalk';
-import { exec } from 'child_process';
+import { execSync, exec } from 'child_process';
 import * as inquirer from 'inquirer';
-import { Utils } from 'jovo-cli-core';
+import { Utils, JovoCliError, ERROR_TYPE } from 'jovo-cli-core';
 import * as _ from 'lodash';
+
 import { AskSkillList, JovoTaskContextAlexa } from '.';
 
 export const DEFAULT_ASK_PROFILE = 'default';
 
 /**
- * Returns ask error object
+ * Returns ask error object for ask-cli@v1.
  * @param {string} method
  * @param {*} stderr
  * @return {Error}
  */
-export function getAskError(method: string, stderr: string) {
+export function getAskErrorV1(method: string, stderr: string) {
+  const module = 'jovo-cli-platform-alexa';
   const badRequest = 'Error code:';
   stderr = stderr.replace(/[\x00-\x1F\x7F-\x9F]/u, '');
   if (stderr.indexOf(badRequest) > -1) {
     try {
       const json = stderr.substring(stderr.indexOf(badRequest) + badRequest.length + 4);
-
       const parsedMessage = JSON.parse(json);
-
-      let customError = parsedMessage.message;
+      const customError = parsedMessage.message;
+      let violations = '';
 
       if (parsedMessage.violations) {
         parsedMessage.violations.forEach((violation: object) => {
-          customError += `\n  ${_.get(violation, 'message')}`;
+          violations += `${_.get(violation, 'message')}\n`;
         });
       }
 
-      return new Error(method + ':' + customError);
+      return new JovoCliError(`${method}:${customError}`, module, violations);
     } catch (error) {
-      return new Error(method + stderr);
+      return new JovoCliError(`${method}:${stderr}`, module);
     }
   }
-  return new Error(stderr);
+  return new JovoCliError(stderr, module);
 }
 
 /**
- * Checks if ask cli is installed
+ * Checks if ask cli is installed and returns version.
  * @return {Promise<any>}
  */
-export function checkAsk(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    exec('ask -v', (error, stdout: string) => {
-      if (error) {
-        let msg;
-        if (error.code === 1) {
-          // @ts-ignore
-          msg = chalk.bgYellow('[WARN] jovo-cli does not yet work with ask-cli@version 2. Please downgrade to ask-cli@version 1.7.23 using npm i -g ask-cli@1.7.23');
-        } else {
-          msg =
-            'Jovo requires ASK CLI\n' +
-            'Please read more: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html';
-        }
-        return reject(new Error(msg));
-      }
-      const version: string[] = stdout.split('.');
-      // if (version.length < 3) {
-      //     return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-      // }
-
-      if (Number(version[0]) >= 1 && Number(version[1]) >= 1) {
-        return resolve();
-      }
-
-      return reject(new Error('Please update ask-cli to version >= 1.1.0'));
-    });
-  });
+export function checkAsk() {
+  try {
+    // Check for ask-cli@v2
+    const version = execSync('ask -V').toString();
+    return version[0];
+  } catch (err) {
+    try {
+      // If ask-cli@v2 fails, check for v1
+      const version = execSync('ask -v').toString();
+      return version[0];
+    } catch (err) {
+      throw new JovoCliError(
+        'Jovo requires ASK CLI',
+        'jovo-cli-platform-alexa',
+        'Install the ask-cli with npm install ask-cli -g. Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
+        ERROR_TYPE.WARN,
+      );
+    }
+  }
 }
 
 /**
@@ -125,7 +118,7 @@ export function askApiCreateSkill(
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiCreateSkill', stderr));
+            return reject(getAskErrorV1('askApiCreateSkill', stderr));
           }
         }
         const skillId = stdout
@@ -147,7 +140,7 @@ export function askApiListSkills(config: JovoTaskContextAlexa): Promise<inquirer
     exec('ask api list-skills --profile ' + config.askProfile, {}, (error, stdout, stderr) => {
       if (error) {
         if (stderr) {
-          return reject(getAskError('askApiListSkills', stderr));
+          return reject(getAskErrorV1('askApiListSkills', stderr));
         }
       }
       resolve(JSON.parse(stdout));
@@ -185,7 +178,7 @@ export function askApiUpdateModel(
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiUpdateModel', stderr));
+            return reject(getAskErrorV1('askApiUpdateModel', stderr));
           }
         }
         resolve();
@@ -216,7 +209,7 @@ export function askApiUpdateSkill(
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiUpdateSkill', stderr));
+            return reject(getAskErrorV1('askApiUpdateSkill', stderr));
           }
         }
         resolve();
@@ -237,7 +230,7 @@ export function askApiGetSkillStatus(config: JovoTaskContextAlexa): Promise<obje
     exec(command, {}, (error, stdout, stderr) => {
       if (error) {
         if (stderr) {
-          return reject(getAskError('askApiGetSkillStatus', stderr));
+          return reject(getAskErrorV1('askApiGetSkillStatus', stderr));
         }
       }
       try {
@@ -267,7 +260,7 @@ export function askApiGetSkill(config: JovoTaskContextAlexa, skillJsonPath: stri
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiGetSkill', stderr));
+            return reject(getAskErrorV1('askApiGetSkill', stderr));
           }
         }
         resolve();
@@ -302,7 +295,7 @@ export function askApiGetModel(
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiGetModel', stderr));
+            return reject(getAskErrorV1('askApiGetModel', stderr));
           }
         }
         resolve();
@@ -324,7 +317,7 @@ export function askApiEnableSkill(config: JovoTaskContextAlexa): Promise<void> {
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
-            return reject(getAskError('askApiEnableSkill', stderr));
+            return reject(getAskErrorV1('askApiEnableSkill', stderr));
           }
         }
         resolve();
@@ -348,7 +341,7 @@ export function askApiGetAccountLinking(config: JovoTaskContextAlexa): Promise<s
           if (stderr && stderr.indexOf('AccountLinking is not present for given skillId') > 0) {
             resolve();
           } else if (stderr) {
-            return reject(getAskError('askApiGetAccountLinking', stderr));
+            return reject(getAskErrorV1('askApiGetAccountLinking', stderr));
           }
         }
         resolve(stdout);
@@ -404,7 +397,10 @@ export function getSkillStatus(config: JovoTaskContextAlexa): Promise<void> {
           _.get(status, `manifest.lastUpdateRequest.errors[0].message`)
         ) {
           return Promise.reject(
-            new Error(_.get(status, `manifest.lastUpdateRequest.errors[0].message`)),
+            new JovoCliError(
+              _.get(status, `manifest.lastUpdateRequest.errors[0].message`),
+              'jovo-cli-platform-alexa',
+            ),
           );
         }
       }

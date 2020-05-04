@@ -38,6 +38,7 @@ import {
   JOVO_WEBHOOK_URL,
   REPO_URL,
 } from './Constants';
+import { JovoCliError } from './JovoCliError';
 
 export class Project {
   projectPath: string;
@@ -132,9 +133,9 @@ export class Project {
             resolve(pathJoin(projectPath, templateName));
           });
         } else if (res.statusCode === 404) {
-          reject(new Error('Could not find template.'));
+          reject(new JovoCliError('Could not find template.', 'jovo-cli'));
         } else {
-          reject(new Error('Could not download template.'));
+          reject(new JovoCliError('Could not download template.', 'jovo-cli'));
         }
       });
     });
@@ -350,7 +351,7 @@ export class Project {
       return require(this.getModelPath(locale));
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new Error('Could not find model file for locale: ' + locale);
+        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'jovo-cli');
       }
       throw error;
     }
@@ -369,7 +370,7 @@ export class Project {
     if (!(await existsAsync(modelFilePath))) {
       modelFilePath = this.getModelPath(locale, 'js');
       if (!(await existsAsync(modelFilePath))) {
-        throw new Error('Model file to backup could not be found');
+        throw new JovoCliError('Model file to backup could not be found.', 'jovo-cli');
       }
     }
 
@@ -711,7 +712,7 @@ export class Project {
     try {
       data = fs.readFileSync(pathJoin(Utils.getUserHome(), '.jovo/config'));
     } catch (err) {
-      throw new Error(`The ".jovo/config" file is missing!`);
+      throw new JovoCliError('The ".jovo/config" file is missing!', 'jovo-cli');
     }
     return JSON.parse(data.toString());
   }
@@ -797,12 +798,13 @@ export class Project {
       } catch (e) {
         if (await existsAsync(this.getModelPath(locale, 'js'))) {
           // File is JavaScript not json
-          throw new Error(
-            'Model file is JavaScript not JSON so platform defaults could not be set!',
+          throw new JovoCliError(
+            'Model file is Javascript, not JSON, so platform defaults could not be set!',
+            'jovo-cli',
           );
         }
 
-        throw new Error('Could not get model!');
+        throw new JovoCliError('Could not get model!', 'jovo-cli');
       }
       await platform.setPlatformDefaults(model);
       return this.saveModel(model, locale);
@@ -957,7 +959,9 @@ export class Project {
     }
 
     if (!major) {
-      return Promise.reject(new Error('Could not get "jovo-framework" version!'));
+      return Promise.reject(
+        new JovoCliError('Could not get "jovo-framework" version!', 'jovo-cli'),
+      );
     }
 
     return {
@@ -985,8 +989,10 @@ export class Project {
 
     if (!(await existsAsync(modelFilePath))) {
       if (await existsAsync(this.getModelPath(locale, 'js'))) {
-        throw new Error(
-          'Model file is JS instead of JSON. So automatic changes can not be applied. To make that possible again change back to .json!',
+        throw new JovoCliError(
+          'Model file is Javascript, not JSON, so automatic changes can not be applied.',
+          'jovo-cli',
+          'To apply automatic changes again, try changing back to .json!',
         );
       }
     }
@@ -1039,7 +1045,7 @@ export class Project {
       model = this.getModel(locale);
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new Error(`Could not find model file for locale "${locale}"`);
+        throw new JovoCliError(`Could not find model file for locale "${locale}"!`, 'jovo-cli');
       }
       throw error;
     }

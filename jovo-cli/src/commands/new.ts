@@ -10,6 +10,7 @@ import {
   getProject,
   InputFlags,
   JovoTaskContext,
+  JovoCliError,
 } from 'jovo-cli-core';
 import * as Listr from 'listr';
 import * as _ from 'lodash';
@@ -102,9 +103,11 @@ export class New extends Command {
         this.exit(1);
       }
 
+      this.log(`\n jovo new: ${New.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/new\n'));
+
       // Start project initialization
       const project = getProject();
-      // TODO: framework version?
       await project.init();
 
       const tasks = new Listr([], {

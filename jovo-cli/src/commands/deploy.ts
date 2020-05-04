@@ -8,11 +8,13 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   TARGET_ZIP,
+  JovoCliError,
 } from 'jovo-cli-core';
 import Listr = require('listr');
 import * as _ from 'lodash';
 import { addBaseCliOptions, deployTargets, JovoCliRenderer, platforms } from '../utils';
 import { deployTask } from '../utils/Tasks';
+import chalk from 'chalk';
 
 export class Deploy extends Command {
   static description = 'Deploys the project to the voice platform.';
@@ -66,6 +68,9 @@ export class Deploy extends Command {
       if (!platforms.validateCliOptions('deploy', flags)) {
         this.exit();
       }
+
+      this.log(`\n jovo deploy: ${Deploy.description}`);
+      this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
       const project = getProject();
       await project.init();

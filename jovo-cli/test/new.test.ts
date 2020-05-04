@@ -16,6 +16,11 @@ afterAll(() => {
 
 describe('new', () => {
   it('jovo new <project>', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+
     const projectName = 'helloworld';
     const projectFolder = path.join(tmpTestfolder, projectName);
 
@@ -36,6 +41,11 @@ describe('new', () => {
   }, 10000);
 
   it('jovo new helloworld --locale de-DE', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'helloworlddeDE';
     const projectFolder = path.join(tmpTestfolder, projectName);
 

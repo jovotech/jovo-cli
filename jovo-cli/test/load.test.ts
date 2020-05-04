@@ -19,6 +19,11 @@ afterAll(() => {
 
 describe('load', () => {
   it("jovo new <project> --build\n\tjovo load jovo-component-email\n\t>> Should fail if component doesn't exist", async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-load-fail';
 
     const parameters = [
@@ -48,6 +53,11 @@ describe('load', () => {
   }, 200000);
 
   it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Typescript Component', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-load-ts-ts';
 
     const parameters = [
@@ -99,6 +109,11 @@ describe('load', () => {
   }, 200000);
 
   it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Typescript Component', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-load-js-ts';
 
     const parameters = [
@@ -161,6 +176,11 @@ describe('load', () => {
   }, 200000);
 
   it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Javascript Component', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-load-ts-js';
 
     const parameters = [
@@ -203,6 +223,11 @@ describe('load', () => {
   }, 200000);
 
   it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Javascript Project\n\t>> Javascript Component', async () => {
+    if (!process.env.ASK_PROFILE) {
+      console.log('Skipping because no ask profile found');
+      return;
+    }
+    
     const projectName = 'jovo-cli-unit-test-load-js-js';
 
     const parameters = [

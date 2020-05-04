@@ -1,4 +1,4 @@
-import { JovoCliDeploy, TARGET_INFO, TARGET_MODEL, TARGET_ZIP } from 'jovo-cli-core';
+import { JovoCliDeploy, TARGET_INFO, TARGET_MODEL, TARGET_ZIP, JovoCliError } from 'jovo-cli-core';
 import { JovoCliDeployLambda } from 'jovo-cli-deploy-lambda';
 
 // All deploy targets that should be available to be used
@@ -57,5 +57,5 @@ function createDeployInstance(name: string): JovoCliDeploy {
     }
   }
 
-  throw new Error(`The deploy target "${name}" is not supported!`);
+  throw new JovoCliError(`The deploy target "${name}" is not supported!`, 'jovo-cli');
 }
