@@ -1,5 +1,5 @@
 import { Utils, JovoCliError } from 'jovo-cli-core';
-import { writeFileSync } from 'fs-extra';
+import { writeFileSync, readFileSync } from 'fs-extra';
 import { ChoiceType } from 'inquirer';
 
 import { JovoTaskContextAlexa, AskSkillList, execAsync, getAskErrorV2 } from '../utils';
@@ -44,9 +44,21 @@ export async function createSkill(
   skillJsonPath: string,
 ): Promise<string> {
   try {
-    const stdout = await execAsync(
-      `ask smapi create-skill-for-vendor --manifest "$(cat ${skillJsonPath})" -p ${ctx.askProfile}`,
-    );
+    let cmd = `ask smapi create-skill-for-vendor -p ${ctx.askProfile} `;
+
+    if (process.platform === 'win32') {
+      const manifestJson = JSON.parse(readFileSync(skillJsonPath).toString());
+      // Since windows does not support cat as Unix-systems do, we have
+      // to include the json file directly in the command.
+      // To make this work, json properties' double quotes need to be escaped.
+      // To achieve this, we call JSON.stringify() twice.
+      const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
+      cmd += `--manifest '${manifestFlag}`;
+    } else {
+      cmd += `--manifest "$(cat ${skillJsonPath})"`;
+    }
+
+    const stdout = await execAsync(cmd);
 
     const { skillId } = JSON.parse(stdout);
     return skillId;
@@ -57,9 +69,21 @@ export async function createSkill(
 
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
-    await execAsync(
-      `ask smapi update-skill-manifest -s ${ctx.skillId} -g development --manifest "$(cat ${skillJsonPath})" -p ${ctx.askProfile}`,
-    );
+    let cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development -p ${ctx.askProfile} `;
+
+    if (process.platform === 'win32') {
+      const manifestJson = JSON.parse(readFileSync(skillJsonPath).toString());
+      // Since windows does not support cat as Unix-systems do, we have
+      // to include the json file directly in the command.
+      // To make this work, json properties' double quotes need to be escaped.
+      // To achieve this, we call JSON.stringify() twice.
+      const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
+      cmd += `--manifest '${manifestFlag}`;
+    } else {
+      cmd += `--manifest "$(cat ${skillJsonPath})"`;
+    }
+
+    await execAsync(cmd);
   } catch (err) {
     throw getAskErrorV2('smapiUpdateSkill', err.message);
   }

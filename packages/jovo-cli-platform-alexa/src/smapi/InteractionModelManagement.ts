@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs-extra';
+import { writeFileSync, readFileSync } from 'fs-extra';
 
 import { JovoTaskContextAlexa, execAsync, getAskErrorV2 } from '../utils';
 
@@ -9,9 +9,20 @@ export async function updateInteractionModel(
   stage: string,
 ): Promise<void> {
   try {
-    await execAsync(
-      `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model "$(cat ${interactionModelPath})"`,
-    );
+    let cmd = `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} `;
+
+    if (process.platform === 'win32') {
+      const interactionModelJson = JSON.parse(readFileSync(interactionModelPath).toString());
+      // Since windows does not support cat as Unix-systems do, we have
+      // to include the json file directly in the command.
+      // To make this work, json properties' double quotes need to be escaped.
+      // To achieve this, we call JSON.stringify() twice.
+      const interactionModelFlag = JSON.stringify(JSON.stringify(interactionModelJson));
+      cmd += `--interaction-model '${interactionModelFlag}`;
+    } else {
+      cmd += `--interaction-model "$(cat ${interactionModelPath})"`;
+    }
+    await execAsync(cmd);
   } catch (err) {
     throw getAskErrorV2('smapiUpdateInteractionModel', err.message);
   }
