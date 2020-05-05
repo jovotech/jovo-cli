@@ -36,7 +36,7 @@ const project: Project = getProject();
 export class JovoCliPlatformAlexa extends JovoCliPlatform {
   static PLATFORM_KEY = 'alexaSkill';
   static ID_KEY = 'skillId';
-  askVersion = ask.checkAsk();
+  askVersion = '2';
 
   constructor() {
     super();
@@ -122,7 +122,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
    */
   getExistingProjects(ctx: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
     // Check if ask-cli is installed.
-    ask.checkAsk();
+    this.askVersion = ask.checkAsk();
 
     if (this.askVersion === '2') {
       // Get Access Token for SMAPI
@@ -303,10 +303,15 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
    * @memberof JovoCliPlatform
    */
   getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
-    const hasAlexaSkill = this.hasPlatform();
+    try {
+      this.askVersion = ask.checkAsk();
+      // Check for folder structure for ask-cli@v2.
+      this.checkDeprecatedFolderStructure();
+    } catch (err) {
+      this.askVersion = '2';
+    }
 
-    // Check for folder structure for ask-cli@v2.
-    this.checkDeprecatedFolderStructure();
+    const hasAlexaSkill = this.hasPlatform();
 
     let title = 'Creating Alexa Skill project files ' + Utils.printStage(ctx.stage);
     if (hasAlexaSkill) {
@@ -425,6 +430,8 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
    * @memberof JovoCliPlatform
    */
   getGetTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    this.askVersion = ask.checkAsk();
+
     // Check for folder structure for ask-cli@v2.
     this.checkDeprecatedFolderStructure();
 
@@ -529,6 +536,8 @@ Endpoint: ${skillInfo.endpoint}`;
    * @memberof JovoCliPlatform
    */
   getBuildReverseTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
+    this.askVersion = ask.checkAsk();
+
     const returnTasks: ListrTask[] = [];
 
     returnTasks.push({
@@ -593,6 +602,8 @@ Endpoint: ${skillInfo.endpoint}`;
    * @memberof JovoCliPlatform
    */
   getDeployTasks(ctx: JovoTaskContextAlexa, targets: JovoCliDeploy[]): ListrTask[] {
+    this.askVersion = ask.checkAsk();
+
     // Check for folder structure for ask-cli@v2.
     this.checkDeprecatedFolderStructure();
 
