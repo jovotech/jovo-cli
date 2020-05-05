@@ -1,6 +1,14 @@
 # Jovo CLI Changelog
 
 
+## 3.0.10 (2020-05-05)
+
+#### :bug: Bug Fix
+* `jovo-cli` [#138](https://github.com/jovotech/jovo-cli/pull/138) Suppress ask-cli Error Bug ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
 ## 3.0.9 (2020-05-04)
 
 #### :nail_care: Enhancements
