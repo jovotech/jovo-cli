@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, existsSync, statSync } from 'fs';
 import * as path from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
+import { ask } from 'jovo-cli-platform-alexa';
 
 const tmpTestFolder = 'tmpTestFolderDeploy';
 
@@ -21,7 +22,7 @@ describe('deploy', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test';
 
     // Create new project
@@ -39,12 +40,31 @@ describe('deploy', () => {
     await runJovoCommand('deploy', deployParameters, projectFolder, 'Deployment completed.');
 
     // Tests
-    const askConfig = JSON.parse(
-      readFileSync(path.join(projectFolder, 'platforms', 'alexaSkill', '.ask', 'config'), 'utf-8'),
-    );
-    expect(askConfig.deploy_settings.default.skill_id.length > 0).toBe(true);
+    const askVersion = ask.checkAsk();
 
-    await deleteSkill(askConfig.deploy_settings.default.skill_id);
+    let configPath: string;
+    if (askVersion === '2') {
+      configPath = 'ask-states.json';
+    } else {
+      configPath = 'config';
+    }
+
+    const askConfig = JSON.parse(
+      readFileSync(
+        path.join(projectFolder, 'platforms', 'alexaSkill', '.ask', configPath),
+        'utf-8',
+      ),
+    );
+
+    let skillId: string;
+    if (askVersion === '2') {
+      skillId = askConfig.profiles.default.skillId;
+    } else {
+      skillId = askConfig.deploy_settings.default.skill_id;
+    }
+
+    expect(skillId.length > 0).toBe(true);
+    await deleteSkill(skillId);
   }, 200000);
 
   it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
@@ -52,7 +72,7 @@ describe('deploy', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-zip';
 
     // Create new project
@@ -78,7 +98,7 @@ describe('deploy', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'helloworldDeployGoogleAction';
 
     // Create new project

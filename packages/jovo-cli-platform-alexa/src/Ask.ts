@@ -45,22 +45,15 @@ export function getAskErrorV1(method: string, stderr: string) {
  */
 export function checkAsk() {
   try {
-    // Check for ask-cli@v2
-    const version = execSync('ask -V').toString();
+    const version = execSync('ask --version', { stdio: 'pipe' }).toString();
     return version[0];
   } catch (err) {
-    try {
-      // If ask-cli@v2 fails, check for v1
-      const version = execSync('ask -v').toString();
-      return version[0];
-    } catch (err) {
-      throw new JovoCliError(
-        'Jovo requires ASK CLI',
-        'jovo-cli-platform-alexa',
-        'Install the ask-cli with npm install ask-cli -g. Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
-        ERROR_TYPE.WARN,
-      );
-    }
+    throw new JovoCliError(
+      'Jovo requires ASK CLI',
+      'jovo-cli-platform-alexa',
+      'Install the ask-cli with npm install ask-cli -g. Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
+      ERROR_TYPE.WARN,
+    );
   }
 }
 
