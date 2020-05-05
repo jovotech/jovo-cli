@@ -305,11 +305,12 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
     try {
       this.askVersion = ask.checkAsk();
-      // Check for folder structure for ask-cli@v2.
-      this.checkDeprecatedFolderStructure();
     } catch (err) {
       this.askVersion = '2';
     }
+
+    // Check for folder structure for ask-cli@v2.
+    this.checkDeprecatedFolderStructure();
 
     const hasAlexaSkill = this.hasPlatform();
 
@@ -1404,9 +1405,9 @@ Endpoint: ${skillInfo.endpoint}`;
       fs.existsSync(path.join(this.getAskConfigFolderPath(), 'config'))
     ) {
       throw new JovoCliError(
-        "You're currently using the ask-cli@v2 with deprecated folder structure from ask-cli@v1.",
+        "You're currently using the ask-cli@v2 with the deprecated folder structure from ask-cli@v1.",
         'jovo-cli-platform-alexa',
-        'Upgrade to the current platform folder structure by running "$ ask util upgrade-project" inside "platforms/alexaSkill".' +
+        'Upgrade to the current platform folder structure by running "ask util upgrade-project" inside "platforms/alexaSkill".' +
           `\n${chalk.grey(
             '>> Read more here: https://developer.amazon.com/en-US/docs/alexa/smapi/ask-cli-v1-to-v2-migration-guide.html',
           )}`,
