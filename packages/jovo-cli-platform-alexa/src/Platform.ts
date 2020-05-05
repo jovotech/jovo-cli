@@ -305,11 +305,12 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
   getBuildTasks(ctx: JovoTaskContextAlexa): ListrTask[] {
     try {
       this.askVersion = ask.checkAsk();
-      // Check for folder structure for ask-cli@v2.
-      this.checkDeprecatedFolderStructure();
     } catch (err) {
       this.askVersion = '2';
     }
+
+    // Check for folder structure for ask-cli@v2.
+    this.checkDeprecatedFolderStructure();
 
     const hasAlexaSkill = this.hasPlatform();
 
