@@ -42,7 +42,7 @@ $ jovo -V
 
 ### Troubleshooting
 
-Find out more about technical requirements in our [Installation Guide](jovo.tech/docs/installation).
+Find out more about technical requirements in our [Installation Guide](https://www.jovo.tech/docs/installation).
 
 If you had the CLI installed with an outdated major version and are running into problems after updating it to the latest one, please try to uninstall it globally before you install it again:
 
