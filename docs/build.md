@@ -40,7 +40,7 @@ $ jovo build [-p | --platform <platform>] [-r | --reverse] [-l | --locale <local
 
 ![jovo build reverse converter](../img/jovo-build-reverse.png "jovo build reverse command")
 
-In this reverse process, you can create a [Jovo Language Model](https://www.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](./get.md './get').
+In this reverse process, you can create a [Jovo Language Model](https://www.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://www.jovo.tech/marketplace/jovo-cli/get).
 
 ```sh
 # Alexa Skill
@@ -68,7 +68,7 @@ $ jovo build -p googleAction --reverse --overwrite
 
 `--locale`, `-l`: Specify the locale, which should be created/updated. Arguments: `en-US`, `de-DE`, et cetera. Default: All files in the `models` folder.
 
-`--deploy`, `-d`: This is a shortcut to the [`jovo deploy`](./deploy.md './deploy') command. Deploy the platform files to their respective developer console.
+`--deploy`, `-d`: This is a shortcut to the [`jovo deploy`](https://www.jovo.tech/marketplace/jovo-cli/deploy) command. Deploy the platform files to their respective developer console.
 
 `--target`, `-t`: Used in combination with `--deploy` to specify target of deployment. Arguments: `info` (Skill Information), `model` (Interaction Model), `all`. Default: `all`.
 
@@ -78,6 +78,6 @@ $ jovo build -p googleAction --reverse --overwrite
 
 `--ask-profile`: Used in combination with `--deploy`. Specifies which profile set up in [ASK CLI](https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html) should be used to deploy. Default: `default`.
 
-`--reverse`, `-r`: In this reverse process, you can create a [Jovo Language Model](../../basic-concepts/model '../model') from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](./get.md './get').
+`--reverse`, `-r`: In this reverse process, you can create a [Jovo Language Model](https://www.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://www.jovo.tech/marketplace/jovo-cli/get).
 
 `--overwrite`: Can be used together with the `--reverse` command. This ignores the question if the existing files should really be overwritten.

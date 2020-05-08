@@ -81,7 +81,7 @@ You can create a Jovo project into a new directory with the following command:
 $ jovo new <directory>
 ```
 
-> Learn more about this command here: [cli/new](./new.md './cli/new').
+> Learn more about this command here: [cli/new](https://www.jovo.tech/marketplace/jovo-cli/new).
 
 ### jovo run
 
@@ -96,7 +96,7 @@ Learn more here: [Docs: Configuration > Hosting](https://www.jovo.tech/docs/host
 $ jovo run
 ```
 
-> Learn more about this command here: [cli/run](./docs/run.md './cli/run').
+> Learn more about this command here: [cli/run](https://www.jovo.tech/marketplace/jovo-cli).
 
 
 ### jovo update
@@ -110,7 +110,7 @@ $ jovo update
 
 This is are necessary (as opposed to `$ npm install jovo-framework`) because the framework is now split into different modules.
 
-> [Learn more about upgrading Jovo here](../../getting-started/installation/upgrading.md './installation/upgrading').
+> [Learn more about upgrading Jovo here](https://www.jovo.tech/docs/installation/upgrading).
 
 
 
@@ -130,7 +130,7 @@ See the following tutorials for alternative ways to create language models on th
 
 `jovo build` is the command to create and update the platform specific interaction models using the Jovo model. Using the files in the `/models` folder and converting them into files in the `/platforms` folder.
 
-To learn more about Jovo Language Models, take a look at [App Configuration > Models](../03_app-configuration/models './model').
+To learn more about Jovo Language Models, take a look at [App Configuration > Models](https://www.jovo.tech/docs/model).
 
 You can either run `build`  separately for each platform, or just let the CLI fetch the right information from the `project.js` file.
 
@@ -139,7 +139,7 @@ You can either run `build`  separately for each platform, or just let the CLI fe
 $ jovo build
 ```
 
-> Learn more about this command here: [cli/build](./docs/build.md './cli/build').
+> Learn more about this command here: [cli/build](https://www.jovo.tech/marketplace/jovo-cli/build).
 
 
 
@@ -156,7 +156,7 @@ To get the Skill from the Amazon developer console, you have to set up [ASK CLI]
 $ jovo get <alexaSkill|googleAction>
 ```
 
-> Learn more about this command here: [cli/get](./docs/get.md './cli/get').
+> Learn more about this command here: [cli/get](https://www.jovo.tech/marketplace/jovo-cli/get).
 
 
 ### jovo deploy
@@ -170,4 +170,4 @@ $ jovo get <alexaSkill|googleAction>
 $ jovo deploy
 ```
 
-> Learn more about this command here: [cli/deploy](./docs/deploy.md './cli/deploy').
+> Learn more about this command here: [cli/deploy](https://www.jovo.tech/marketplace/jovo-cli/deploy).
