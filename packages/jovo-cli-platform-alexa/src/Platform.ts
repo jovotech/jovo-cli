@@ -1222,8 +1222,11 @@ Endpoint: ${skillInfo.endpoint}`;
         );
       }
     } catch (err) {
-      console.log(err);
-      return;
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+
+      throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
     }
   }
 
@@ -1306,20 +1309,24 @@ Endpoint: ${skillInfo.endpoint}`;
    * @return {*}
    */
   getSkillInformation() {
-    const skillJson = this.getSkillJson();
-    const info = {
-      name: '',
-      invocationName: '',
-      skillId: this.getSkillId(),
-      endpoint: skillJson.manifest.apis.custom.endpoint.uri,
-    };
+    try {
+      const skillJson = this.getSkillJson();
+      const info = {
+        name: '',
+        invocationName: '',
+        skillId: this.getSkillId(),
+        endpoint: skillJson.manifest.apis.custom.endpoint.uri,
+      };
 
-    const locales = skillJson.manifest.publishingInformation.locales;
-    for (const locale of Object.keys(locales)) {
-      info.name += locales[locale].name + ' (' + locale + ') ';
-      info.invocationName += this.getInvocationName(locale) + ' (' + locale + ') ';
+      const locales = skillJson.manifest.publishingInformation.locales;
+      for (const locale of Object.keys(locales)) {
+        info.name += locales[locale].name + ' (' + locale + ') ';
+        info.invocationName += this.getInvocationName(locale) + ' (' + locale + ') ';
+      }
+      return info;
+    } catch (err) {
+      throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
     }
-    return info;
   }
 
   /**
@@ -1328,7 +1335,6 @@ Endpoint: ${skillInfo.endpoint}`;
    */
   getSkillSimpleInformation() {
     const skillJson = this.getSkillJson();
-
     const info = {
       name: '',
       skillId: this.getSkillId(),
