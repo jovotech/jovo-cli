@@ -26,15 +26,17 @@ export function getAskErrorV2(method: string, stderr: string) {
     try {
       const json = stderr.substring(i + splitter.length);
       const parsedError = JSON.parse(json);
-      const message = parsedError.message;
+
+      const payload = parsedError.response ? parsedError.response : parsedError;
+
+      const message = payload.message;
       let violations = '';
 
-      if (parsedError.violations) {
-        for (const violation of parsedError.violations) {
+      if (payload.violations) {
+        for (const violation of payload.violations) {
           violations += violation.message;
         }
       }
-
       return new JovoCliError(`${method}:${message}`, module, violations);
     } catch (err) {
       return new JovoCliError(`${method}:${stderr}`, module);

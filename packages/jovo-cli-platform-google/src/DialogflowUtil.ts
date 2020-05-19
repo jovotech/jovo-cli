@@ -123,6 +123,7 @@ export function getAgentJson() {
  */
 export function createEmptyAgentJson() {
   const agentJson = {
+    defaultTimezone: 'America/New_York',
     description: '',
     // language: Helper.DEFAULT_LOCALE.substr(0, 2),
   };

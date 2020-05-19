@@ -66,6 +66,7 @@ export class Run extends Command {
   async run() {
     platforms.addCliOptions('run', Run.flags);
     addBaseCliOptions(Run.flags);
+    this.log(' ');
 
     const { args, flags } = this.parse(Run);
 
@@ -123,7 +124,7 @@ export class Run extends Command {
     try {
       project.getConfig(stage);
     } catch (e) {
-      this.error('Could not load app.json.');
+      this.error('Could not load project.js.');
     }
 
     if (flags['webhook-only']) {
@@ -155,6 +156,15 @@ export class Run extends Command {
       // If it is a typescript project look in "dist" folder
       checkFolders.push('./dist/src/');
       checkFolders.push('./dist/');
+
+      try {
+        accessSync(path.join('./dist/'));
+      } catch (e) {
+        this.log('Cannot find /dist folder. Start compiling TypeScript...');
+        await project.compileTypeScriptProject(srcDir);
+        this.log('TypeScript Compiling finished.');
+        this.log(' ');
+      }
     } else {
       // In regular projects in "src" folder
       checkFolders.push('./src/');
