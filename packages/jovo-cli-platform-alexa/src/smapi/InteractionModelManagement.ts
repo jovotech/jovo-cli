@@ -11,7 +11,7 @@ export async function updateInteractionModel(
   try {
     const cmd = `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model "file:${interactionModelPath}"`;
 
-  	await execAsync(cmd);
+    await execAsync(cmd);
   } catch (err) {
     throw getAskErrorV2('smapiUpdateInteractionModel', err.message);
   }

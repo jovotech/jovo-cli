@@ -6,7 +6,6 @@ import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 
 import * as _ from 'lodash';
 import Listr = require('listr');
 import { JovoCliRenderer } from '../utils';
-import { JovoCliError } from 'jovo-cli-core';
 
 export class Convert extends Command {
   static description = 'Converts .csv-files to i18n.json-files and vice versa.';
