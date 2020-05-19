@@ -44,19 +44,7 @@ export async function createSkill(
   skillJsonPath: string,
 ): Promise<string> {
   try {
-    let cmd = `ask smapi create-skill-for-vendor -p ${ctx.askProfile} `;
-
-    if (process.platform === 'win32') {
-      const manifestJson = JSON.parse(readFileSync(skillJsonPath).toString());
-      // Since windows does not support cat as Unix-systems do, we have
-      // to include the json file directly in the command.
-      // To make this work, json properties' double quotes need to be escaped.
-      // To achieve this, we call JSON.stringify() twice.
-      const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
-      cmd += `--manifest ${manifestFlag}`;
-    } else {
-      cmd += `--manifest "$(cat ${skillJsonPath})"`;
-    }
+    const cmd = `ask smapi create-skill-for-vendor -p ${ctx.askProfile} --manifest "file:${skillJsonPath}"`;
 
     const stdout = await execAsync(cmd);
 
@@ -69,19 +57,7 @@ export async function createSkill(
 
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
-    let cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development -p ${ctx.askProfile} `;
-
-    if (process.platform === 'win32') {
-      const manifestJson = JSON.parse(readFileSync(skillJsonPath).toString());
-      // Since windows does not support cat as Unix-systems do, we have
-      // to include the json file directly in the command.
-      // To make this work, json properties' double quotes need to be escaped.
-      // To achieve this, we call JSON.stringify() twice.
-      const manifestFlag = JSON.stringify(JSON.stringify(manifestJson));
-      cmd += `--manifest ${manifestFlag}`;
-    } else {
-      cmd += `--manifest "$(cat ${skillJsonPath})"`;
-    }
+    const cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development -p ${ctx.askProfile} --manifest "file:${skillJsonPath}"`;
 
     await execAsync(cmd);
   } catch (err) {

@@ -29,19 +29,7 @@ export async function updateAccountLinkingInformation(
       return;
     }
 
-    let cmd = `ask smapi update-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile} `;
-
-    if (process.platform === 'win32') {
-      const accountLinkingJson = JSON.parse(readFileSync(accountLinkingJsonPath).toString());
-      // Since windows does not support cat as Unix-systems do, we have
-      // to include the json file directly in the command.
-      // To make this work, json properties' double quotes need to be escaped.
-      // To achieve this, we call JSON.stringify() twice.
-      const accountLinkingFlag = JSON.stringify(JSON.stringify(accountLinkingJson));
-      cmd += `--account-linking-request ${accountLinkingFlag}`;
-    } else {
-      cmd += `--account-linking-request "$(cat ${accountLinkingJsonPath})"`;
-    }
+    const cmd = `ask smapi update-account-linking-info -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile} --account-linking-request "file:${accountLinkingJsonPath}"`;
 
     await execAsync(cmd);
   } catch (err) {
