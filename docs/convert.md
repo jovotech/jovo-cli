@@ -9,7 +9,7 @@ Learn more about how to convert your i18n model to csv and vice versa to quickly
 
 `jovo convert` is the Jovo CLI command to either convert i18n.json-files to .csv-files, or .csv-files to i18n.json-files. This way you can import your i18n-model to a cms of your choice, or convert your cms data to respective local i18n files.
 
-> [Find out more about Jovo's CMS Integrations](https://www.jovo.tech/docs/cms)
+> [Find out more about Jovo's CMS Integrations here](https://www.jovo.tech/docs/cms).
 
 ## Workflow
 

@@ -82,9 +82,9 @@ $ jovo deploy --platform googleAction
 
 ### Deploy Source Code
 
-> [Learn more about hosting here](../../configuration/hosting '../hosting').
+> [Learn more about hosting here](https://www.jovo.tech/docs/hosting).
 
-For testing and running your app in production, you need to deploy the code to various [hosting providers](../../configuration/hosting '../hosting') Jovo offers integrations for.
+For testing and running your app in production, you need to deploy the code to various [hosting providers](https://www.jovo.tech/docs/hosting) Jovo offers integrations for.
 
 You can create a ready-to-deploy `bundle.zip` file with either of the following commands:
 
