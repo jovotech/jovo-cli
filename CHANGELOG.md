@@ -1,5 +1,13 @@
 # Jovo CLI Changelog
 
+## 3.0.12 (2020-05-19)
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-alexa` [#141](https://github.com/jovotech/jovo-cli/pull/141) Fix Windows Error: ENAMETOOLONG ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
 
 ## 3.0.10 (2020-05-05)
 
