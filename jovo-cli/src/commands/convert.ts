@@ -135,7 +135,7 @@ export class Convert extends Command {
       this.log(successMsg);
       this.log();
     } catch (err) {
-      this.error(failMsg);
+      this.error(`${failMsg}\n${err}`);
     }
   }
 }

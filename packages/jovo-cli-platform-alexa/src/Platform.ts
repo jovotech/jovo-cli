@@ -617,14 +617,20 @@ Endpoint: ${skillInfo.endpoint}`;
     try {
       ctx.skillId = this.getSkillId();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+
       if (
         ctx.targets.length === 0 ||
         (ctx.targets.length &&
           !additionalTargetKeys.some((targetName) => ctx.targets!.includes(targetName)))
       ) {
-        // prettier-ignore
-        console.log(`Couldn't find a platform folder. Please use the "jovo build" command to create platform-specific files.\n`);
-        return [];
+        throw new JovoCliError(
+          `Couldn't find a platform folder.`,
+          'jovo-cli',
+          `Please use the \'jovo build\' command to create platform-specific files.`,
+        );
       }
     }
 

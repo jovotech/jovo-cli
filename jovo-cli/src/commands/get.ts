@@ -99,7 +99,10 @@ export class Get extends Command {
       try {
         project.getConfig(flags.stage);
       } catch (err) {
-        this.error('Could not load app.json.');
+        if (err instanceof JovoCliError) {
+          throw err;
+        }
+        throw new JovoCliError(err.message, 'jovo-cli');
       }
 
       const config: JovoTaskContext = {

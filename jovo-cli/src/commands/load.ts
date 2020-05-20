@@ -22,8 +22,10 @@ export class Load extends Command {
       await project.init();
 
       if (!existsSync(`./node_modules/${args.component}`)) {
-        this.error(
-          `The component '${args.component}' does not exist. Please check for spelling or install it with 'npm i ${args.component} -s'.`,
+        throw new JovoCliError(
+          `The component '${args.component}' does not exist.`,
+          'jovo-cli',
+          "Please check for spelling or install it with 'npm i ${args.component} -s'.",
         );
       }
 

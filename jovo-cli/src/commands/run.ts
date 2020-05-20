@@ -123,8 +123,8 @@ export class Run extends Command {
 
     try {
       project.getConfig(stage);
-    } catch (e) {
-      this.error('Could not load project.js.');
+    } catch (err) {
+      throw new JovoCliError(err.message, 'jovo-cli');
     }
 
     if (flags['webhook-only']) {
