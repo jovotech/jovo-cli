@@ -97,12 +97,12 @@ export class New extends Command {
       const { args, flags } = this.parse(New);
 
       if (!platforms.validateCliOptions('new', flags)) {
-        this.exit();
+        return;
       }
 
       // Validation
       if (!isValidProjectName(args.directory) || !isValidTemplate(flags.template)) {
-        this.exit(1);
+        return;
       }
 
       this.log(`\n jovo new: ${New.description}`);

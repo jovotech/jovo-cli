@@ -71,7 +71,7 @@ export class Run extends Command {
     const { args, flags } = this.parse(Run);
 
     if (!platforms.validateCliOptions('run', flags)) {
-      this.exit();
+      return;
     }
 
     this.log(`\n jovo run: ${Run.description}`);

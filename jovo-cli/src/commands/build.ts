@@ -105,7 +105,7 @@ export class Build extends Command {
       const { flags } = this.parse(Build);
 
       if (!platforms.validateCliOptions('build', flags)) {
-        this.exit();
+        return;
       }
 
       if (!isValidLocale(flags.locale) || !isValidPlatform(flags.platform)) {
@@ -198,7 +198,7 @@ export class Build extends Command {
           } else if (project.hasModelFiles(config.locales)) {
             const answer = await promptOverwriteReverseBuild();
             if (answer.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-              this.exit();
+              return;
             }
             config.reverse = answer.promptOverwriteReverseBuild;
           }

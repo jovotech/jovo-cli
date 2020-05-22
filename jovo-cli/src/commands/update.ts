@@ -57,7 +57,7 @@ export class Update extends Command {
 
       const { update } = await promptUpdateVersions(outOfDatePackages.length);
       if (update !== ANSWER_UPDATE) {
-        this.exit();
+        return;
       }
 
       let npmUpdateOutput = '';

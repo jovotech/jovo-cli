@@ -66,7 +66,7 @@ export class Deploy extends Command {
       const { flags } = this.parse(Deploy);
 
       if (!platforms.validateCliOptions('deploy', flags)) {
-        this.exit();
+        return;
       }
 
       this.log(`\n jovo deploy: ${Deploy.description}`);
