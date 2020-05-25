@@ -5,7 +5,7 @@ import * as elegantSpinner from 'elegant-spinner';
 // @ts-ignore
 import * as figures from 'figures';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
-import { getProject, InputFlags } from 'jovo-cli-core';
+import { getProject, InputFlags, JovoCliError } from 'jovo-cli-core';
 import latestVersion from 'latest-version';
 import { ListrOptions } from 'listr';
 import * as logSymbols from 'log-symbols';
@@ -100,31 +100,55 @@ export function deleteFolderRecursive(path: string) {
  */
 export async function getPackages(packageRegex?: RegExp): Promise<PackageVersions> {
   const projectPath = project.getProjectPath();
-  const packagePath = pathJoin(projectPath, 'package-lock.json');
+  let packageFileName: string = '';
+
+  // Get file name depending on what file exists.
+  if (existsSync(pathJoin(projectPath, 'package-lock.json'))) {
+    packageFileName = 'package-lock.json';
+  } else if (existsSync(pathJoin(projectPath, 'package.json'))) {
+    packageFileName = 'package.json';
+  } else {
+    throw new JovoCliError(
+      "Could not find an NPM dependency file, such as your project's package.json.",
+      'jovo-cli',
+    );
+  }
+
+  const packagePath = pathJoin(projectPath, packageFileName);
   let content;
   try {
     content = readFileSync(packagePath).toString();
   } catch (e) {
-    // Could not read file
-    return {};
+    throw new JovoCliError(
+      `Something went wrong while reading your ${packageFileName} file.`,
+      'jovo-cli',
+    );
   }
+
   const packageFile = JSON.parse(content);
-
   const packages: PackageVersions = {};
-  const versionNumberRegex = /^\d{1,2}\.\d{1,2}\.\d{1,2}$/;
-  Object.keys(packageFile.dependencies).forEach((packageName) => {
-    const packageObj = packageFile.dependencies[packageName];
+  const versionNumberRegex = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 
-    if (packageRegex && !packageName.match(packageRegex)) {
-      return;
+  for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies)) {
+    if (packageRegex && !dependencyKey.match(packageRegex)) {
+      continue;
     }
 
-    if (!packageObj.version.match(versionNumberRegex)) {
-      return;
+    if (typeof dependency === 'string') {
+      if (dependency.match(versionNumberRegex)) {
+        packages[dependencyKey] = dependency;
+      }
     }
 
-    packages[packageName] = packageFile.dependencies[packageName].version;
-  });
+    // @ts-ignore
+    if (typeof dependency === 'object') {
+      // @ts-ignore
+      if (dependency.version.match(versionNumberRegex)) {
+        // @ts-ignore
+        packages[dependencyKey] = dependency.version;
+      }
+    }
+  }
   return packages;
 }
 
