@@ -10,7 +10,6 @@ import {
   getProject,
   InputFlags,
   JovoTaskContext,
-  JovoCliError,
 } from 'jovo-cli-core';
 import * as Listr from 'listr';
 import * as _ from 'lodash';
@@ -70,12 +69,15 @@ export class New extends Command {
     'language': flags.string({
       description: 'Sets the programming language of the template.',
       options: ['javascript', 'typescript'],
-      default: 'javascript',
     }),
     'endpoint': flags.string({
       description: 'Type of endpoint',
       default: ENDPOINT_JOVOWEBHOOK,
       options: [ENDPOINT_JOVOWEBHOOK, ENDPOINT_NGROK, ENDPOINT_NONE],
+    }),
+    'typescript': flags.boolean({
+      description: 'Sets the programming language of the template to TypeScript.',
+      default: false,
     }),
     'debug': flags.boolean({
       hidden: true,
@@ -95,12 +97,12 @@ export class New extends Command {
       const { args, flags } = this.parse(New);
 
       if (!platforms.validateCliOptions('new', flags)) {
-        this.exit();
+        return;
       }
 
       // Validation
       if (!isValidProjectName(args.directory) || !isValidTemplate(flags.template)) {
-        this.exit(1);
+        return;
       }
 
       this.log(`\n jovo new: ${New.description}`);
@@ -141,11 +143,13 @@ export class New extends Command {
       this.log("  I'm setting everything up");
       this.log();
 
+      const language = flags.typescript ? 'typescript' : flags.language || DEFAULT_LANGUAGE;
+
       _.merge(config, {
+        language,
         projectName: args.directory,
         locales: project.getLocales(flags.locale),
         template: flags.template || DEFAULT_TEMPLATE,
-        language: flags.language || DEFAULT_LANGUAGE,
         invocation: flags.invocation,
         endpoint: flags.endpoint || DEFAULT_ENDPOINT,
       });

@@ -105,7 +105,7 @@ export class Build extends Command {
       const { flags } = this.parse(Build);
 
       if (!platforms.validateCliOptions('build', flags)) {
-        this.exit();
+        return;
       }
 
       if (!isValidLocale(flags.locale) || !isValidPlatform(flags.platform)) {
@@ -135,7 +135,7 @@ export class Build extends Command {
         if (flags.debug) {
           this.log(err);
         }
-        this.error(`Could not load ${project.getConfigFileName()}.`);
+        throw new JovoCliError(`Could not load ${project.getConfigFileName()}.`, 'jovo-cli');
       }
 
       const types: string[] = flags.platform
@@ -165,7 +165,10 @@ export class Build extends Command {
       };
 
       if (!project.hasConfigFile()) {
-        this.error(`The "${project.getConfigPath()}" file is missing or invalid!`);
+        throw new JovoCliError(
+          `The "${project.getConfigPath()}" file is missing or invalid!`,
+          'jovo-cli',
+        );
       }
 
       // If more than one type is set and reverse selected ask the user
@@ -195,7 +198,7 @@ export class Build extends Command {
           } else if (project.hasModelFiles(config.locales)) {
             const answer = await promptOverwriteReverseBuild();
             if (answer.promptOverwriteReverseBuild === ANSWER_CANCEL) {
-              this.exit();
+              return;
             }
             config.reverse = answer.promptOverwriteReverseBuild;
           }

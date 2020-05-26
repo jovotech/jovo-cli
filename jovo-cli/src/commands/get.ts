@@ -75,7 +75,7 @@ export class Get extends Command {
       const { args, flags } = this.parse(Get);
 
       if (!platforms.validateCliOptions('get', flags)) {
-        this.exit();
+        return;
       }
 
       this.log(`\n jovo get: ${Get.description}`);
@@ -99,7 +99,10 @@ export class Get extends Command {
       try {
         project.getConfig(flags.stage);
       } catch (err) {
-        this.error('Could not load app.json.');
+        if (err instanceof JovoCliError) {
+          throw err;
+        }
+        throw new JovoCliError(err.message, 'jovo-cli');
       }
 
       const config: JovoTaskContext = {
@@ -118,7 +121,7 @@ export class Get extends Command {
         if (!flags.overwrite && Object.keys(platformConfigIds).length > 0) {
           const { overwrite } = await promptOverwriteProjectFiles();
           if (overwrite === ANSWER_CANCEL) {
-            this.exit();
+            return;
           }
         }
 

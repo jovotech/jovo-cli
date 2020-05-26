@@ -66,7 +66,7 @@ export class Deploy extends Command {
       const { flags } = this.parse(Deploy);
 
       if (!platforms.validateCliOptions('deploy', flags)) {
-        this.exit();
+        return;
       }
 
       this.log(`\n jovo deploy: ${Deploy.description}`);
@@ -100,8 +100,10 @@ export class Deploy extends Command {
           config.targets.length === 0 ||
           !deployTargets.getAllPluginTargets().some((el) => config.targets!.includes(el)))
       ) {
-        this.error(
-          'Couldn\'t find a platform folder. Please use the "jovo build" command to create platform-specific files.',
+        throw new JovoCliError(
+          "Couldn't find a platform folder.",
+          'jovo-cli',
+          'Please use the "jovo build" command to create platform-specific files.',
         );
       }
 
