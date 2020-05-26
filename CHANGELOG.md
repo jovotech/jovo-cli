@@ -1,5 +1,15 @@
 # Jovo CLI Changelog
 
+
+## 3.0.13 (2020-05-26)
+
+#### :nail_care: Enhancements
+* `jovo-cli` [#142](https://github.com/jovotech/jovo-cli/pull/142)  Enhance verbose error messages ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
 ## 3.0.12 (2020-05-19)
 
 #### :bug: Bug Fix
