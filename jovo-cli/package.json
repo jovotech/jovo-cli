@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "3.0.13",
+	"version": "3.0.14",
 	"author": "jovotech",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
