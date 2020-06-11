@@ -51,7 +51,7 @@ export class Run extends Command {
     'model-test': flags.boolean({
       description: 'Activates the language model test.',
     }),
-    'timeout': flags.string({
+    'timeout': flags.integer({
       description: 'Sets timeout in milliseconds.',
     }),
     'record': flags.string({
