@@ -1,5 +1,7 @@
 # jovo update
 
+> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/update
+
 Learn how to update all the Jovo packages in your project.
 
 ## Introduction

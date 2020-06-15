@@ -1,5 +1,7 @@
 # jovo get
 
+> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/get
+
 Learn how to import an existing Alexa Skill or Google Action into Jovo with the `jovo get` CLI command.
 
 * [Introduction](#introduction)

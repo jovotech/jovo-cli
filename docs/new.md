@@ -1,5 +1,7 @@
 # jovo new
 
+> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/new
+
 Learn how to create a new Jovo Project with the `jovo new` command of the Jovo CLI.
 
 * [Introduction](#introduction)

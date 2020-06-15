@@ -1,5 +1,7 @@
 # jovo load
 
+> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/load
+
 Learn more about how to load your Conversational Component into your existing voice application.
 
 * [Introduction](#introduction)
