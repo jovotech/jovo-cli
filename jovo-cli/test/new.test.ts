@@ -45,7 +45,7 @@ describe('new', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'helloworlddeDE';
     const projectFolder = path.join(tmpTestfolder, projectName);
 

@@ -23,7 +23,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-fail';
 
     const parameters = [
@@ -57,7 +57,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-ts-ts';
 
     const parameters = [
@@ -113,7 +113,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-js-ts';
 
     const parameters = [
@@ -180,7 +180,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-ts-js';
 
     const parameters = [
@@ -227,7 +227,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-js-js';
 
     const parameters = [

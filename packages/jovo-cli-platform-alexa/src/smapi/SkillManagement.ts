@@ -8,7 +8,9 @@ import { prepareSkillList } from '../Ask';
 export async function getSkillStatus(ctx: JovoTaskContextAlexa) {
   try {
     const stdout = await execAsync(
-      `ask smapi get-skill-status -s ${ctx.skillId} -p ${ctx.askProfile}`,
+      `ask smapi get-skill-status -s ${ctx.skillId} ${
+        ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+      }`,
     );
 
     const response = JSON.parse(stdout);
@@ -44,7 +46,9 @@ export async function createSkill(
   skillJsonPath: string,
 ): Promise<string> {
   try {
-    const cmd = `ask smapi create-skill-for-vendor -p ${ctx.askProfile} --manifest "file:${skillJsonPath}"`;
+    const cmd = `ask smapi create-skill-for-vendor ${
+      ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+    } --manifest "file:${skillJsonPath}"`;
 
     const stdout = await execAsync(cmd);
 
@@ -57,7 +61,9 @@ export async function createSkill(
 
 export async function updateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   try {
-    const cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development -p ${ctx.askProfile} --manifest "file:${skillJsonPath}"`;
+    const cmd = `ask smapi update-skill-manifest -s ${ctx.skillId} -g development ${
+      ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+    } --manifest "file:${skillJsonPath}"`;
 
     await execAsync(cmd);
   } catch (err) {
@@ -72,7 +78,9 @@ export async function getSkillInformation(
 ) {
   try {
     const stdout = await execAsync(
-      `ask smapi get-skill-manifest -s ${ctx.skillId} -g ${stage} -p ${ctx.askProfile}`,
+      `ask smapi get-skill-manifest -s ${ctx.skillId} -g ${stage} ${
+        ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+      }`,
     );
 
     const response = JSON.parse(stdout);
@@ -85,7 +93,9 @@ export async function getSkillInformation(
 
 export async function listSkills(ctx: JovoTaskContextAlexa): Promise<ChoiceType[]> {
   try {
-    const stdout = await execAsync(`ask smapi list-skills-for-vendor -p ${ctx.askProfile}`);
+    const stdout = await execAsync(
+      `ask smapi list-skills-for-vendor ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
+    );
 
     const response = JSON.parse(stdout);
 
