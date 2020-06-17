@@ -9,7 +9,9 @@ export async function updateInteractionModel(
   stage: string,
 ): Promise<void> {
   try {
-    const cmd = `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile} --interaction-model "file:${interactionModelPath}"`;
+    const cmd = `ask smapi set-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} ${
+      ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+    } --interaction-model "file:${interactionModelPath}"`;
 
     await execAsync(cmd);
   } catch (err) {
@@ -25,7 +27,9 @@ export async function getInteractionModel(
 ) {
   try {
     const stdout = await execAsync(
-      `ask smapi get-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} -p ${ctx.askProfile}`,
+      `ask smapi get-interaction-model -s ${ctx.skillId} -g ${stage} -l ${locale} ${
+        ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+      }`,
     );
     const response = JSON.parse(stdout);
     writeFileSync(modelPath, JSON.stringify(response, null, '\t'));

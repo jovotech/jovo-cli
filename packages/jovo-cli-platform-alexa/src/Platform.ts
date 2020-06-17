@@ -107,9 +107,7 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
         project.jovoConfigReader!.getConfigParameter(
           'host.lambda.askProfile',
           options && (options.stage as string),
-        ) ||
-        process.env.ASK_DEFAULT_PROFILE ||
-        ask.DEFAULT_ASK_PROFILE,
+        ),
     };
   }
 
