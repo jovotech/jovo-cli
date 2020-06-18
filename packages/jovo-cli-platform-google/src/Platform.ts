@@ -490,84 +490,89 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
    * @return {{}}
    */
   async reverse(locale: string): Promise<JovoModelData> {
-    const platformFiles: NativeFileInformation[] = await DialogFlowUtil.getPlatformFiles();
+    try {
+      const platformFiles: NativeFileInformation[] = await DialogFlowUtil.getPlatformFiles();
 
-    const jovoModel = new JovoModelDialogflow();
-    jovoModel.importNative(platformFiles, locale);
-    const nativeData = jovoModel.exportJovoModel();
-    if (nativeData === undefined) {
-      throw new JovoCliError(
-        'Dialogflow files did not contain any valid data.',
-        'jovo-cli-platform-google',
-      );
+      const jovoModel = new JovoModelDialogflow();
+      jovoModel.importNative(platformFiles, locale);
+      const nativeData = jovoModel.exportJovoModel();
+      if (nativeData === undefined) {
+        throw new JovoCliError(
+          'Dialogflow files did not contain any valid data.',
+          'jovo-cli-platform-google',
+        );
+      }
+      // @ts-ignore
+      return nativeData;
+    } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+
+      throw new JovoCliError(err.message, 'jovo-cli-platform-google');
     }
-    return nativeData;
   }
 
   async transform(locale: string, stage: string | undefined) {
-    let model;
     try {
+      let model;
       model = project.getModel(locale);
-    } catch (e) {
-      return;
-    }
 
-    // Make sure all dialog flow folders exist
-    if (!fs.existsSync(DialogFlowUtil.getPath())) {
-      fs.mkdirSync(DialogFlowUtil.getPath());
-    }
-    if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
-      fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
-    }
-    if (!fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
-      fs.mkdirSync(DialogFlowUtil.getEntitiesFolderPath());
-    }
-
-    let outputLocale = locale.toLowerCase();
-
-    if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(outputLocale) === -1) {
-      const primLanguage = project.getLocales().filter((lang: string) => {
-        return locale.substr(0, 2) === lang.substr(0, 2);
-      });
-      if (primLanguage.length === 1) {
-        outputLocale = locale.substr(0, 2);
+      // Make sure all dialog flow folders exist
+      if (!fs.existsSync(DialogFlowUtil.getPath())) {
+        fs.mkdirSync(DialogFlowUtil.getPath());
       }
-    }
-
-    const concatArrays = function customizer(
-      objValue: any[], // tslint:disable-line:no-any
-      srcValue: any, // tslint:disable-line:no-any
-    ) {
-      // tslint:disable-line
-      if (_.isArray(objValue)) {
-        return objValue.concat(srcValue);
+      if (!fs.existsSync(DialogFlowUtil.getIntentsFolderPath())) {
+        fs.mkdirSync(DialogFlowUtil.getIntentsFolderPath());
       }
-    };
+      if (!fs.existsSync(DialogFlowUtil.getEntitiesFolderPath())) {
+        fs.mkdirSync(DialogFlowUtil.getEntitiesFolderPath());
+      }
 
-    if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
-      model = _.mergeWith(
-        model,
-        project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
-        concatArrays,
-      );
-    }
-    if (
-      project.jovoConfigReader!.getConfigParameter(
-        `googleAction.dialogflow.languageModel.${locale}`,
-        stage,
-      )
-    ) {
-      model = _.mergeWith(
-        model,
+      let outputLocale = locale.toLowerCase();
+
+      if (['pt-br', 'zh-cn', 'zh-hk', 'zh-tw'].indexOf(outputLocale) === -1) {
+        const primLanguage = project.getLocales().filter((lang: string) => {
+          return locale.substr(0, 2) === lang.substr(0, 2);
+        });
+        if (primLanguage.length === 1) {
+          outputLocale = locale.substr(0, 2);
+        }
+      }
+
+      const concatArrays = function customizer(
+        objValue: any[], // tslint:disable-line:no-any
+        srcValue: any, // tslint:disable-line:no-any
+      ) {
+        // tslint:disable-line
+        if (_.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+      };
+
+      if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
+        model = _.mergeWith(
+          model,
+          project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
+          concatArrays,
+        );
+      }
+      if (
         project.jovoConfigReader!.getConfigParameter(
           `googleAction.dialogflow.languageModel.${locale}`,
           stage,
-        ),
-        concatArrays,
-      );
-    }
+        )
+      ) {
+        model = _.mergeWith(
+          model,
+          project.jovoConfigReader!.getConfigParameter(
+            `googleAction.dialogflow.languageModel.${locale}`,
+            stage,
+          ),
+          concatArrays,
+        );
+      }
 
-    try {
       const jovoModel = new JovoModelDialogflow(model, outputLocale);
       const alexaModelFiles = jovoModel.exportNative();
 
@@ -587,6 +592,10 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
 
       return Promise.resolve();
     } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+
       throw new JovoCliError(err.message, 'jovo-cli-platform-google');
     }
   }

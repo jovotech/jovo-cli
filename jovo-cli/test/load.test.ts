@@ -23,7 +23,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-fail';
 
     const parameters = [
@@ -44,11 +44,11 @@ describe('load', () => {
       ['jovo-component-email'],
       projectFolder,
       '',
-      "Error: The component 'jovo-component-email' does not exist.",
+      "The component 'jovo-component-email' does not exist.",
     );
 
     expect(
-      res.indexOf("Error: The component 'jovo-component-email' does not exist.") > -1,
+      res.indexOf("The component 'jovo-component-email' does not exist.") > -1,
     ).toBeTruthy();
   }, 200000);
 
@@ -57,7 +57,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-ts-ts';
 
     const parameters = [
@@ -113,7 +113,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-js-ts';
 
     const parameters = [
@@ -180,7 +180,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-ts-js';
 
     const parameters = [
@@ -227,7 +227,7 @@ describe('load', () => {
       console.log('Skipping because no ask profile found');
       return;
     }
-    
+
     const projectName = 'jovo-cli-unit-test-load-js-js';
 
     const parameters = [

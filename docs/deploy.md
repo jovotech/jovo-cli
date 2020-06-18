@@ -1,5 +1,7 @@
 # jovo deploy
 
+> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/deploy
+
 Learn how to deploy your Alexa Skills and Google Actions with the `jovo deploy` CLI command.
 
 * [Introduction](#introduction)
