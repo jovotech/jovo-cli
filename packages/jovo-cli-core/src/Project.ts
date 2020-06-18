@@ -1043,11 +1043,16 @@ export class Project {
     let model: JovoModelData;
     try {
       model = this.getModel(locale);
-    } catch (error) {
-      if (error.code === 'MODULE_NOT_FOUND') {
+    } catch (err) {
+      if(err instanceof JovoCliError) {
+        throw err;
+      }
+
+      if (err.code === 'MODULE_NOT_FOUND') {
         throw new JovoCliError(`Could not find model file for locale "${locale}"!`, 'jovo-cli');
       }
-      throw error;
+
+      throw new JovoCliError(err.message, 'jovo-cli');
     }
 
     const valid = tv4.validate(model, validator);

@@ -1284,6 +1284,22 @@ Endpoint: ${skillInfo.endpoint}`;
       _.merge(skillJson.manifest, config.alexaSkill!.manifest);
     }
 
+    // Set skill event endpoint.
+    let skillEventsEndpoint = _.get(config, 'alexaSkill.manifest.events.endpoint.uri');
+    if (skillEventsEndpoint) {
+      skillEventsEndpoint = project.getEndpointFromConfig(skillEventsEndpoint);
+      if (_.startsWith(skillEventsEndpoint, 'arn')) {
+        _.set(skillJson, 'manifest.events.endpoint', {
+          uri: skillEventsEndpoint,
+        });
+      } else {
+        _.set(skillJson, 'manifest.events.endpoint', {
+          sslCertificateType: 'Wildcard',
+          uri: skillEventsEndpoint,
+        });
+      }
+    }
+
     fs.writeFileSync(this.getSkillJsonPath(), JSON.stringify(skillJson, null, '\t'));
 
     const skillId = project.jovoConfigReader!.getConfigParameter('alexaSkill.skillId', stage);
