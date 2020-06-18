@@ -44,11 +44,11 @@ describe('load', () => {
       ['jovo-component-email'],
       projectFolder,
       '',
-      "Error: The component 'jovo-component-email' does not exist.",
+      "The component 'jovo-component-email' does not exist.",
     );
 
     expect(
-      res.indexOf("Error: The component 'jovo-component-email' does not exist.") > -1,
+      res.indexOf("The component 'jovo-component-email' does not exist.") > -1,
     ).toBeTruthy();
   }, 200000);
 

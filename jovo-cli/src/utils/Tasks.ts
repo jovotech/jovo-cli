@@ -50,7 +50,8 @@ export function buildTask(ctx: JovoTaskContext) {
               `Expected location: ${err.path}`,
             );
           }
-          throw err;
+
+          throw new JovoCliError(err.message, 'jovo-cli');
         }
 
         // JSON validation.
@@ -65,10 +66,18 @@ export function buildTask(ctx: JovoTaskContext) {
           return;
         }
 
-        // Validate content of platform-specific properties.
-        for (const type of ctx.types) {
-          const platform = platforms.get(type);
-          project.validateModel(locale, platform.getModelValidator());
+        try {
+          // Validate content of platform-specific properties.
+          for (const type of ctx.types) {
+            const platform = platforms.get(type);
+            project.validateModel(locale, platform.getModelValidator());
+          }
+        } catch (err) {
+          if (err instanceof JovoCliError) {
+            throw err;
+          }
+
+          throw new JovoCliError(err.message, 'jovo-cli');
         }
       },
     });
