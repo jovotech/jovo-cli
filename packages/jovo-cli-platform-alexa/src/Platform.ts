@@ -443,7 +443,9 @@ export class JovoCliPlatformAlexa extends JovoCliPlatform {
 
     return [
       {
-        title: 'Getting Alexa Skill project for ASK profile ' + highlight(ctx.askProfile),
+        title: `Getting Alexa Skill project ${
+          ctx.askProfile ? `for ASK profile ${highlight(ctx.askProfile)}` : ''
+        }`,
         enabled: (ctx: JovoTaskContextAlexa) =>
           ctx.targets!.includes(TARGET_ALL) || ctx.targets!.includes(TARGET_INFO),
         task: async (ctx: JovoTaskContextAlexa, task) => {
@@ -639,7 +641,9 @@ Endpoint: ${skillInfo.endpoint}`;
       task: (ctx: JovoTaskContextAlexa, task: ListrTaskWrapper) => {
         const deployTasks: ListrTask[] = [
           {
-            title: `Creating Alexa Skill project for ASK profile ${highlight(ctx.askProfile)}`, // eslint-disable-line
+            title: `Creating Alexa Skill project ${
+              ctx.askProfile ? `for ASK profile ${highlight(ctx.askProfile)}` : ''
+            }`,
             enabled: (ctx: JovoTaskContextAlexa) => {
               return (
                 !ctx.skillId &&
@@ -681,7 +685,9 @@ Endpoint: ${skillInfo.endpoint}`;
             },
           },
           {
-            title: 'Updating Alexa Skill project for ASK profile ' + ctx.askProfile,
+            title: `Updating Alexa Skill project ${
+              ctx.askProfile ? `for ASK profile ${highlight(ctx.askProfile)}` : ''
+            }`,
             enabled: (ctx: JovoTaskContextAlexa) =>
               !!ctx.skillId &&
               !ctx.newSkill &&
