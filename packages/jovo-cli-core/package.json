@@ -1,6 +1,6 @@
 {
     "name": "jovo-cli-core",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "description": "Jovo CLI core components",
     "main": "dist/src/index",
     "types": "dist/src/index.d.ts",
