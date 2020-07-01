@@ -64,7 +64,7 @@ describe('deploy', () => {
     }
 
     expect(skillId.length > 0).toBe(true);
-    await deleteSkill(skillId);
+    await deleteSkill(askVersion, process.env.ASK_PROFILE, skillId);
   }, 200000);
 
   it('jovo new <project> --build\n      jovo deploy --target zip', async () => {
@@ -135,19 +135,23 @@ describe('deploy', () => {
  * @param {string} skillId
  * @param {function} callback
  */
-async function deleteSkill(skillId: string) {
+async function deleteSkill(askVersion: string, askProfile: string, skillId: string) {
   return new Promise((resolve, reject) => {
-    exec('ask api delete-skill --skill-id ' + skillId, {}, (error, stdout, stderr) => {
+    const cmd =
+      `ask ${askVersion === '2' ? 'smapi' : 'api'} delete-skill ` +
+      `--skill-id ${skillId} ` +
+      `--profile ${askProfile}`;
+
+    exec(cmd, {}, (error, stdout, stderr) => {
       if (error) {
-        console.log(error);
-        if (stderr) {
-          console.log(stderr);
-        }
         reject(error);
       }
-      if (stdout.indexOf('Skill deleted successfully.') > -1) {
-        resolve();
+
+      if (stderr) {
+        reject(stderr);
       }
+
+      resolve();
     });
   });
 }
