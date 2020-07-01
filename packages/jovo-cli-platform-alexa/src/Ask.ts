@@ -97,17 +97,17 @@ export function prepareSkillList(askSkill: AskSkillList) {
 
 /**
  * Creates skill in ASK
- * @param {*} config
+ * @param {*} ctx
  * @param {string} skillJsonPath
  * @return {Promise<any>}
  */
 export function askApiCreateSkill(
-  config: JovoTaskContextAlexa,
+  ctx: JovoTaskContextAlexa,
   skillJsonPath: string,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api create-skill -f "' + skillJsonPath + '" --profile ' + config.askProfile,
+      `ask api create-skill -f "${skillJsonPath}" ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -125,19 +125,22 @@ export function askApiCreateSkill(
 
 /**
  * Returns list of skills that are owned by the given profile
- * @param {*} config
+ * @param {*} ctx
  * @return {Promise<any>}
  */
-export function askApiListSkills(config: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
+export function askApiListSkills(ctx: JovoTaskContextAlexa): Promise<inquirer.ChoiceType[]> {
   const returnPromise = new Promise((resolve, reject) => {
-    exec('ask api list-skills --profile ' + config.askProfile, {}, (error, stdout, stderr) => {
-      if (error) {
-        if (stderr) {
-          return reject(getAskErrorV1('askApiListSkills', stderr));
+    exec(
+      `ask api list-skills ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          if (stderr) {
+            return reject(getAskErrorV1('askApiListSkills', stderr));
+          }
         }
-      }
-      resolve(JSON.parse(stdout));
-    });
+        resolve(JSON.parse(stdout));
+      },
+    );
   });
 
   return returnPromise.then((askSkill) => {
@@ -147,27 +150,21 @@ export function askApiListSkills(config: JovoTaskContextAlexa): Promise<inquirer
 
 /**
  * Updates model of skill for the given locale
- * @param {*} config
+ * @param {*} ctx
  * @param {*} modelPath
  * @param {string} locale
  * @return {Promise<any>}
  */
 export function askApiUpdateModel(
-  config: JovoTaskContextAlexa,
+  ctx: JovoTaskContextAlexa,
   modelPath: string,
   locale: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api update-model -s ' +
-        config.skillId +
-        ' -f "' +
-        modelPath +
-        '" -l ' +
-        locale +
-        ' --profile ' +
-        config.askProfile,
-      {},
+      `ask api update-model -s ${ctx.skillId} -f ${modelPath} -l ${locale} ${
+        ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+      }`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -182,23 +179,16 @@ export function askApiUpdateModel(
 
 /**
  * Updates skill information
- * @param {*} config
+ * @param {*} ctx
  * @param {string} skillJsonPath
  * @return {Promise<any>}
  */
-export function askApiUpdateSkill(
-  config: JovoTaskContextAlexa,
-  skillJsonPath: string,
-): Promise<void> {
+export function askApiUpdateSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api update-skill -s ' +
-        config.skillId +
-        ' -f "' +
-        skillJsonPath +
-        '" --profile ' +
-        config.askProfile,
-      {},
+      `ask api update-skill -s ${ctx.skillId} -f ${skillJsonPath} ${
+        ctx.askProfile ? `-p ${ctx.askProfile}` : ''
+      }`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -213,43 +203,39 @@ export function askApiUpdateSkill(
 
 /**
  * Gets build status of model
- * @param {*} config
+ * @param {*} ctx
  * @return {Promise<any>}
  */
-export function askApiGetSkillStatus(config: JovoTaskContextAlexa): Promise<object> {
+export function askApiGetSkillStatus(ctx: JovoTaskContextAlexa): Promise<object> {
   return new Promise((resolve, reject) => {
-    const command =
-      'ask api get-skill-status -s ' + config.skillId + ' --profile ' + config.askProfile;
-    exec(command, {}, (error, stdout, stderr) => {
-      if (error) {
-        if (stderr) {
-          return reject(getAskErrorV1('askApiGetSkillStatus', stderr));
+    exec(
+      `ask api get-skill-status -s ${ctx.skillId} ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          if (stderr) {
+            return reject(getAskErrorV1('askApiGetSkillStatus', stderr));
+          }
         }
-      }
-      try {
-        resolve(JSON.parse(stdout));
-      } catch (error) {
-        reject(error);
-      }
-    });
+        try {
+          resolve(JSON.parse(stdout));
+        } catch (error) {
+          reject(error);
+        }
+      },
+    );
   });
 }
 
 /**
  * Saves skill information to json file
- * @param {*} config
+ * @param {*} ctx
  * @param {string} skillJsonPath
  * @return {Promise<any>}
  */
-export function askApiGetSkill(config: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
+export function askApiGetSkill(ctx: JovoTaskContextAlexa, skillJsonPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api get-skill -s ' +
-        config.skillId +
-        ' > "' +
-        skillJsonPath +
-        '" --profile ' +
-        config.askProfile,
+      `ask api get-skill -s ${ctx.skillId} > "${skillJsonPath}" ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -264,27 +250,19 @@ export function askApiGetSkill(config: JovoTaskContextAlexa, skillJsonPath: stri
 
 /**
  * Saves model to file
- * @param {*} config
+ * @param {*} ctx
  * @param {string} skillJsonPath
  * @param {string} locale
  * @return {Promise<any>}
  */
 export function askApiGetModel(
-  config: JovoTaskContextAlexa,
+  ctx: JovoTaskContextAlexa,
   skillJsonPath: string,
   locale: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api get-model -s ' +
-        config.skillId +
-        ' -l ' +
-        locale +
-        ' > "' +
-        skillJsonPath +
-        '" --profile ' +
-        config.askProfile,
-      {},
+      `ask api get-model -s ${ctx.skillId} -l ${locale} > "${skillJsonPath}" ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -299,14 +277,13 @@ export function askApiGetModel(
 
 /**
  * Saves model to file
- * @param {*} config
+ * @param {*} ctx
  * @return {Promise<any>}
  */
-export function askApiEnableSkill(config: JovoTaskContextAlexa): Promise<void> {
+export function askApiEnableSkill(ctx: JovoTaskContextAlexa): Promise<void> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api enable-skill -s ' + config.skillId + ' --profile ' + config.askProfile,
-      {},
+      `ask api enable-skill -s ${ctx.skillId} ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
       (error, stdout, stderr) => {
         if (error) {
           if (stderr) {
@@ -321,13 +298,13 @@ export function askApiEnableSkill(config: JovoTaskContextAlexa): Promise<void> {
 
 /**
  * Saves account linking information to file
- * @param {*} config
+ * @param {*} ctx
  * @return {Promise<any>}
  */
-export function askApiGetAccountLinking(config: JovoTaskContextAlexa): Promise<string> {
+export function askApiGetAccountLinking(ctx: JovoTaskContextAlexa): Promise<string> {
   return new Promise((resolve, reject) => {
     exec(
-      'ask api get-account-linking -s ' + config.skillId + ' --profile ' + config.askProfile,
+      `ask api get-account-linking -s ${ctx.skillId} ${ctx.askProfile ? `-p ${ctx.askProfile}` : ''}`,
       {},
       (error, stdout, stderr) => {
         if (error) {

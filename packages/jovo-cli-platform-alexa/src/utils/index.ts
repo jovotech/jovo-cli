@@ -9,7 +9,7 @@ export function execAsync(cmd: string, options: ExecOptions = {}): Promise<strin
       if (err) {
         return rej(err);
       }
-      if (stderr) {
+      if (stderr && !stdout) {
         return rej(stderr);
       }
 

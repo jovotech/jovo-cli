@@ -563,7 +563,7 @@ Endpoint: ${skillInfo.endpoint}`;
               // Apply the changes to the current model-file if one exists
               let modelFile;
               try {
-                modelFile = await project.getModel(locale);
+                modelFile = project.getModel(locale);
               } catch (e) {
                 // Currently no model file exists so there is
                 // nothing to merge it with
@@ -825,6 +825,14 @@ Endpoint: ${skillInfo.endpoint}`;
    * @memberof JovoCliPlatformAlexa
    */
   getLocales(locale?: string | string[]): string[] {
+    //! Since the locales will be fetched from inside the /platforms/alexaSkill/ folder,
+    //! we need to check for the ask-cli version to read the correct model files.
+    try {
+      this.askVersion = ask.checkAsk();
+    } catch (err) {
+      this.askVersion = '2';
+    }
+
     try {
       if (locale) {
         if (Array.isArray(locale)) {
