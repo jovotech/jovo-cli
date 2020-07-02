@@ -45,9 +45,9 @@ export class Update extends Command {
 
           if (pkg.local !== pkg.npm) {
             outOfDatePackages.push({
-				dev: pkg.dev,
-				name
-			});
+              dev: pkg.dev,
+              name,
+            });
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -73,25 +73,25 @@ export class Update extends Command {
       tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
+          const prodPkgs = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => !pkg.dev)
+            .map((pkg: OutdatedPackages) => pkg.name);
+          const devPkgs = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => pkg.dev)
+            .map((pkg: OutdatedPackages) => pkg.name);
 
-        	const prodPkgs = outOfDatePackages
-				.filter((pkg: OutdatedPackages) => !pkg.dev)
-				.map((pkg:OutdatedPackages) => pkg.name);
-			const devPkgs = outOfDatePackages
-				.filter((pkg: OutdatedPackages) => pkg.dev)
-				.map((pkg:OutdatedPackages) => pkg.name);
+          const updateCommands: string[] = [];
 
-			let updateCommandProd = '';
-			let updateCommandDev = '';
+          if (prodPkgs.length > 0) {
+            updateCommands.push(`npm install ${prodPkgs.join(' ')} --loglevel=error`);
+          }
 
-			if (prodPkgs.length > 0) {
-				updateCommandProd = `npm install ${prodPkgs.join(' ')} --loglevel=error`;
-			}
+          if (devPkgs.length > 0) {
+            updateCommands.push(`npm install ${devPkgs.join(' ')} --save-dev --loglevel=error`);
+          }
 
-			if (devPkgs.length > 0) {
-				updateCommandDev = `npm install ${devPkgs.join(' ')} --save-dev --loglevel=error`;
-			}
-          const updateCommand = `${updateCommandProd} && ${updateCommandDev}`;
+          const updateCommand = updateCommands.join('&&');
+
           try {
             const { stdout, stderr } = await execAsync(updateCommand, {
               cwd: project.getProjectPath(),

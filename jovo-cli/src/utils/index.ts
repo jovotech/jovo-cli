@@ -129,21 +129,18 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
   const packages: PackageVersions = {};
   const versionNumberRegex = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 
+  for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
+    if (packageRegex && !dependencyKey.match(packageRegex)) {
+      continue;
+    }
 
-	for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
-		if (packageRegex && !dependencyKey.match(packageRegex)) {
-			continue;
-		}
-
-		if ((dependency as string).match(versionNumberRegex)) {
-			packages[dependencyKey] = {
-				dev: true,
-				version: dependency as string
-			};
-		}
-
-	}
-
+    if ((dependency as string).match(versionNumberRegex)) {
+      packages[dependencyKey] = {
+        dev: true,
+        version: (dependency as string).replace('^', ''),
+      };
+    }
+  }
 
   for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies)) {
     if (packageRegex && !dependencyKey.match(packageRegex)) {
@@ -153,9 +150,9 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     if (typeof dependency === 'string') {
       if (dependency.match(versionNumberRegex)) {
         packages[dependencyKey] = {
-			dev: false,
-			version: dependency,
-		};
+          dev: false,
+          version: dependency.replace('^', ''),
+        };
       }
     }
 
@@ -164,9 +161,9 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
       // @ts-ignore
       if (dependency.version.match(versionNumberRegex)) {
         packages[dependencyKey] = {
-			dev: !!(dependency as any).dev,
-			version: (dependency as any).version,
-		};
+          dev: !!(dependency as any).dev,
+          version: (dependency as any).version.replace('^', ''),
+        };
       }
     }
   }
@@ -195,7 +192,7 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   for (const packageName of Object.keys(packages)) {
     returnPackages[packageName] = {
       local: packages[packageName].version,
-		dev: packages[packageName].dev,
+      dev: packages[packageName].dev,
       npm: await queryPromises[packageName],
     };
   }
