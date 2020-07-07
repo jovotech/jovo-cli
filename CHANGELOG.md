@@ -1,5 +1,19 @@
 # Jovo CLI Changelog
 
+
+## 3.0.16 (2020-07-07)
+
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-alexa` [#146](https://github.com/jovotech/jovo-cli/pull/146) Resolve ask-profile for ask-cli@v1, Fix problem with ask-cli@v2…  ([@rubenaeg](https://github.com/rubenaeg))
+* `jovo-cli` [#145](https://github.com/jovotech/jovo-cli/pull/145) Fix jovo update (devDependecies) ([@aswetlow](https://github.com/aswetlow))
+
+
+#### Committers: 2
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+- Alex Swetlow ([@aswetlow](https://github.com/aswetlow))
+
+
 ## 3.0.15 (2020-06-19)
 
 #### :nail_care: Enhancements
