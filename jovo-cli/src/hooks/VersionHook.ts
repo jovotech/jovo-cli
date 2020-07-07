@@ -12,7 +12,7 @@ export default async function hook() {
       if (Object.keys(packages).length) {
         console.log('\nJovo packages of current project:');
         for (const packageName of Object.keys(packages)) {
-          console.log(`  ${packageName}: ${packages[packageName]}`);
+          console.log(`  ${packageName}: ${packages[packageName].version}`);
         }
       }
     }
