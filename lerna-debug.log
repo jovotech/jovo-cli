@@ -1,0 +1,15 @@
+0 silly argv {
+0 silly argv   _: [ 'add' ],
+0 silly argv   dev: true,
+0 silly argv   D: true,
+0 silly argv   scope: 'jovo-cli-platform-google-ca',
+0 silly argv   globs: [],
+0 silly argv   lernaVersion: '3.20.2',
+0 silly argv   '$0': '/usr/local/bin/lerna',
+0 silly argv   pkg: '@types/json-to-pretty-yaml'
+0 silly argv }
+1 notice cli v3.20.2
+2 verbose rootPath /home/ruben/Projects/Jovo/jovo-cli
+3 info versioning independent
+4 error Error: 404 Not Found - GET https://registry.npmjs.org/@types%2fjson-to-pretty-yaml - Not found
+4 error     at /home/ruben/Projects/Jovo/jovo-cli/node_modules/@evocateur/npm-registry-fetch/check-response.js:104:15
