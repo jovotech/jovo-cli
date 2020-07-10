@@ -15,7 +15,8 @@ import {
   OutputFlags,
   InputFlags,
 } from 'jovo-cli-core';
-import { JovoModelAlexa } from 'jovo-model-alexa';
+import { JovoModelAlexa, AlexaModel } from 'jovo-model-alexa';
+import { JovoModelData } from 'jovo-model';
 
 const project = getProject();
 
@@ -79,7 +80,7 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
                   variables: {
                     platform: '226ed860-c4b0-4199-99b9-f363dbb0289e',
                     name: this.getName(),
-                    body: model,
+                    body: JSON.stringify(model),
                   },
                 });
 
@@ -100,13 +101,13 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
 
                 try {
                   const res = await axios(config);
-                  if(res.data?.errors) {
-
+                  if (res.data?.errors) {
+                    const err = res.data.errors[0];
+                    throw new JovoCliError(
+                      `Spokestack returned an error: ${err.message}`,
+                      'jovo-cli-platform-spokestack',
+                    );
                   }
-                  console.log(res);
-                  console.log(res.data.errors);
-                  console.log(res.data.errors[0].locations);
-                  process.exit();
                 } catch (err) {
                   if (err.isAxiosError) {
                     throw new JovoCliError(
@@ -131,23 +132,11 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
 
   buildLanguageModelSpokestack(locale: string, stage: string) {
     try {
-      let model = project.getModel(locale);
-
-      if (project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage)) {
-        model = _.mergeWith(
-          model,
-          project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
-          (objValue: any[], srcValue: any) => {
-            // Since _.merge simply overwrites the original array, concatenate them instead.
-            if (_.isArray(objValue)) {
-              return objValue.concat(srcValue);
-            }
-          },
-        );
+      if (!existsSync(this.getModelsPath())) {
+        mkdirSync(this.getModelsPath(), { recursive: true });
       }
 
-      // ToDo: Get model from project.spokestack property.
-
+      const model = this.getJovoModel(locale, stage);
       const jovoModel = new JovoModelAlexa(model, locale);
       const alexaModelFiles = jovoModel.exportNative();
 
@@ -177,10 +166,6 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
         locales.push(locale);
       }
 
-      if (!existsSync(this.getModelsPath())) {
-        mkdirSync(this.getModelsPath(), { recursive: true });
-      }
-
       for (const targetLocale of locales) {
         writeFileSync(
           this.getModelPath(targetLocale),
@@ -194,6 +179,43 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
 
       throw new JovoCliError(err.message, 'jovo-cli-platform-spokestack');
     }
+  }
+
+  getJovoModel(locale: string, stage?: string): JovoModelData {
+    let model = project.getModel(locale);
+
+    const concatArraysCustomizer = (objValue: any, srcValue: any) => {
+      if (_.isArray(objValue)) {
+        // Since _.merge simply overwrites the original array, concatenate them instead.
+        return objValue.concat(srcValue);
+      }
+    };
+
+    if (project.jovoConfigReader?.getConfigParameter(`languageModel.${locale}`, stage)) {
+      model = _.mergeWith(
+        model,
+        project.jovoConfigReader!.getConfigParameter(`languageModel.${locale}`, stage),
+        concatArraysCustomizer,
+      );
+    }
+
+    if (
+      project.jovoConfigReader!.getConfigParameter(
+        `spokestack.conversational.languageModel.${locale}`,
+        stage,
+      )
+    ) {
+      model = _.mergeWith(
+        model,
+        project.jovoConfigReader!.getConfigParameter(
+          `spokestack.conversational.languageModel.${locale}`,
+          stage,
+        ),
+        concatArraysCustomizer,
+      );
+    }
+
+    return model;
   }
 
   getSubLocales(locale: string, stage?: string): string[] {
@@ -218,7 +240,7 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
     return pathJoin(this.getModelsPath(), `${locale}.json`);
   }
 
-  getModel(locale: string): object {
+  getModel(locale: string): AlexaModel {
     const modelBuffer = readFileSync(this.getModelPath(locale));
     return JSON.parse(modelBuffer.toString());
   }
