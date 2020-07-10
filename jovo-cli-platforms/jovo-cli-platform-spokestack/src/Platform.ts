@@ -99,7 +99,14 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
                 };
 
                 try {
-                  await axios(config);
+                  const res = await axios(config);
+                  if(res.data?.errors) {
+
+                  }
+                  console.log(res);
+                  console.log(res.data.errors);
+                  console.log(res.data.errors[0].locations);
+                  process.exit();
                 } catch (err) {
                   if (err.isAxiosError) {
                     throw new JovoCliError(

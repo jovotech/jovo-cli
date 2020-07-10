@@ -1,7 +1,9 @@
 {
     "packages": [
         "jovo-cli",
-        "packages/*"
+        "jovo-cli-core",
+        "jovo-cli-integrations/*",
+        "jovo-cli-platforms/*"
     ],
     "version": "independent"
 }

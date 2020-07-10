@@ -1,1 +1,0 @@
-# jovo-cli-deploy-lambda
