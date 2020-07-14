@@ -222,6 +222,7 @@ export class Run extends Command {
     if (flags.port) {
       parameters.push('--port', flags.port);
     }
+	  parameters.push('--color');
 
     // Pass all parameters through to project process that gets set after "--"
     // Example: "jovo run -- --log-level 5"
