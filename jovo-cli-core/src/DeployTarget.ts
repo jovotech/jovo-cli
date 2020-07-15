@@ -1,4 +1,4 @@
-import { JovoTaskContext, Project } from './';
+import { JovoTaskContext, Project } from '.';
 import { ListrTask } from 'listr';
 
 export class JovoCliDeploy {

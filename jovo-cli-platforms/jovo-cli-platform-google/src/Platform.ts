@@ -25,7 +25,7 @@ import {
 } from 'jovo-cli-core';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 import { JovoModelDialogflow } from 'jovo-model-dialogflow';
-import { AppFileDialogFlow, JovoTaskContextGoogle } from './';
+import { AppFileDialogFlow, JovoTaskContextGoogle } from '.';
 
 import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
