@@ -109,7 +109,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     packageFileName = 'package.json';
   } else {
     throw new JovoCliError(
-      "Could not find an NPM dependency file, such as your project's package.json.",
+      'Could not find an NPM dependency file, such as your project\'s package.json.',
       'jovo-cli',
     );
   }
@@ -129,6 +129,19 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
   const packages: PackageVersions = {};
   const versionNumberRegex = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 
+  for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
+    if (packageRegex && !dependencyKey.match(packageRegex)) {
+      continue;
+    }
+
+    if ((dependency as string).match(versionNumberRegex)) {
+      packages[dependencyKey] = {
+        dev: true,
+        version: (dependency as string).replace('^', ''),
+      };
+    }
+  }
+
   for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies)) {
     if (packageRegex && !dependencyKey.match(packageRegex)) {
       continue;
@@ -136,7 +149,10 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
 
     if (typeof dependency === 'string') {
       if (dependency.match(versionNumberRegex)) {
-        packages[dependencyKey] = dependency;
+        packages[dependencyKey] = {
+          dev: false,
+          version: dependency.replace('^', ''),
+        };
       }
     }
 
@@ -144,8 +160,10 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     if (typeof dependency === 'object') {
       // @ts-ignore
       if (dependency.version.match(versionNumberRegex)) {
-        // @ts-ignore
-        packages[dependencyKey] = dependency.version;
+        packages[dependencyKey] = {
+          dev: !!(dependency as any).dev,
+          version: (dependency as any).version.replace('^', ''),
+        };
       }
     }
   }
@@ -161,7 +179,6 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
  */
 export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<PackageVersionsNpm> {
   const packages = await getPackages(packageRegex);
-
   // Start directly with querying the data in parallel
   const queryPromises: {
     [key: string]: Promise<string>;
@@ -174,7 +191,8 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   const returnPackages: PackageVersionsNpm = {};
   for (const packageName of Object.keys(packages)) {
     returnPackages[packageName] = {
-      local: packages[packageName],
+      local: packages[packageName].version,
+      dev: packages[packageName].dev,
       npm: await queryPromises[packageName],
     };
   }

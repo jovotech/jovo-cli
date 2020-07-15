@@ -27,7 +27,7 @@ import * as Utils from './Utils';
 
 import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
-import { AppFile, JovoCliPlatform, JovoTaskContext, JovoUserConfig, PackageVersion } from './';
+import { AppFile, JovoCliPlatform, JovoTaskContext, JovoUserConfig, PackageVersion } from '.';
 
 import {
   DEFAULT_LOCALE,

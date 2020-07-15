@@ -7,7 +7,7 @@ import Listr = require('listr');
 import { join as pathJoin } from 'path';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
-import { getPackageVersionsNpm, JovoCliRenderer } from '../utils';
+import { getPackageVersionsNpm, JovoCliRenderer, OutdatedPackages } from '../utils';
 import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';
 
 const execAsync = promisify(exec);
@@ -36,14 +36,18 @@ export class Update extends Command {
 
       // ToDo: Outsource to utils.
       const packageVersions = await getPackageVersionsNpm(/^jovo\-/);
-      const outOfDatePackages: string[] = [];
+      const outOfDatePackages: OutdatedPackages[] = [];
 
       if (Object.keys(packageVersions).length > 0) {
         this.log('Jovo packages of current project:');
         for (const [name, pkg] of Object.entries(packageVersions)) {
-          let text = `  ${name}: ${pkg.local}`;
+          let text = `  ${name} ${pkg.dev ? '(dev)' : ''}: ${pkg.local}`;
+
           if (pkg.local !== pkg.npm) {
-            outOfDatePackages.push(name);
+            outOfDatePackages.push({
+              dev: pkg.dev,
+              name,
+            });
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -63,13 +67,30 @@ export class Update extends Command {
       let npmUpdateOutput = '';
 
       for (let i = 0; i < outOfDatePackages.length; i++) {
-        outOfDatePackages[i] = outOfDatePackages[i] + '@latest';
+        outOfDatePackages[i].name = outOfDatePackages[i].name + '@latest';
       }
 
       tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
-          const updateCommand = `npm install ${outOfDatePackages.join(' ')} --loglevel=error`;
+          const prodPkgs = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => !pkg.dev)
+            .map((pkg: OutdatedPackages) => pkg.name);
+          const devPkgs = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => pkg.dev)
+            .map((pkg: OutdatedPackages) => pkg.name);
+
+          const updateCommands: string[] = [];
+
+          if (prodPkgs.length > 0) {
+            updateCommands.push(`npm install ${prodPkgs.join(' ')} --loglevel=error`);
+          }
+
+          if (devPkgs.length > 0) {
+            updateCommands.push(`npm install ${devPkgs.join(' ')} --save-dev --loglevel=error`);
+          }
+
+          const updateCommand = updateCommands.join('&&');
 
           try {
             const { stdout, stderr } = await execAsync(updateCommand, {

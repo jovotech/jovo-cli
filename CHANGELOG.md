@@ -1,5 +1,21 @@
 # Jovo CLI Changelog
 
+## 3.0.15 (2020-06-19)
+
+#### :nail_care: Enhancements
+* `jovo-cli-platform-alexa` [#144](https://github.com/jovotech/jovo-cli/pull/144) Resolve JOVO_WEBHOOK_URL for Skill Events  ([@rubenaeg](https://github.com/rubenaeg))
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-alexa` [#145](https://github.com/jovotech/jovo-cli/pull/145) Fix logs for undefined ask profile ([@rubenaeg](https://github.com/rubenaeg))
+* `jovo-cli-platform-alexa` [#143](https://github.com/jovotech/jovo-cli/pull/143) Alexa: allows use of env. variables instead of cli_config for ask-cli ([@KaanKC](https://github.com/KaanKC))
+* `jovo-cli` Fix webhook --timeout type casting
+
+
+#### Committers: 2
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+- Kaan Kilic ([@KaanKC](https://github.com/KaanKC))
+- Alex Swetlow ([@aswetlow](https://github.com/aswetlow))
+
 
 ## 3.0.13 (2020-05-26)
 
