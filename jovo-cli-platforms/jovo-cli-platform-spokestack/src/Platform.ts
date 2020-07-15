@@ -26,15 +26,21 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
   getBuildTasks(ctx: JovoTaskContext): ListrTask[] {
     const tasks: ListrTask[] = [];
 
+    const title = `${this.hasPlatform() ? 'Updating' : 'Creating'} Spokestack project files`;
+
     tasks.push({
-      title: 'Building language model files...',
+      title,
       task: () => {
         const localeTasks: ListrTask[] = [];
 
         for (const locale of ctx.locales!) {
           localeTasks.push({
             title: locale,
-            task: async () => {
+            task: async (ctx, task) => {
+              if (locale.split('-')[0] !== 'en') {
+                return task.skip(`Locale ${locale} is currently not supported by Spokestack.`);
+              }
+
               this.buildLanguageModelSpokestack(locale, ctx.stage!);
               await Utils.wait(500);
             },
@@ -70,6 +76,10 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
               task: async () => {
                 const model = this.getModel(locale);
 
+                // If project has multiple locales, trail the app name with the respective locale.
+                const hasMultipleLocales = ctx.locales!.length > 1 || deployLocales.length > 1;
+                const name = `${this.getName()}${hasMultipleLocales ? `_${locale}` : ''}`;
+
                 // Initiate deployment process.
                 const body = JSON.stringify({
                   query: `
@@ -79,7 +89,7 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
                   `,
                   variables: {
                     platform: '226ed860-c4b0-4199-99b9-f363dbb0289e',
-                    name: this.getName(),
+                    name,
                     body: JSON.stringify(model),
                   },
                 });
@@ -101,6 +111,7 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
 
                 try {
                   const res = await axios(config);
+
                   if (res.data?.errors) {
                     const err = res.data.errors[0];
                     throw new JovoCliError(
@@ -109,6 +120,10 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
                     );
                   }
                 } catch (err) {
+                  if (err instanceof JovoCliError) {
+                    throw err;
+                  }
+
                   if (err.isAxiosError) {
                     throw new JovoCliError(
                       `Spokestack returned an error with status code ${err.response.status}: ${err.response.statusText}`,
@@ -142,7 +157,7 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
 
       if (!alexaModelFiles || alexaModelFiles.length === 0) {
         throw new JovoCliError(
-          `Could not build Alexa files for locale "${locale}"!`,
+          `Could not build Spokestack files for locale "${locale}"!`,
           'jovo-cli-platform-spokestack',
         );
       }
@@ -246,15 +261,60 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
   }
 
   getKeyId(): string {
-    return project.jovoConfigReader!.getConfigParameter('spokestack.keyId') as string;
+    const keyId = project.jovoConfigReader!.getConfigParameter('spokestack.keyId') as string;
+
+    if (!keyId) {
+      throw new JovoCliError(
+        'You need to provide an identity key for your spokestack application.',
+        'jovo-cli-platform-spokestack',
+        'Please add the property "keyId" with your account\'s identity key to your project.js file.',
+      );
+    }
+
+    return keyId;
   }
 
   getKeySecret(): string {
-    return project.jovoConfigReader!.getConfigParameter('spokestack.keySecret') as string;
+    const keySecret = project.jovoConfigReader!.getConfigParameter(
+      'spokestack.keySecret',
+    ) as string;
+
+    if (!keySecret) {
+      throw new JovoCliError(
+        'You need to provide a secret key for your spokestack application.',
+        'jovo-cli-platform-spokestack',
+        'Please add the property "keySecret" with your account\'s secret key to your project.js file.',
+      );
+    }
+
+    return keySecret;
   }
 
   getName(): string {
-    return project.jovoConfigReader!.getConfigParameter('spokestack.name') as string;
+    const name = project.jovoConfigReader!.getConfigParameter('spokestack.name') as string;
+
+    if (!name) {
+      throw new JovoCliError(
+        'You need to provide an app name for your spokestack application.',
+        'jovo-cli-platform-spokestack',
+        'Please add the property "name" to your project.js file.',
+      );
+    }
+
+    return name;
+  }
+
+  /**
+   * Returns true if project has spokestack platforms folder.
+   *
+   * @returns {boolean}
+   */
+  hasPlatform(): boolean {
+    try {
+      return existsSync(this.getModelsPath());
+    } catch (err) {
+      return false;
+    }
   }
 
   getPlatformConfigIds(project: Project, options: OutputFlags): object {
@@ -272,6 +332,6 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
   }
 
   getModelValidator(): tv4.JsonSchema {
-    return {};
+    return JovoModelAlexa.getValidator();
   }
 }
