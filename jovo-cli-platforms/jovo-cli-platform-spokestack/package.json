@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli-platform-spokestack",
-  "version": "0.0.1",
+  "version": "3.0.1",
   "description": "Jovo CLI platform for Spokestack.",
   "main": "dist/src/index",
   "types": "dist/src/index.d.ts",
