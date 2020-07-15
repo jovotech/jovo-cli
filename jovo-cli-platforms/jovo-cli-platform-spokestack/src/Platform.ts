@@ -73,7 +73,11 @@ export class JovoCliPlatformSpokestack extends JovoCliPlatform {
           for (const locale of deployLocales) {
             localeTasks.push({
               title: locale,
-              task: async () => {
+              task: async (context, task) => {
+                if (locale.split('-')[0] !== 'en') {
+                  return task.skip(`Locale ${locale} is currently not supported by Spokestack.`);
+                }
+
                 const model = this.getModel(locale);
 
                 // If project has multiple locales, trail the app name with the respective locale.
