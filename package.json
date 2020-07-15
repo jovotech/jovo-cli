@@ -13,7 +13,8 @@
 		"rimraf": "lerna exec npm run rimraf",
 		"typedoc": "npm run lerna exec npm run typedoc",
 		"preparePublish": "npm run rimraf && npm run tsc && npm run tslint",
-		"publish": "lerna publish --no-push"
+		"publish": "lerna publish --no-push",
+		"devsetup": "npm run bootstrap && npm run tsc"
 	},
 	"devDependencies": {
 		"@types/es6-promise": "^3.3.0",

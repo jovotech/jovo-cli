@@ -1,4 +1,4 @@
-import { AppFile, JovoCliDeploy, JovoTaskContext, Project } from './';
+import { AppFile, JovoCliDeploy, JovoTaskContext, Project } from '.';
 import { ListrTask } from 'listr';
 import * as path from 'path';
 import * as inquirer from 'inquirer';

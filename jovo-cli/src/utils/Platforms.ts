@@ -8,9 +8,14 @@ import {
 } from 'jovo-cli-core';
 import { JovoCliPlatformAlexa } from 'jovo-cli-platform-alexa';
 import { JovoCliPlatformGoogle } from 'jovo-cli-platform-google';
+import { JovoCliPlatformSpokestack } from 'jovo-cli-platform-spokestack';
 
 // All platforms that should be available to be used
-const AVAILABLE_PLATFORMS = [JovoCliPlatformAlexa, JovoCliPlatformGoogle];
+const AVAILABLE_PLATFORMS = [
+  JovoCliPlatformAlexa,
+  JovoCliPlatformGoogle,
+  JovoCliPlatformSpokestack,
+];
 
 // Keeps the Platfrom singletons
 const instances: { [key: string]: JovoCliPlatform } = {};
