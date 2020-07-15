@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli",
-	"version": "3.0.15",
+	"version": "3.0.16",
 	"author": "jovotech",
 	"description": "jovo command line tool (beta)",
 	"main": "dist/src/index",
@@ -41,7 +41,7 @@
 		"inquirer": "^7.0.4",
 		"jovo-cli-core": "^3.0.4",
 		"jovo-cli-deploy-lambda": "^3.0.4",
-		"jovo-cli-platform-alexa": "^3.0.10",
+		"jovo-cli-platform-alexa": "^3.0.11",
 		"jovo-cli-platform-google": "^3.0.7",
 		"jovo-cli-platform-spokestack": "^0.0.1",
 		"jovo-model": "^0.1.3",
