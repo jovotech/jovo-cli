@@ -41,13 +41,19 @@ export class Update extends Command {
       if (Object.keys(packageVersions).length > 0) {
         this.log('Jovo packages of current project:');
         for (const [name, pkg] of Object.entries(packageVersions)) {
-          let text = `  ${name} ${pkg.dev ? '(dev)' : ''}: ${pkg.local}`;
-
           if (pkg.local !== pkg.npm) {
             outOfDatePackages.push({
               dev: pkg.dev,
+              inPackageJson: pkg.inPackageJson,
               name,
             });
+          }
+          if (!pkg.inPackageJson) {
+            continue;
+          }
+          let text = `  ${name} ${pkg.dev ? '(dev)' : ''}: ${pkg.local}`;
+
+          if (pkg.local !== pkg.npm) {
             text += chalk.grey(`  -> ${pkg.npm}`);
           }
           this.log(text);
@@ -59,7 +65,9 @@ export class Update extends Command {
         return;
       }
 
-      const { update } = await promptUpdateVersions(outOfDatePackages.length);
+      const { update } = await promptUpdateVersions(
+        outOfDatePackages.filter((pkg: OutdatedPackages) => pkg.inPackageJson).length,
+      );
       if (update !== ANSWER_UPDATE) {
         return;
       }
@@ -73,21 +81,41 @@ export class Update extends Command {
       tasks.add({
         title: 'Updating Jovo packages...',
         task: async () => {
-          const prodPkgs = outOfDatePackages
-            .filter((pkg: OutdatedPackages) => !pkg.dev)
+          const prodPkgsSave = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => !pkg.dev && pkg.inPackageJson)
             .map((pkg: OutdatedPackages) => pkg.name);
-          const devPkgs = outOfDatePackages
-            .filter((pkg: OutdatedPackages) => pkg.dev)
+
+          const prodPkgsNoSave = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => !pkg.dev && !pkg.inPackageJson)
+            .map((pkg: OutdatedPackages) => pkg.name);
+
+          const devPkgsSave = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => pkg.dev && pkg.inPackageJson)
+            .map((pkg: OutdatedPackages) => pkg.name);
+
+          const devPkgsNoSave = outOfDatePackages
+            .filter((pkg: OutdatedPackages) => !pkg.dev && !pkg.inPackageJson)
             .map((pkg: OutdatedPackages) => pkg.name);
 
           const updateCommands: string[] = [];
 
-          if (prodPkgs.length > 0) {
-            updateCommands.push(`npm install ${prodPkgs.join(' ')} --loglevel=error`);
+          if (prodPkgsSave.length > 0) {
+            updateCommands.push(`npm install ${prodPkgsSave.join(' ')} --loglevel=error`);
           }
 
-          if (devPkgs.length > 0) {
-            updateCommands.push(`npm install ${devPkgs.join(' ')} --save-dev --loglevel=error`);
+          if (prodPkgsSave.length > 0) {
+            updateCommands.push(
+              `npm install ${prodPkgsNoSave.join(' ')} --no-save --loglevel=error`,
+            );
+          }
+
+          if (devPkgsSave.length > 0) {
+            updateCommands.push(`npm install ${devPkgsSave.join(' ')} --save-dev --loglevel=error`);
+          }
+          if (devPkgsNoSave.length > 0) {
+            updateCommands.push(
+              `npm install ${devPkgsNoSave.join(' ')} --no-save --loglevel=error`,
+            );
           }
 
           const updateCommand = updateCommands.join('&&');

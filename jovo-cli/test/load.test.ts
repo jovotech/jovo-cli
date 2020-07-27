@@ -47,9 +47,7 @@ describe('load', () => {
       "The component 'jovo-component-email' does not exist.",
     );
 
-    expect(
-      res.indexOf("The component 'jovo-component-email' does not exist.") > -1,
-    ).toBeTruthy();
+    expect(res.indexOf("The component 'jovo-component-email' does not exist.") > -1).toBeTruthy();
   }, 200000);
 
   it('jovo new <project> --init alexaSkill --build\n\tjovo load jovo-component-email\n\t>> Typescript Project\n\t>> Typescript Component', async () => {

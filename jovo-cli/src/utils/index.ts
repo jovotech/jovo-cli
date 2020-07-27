@@ -109,7 +109,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     packageFileName = 'package.json';
   } else {
     throw new JovoCliError(
-      'Could not find an NPM dependency file, such as your project\'s package.json.',
+      "Could not find an NPM dependency file, such as your project's package.json.",
       'jovo-cli',
     );
   }
@@ -137,6 +137,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     if ((dependency as string).match(versionNumberRegex)) {
       packages[dependencyKey] = {
         dev: true,
+        inPackageJson: false,
         version: (dependency as string).replace('^', ''),
       };
     }
@@ -151,6 +152,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
       if (dependency.match(versionNumberRegex)) {
         packages[dependencyKey] = {
           dev: false,
+          inPackageJson: false,
           version: dependency.replace('^', ''),
         };
       }
@@ -162,9 +164,34 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
       if (dependency.version.match(versionNumberRegex)) {
         packages[dependencyKey] = {
           dev: !!(dependency as any).dev,
+          inPackageJson: false,
           version: (dependency as any).version.replace('^', ''),
         };
       }
+    }
+  }
+
+  if (existsSync(pathJoin(projectPath, 'package.json'))) {
+    try {
+      content = readFileSync(pathJoin(projectPath, 'package.json')).toString();
+      const packageJsonFileContent = JSON.parse(content);
+
+      Object.keys(packageJsonFileContent.dependencies || {}).forEach((key: string) => {
+        if (packages[key]) {
+          packages[key].inPackageJson = true;
+        }
+      });
+
+      Object.keys(packageJsonFileContent.devDependencies || {}).forEach((key: string) => {
+        if (packages[key]) {
+          packages[key].inPackageJson = true;
+        }
+      });
+    } catch (e) {
+      throw new JovoCliError(
+        `Something went wrong while reading your ${packageFileName} file.`,
+        'jovo-cli',
+      );
     }
   }
   return packages;
@@ -191,8 +218,9 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   const returnPackages: PackageVersionsNpm = {};
   for (const packageName of Object.keys(packages)) {
     returnPackages[packageName] = {
-      local: packages[packageName].version,
       dev: packages[packageName].dev,
+      inPackageJson: packages[packageName].inPackageJson,
+      local: packages[packageName].version,
       npm: await queryPromises[packageName],
     };
   }
