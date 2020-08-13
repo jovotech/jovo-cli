@@ -1,6 +1,6 @@
 {
 	"name": "jovo-cli-platform-alexa",
-	"version": "3.0.13",
+	"version": "3.0.14",
 	"description": "Alexa specific CLI code",
 	"main": "dist/src/index",
 	"types": "dist/src/index.d.ts",
@@ -43,7 +43,7 @@
 		"aws-sdk": "^2.344.0",
 		"boxen": "^4.2.0",
 		"chalk": "^2.4.1",
-		"jovo-cli-core": "^3.0.5",
+		"jovo-cli-core": "^3.0.6",
 		"jovo-model": "^3.0.0",
 		"jovo-model-alexa": "^3.0.0",
 		"jovo-webhook-connector": "^3.0.5",
