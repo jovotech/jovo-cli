@@ -33,6 +33,7 @@ const writeFile = promisify(fs.writeFile);
 const project: Project = require('jovo-cli-core').getProject();
 
 export class JovoCliPlatformGoogle extends JovoCliPlatform {
+  static NLU_KEY = 'dialogflow';
   static PLATFORM_KEY = 'googleAction';
   static ID_KEY = 'projectId';
 

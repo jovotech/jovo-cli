@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {
   AppFile,
   getProject,
@@ -9,12 +10,14 @@ import {
 import { JovoCliPlatformAlexa } from 'jovo-cli-platform-alexa';
 import { JovoCliPlatformGoogle } from 'jovo-cli-platform-google';
 import { JovoCliPlatformSpokestack } from 'jovo-cli-platform-spokestack';
+import { JovoCliPlatformGoogleCA } from 'jovo-cli-platform-google-ca';
 
 // All platforms that should be available to be used
 const AVAILABLE_PLATFORMS = [
   JovoCliPlatformAlexa,
   JovoCliPlatformGoogle,
   JovoCliPlatformSpokestack,
+  JovoCliPlatformGoogleCA,
 ];
 
 // Keeps the Platfrom singletons
@@ -28,9 +31,14 @@ const project = getProject();
  * @returns {string[]}
  */
 export function getAllAvailable() {
-  return AVAILABLE_PLATFORMS.map((platform) => platform.PLATFORM_KEY);
+  const platformKeys = AVAILABLE_PLATFORMS.map((platform) => platform.PLATFORM_KEY);
+  return _.uniq(platformKeys);
 }
 
+/**
+ * Creates an instance of the given platform on instances[] and returns it.
+ * @param platform - The platform id.
+ */
 export function get(platform: string): JovoCliPlatform {
   if (!instances.hasOwnProperty(platform)) {
     instances[platform] = createPlatformInstance(platform);
@@ -74,17 +82,26 @@ export function getAll(platform?: string, stage?: string): string[] {
 /**
  * Creates a new platform instance of the platform with the given name
  *
- * @param {string} name The name of the platform to create an instance of
+ * @param {string} platformKey The name of the platform to create an instance of
  * @returns {JovoCliPlatform}
  */
-function createPlatformInstance(name: string): JovoCliPlatform {
-  for (let i = 0; i < AVAILABLE_PLATFORMS.length; i++) {
-    if (AVAILABLE_PLATFORMS[i].PLATFORM_KEY === name) {
-      return new AVAILABLE_PLATFORMS[i]() as JovoCliPlatform;
-    }
+function createPlatformInstance(platformKey: string): JovoCliPlatform {
+  const config: AppFile = project.getConfigContent();
+  let nluKey = _.get(config, `${platformKey}.nlu`);
+  if (typeof nluKey === 'object') {
+    nluKey = nluKey.name;
   }
 
-  throw new JovoCliError(`The platform ${name} is not supported!`, 'jovo-cli');
+  const Platform =
+    AVAILABLE_PLATFORMS.find((el) => el.NLU_KEY === nluKey) ||
+    // If no platform with the nlu key is found, search for the default platform with no given nlu key.
+    AVAILABLE_PLATFORMS.find((el) => !el.NLU_KEY && el.PLATFORM_KEY === platformKey);
+
+  if (!Platform) {
+    throw new JovoCliError(`The platform ${platformKey} is not supported!`, 'jovo-cli');
+  }
+
+  return new Platform() as JovoCliPlatform;
 }
 
 /**

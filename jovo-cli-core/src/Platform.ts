@@ -9,6 +9,7 @@ const project = require('./Project').getProject();
 
 export class JovoCliPlatform {
   static PLATFORM_KEY = '';
+  static NLU_KEY = '';
   static ID_KEY = '';
 
   // START: Methods which need to get implemented by platform modules

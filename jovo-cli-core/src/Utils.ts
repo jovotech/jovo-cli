@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { sep as pathSep } from 'path';
-const highlight = require('chalk').white.bold;
+import * as chalk from 'chalk';
 
 export function log(msg: undefined | string | object) {
   let data = '';
@@ -48,5 +48,9 @@ export function wait(ms: number) {
  * @return {string}
  */
 export function printStage(stage: undefined | string) {
-  return stage ? `(stage: ${highlight(stage)})` : ``;
+  return stage ? `(stage: ${chalk.white.bold(stage)})` : ``;
+}
+
+export function printWarning(message: string) {
+  return chalk.yellow.bold(`[WARN] ${message}`);
 }
