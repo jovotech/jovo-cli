@@ -6,9 +6,9 @@
         "jovo-cli-platforms/*"
     ],
     "version": "independent",
-	"command": {
-		"publish": {
-		  "message": ":bookmark: Publish"
-		}
-  	},
+    "command": {
+        "publish": {
+            "message": ":bookmark: Publish"
+	}
+    }
 }
