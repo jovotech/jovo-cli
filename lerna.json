@@ -5,5 +5,10 @@
         "jovo-cli-integrations/*",
         "jovo-cli-platforms/*"
     ],
-    "version": "independent"
+    "version": "independent",
+	"command": {
+		"publish": {
+		  "message": ":bookmark: Publish"
+		}
+  	},
 }
