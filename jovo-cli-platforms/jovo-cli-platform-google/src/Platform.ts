@@ -166,7 +166,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
    *
    * @param {(string | string[])} [locale]
    * @returns {string[]}
-   * @memberof JovoCliPlatformAlexa
+   * @memberof JovoCliPlatformGoogle
    */
   getLocales(locale?: string | string[]): string[] {
     const agentJson = DialogFlowUtil.getAgentJson();
@@ -450,7 +450,7 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
                 if (!fs.existsSync(process.cwd() + pathSep + keyFile)) {
                   throw new JovoCliError(
                     `Keyfile ${process.cwd() + pathSep + keyFile} does not exist.`,
-                    'jovo-cli-platform-alexa',
+                    'jovo-cli-platform-google',
                   );
                 }
                 ctx.keyFile = process.cwd() + pathSep + keyFile;
@@ -574,16 +574,16 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
       }
 
       const jovoModel = new JovoModelDialogflow(model, outputLocale);
-      const alexaModelFiles = jovoModel.exportNative();
+      const dialogflowModelFiles = jovoModel.exportNative();
 
-      if (alexaModelFiles === undefined || alexaModelFiles.length === 0) {
+      if (dialogflowModelFiles === undefined || dialogflowModelFiles.length === 0) {
         // Should actually never happen but who knows
         throw new JovoCliError(
           `Could not build Dialogflow files for locale "${locale}"!`,
           'jovo-cli-platform-google',
         );
       }
-      for (const fileInformation of alexaModelFiles) {
+      for (const fileInformation of dialogflowModelFiles) {
         await writeFile(
           pathJoin(DialogFlowUtil.getPath(), ...fileInformation.path),
           JSON.stringify(fileInformation.content, null, '\t'),
