@@ -1,3 +1,4 @@
+import { flags } from '@oclif/command';
 import { ListrTask } from 'listr';
 import * as Listr from 'listr';
 import { join as pathJoin } from 'path';
@@ -18,9 +19,10 @@ import {
   Utils,
   JOVO_WEBHOOK_URL,
 } from 'jovo-cli-core';
-import { JovoModelGoogle } from 'jovo-model-google';
-import { GASettings, JovoTaskContextGoogleCA, GAProjectLanguages, getGActionsError } from './utils';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
+import { JovoModelGoogle } from 'jovo-model-google';
+
+import { GASettings, JovoTaskContextGoogleCA, GAProjectLanguages, getGActionsError } from './utils';
 
 const execSync = promisify(exec);
 const project: Project = getProject();
@@ -111,18 +113,6 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
             }
 
             return new Listr(localeTasks);
-          },
-        };
-
-        const buildManifestTask: ListrTask = {
-          title: 'Building manifest.yaml...',
-          task: async () => {
-            const manifest = {
-              version: '1.0',
-            };
-
-            writeFileSync(this.getManifestPath(), yaml.stringify(manifest));
-            await Utils.wait(500);
           },
         };
 
@@ -230,8 +220,13 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           },
         };
 
+        // Build manifest.yaml without including it within a task.
+        const manifest = {
+          version: '1.0',
+        };
+        writeFileSync(this.getManifestPath(), yaml.stringify(manifest));
+
         buildTasks.push(
-          buildManifestTask,
           buildSettingsTask,
           buildWebhookTask,
           buildLanguageModelsTask,
@@ -314,6 +309,14 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
             JovoCliPlatformGoogleCA.PLATFORM_ID,
             'Install the gactions CLI following this guide: ' +
               'https://developers.google.com/assistant/conversational/quickstart#install_the_gactions_command-line_tool',
+          );
+        }
+
+        if (!ctx.projectId) {
+          throw new JovoCliError(
+            'Could not find projectId.',
+            JovoCliPlatformGoogleCA.PLATFORM_ID,
+            'Please provide a project id by using the flag "--project-id" or in your project.js.',
           );
         }
 
@@ -423,6 +426,8 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           mkdirSync(modelPath);
         }
 
+        // @ts-ignore
+        yaml.scalarOptions.str.defaultType = 'QUOTE_DOUBLE';
         writeFileSync(pathJoin(modelPath, fileName), yaml.stringify(file.content));
       }
     } catch (err) {
@@ -535,18 +540,16 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
       );
     }
 
-    if (!projectId) {
-      throw new JovoCliError(
-        "Couldn't find project-id.",
-        JovoCliPlatformGoogleCA.PLATFORM_ID,
-        'Please add a property "projectId" to your project.js file.',
-      );
-    }
-
     return { projectId };
   }
 
-  getAdditionalCliOptions(command: string, options: InputFlags) {}
+  getAdditionalCliOptions(command: string, options: InputFlags) {
+    if (['get', 'deploy'].includes(command)) {
+      options['project-id'] = flags.string({
+        description: 'Google Cloud Project ID',
+      });
+    }
+  }
 
   validateAdditionalCliOptions(command: string, options: OutputFlags): boolean {
     return true;
@@ -659,6 +662,12 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
 
       if (!isDefaultLocale) {
         path.push(locale);
+      }
+
+      const folderPath = pathJoin(...path);
+
+      if (!existsSync(folderPath)) {
+        continue;
       }
 
       const files: string[] = readdirSync(pathJoin(...path));
