@@ -1224,6 +1224,9 @@ Endpoint: ${skillInfo.endpoint}`;
             stage,
           ) as string[];
         } catch (err) {
+          if (err instanceof JovoCliError) {
+            throw err;
+          }
           throw new JovoCliError(
             `Could not retrieve locales mapping for language "${locale}"!`,
             'jovo-cli-platform-alexa',

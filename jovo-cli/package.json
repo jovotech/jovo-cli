@@ -44,6 +44,7 @@
 		"jovo-cli-platform-alexa": "^3.0.14",
 		"jovo-cli-platform-google": "^3.0.10",
 		"jovo-cli-platform-spokestack": "^3.0.5",
+		"jovo-cli-platform-google-ca": "^3.0.0",
 		"jovo-model": "^3.0.0",
 		"jovo-webhook-connector": "^3.0.5",
 		"latest-version": "^5.1.0",
