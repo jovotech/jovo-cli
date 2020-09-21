@@ -36,8 +36,8 @@
   "dependencies": {
     "chalk": "^4.0.1",
     "jovo-cli-core": "^3.0.6",
-    "jovo-model": "^3.0.0",
-    "jovo-model-google": "^3.0.0",
+    "jovo-model": "^3.0.1",
+    "jovo-model-google": "^3.0.1",
     "jovo-webhook-connector": "^3.0.5",
     "listr": "^0.14.2",
     "lodash": "^4.17.15",
