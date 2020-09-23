@@ -39,9 +39,9 @@ export function getAllAvailable() {
  * Creates an instance of the given platform on instances[] and returns it.
  * @param platform - The platform id.
  */
-export function get(platform: string): JovoCliPlatform {
+export function get(platform: string, stage?: string): JovoCliPlatform {
   if (!instances.hasOwnProperty(platform)) {
-    instances[platform] = createPlatformInstance(platform);
+    instances[platform] = createPlatformInstance(platform, stage);
   }
   return instances[platform];
 }
@@ -85,8 +85,8 @@ export function getAll(platform?: string, stage?: string): string[] {
  * @param {string} platformKey The name of the platform to create an instance of
  * @returns {JovoCliPlatform}
  */
-function createPlatformInstance(platformKey: string): JovoCliPlatform {
-  const config: AppFile = project.getConfigContent();
+function createPlatformInstance(platformKey: string, stage?: string): JovoCliPlatform {
+  const config: AppFile = project.getConfig(stage); 
   let nluKey = _.get(config, `${platformKey}.nlu`);
   if (typeof nluKey === 'object') {
     nluKey = nluKey.name;
@@ -112,7 +112,7 @@ function createPlatformInstance(platformKey: string): JovoCliPlatform {
  */
 export function addCliOptions(command: string, options: InputFlags) {
   for (const platform of getAllAvailable()) {
-    const instance = get(platform);
+    const instance = createPlatformInstance(platform);
     instance.getAdditionalCliOptions(command, options);
   }
 }
@@ -126,7 +126,7 @@ export function addCliOptions(command: string, options: InputFlags) {
  */
 export function validateCliOptions(command: string, options: OutputFlags) {
   for (const platform of getAllAvailable()) {
-    const instance = get(platform);
+    const instance = createPlatformInstance(platform);
     if (!instance.validateAdditionalCliOptions(command, options)) {
       return false;
     }

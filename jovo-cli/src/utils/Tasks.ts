@@ -69,7 +69,7 @@ export function buildTask(ctx: JovoTaskContext) {
         try {
           // Validate content of platform-specific properties.
           for (const type of ctx.types) {
-            const platform = platforms.get(type);
+            const platform = platforms.get(type, ctx.stage);
             project.validateModel(locale, platform.getModelValidator());
           }
         } catch (err) {
@@ -119,7 +119,7 @@ export function buildTask(ctx: JovoTaskContext) {
 
   // Apply platform-specific tasks.
   for (const type of ctx.types) {
-    const platform = platforms.get(type);
+    const platform = platforms.get(type, ctx.stage);
     buildPlatformTasks.push(...platform.getBuildTasks(ctx));
   }
 
@@ -179,7 +179,7 @@ export function deployTask(ctx: JovoTaskContext): ListrTask[] {
 
   // Push platform-specifics
   for (const type of ctx.types) {
-    const platform = platforms.get(type);
+    const platform = platforms.get(type, ctx.stage);
     deployPlatformTasks.push(...platform.getDeployTasks(ctx, targets));
   }
 
@@ -210,7 +210,7 @@ export function buildReverseTask(ctx: JovoTaskContext) {
   ];
 
   for (const type of ctx.types) {
-    const platform = platforms.get(type);
+    const platform = platforms.get(type, ctx.stage);
     buildReverseSubTasks.push(...platform.getBuildReverseTasks(ctx));
   }
 
@@ -226,7 +226,7 @@ export function getTask(ctx: JovoTaskContext) {
   const tasks: ListrTask[] = [];
 
   for (const type of ctx.types) {
-    const platform = platforms.get(type);
+    const platform = platforms.get(type, ctx.stage);
     tasks.push(...platform.getGetTasks(ctx));
   }
 

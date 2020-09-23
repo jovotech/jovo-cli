@@ -108,7 +108,7 @@ export class Deploy extends Command {
       }
 
       for (const type of config.types) {
-        const platform = platforms.get(type);
+        const platform = platforms.get(type, config.stage);
         _.merge(config, platform.getPlatformConfigIds(project, flags));
         _.merge(config, platform.getPlatformConfigValues(project, flags));
       }
