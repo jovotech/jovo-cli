@@ -182,7 +182,7 @@ export class Build extends Command {
       }
 
       for (const type of config.types) {
-        const platform = platforms.get(type);
+        const platform = platforms.get(type, config.stage);
 
         // Apply platform-specific config values.
         _.merge(

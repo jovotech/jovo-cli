@@ -111,7 +111,7 @@ export class Get extends Command {
       };
 
       for (const type of config.types) {
-        const platform = platforms.get(type);
+        const platform = platforms.get(type, config.stage);
 
         // TODO: Refactor!!
         // Try to get platform id only from the files and not from the cli arguments. That is important
