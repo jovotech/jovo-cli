@@ -1,9 +1,13 @@
 import { JovoCliError } from 'jovo-cli-core';
+import * as _ from 'lodash';
 
 import { GActionsError } from './Interfaces';
 import { JovoCliPlatformGoogleCA } from '../Platform';
 
 export * from './Interfaces';
+
+export const GOOGLE_ACTIONS_TEST_HINT =
+  'If you want to test your changes, run "gactions deploy preview", or navigate to the Test section in the Console.';
 
 export function getGActionsError(errMessage: string): JovoCliError | undefined {
   const regex: RegExp = /{(.|\n)*}/g;
@@ -27,6 +31,6 @@ export function getGActionsError(errMessage: string): JovoCliError | undefined {
   return new JovoCliError(
     error.message,
     JovoCliPlatformGoogleCA.PLATFORM_ID,
-    error.details[0].fieldViolations[0].description,
+    _.get(error, 'details[0].fieldViolations[0].description'),
   );
 }
