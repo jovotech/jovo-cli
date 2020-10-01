@@ -76,7 +76,8 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         const buildSettingsTask: ListrTask = {
           title: 'Building project settings...',
           task: () => {
-            _.merge(ctx, this.getPlatformConfigIds(project, {}));
+            // @ts-ignore
+            _.merge(ctx, this.getPlatformConfigIds(project, ctx));
 
             const localeTasks: ListrTask[] = [];
             for (const [modelLocale, resolvedLocales] of Object.entries(projectLocales)) {
@@ -189,8 +190,8 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                 localesTasks.push({
                   title: locale,
                   task: () => {
-                    const model = this.getJovoModel(locale, ctx.stage);
-                    const scenes = _.get(model, 'google.custom.scenes', []);
+                    const model = this.getJovoModel(modelLocale, ctx.stage);
+                    const scenes = _.get(model, 'googleAssistant.custom.scenes', []);
 
                     const scenesPath: string = pathJoin(this.getPath(), 'custom', 'scenes');
                     if (!existsSync(scenesPath)) {
@@ -397,15 +398,6 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     defaultLocale: string,
   ) {
     try {
-      // Create platform folders.
-      if (!existsSync(pathJoin(this.getPath(), 'custom', 'intents'))) {
-        mkdirSync(pathJoin(this.getPath(), 'custom', 'intents'), { recursive: true });
-      }
-
-      if (!existsSync(pathJoin(this.getPath(), 'custom', 'types'))) {
-        mkdirSync(pathJoin(this.getPath(), 'custom', 'types'), { recursive: true });
-      }
-
       const model = this.getJovoModel(modelLocale, stage);
 
       const jovoModel = new JovoModelGoogle(model, resolvedLocale, defaultLocale);
@@ -424,7 +416,12 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         const modelPath = pathJoin(this.getPath(), ...file.path);
 
         if (!existsSync(modelPath)) {
-          mkdirSync(modelPath);
+          mkdirSync(modelPath, { recursive: true });
+        }
+
+        // Merge existing actions with configured actions in project.js
+        if (fileName === 'actions.yaml') {
+          _.merge(file.content, this.getProjectActions(stage));
         }
 
         // @ts-ignore
@@ -476,6 +473,18 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     }
 
     return model;
+  }
+
+  /**
+   * Gets actions object from project.js
+   * @param stage - Optional configuration stage.
+   */
+  getProjectActions(stage?: string) {
+    const actions = project.jovoConfigReader!.getConfigParameter(
+      'googleAction.manifest.actions',
+      stage,
+    );
+    return actions;
   }
 
   getProjectWebhooks(stage?: string): GAWebhooks {
