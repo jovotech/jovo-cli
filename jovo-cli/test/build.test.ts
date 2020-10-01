@@ -1,4 +1,5 @@
 import { mkdirSync, existsSync, readFileSync } from 'fs';
+import * as rimraf from 'rimraf';
 import * as path from 'path';
 import { deleteFolderRecursive } from '../src/utils';
 import { runJovoCommand } from './Helpers';
@@ -229,19 +230,23 @@ describe('build', () => {
     const projectName = 'helloworld_reverse_googleAction';
 
     // Create new project
-    const parameters = [
-      projectName,
-      '-t',
-      'helloworldtest',
-      '--build',
-      'googleAction',
-      '--skip-npminstall',
-    ];
+    const parameters = [projectName, '-t', 'helloworldtest', '--skip-npminstall'];
     await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
     const projectFolder = path.join(tmpTestFolder, projectName);
 
     // Build project
+    await runJovoCommand(
+      'build',
+      ['--platform', 'googleAction'],
+      projectFolder,
+      'Build completed.',
+    );
+
+    // Delete models/ folder.
+    rimraf.sync(path.join(projectFolder, 'models', '*'));
+
+    // Execute reverse build.
     await runJovoCommand(
       'build',
       ['--platform', 'googleAction', '--reverse', '--force'],

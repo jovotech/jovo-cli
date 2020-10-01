@@ -31,3 +31,15 @@ export interface GActionsError {
   message: string;
   details: { fieldViolations: { description: string }[] }[];
 }
+
+export interface GAWebhooks {
+  [key: string]: {
+    handlers: { name: string }[];
+    inlineCloudFunction?: {
+      executeFunction: string;
+    };
+    httpsEndpoint?: {
+      baseUrl: string;
+    };
+  };
+}
