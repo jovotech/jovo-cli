@@ -30,13 +30,9 @@ describe('deploy', () => {
     await runJovoCommand('new', newParameters, tmpTestFolder, 'Installation completed.');
 
     // Deploy project
-    const deployParameters = ['--platform', 'alexaSkill'];
-
-    if (process.env.ASK_PROFILE) {
-      deployParameters.push('--ask-profile', process.env.ASK_PROFILE);
-    }
-
+    const deployParameters = ['--platform', 'alexaSkill', '--ask-profile', process.env.ASK_PROFILE];
     const projectFolder = path.join(tmpTestFolder, projectName);
+
     await runJovoCommand('deploy', deployParameters, projectFolder, 'Deployment completed.');
 
     // Tests
@@ -102,11 +98,20 @@ describe('deploy', () => {
     const projectName = 'helloworldDeployGoogleAction';
 
     // Create new project
-    const parameters = [projectName, '-t', 'helloworldtest', '--build', 'googleAction'];
+    const parameters = [projectName, '-t', 'helloworldtest'];
     await runJovoCommand('new', parameters, tmpTestFolder, 'Installation completed.');
 
-    // Deploy project
     const projectFolder = path.join(tmpTestFolder, projectName);
+
+    // Build project.
+    await runJovoCommand(
+      'build',
+      ['--platform', 'googleAction'],
+      projectFolder,
+      'Build completed.',
+    );
+
+    // Deploy project
     await runJovoCommand(
       'deploy',
       ['--platform', 'googleAction'],

@@ -40,7 +40,7 @@ export function runJovoCommand(
 
     child.stdout.on('data', (data) => {
       if (!waitText) {
-        return;
+        return reject();
       }
 
       for (const text of waitText) {

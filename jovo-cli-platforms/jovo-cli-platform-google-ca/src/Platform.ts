@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command';
 import { ListrTask } from 'listr';
 import * as Listr from 'listr';
-import { join as pathJoin } from 'path';
+import { join as pathJoin, resolve } from 'path';
 import { existsSync, mkdirSync, writeFileSync, readdirSync, readFileSync } from 'fs';
 import * as _ from 'lodash';
 import { exec } from 'child_process';
@@ -22,7 +22,14 @@ import {
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 import { JovoModelGoogle } from 'jovo-model-google';
 
-import { GASettings, JovoTaskContextGoogleCA, GAProjectLanguages, getGActionsError } from './utils';
+import {
+  GASettings,
+  JovoTaskContextGoogleCA,
+  GAProjectLanguages,
+  getGActionsError,
+  GOOGLE_ACTIONS_TEST_HINT,
+  GAWebhooks,
+} from './utils';
 
 const execSync = promisify(exec);
 const project: Project = getProject();
@@ -77,7 +84,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                 localeTasks.push({
                   title: locale,
                   task: async () => {
-                    const projectSettings: GASettings = this.getProjectSettings(
+                    const projectSettings: GASettings = this.getProjectLocalizedSettings(
                       modelLocale,
                       ctx.stage,
                     );
@@ -119,16 +126,25 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         const buildWebhookTask: ListrTask = {
           title: 'Generating webhook...',
           task: async () => {
-            const webhookFile = {
-              handlers: [
-                {
-                  name: 'Jovo',
+            const webhooks: GAWebhooks = {
+              ActionsOnGoogleFulfillment: {
+                handlers: [
+                  {
+                    name: 'Jovo',
+                  },
+                ],
+                httpsEndpoint: {
+                  baseUrl: `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`,
                 },
-              ],
-              httpsEndpoint: {
-                baseUrl: `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`,
               },
             };
+
+            _.mergeWith(webhooks, this.getProjectWebhooks(ctx.stage), (objValue, srcValue) => {
+              // If both values are of type object, instead of merging properties, override the original value.
+              if (typeof objValue === 'object' && typeof srcValue === 'object') {
+                return srcValue;
+              }
+            });
 
             const webhookPath = pathJoin(this.getPath(), 'webhooks');
 
@@ -136,10 +152,9 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
               mkdirSync(webhookPath, { recursive: true });
             }
 
-            writeFileSync(
-              pathJoin(webhookPath, 'ActionsOnGoogleFulfillment.yaml'),
-              yaml.stringify(webhookFile),
-            );
+            for (const [name, content] of Object.entries(webhooks)) {
+              writeFileSync(pathJoin(webhookPath, `${name}.yaml`), yaml.stringify(content));
+            }
           },
         };
 
@@ -164,59 +179,36 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           },
         };
 
-        const buildGlobalIntents: ListrTask = {
-          title: 'Building global main intent...',
-          task: async () => {
-            const intentHandler = {
-              handler: { webhookHandler: 'Jovo' },
-            };
+        const buildScenesTask: ListrTask = {
+          title: 'Building scenes...',
+          task: () => {
+            const localesTasks: ListrTask[] = [];
 
-            const globalPath = pathJoin(pathJoin(this.getPath(), 'custom', 'global'));
-            if (!existsSync(globalPath)) {
-              mkdirSync(globalPath, { recursive: true });
-            }
-
-            writeFileSync(
-              pathJoin(globalPath, 'actions.intent.MAIN.yaml'),
-              yaml.stringify(intentHandler),
-            );
-            await Utils.wait(500);
-          },
-        };
-
-        // Task for building actions/
-        const buildActions: ListrTask = {
-          title: 'Building actions',
-          task: async () => {
-            const localeTasks: ListrTask[] = [];
-
-            for (const [, resolvedLocales] of Object.entries(projectLocales)) {
+            for (const [modelLocale, resolvedLocales] of Object.entries(projectLocales)) {
               for (const locale of resolvedLocales) {
-                localeTasks.push({
+                localesTasks.push({
                   title: locale,
-                  task: async () => {
-                    const action = {
-                      custom: { 'actions.intent.MAIN': {} },
-                    };
+                  task: () => {
+                    const model = this.getJovoModel(locale, ctx.stage);
+                    const scenes = _.get(model, 'google.custom.scenes', []);
 
-                    const path: string[] = [this.getPath(), 'actions'];
-                    if (locale !== defaultLocale) {
-                      path.push(locale);
+                    const scenesPath: string = pathJoin(this.getPath(), 'custom', 'scenes');
+                    if (!existsSync(scenesPath)) {
+                      mkdirSync(scenesPath, { recursive: true });
                     }
 
-                    const actionsPath = pathJoin(...path);
-                    if (!existsSync(actionsPath)) {
-                      mkdirSync(actionsPath, { recursive: true });
+                    for (const scene of scenes) {
+                      writeFileSync(
+                        `${pathJoin(scenesPath, scene.name)}.yaml`,
+                        yaml.stringify(scene.content),
+                      );
                     }
-
-                    writeFileSync(pathJoin(actionsPath, 'actions.yaml'), yaml.stringify(action));
-                    await Utils.wait(500);
                   },
                 });
               }
             }
 
-            return new Listr(localeTasks);
+            return new Listr(localesTasks);
           },
         };
 
@@ -230,8 +222,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           buildSettingsTask,
           buildWebhookTask,
           buildLanguageModelsTask,
-          buildGlobalIntents,
-          buildActions,
+          buildScenesTask,
         );
 
         return new Listr(buildTasks);
@@ -256,6 +247,14 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           );
         }
 
+        if (!ctx.projectId) {
+          throw new JovoCliError(
+            'Could not find projectId.',
+            JovoCliPlatformGoogleCA.PLATFORM_ID,
+            'Please provide a project id by using the flag "--project-id" or in your project.js.',
+          );
+        }
+
         // Check if gactions CLI is installed.
         try {
           await execSync('gactions version');
@@ -272,8 +271,10 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
           const { stdout, stderr } = await execSync('gactions push', { cwd: platformPath });
 
           if (stderr) {
+            // Cut out sentence about testing with gactions CLI.
+            const hint: string = stdout.replace(GOOGLE_ACTIONS_TEST_HINT, '');
             console.log(Utils.printWarning(stderr));
-            console.log(stdout);
+            console.log(hint);
             console.log('\n');
           }
         } catch (err) {
@@ -465,17 +466,11 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     }
 
     if (
-      project.jovoConfigReader!.getConfigParameter(
-        `googleAction.conversational.languageModel.${locale}`,
-        stage,
-      )
+      project.jovoConfigReader!.getConfigParameter(`googleAction.languageModel.${locale}`, stage)
     ) {
       model = _.mergeWith(
         model,
-        project.jovoConfigReader!.getConfigParameter(
-          `googleAction.conversational.languageModel.${locale}`,
-          stage,
-        ),
+        project.jovoConfigReader!.getConfigParameter(`googleAction.languageModel.${locale}`, stage),
         concatArraysCustomizer,
       );
     }
@@ -483,7 +478,15 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     return model;
   }
 
-  getProjectSettings(locale: string, stage?: string): GASettings {
+  getProjectWebhooks(stage?: string): GAWebhooks {
+    const webhooks = project.jovoConfigReader!.getConfigParameter(
+      'googleAction.manifest.webhooks',
+      stage,
+    ) as GAWebhooks;
+    return webhooks;
+  }
+
+  getProjectLocalizedSettings(locale: string, stage?: string): GASettings {
     const invocationName = this.getInvocationName(locale, stage);
 
     const projectSettings: GASettings = {
@@ -494,7 +497,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     };
 
     const localizedProjectSettings = project.jovoConfigReader!.getConfigParameter(
-      `googleAction.localizedSettings.${locale}`,
+      `googleAction.manifest.settings.localizedSettings.${locale}`,
       stage,
     ) as GASettings;
 
@@ -525,7 +528,10 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
   }
 
   getCategory(stage?: string): string {
-    return project.jovoConfigReader!.getConfigParameter('googleAction.category', stage) as string;
+    return project.jovoConfigReader!.getConfigParameter(
+      'googleAction.manifest.settings.category',
+      stage,
+    ) as string;
   }
 
   getPlatformConfigIds(project: Project, options: OutputFlags): object {
@@ -534,17 +540,22 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     if (options && options['project-id']) {
       projectId = options['project-id'];
     } else {
-      projectId = project.jovoConfigReader!.getConfigParameter(
-        'googleAction.projectId',
-        options.stage as string,
-      );
+      projectId =
+        project.jovoConfigReader!.getConfigParameter(
+          'googleAction.projectId',
+          options.stage as string,
+        ) ||
+        project.jovoConfigReader!.getConfigParameter(
+          'googleAction.manifest.settings.projectId',
+          options.stage as string,
+        );
     }
 
     return { projectId };
   }
 
   getAdditionalCliOptions(command: string, options: InputFlags) {
-    if (['get', 'deploy'].includes(command)) {
+    if (['get', 'build', 'deploy'].includes(command)) {
       options['project-id'] = flags.string({
         description: 'Google Cloud Project ID',
       });
@@ -569,7 +580,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
 
   getDefaultLocale(stage?: string, locales?: string[]): string {
     let defaultLocale = project.jovoConfigReader!.getConfigParameter(
-      'googleAction.defaultLocale',
+      'googleAction.manifest.settings.defaultLocale',
       stage,
     ) as string;
 
@@ -655,7 +666,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     const platformModels: NativeFileInformation[] = [];
 
     const modelPath: string = pathJoin(this.getPath(), 'custom');
-    const foldersToInclude: string[] = ['intents', 'types'];
+    const foldersToInclude: string[] = ['intents', 'types', 'scenes', 'global'];
 
     for (const folder of foldersToInclude) {
       const path: string[] = [modelPath, folder];
@@ -670,9 +681,13 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         continue;
       }
 
-      const files: string[] = readdirSync(pathJoin(...path));
+      let files: string[] = readdirSync(pathJoin(...path));
 
-      const yamlRegex: RegExp = /.*\.yaml/g;
+      if (folder === 'global') {
+        files = files.filter((file) => file.includes('actions.intent'));
+      }
+
+      const yamlRegex: RegExp = /.*\.yaml/;
       for (const file of files) {
         if (yamlRegex.test(file)) {
           const fileContent = readFileSync(pathJoin(...path, file), 'utf-8');
