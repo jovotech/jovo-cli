@@ -43,3 +43,7 @@ export interface GAWebhooks {
     };
   };
 }
+
+export interface GAScenes {
+  [key: string]: object;
+}

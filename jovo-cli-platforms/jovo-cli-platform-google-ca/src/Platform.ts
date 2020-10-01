@@ -29,6 +29,7 @@ import {
   getGActionsError,
   GOOGLE_ACTIONS_TEST_HINT,
   GAWebhooks,
+  GAScenes,
 } from './utils';
 
 const execSync = promisify(exec);
@@ -191,18 +192,15 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                   title: locale,
                   task: () => {
                     const model = this.getJovoModel(modelLocale, ctx.stage);
-                    const scenes = _.get(model, 'googleAssistant.custom.scenes', []);
+                    const scenes: GAScenes = _.get(model, 'googleAssistant.custom.scenes', {});
 
                     const scenesPath: string = pathJoin(this.getPath(), 'custom', 'scenes');
                     if (!existsSync(scenesPath)) {
                       mkdirSync(scenesPath, { recursive: true });
                     }
 
-                    for (const scene of scenes) {
-                      writeFileSync(
-                        `${pathJoin(scenesPath, scene.name)}.yaml`,
-                        yaml.stringify(scene.content),
-                      );
+                    for (const [name, content] of Object.entries(scenes)) {
+                      writeFileSync(`${pathJoin(scenesPath, name)}.yaml`, yaml.stringify(content));
                     }
                   },
                 });
