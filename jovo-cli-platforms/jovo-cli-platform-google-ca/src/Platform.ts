@@ -369,8 +369,10 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         );
       }
 
-      const actions: { [key: string]: object } = {
-        'actions.intent.MAIN': {},
+      const actions: { custom: { [key: string]: object } } = {
+        custom: {
+          'actions.intent.MAIN': {},
+        },
       };
 
       for (const file of modelFiles) {
@@ -383,7 +385,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
 
         // Register actions.
         if (file.path.includes('intents')) {
-          actions[fileName.replace('.yaml', '')] = {};
+          actions.custom[fileName.replace('.yaml', '')] = {};
         }
 
         writeFileSync(pathJoin(modelPath, fileName), file.content);
