@@ -15,8 +15,8 @@ export interface GALocalizedProjectSettings {
 }
 
 export interface GAProjectSettings {
-  projectId: string;
-  defaultLocale: string;
+  projectId?: string;
+  defaultLocale?: string;
   localizedSettings?: GALocalizedProjectSettings;
   [key: string]: string | GALocalizedProjectSettings | object | undefined;
 }

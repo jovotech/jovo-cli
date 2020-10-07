@@ -86,20 +86,24 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                 localeTasks.push({
                   title: locale,
                   task: async () => {
-                    const settings: GAProjectSettings = {
-                      defaultLocale,
-                      projectId: ctx.projectId,
+                    const settings: GAProjectSettings = {};
+
+                    const localizedProjectSettings: GAProjectSettings = {
+                      localizedSettings: this.getLocalizedProjectSettings(modelLocale, ctx.stage),
                     };
 
-                    const projectSettings: GAProjectSettings = this.getProjectSettings(ctx.stage);
-                    const localizedProjectSettings: GALocalizedProjectSettings = this.getLocalizedProjectSettings(
-                      modelLocale,
-                      ctx.stage,
-                    );
+                    // If the current locale is not default, only set the localized settings.
+                    if (locale !== defaultLocale) {
+                      _.merge(settings, localizedProjectSettings);
+                    } else {
+                      const defaultSettings: GAProjectSettings = {
+                        defaultLocale,
+                        projectId: ctx.projectId,
+                      };
+                      const projectSettings: GAProjectSettings = this.getProjectSettings(ctx.stage);
 
-                    _.merge(settings, projectSettings, {
-                      localizedSettings: localizedProjectSettings,
-                    });
+                      _.merge(settings, defaultSettings, projectSettings, localizedProjectSettings);
+                    }
 
                     const path: string[] = [this.getPath(), 'settings'];
                     if (locale !== defaultLocale) {
