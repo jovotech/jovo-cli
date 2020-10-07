@@ -32,7 +32,7 @@ export function isValidTemplate(template: string | undefined) {
  * @return {boolean}
  */
 export function isValidLocale(locale: string | undefined) {
-  if (locale && !/[a-z]{2}-[A-Z]{2}/.test(locale)) {
+  if (locale && !/^[a-z]{2}-?([A-Z]{2})?$/.test(locale)) {
     console.log('Please use a valid locale: e.g. en-US, de-DE, en-GB');
     return false;
   }
