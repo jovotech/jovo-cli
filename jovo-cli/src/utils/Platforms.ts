@@ -86,7 +86,15 @@ export function getAll(platform?: string, stage?: string): string[] {
  * @returns {JovoCliPlatform}
  */
 function createPlatformInstance(platformKey: string, stage?: string): JovoCliPlatform {
-  const config: AppFile = project.getConfig(stage); 
+  // If no stage is given, try to parse it directly from process.argv stream, as flags only become available later.
+  if (!stage) {
+    const stageIndex: number = process.argv.findIndex((el) => el === '--stage');
+    if (stageIndex > -1) {
+      stage = process.argv[stageIndex + 1];
+    }
+  }
+
+  const config: AppFile = project.getConfig(stage);
   let nluKey = _.get(config, `${platformKey}.nlu`);
   if (typeof nluKey === 'object') {
     nluKey = nluKey.name;
