@@ -1,21 +1,24 @@
 import { JovoTaskContext } from 'jovo-cli-core';
 
-export interface GASettings {
-  localizedSettings: {
-    displayName: string;
-    pronunciation: string;
-    developerEmail?: string;
-    developerName?: string;
-    shortDescription?: string;
-    fullDescription?: string;
-    privacyPolicyUrl?: string;
-    termsOfServiceUrl?: string;
-    sampleInvocations?: string[];
-    smallLogoImage?: string;
-    largeBannerImage?: string;
-  };
+export interface GALocalizedProjectSettings {
+  displayName: string;
+  pronunciation: string;
+  developerEmail?: string;
+  developerName?: string;
+  shortDescription?: string;
+  fullDescription?: string;
+  privacyPolicyUrl?: string;
+  termsOfServiceUrl?: string;
+  sampleInvocations?: string[];
+  smallLogoImage?: string;
+  largeBannerImage?: string;
+}
+
+export interface GAProjectSettings {
   projectId?: string;
   defaultLocale?: string;
+  localizedSettings?: GALocalizedProjectSettings;
+  [key: string]: string | GALocalizedProjectSettings | object | undefined;
 }
 
 export interface JovoTaskContextGoogleCA extends JovoTaskContext {
@@ -42,8 +45,4 @@ export interface GAWebhooks {
       baseUrl: string;
     };
   };
-}
-
-export interface GAScenes {
-  [key: string]: object;
 }
