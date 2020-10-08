@@ -160,7 +160,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         };
 
         const buildLanguageModelsTask: ListrTask = {
-          title: 'Building project language model files for Conversational Actions...',
+          title: 'Building project language model files...',
           task: () => {
             const localesTasks: ListrTask[] = [];
 
@@ -475,6 +475,10 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
       `googleAction.manifest.settings`,
       stage,
     ) as GAProjectSettings;
+
+    if (!projectSettings) {
+      return {};
+    }
 
     delete projectSettings.localizedSettings;
 
