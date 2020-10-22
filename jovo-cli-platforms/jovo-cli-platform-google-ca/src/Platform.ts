@@ -132,6 +132,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         const buildWebhookTask: ListrTask = {
           title: 'Generating webhook...',
           task: async () => {
+            const defaultHandler: string = `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`;
             const webhooks: GAWebhooks = {
               ActionsOnGoogleFulfillment: {
                 handlers: [
@@ -140,7 +141,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                   },
                 ],
                 httpsEndpoint: {
-                  baseUrl: `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`,
+                  baseUrl: this.getProjectEndpoint(ctx.stage) || defaultHandler,
                 },
               },
             };
@@ -468,6 +469,15 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
       stage,
     ) as GAWebhooks;
     return webhooks;
+  }
+
+  getProjectEndpoint(stage?: string): string {
+    const endpoint = project.jovoConfigReader!.getConfigParameter(
+      'googleAction.endpoint',
+      stage,
+    ) as string;
+
+    return endpoint;
   }
 
   getProjectSettings(stage?: string): GAProjectSettings {
