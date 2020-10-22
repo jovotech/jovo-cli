@@ -10,32 +10,7 @@ export const ANSWER_SEPERATE = 'seperate_file';
  * Asks for platform
  * @return {Promise}
  */
-export function promptForPlatform(): Promise<inquirer.Answers> {
-  const questions = [
-    {
-      type: 'list',
-      name: 'platform',
-      message: 'Choose your platform',
-      choices: [
-        {
-          value: 'alexaSkill',
-          name: 'Alexa Skill (alexaSkill)',
-        },
-        {
-          value: 'googleAction',
-          name: 'GoogleAction with DialogFlow (googleAction)',
-        },
-      ],
-    },
-  ];
-  return inquirer.prompt(questions);
-}
-
-/**
- * Asks for platform
- * @return {Promise}
- */
-export function promptForInit(message: string): Promise<inquirer.Answers> {
+export function promptForPlatforms(message: string): Promise<inquirer.Answers> {
   const questions = [
     {
       type: 'list',
@@ -48,7 +23,7 @@ export function promptForInit(message: string): Promise<inquirer.Answers> {
         },
         {
           value: 'googleAction',
-          name: 'GoogleAction with DialogFlow (googleAction)',
+          name: 'Google Action (googleAction)',
         },
       ],
     },
