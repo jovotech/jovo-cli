@@ -34,3 +34,48 @@ export function getGActionsError(errMessage: string): JovoCliError | undefined {
     _.get(error, 'details[0].fieldViolations[0].description'),
   );
 }
+
+/**
+ * Validates and parses version numbers to the following format: [major, minor, buildNumber].
+ * @param version - The version as a string.
+ */
+export function parseVersionNumbers(version: string): string[] {
+  const regexp: RegExp = /^(\d+)\.(\d+)\.(\d+)/g;
+  const versionNumbers: string[] = [];
+  const match = regexp.exec(version);
+
+  if (!match) {
+    throw new JovoCliError(
+      `gactions CLI has an invalid version ${version}.`,
+      JovoCliPlatformGoogleCA.PLATFORM_ID,
+    );
+  }
+
+  match.shift();
+  versionNumbers.push(...match);
+
+  return versionNumbers;
+}
+
+/**
+ * Checks if a provided version is higher than/equal to a target version.
+ * @param version - The version to check.
+ * @param targetVersion - The target version to check against.
+ * @returns boolean - True if the version is higher or equal to the target version, false otherwise.
+ */
+export function matchesVersion(version: string, targetVersion: string): boolean {
+  const versionNumbers = parseVersionNumbers(version);
+  const targetVersionNumbers: string[] = parseVersionNumbers(targetVersion);
+
+  for (let i = 0; i < 3; i++) {
+    if (parseInt(versionNumbers[i]) < parseInt(targetVersionNumbers[i])) {
+      return false;
+    }
+
+    if (parseInt(versionNumbers[i]) > parseInt(targetVersionNumbers[i])) {
+      return true;
+    }
+  }
+
+  return true;
+}
