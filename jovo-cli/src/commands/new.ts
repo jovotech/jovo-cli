@@ -173,7 +173,8 @@ export class New extends Command {
       tasks.add({
         title: `Downloading and extracting template ${chalk.white.bold(config.template!)}`,
         async task(ctx) {
-          // TODO: ctx should be empty?
+
+			// TODO: ctx should be empty?
           await project.downloadAndExtract(
             ctx.projectName,
             ctx.template,
