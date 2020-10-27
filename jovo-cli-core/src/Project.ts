@@ -772,7 +772,8 @@ export class Project {
   async updateModelLocale(locale: string): Promise<void> {
     const modelPath = this.getModelsPath();
 
-    const exists = await existsAsync(modelPath);
+    const exists = fs.existsSync(modelPath);
+
 
     if (!exists) {
     	return;
