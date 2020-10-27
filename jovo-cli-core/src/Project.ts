@@ -772,6 +772,12 @@ export class Project {
   async updateModelLocale(locale: string): Promise<void> {
     const modelPath = this.getModelsPath();
 
+    const exists = await existsAsync(modelPath);
+
+    if (!exists) {
+    	return;
+	}
+
     const files = await readdirAsync(modelPath);
 
     let modelFile;
