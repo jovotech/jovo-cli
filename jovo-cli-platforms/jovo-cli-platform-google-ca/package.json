@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli-platform-google-ca",
-  "version": "3.0.11",
+  "version": "3.0.12",
   "description": "Jovo CLI platform for Conversational Actions.",
   "main": "dist/src/index",
   "types": "dist/src/index.d.ts",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.1",
-    "jovo-cli-core": "^3.0.9",
+    "jovo-cli-core": "^3.0.10",
     "jovo-model": "^3.0.0",
     "jovo-model-google": "^3.0.4",
     "jovo-webhook-connector": "^3.0.5",

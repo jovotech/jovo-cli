@@ -1,6 +1,6 @@
 {
   "name": "jovo-cli-platform-spokestack",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "Jovo CLI platform for Spokestack.",
   "main": "dist/src/index",
   "types": "dist/src/index.d.ts",
@@ -47,8 +47,8 @@
     "axios": "^0.19.2",
     "boxen": "^4.2.0",
     "chalk": "^2.4.1",
-    "jovo-cli-core": "^3.0.9",
-    "jovo-cli-platform-alexa": "^3.0.17",
+    "jovo-cli-core": "^3.0.10",
+    "jovo-cli-platform-alexa": "^3.0.18",
     "jovo-model": "^3.0.0",
     "jovo-model-alexa": "^3.0.1",
     "jovo-webhook-connector": "^3.0.5",
