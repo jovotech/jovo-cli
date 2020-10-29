@@ -774,7 +774,6 @@ export class Project {
 
     const exists = fs.existsSync(modelPath);
 
-
     if (!exists) {
     	return;
 	}
