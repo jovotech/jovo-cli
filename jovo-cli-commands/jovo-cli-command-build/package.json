@@ -1,0 +1,37 @@
+{
+	"name": "jovo-cli-command-build",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./dist/index.js",
+	"scripts": {
+		"test": "jest",
+		"tsc": "tsc"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@oclif/command": "^1.8.0",
+		"@oclif/test": "^1.2.8",
+		"chalk": "^4.1.0",
+		"enquirer": "^2.3.6",
+		"jovo-cli-core": "^1.0.0",
+		"listr": "^0.14.3",
+		"node-emoji": "^1.10.0",
+		"parse-json": "^5.1.0",
+		"rxjs": "^6.6.3"
+	},
+	"devDependencies": {
+		"@types/jest": "^26.0.20",
+		"@types/node": "^14.14.22",
+		"@types/node-emoji": "^1.8.1",
+		"@types/parse-json": "^4.0.0",
+		"@types/rimraf": "^3.0.0",
+		"cli": "^0.0.0",
+		"fancy-test": "^1.4.10",
+		"jest": "^26.6.3",
+		"jovo-cli": "^3.2.1",
+		"rimraf": "^3.0.2",
+		"ts-jest": "^26.4.4",
+		"typescript": "^4.1.3"
+	}
+}
