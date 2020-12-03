@@ -27,7 +27,7 @@ import { buildTask, deployTask } from '../utils/Tasks';
 
 const { buildReverseTask } = tasks;
 const { isValidLocale, isValidPlatform } = validators;
-const { promptForInit, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
+const { promptForPlatforms, promptOverwriteReverseBuild, ANSWER_CANCEL } = prompts;
 
 export class Build extends Command {
   static description = 'Build platform-specific language models based on jovo models folder.';
@@ -175,7 +175,7 @@ export class Build extends Command {
       // for a platform as a reverse build can only be done from one
       // as further ones would overwrite previous ones.
       if (config.types.length !== 1 && flags.reverse) {
-        const { platform } = await promptForInit(
+        const { platform } = await promptForPlatforms(
           'Please select the platform you want to reverse build from:',
         );
         config.types = [platform];

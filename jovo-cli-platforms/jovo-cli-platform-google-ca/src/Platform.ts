@@ -30,6 +30,7 @@ import {
   GAWebhooks,
   GAProjectSettings,
   GALocalizedProjectSettings,
+  matchesVersion,
 } from './utils';
 
 const execSync = promisify(exec);
@@ -39,6 +40,8 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
   static PLATFORM_KEY: string = 'googleAction';
   static ID_KEY: string = 'projectId';
   static PLATFORM_ID: string = 'jovo-cli-platform-google-ca';
+
+  cliUpToDate: boolean = true;
 
   getBuildTasks(ctx: JovoTaskContextGoogleCA): ListrTask[] {
     // Create folder /platforms/googleAction/conversational/, if it doesn't exist.
@@ -132,6 +135,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         const buildWebhookTask: ListrTask = {
           title: 'Generating webhook...',
           task: async () => {
+            const defaultHandler: string = `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`;
             const webhooks: GAWebhooks = {
               ActionsOnGoogleFulfillment: {
                 handlers: [
@@ -140,7 +144,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
                   },
                 ],
                 httpsEndpoint: {
-                  baseUrl: `${JOVO_WEBHOOK_URL}/${project.getWebhookUuid()}`,
+                  baseUrl: this.getProjectEndpoint(ctx.stage) || defaultHandler,
                 },
               },
             };
@@ -219,19 +223,13 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
         }
 
         // Check if gactions CLI is installed.
-        try {
-          await execSync('gactions version');
-        } catch (err) {
-          throw new JovoCliError(
-            'Jovo requires gactions CLI',
-            JovoCliPlatformGoogleCA.PLATFORM_ID,
-            'Install the gactions CLI following this guide: ' +
-              'https://developers.google.com/assistant/conversational/quickstart#install_the_gactions_command-line_tool',
-          );
-        }
+        await this.checkForGactionsCliVersion();
 
         try {
-          const { stdout, stderr } = await execSync('gactions push', { cwd: platformPath });
+          const { stdout, stderr } = await execSync(
+            `gactions push ${this.cliUpToDate ? '--consumer jovo-cli' : ''}`,
+            { cwd: platformPath },
+          );
 
           if (stderr) {
             // Cut out sentence about testing with gactions CLI.
@@ -265,16 +263,7 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
       title: `Getting Conversational Action Project (projectId: ${chalk.white.bold(ctx.projectId)})`,
       task: async () => {
         // Check if gactions CLI is installed.
-        try {
-          await execSync('gactions version');
-        } catch (err) {
-          throw new JovoCliError(
-            'Jovo requires gactions CLI',
-            JovoCliPlatformGoogleCA.PLATFORM_ID,
-            'Install the gactions CLI following this guide: ' +
-              'https://developers.google.com/assistant/conversational/quickstart#install_the_gactions_command-line_tool',
-          );
-        }
+        await this.checkForGactionsCliVersion();
 
         if (!ctx.projectId) {
           throw new JovoCliError(
@@ -286,7 +275,9 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
 
         try {
           const { stdout, stderr } = await execSync(
-            `gactions pull --clean --force --project-id ${ctx.projectId}`,
+            `gactions pull --clean --force --project-id ${ctx.projectId} ${
+              this.cliUpToDate ? '--consumer jovo-cli' : ''
+            }`,
             {
               cwd: platformPath,
             },
@@ -412,6 +403,32 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
     }
   }
 
+  async checkForGactionsCliVersion() {
+    try {
+      const { stdout } = await execSync('gactions version');
+      const version: string = stdout.replace('\n', '');
+      // If the current gactions CLI version is lower than the required one, print warning.
+      if (!matchesVersion(version, '3.1.0')) {
+        this.cliUpToDate = false;
+        console.log(
+          Utils.printWarning(
+            `Your gactions CLI (v${version}) is not up to date.\nConsider upgrading to ^3.1.0 using the following link:\nhttps://developers.google.com/assistant/actionssdk/gactions#install_the_gactions_command-line_tool.`,
+          ),
+        );
+      }
+    } catch (err) {
+      if (err instanceof JovoCliError) {
+        throw err;
+      }
+      throw new JovoCliError(
+        'Jovo requires gactions CLI',
+        JovoCliPlatformGoogleCA.PLATFORM_ID,
+        'Install the gactions CLI following this guide: ' +
+          'https://developers.google.com/assistant/conversational/quickstart#install_the_gactions_command-line_tool',
+      );
+    }
+  }
+
   getProjectLanguages(locale: string, stage?: string): string[] | undefined {
     return project.jovoConfigReader!.getConfigParameter(
       `googleAction.nlu.lang.${locale}`,
@@ -468,6 +485,15 @@ export class JovoCliPlatformGoogleCA extends JovoCliPlatform {
       stage,
     ) as GAWebhooks;
     return webhooks;
+  }
+
+  getProjectEndpoint(stage?: string): string {
+    const endpoint = project.jovoConfigReader!.getConfigParameter(
+      'googleAction.endpoint',
+      stage,
+    ) as string;
+
+    return endpoint;
   }
 
   getProjectSettings(stage?: string): GAProjectSettings {
