@@ -1,6 +1,83 @@
 # Jovo CLI Changelog
 
 
+## 3.2.1 (2020-10-29)
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-google-ca` [#174](https://github.com/jovotech/jovo-cli/pull/174) Address various features/issues   ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+## 3.0.25 (2020-10-08)
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-google-ca` [#172](https://github.com/jovotech/jovo-cli/pull/172) Fix minor issues   ([@rubenaeg](https://github.com/rubenaeg))
+* `jovo-cli-platform-google-ca` [#172](https://github.com/jovotech/jovo-cli/pull/172) Fix bug for omitted project settings   ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+## 3.0.25 (2020-10-02)
+
+#### :sparkles: New Features
+* `jovo-cli-platform-google-ca` [#170](https://github.com/jovotech/jovo-cli/pull/170)  Add support for Conversational Action Scenes  ([@rubenaeg](https://github.com/rubenaeg))
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-google-ca` [#171](https://github.com/jovotech/jovo-cli/pull/171) Merge config actions, solve staging problem    ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+## 3.0.24 (2020-09-24)
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-google-ca` [#168](https://github.com/jovotech/jovo-cli/pull/168) Solve staging bug for Google Conversational Actions   ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+## 3.0.23 (2020-09-21)
+
+#### :sparkles: New Features
+* `jovo-cli-platform-google-ca` [#160](https://github.com/jovotech/jovo-cli/pull/160) Add Conversational Actions Platform Integration  ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+
+## 3.0.23 (2020-09-21)
+
+#### :sparkles: New Features
+* `jovo-cli-platform-google-ca` [#160](https://github.com/jovotech/jovo-cli/pull/160) Add Conversational Actions Platform Integration  ([@rubenaeg](https://github.com/rubenaeg))
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+## 3.0.20 (2020-07-15)
+
+#### :sparkles: New Features
+* `jovo-cli-platform-spokestack` [#150](https://github.com/jovotech/jovo-cli/pull/150) Add Spokestack Platform Integration  ([@rubenaeg](https://github.com/rubenaeg))
+
+
+#### Committers: 1
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+
+
+
+#### :bug: Bug Fix
+* `jovo-cli-platform-alexa` [#146](https://github.com/jovotech/jovo-cli/pull/146) Resolve ask-profile for ask-cli@v1, Fix problem with ask-cli@v2…  ([@rubenaeg](https://github.com/rubenaeg))
+* `jovo-cli` [#145](https://github.com/jovotech/jovo-cli/pull/145) Fix jovo update (devDependecies) ([@aswetlow](https://github.com/aswetlow))
+
+
+#### Committers: 2
+- Ruben A. ([@rubenaeg](https://github.com/rubenaeg))
+- Alex Swetlow ([@aswetlow](https://github.com/aswetlow))
+
+
 ## 3.0.16 (2020-07-07)
 
 
