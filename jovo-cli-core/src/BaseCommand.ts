@@ -3,7 +3,6 @@ import * as Config from '@oclif/config';
 import _get from 'lodash.get';
 
 import { Emitter } from '.';
-import { Project } from './Project';
 import { DefaultEvents, Events, JovoCliConfigHooks, JovoCliPluginConfig } from './utils';
 
 export abstract class BaseCommand<T extends Events = DefaultEvents> extends Command {
@@ -23,7 +22,10 @@ export abstract class BaseCommand<T extends Events = DefaultEvents> extends Comm
    * @param emitter - The commands EventEmitter.
    * @param config - The command plugins config.
    */
-  static async install(emitter: Emitter<Events>, config?: JovoCliPluginConfig): Promise<Config.Command.Plugin> {
+  static async install(
+    emitter: Emitter<Events>,
+    config?: JovoCliPluginConfig,
+  ): Promise<Config.Command.Plugin> {
     if (!this.prototype.$emitter) {
       this.prototype.$emitter = emitter;
     }

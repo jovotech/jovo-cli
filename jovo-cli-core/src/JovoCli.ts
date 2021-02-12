@@ -53,7 +53,11 @@ export class JovoCli {
 
   collectLocalPlugins(): JovoCliPluginConfig[] {
     const localPlugins: JovoCliPluginConfig[] = [];
-    const projectCliPlugins: JovoCliPluginEntry[] = this.$project!.getCliPlugins();
+    if (!this.$project) {
+      return localPlugins;
+    }
+
+    const projectCliPlugins: JovoCliPluginEntry[] = this.$project.getCliPlugins();
 
     for (const plugin of projectCliPlugins) {
       const cliPlugin: JovoCliPluginConfig = {
@@ -129,10 +133,6 @@ export class JovoCli {
 
     for (const pluginConfig of pluginConfigs) {
       // Instantiate default class exported from plugin and pass config as parameter.
-      console.log(pluginConfig.path);
-      console.time('Collecting plugins from core...');
-      require(joinPaths(pluginConfig.path, 'dist', 'index.js'));
-      console.timeEnd('Collecting plugins from core...');
       const plugin: JovoCliPlugin = new (require(pluginConfig.path).default)(pluginConfig);
 
       // Register plugin.

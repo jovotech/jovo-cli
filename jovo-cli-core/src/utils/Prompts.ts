@@ -58,25 +58,29 @@ export async function promptListForProjectId(choices: { name: string; value: str
  * Prompt for overwrite.
  * @param message - Message to display on prompt.
  */
-export async function promptOverwrite(message: string) {
-  return (await prompt({
-    name: 'overwrite',
-    type: 'select',
-    message,
-    choices: [
-      {
-        value: ANSWER_OVERWRITE,
-        name: 'Overwrite',
+export async function promptOverwrite(message: string): Promise<{ overwrite: string }> {
+  try {
+    return (await prompt({
+      name: 'overwrite',
+      type: 'select',
+      message,
+      choices: [
+        {
+          value: ANSWER_OVERWRITE,
+          name: 'Overwrite',
+        },
+        {
+          value: ANSWER_CANCEL,
+          name: 'Cancel',
+        },
+      ],
+      result() {
+        // Since enquirer returns the prompt's name by default, we need to get the value manually.
+        // @ts-ignore
+        return this.focused.value;
       },
-      {
-        value: ANSWER_CANCEL,
-        name: 'Cancel',
-      },
-    ],
-    result() {
-      // Since enquirer returns the prompt's name by default, we need to get the value manually.
-      // @ts-ignore
-      return this.focused.value;
-    },
-  })) as { overwrite: string };
+    })) as { overwrite: string };
+  } catch (error) {
+    return { overwrite: ANSWER_CANCEL };
+  }
 }
