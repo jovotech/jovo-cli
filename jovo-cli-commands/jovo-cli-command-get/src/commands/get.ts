@@ -40,7 +40,6 @@ export class Get extends BaseCommand<GetEvents> {
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
     }),
-    // ToDo: If these two flags depend on each other, why not just provide one?
     build: flags.boolean({
       description: 'Runs build after get.',
       char: 'b',
