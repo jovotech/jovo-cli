@@ -1,9 +1,9 @@
 {
-  "name": "cli",
+  "name": "jovodev",
   "version": "0.0.0",
   "author": "rubenaeg @rubenaeg",
   "bin": {
-    "cli": "./bin/run"
+    "jovodev": "./bin/run"
   },
   "bugs": "https://github.com/rubenaeg/cli/issues",
   "dependencies": {
