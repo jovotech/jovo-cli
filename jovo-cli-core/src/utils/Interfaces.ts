@@ -79,10 +79,26 @@ export interface JovoUserConfigFile {
   webhook: {
     uuid: string;
   };
-  cli?: {
+  cli: {
     plugins: JovoCliPluginEntry[];
+    presets: JovoCliPreset[];
   };
   timeLastUpdateMessage?: string | number;
+}
+
+export interface ProjectProperties {
+  projectName: string;
+  template: string;
+  language: 'javascript' | 'typescript';
+  platforms: string[];
+  locales: string[];
+  linter: boolean;
+  unitTesting: boolean;
+}
+
+export interface JovoCliPreset extends ProjectProperties {
+  name: string;
+  key: string;
 }
 
 // ####### PACKAGE MANAGEMENT #######

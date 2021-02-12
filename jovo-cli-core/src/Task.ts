@@ -63,7 +63,7 @@ export class Task {
         const output = await this.action();
         spinner.succeed();
         if (output) {
-          console.log(chalk.grey(indentString(`>> ${output}`, this.indentation + 2)));
+          console.log(chalk.white.dim(indentString(`>> ${output}`, this.indentation + 2)));
         }
       } catch (error) {
         spinner.fail();

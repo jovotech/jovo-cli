@@ -16,3 +16,5 @@ export const TADA: string = get('tada');
 export const STAR: string = get('star');
 export const STATION: string = get('station');
 export const CLOUD: string = get('cloud');
+export const CRYSTAL_BALL: string = get('crystal_ball');
+export const WRENCH: string = get('wrench');

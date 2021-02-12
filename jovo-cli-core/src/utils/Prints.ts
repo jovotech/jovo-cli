@@ -6,7 +6,15 @@ import indentString from 'indent-string';
  * @param stage - Stage to print.
  */
 export function printStage(stage?: string): string {
-  return stage ? `[stage: ${chalk.white.bold(stage)}]` : '';
+  return stage ? `[stage: ${printHighlight(stage)}]` : '';
+}
+
+/**
+ * Returns a string of a white, bold text.
+ * @param text - Text to highlight.
+ */
+export function printHighlight(text: string) {
+  return chalk.white.bold(text);
 }
 
 /**
@@ -22,7 +30,7 @@ export function printSubHeadline(hl: string): string {
  * @param askProfile - ASK profile to print.
  */
 export function printAskProfile(askProfile: string): string {
-  return askProfile ? `[ASK profile: ${chalk.white.bold(askProfile)}]` : '';
+  return askProfile ? `[ASK profile: ${printHighlight(askProfile)}]` : '';
 }
 
 /**

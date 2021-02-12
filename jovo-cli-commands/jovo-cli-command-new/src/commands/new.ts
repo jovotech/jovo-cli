@@ -1,28 +1,40 @@
 import { flags } from '@oclif/command';
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-import { prompt } from 'enquirer';
 import { join as joinPaths } from 'path';
-import { cli as ux } from 'cli-ux';
+import _merge from 'lodash.merge';
+import _pick from 'lodash.pick';
 import {
   ANSWER_CANCEL,
   BaseCommand,
+  CRYSTAL_BALL,
   deleteFolderRecursive,
   JovoCli,
+  JovoCliError,
   JovoCliPluginContext,
+  JovoCliPreset,
+  printHighlight,
   printSubHeadline,
+  ProjectProperties,
   promptOverwrite,
   STAR,
   Task,
+  WRENCH,
 } from 'jovo-cli-core';
-import chalk from 'chalk';
-import { createEmptyProject, downloadAndExtract } from '../utils';
+import { downloadAndExtract } from '../utils';
+import { existsSync, mkdirSync } from 'fs';
+import {
+  promptPreset,
+  promptPresetName,
+  promptProjectProperties,
+  promptSavePreset,
+} from '../utils/Prompts';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export interface NewPluginContext extends JovoCliPluginContext {
-  projectName: string;
-}
+export interface NewPluginContext
+  extends JovoCliPluginContext,
+    Omit<ProjectProperties, 'name' | 'key'> {}
 
 export interface NewEvents {
   'before.new': NewPluginContext;
@@ -44,7 +56,6 @@ export class New extends BaseCommand<NewEvents> {
     'template': flags.string({
       char: 't',
       description: 'Name of the template.',
-      default: 'helloworld',
       parse(template: string) {
         if (!/^[0-9a-zA-Z-/_]+$/.test(template)) {
           console.log('Please use a valid template name.');
@@ -57,19 +68,20 @@ export class New extends BaseCommand<NewEvents> {
     'locale': flags.string({
       char: 'l',
       description: 'Locale of the language model.',
-      default: 'en',
+      multiple: true,
     }),
     'language': flags.string({
       description: 'Sets the programming language of the template.',
       options: ['javascript', 'typescript'],
-      default: 'javascript',
     }),
     'typescript': flags.boolean({
       description: 'Sets the programming language of the template to TypeScript.',
-      default: false,
     }),
-    'default': flags.boolean({
-      description: 'Wizard for installation',
+    'preset': flags.string({
+      description:
+        'Selects a preconfigured preset from the wizard without going through the selection process.',
+      dependsOn: ['no-wizard'],
+      options: jovo.$userConfig.getPresets().map((preset) => preset.key),
     }),
     'build': flags.string({
       description: 'Runs build after "jovo new".',
@@ -96,6 +108,8 @@ export class New extends BaseCommand<NewEvents> {
           console.log('Please use a valid directory name.');
           process.exit();
         }
+
+        return directory;
       },
     },
   ];
@@ -108,129 +122,130 @@ export class New extends BaseCommand<NewEvents> {
     this.log(`\n jovo new: ${New.description}`);
     this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
-    // Check if provided directory already exists, if so, prompt for overwrite.
-    if (jovo.hasExistingProject(args.directory)) {
-      const { overwrite } = await promptOverwrite(
-        `The directory ${args.directory} already exists. What would you like to do?`,
-      );
-      if (overwrite === ANSWER_CANCEL) {
-        this.exit();
-      } else {
-        deleteFolderRecursive(joinPaths(process.cwd(), args.directory));
-      }
-    }
-
-    // ToDo: WIZARD!!
     const context: NewPluginContext = {
       projectName: args.directory,
+      template: flags.template || 'helloworldtest',
+      language: flags.language || 'typescript',
+      linter: false,
+      unitTesting: false,
       command: New.id,
-      locales: [],
+      locales: flags.locale || ['en'],
+      // ToDo: What platforms to use?
       platforms: [],
       flags,
       args,
     };
 
-    this.log("  I'm setting everything up");
+    let preset: JovoCliPreset | undefined;
+
+    if (!flags['no-wizard']) {
+      this.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
+      this.log();
+
+      try {
+        const { selectedPreset } = await promptPreset();
+
+        if (selectedPreset === 'manual') {
+          // Manually select project properties.
+          const options: ProjectProperties = await promptProjectProperties(args, flags);
+
+          const { savePreset } = await promptSavePreset();
+          if (savePreset) {
+            const { presetName } = await promptPresetName();
+            preset = {
+              name: presetName,
+              key: presetName,
+              ...options,
+            };
+
+            jovo.$userConfig.savePreset(preset);
+          }
+        } else {
+          preset = jovo.$userConfig.getPreset(selectedPreset);
+        }
+      } catch (error) {
+        // If no error is given, i.e. user cancelled process, return and exit. Explicitly check, if error.length is 0, as it is undefined on JovoCliError.
+        if (error.length === 0) {
+          return;
+        }
+
+        if (error instanceof JovoCliError) {
+          console.log('HERE');
+          throw error;
+        }
+
+        throw new JovoCliError(error.message, 'jovo-cli-command-new');
+      }
+    } else if (flags.preset) {
+      preset = jovo.$userConfig.getPreset(flags.preset);
+    }
+
+    // Merge project properties with context object.
+    if (preset) {
+      const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
+      _merge(context, contextPreset);
+    } else {
+      // Directory is mandatory, so throw an error if omitted.
+      if (!context.projectName) {
+        throw new JovoCliError(
+          'Please provide a directory.',
+          'jovo-cli-command-new',
+          'For more information, run "jovo new --help".',
+        );
+      }
+    }
+
+    // Check if provided directory already exists, if so, prompt for overwrite.
+    if (jovo.hasExistingProject(context.projectName)) {
+      const { overwrite } = await promptOverwrite(
+        `The directory ${printHighlight(
+          context.projectName,
+        )} already exists. What would you like to do?`,
+      );
+      if (overwrite === ANSWER_CANCEL) {
+        return;
+      } else {
+        deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
+      }
+    }
+
+    this.log();
+    this.log(`  ${WRENCH} I'm setting everything up`);
     this.log();
 
     await this.$emitter!.run('before.new');
 
     const newTask: Task = new Task(
-      `Creating new directory /${chalk.white.bold(args.directory)}`,
+      `Creating new directory /${printHighlight(context.projectName)}`,
       () => {
-        createEmptyProject(context.projectName);
-        return context.projectName;
+        if (!existsSync(context.projectName)) {
+          mkdirSync(context.projectName);
+        }
+        return joinPaths(jovo.$projectPath, context.projectName);
       },
     );
-
-    const downloadTask: Task = new Task(
-      `Downloading and extracting template ${chalk.white.bold()}`,
-      async () => {
-        await downloadAndExtract(context.projectName);
-      },
-    );
-
     await newTask.run();
 
-    tasks.add({
-      title: `Downloading and extracting template ${chalk.white.bold(config.template!)}`,
-      async task(ctx) {
-        // TODO: ctx should be empty?
-        await project.downloadAndExtract(
-          ctx.projectName,
-          ctx.template,
-          ctx.locales[0],
-          ctx.language,
+    const downloadTask: Task = new Task(
+      `Downloading and extracting template ${context.template}`,
+      async () => {
+        // ToDo: What if multiple locales are provided?
+        await downloadAndExtract(
+          context.projectName,
+          context.template,
+          context.locales[0],
+          context.language,
         );
-
-        await project.updateModelLocale(ctx.locales[0]);
       },
-    });
-
-    // ToDo: Maybe give user option to use wizard or not?
-    if (!flags.default) {
-      const options = await prompt([
-        {
-          name: 'projectName',
-          message: 'Project name',
-          type: 'input',
-          skip: !!args.directory,
-          initial: 'helloworld',
-        },
-        {
-          name: 'template',
-          message: 'Choose a template',
-          type: 'select',
-          skip: !!flags.template,
-          initial: 0,
-          choices: ['helloworld', 'google', 'alexa'],
-        },
-        {
-          name: 'language',
-          message: 'Programming language',
-          type: 'select',
-          skip: !!flags.language || !!flags.typescript,
-          choices: ['typescript', 'javascript'],
-        },
-        {
-          name: 'linter',
-          message: 'Choose a Linter/Formatter',
-          type: 'select',
-          choices: ['Prettier', 'TsLint', 'EsLint'],
-        },
-      ]);
-
-      // @ts-ignore
-      const { savePreset } = await prompt(
-        // ToDo: Only save preset if at least one option has been made? Not all options as flags?
-        {
-          name: 'savePreset',
-          message: 'Do you want to save this preset?',
-          type: 'confirm',
-        },
-      );
-
-      if (savePreset) {
-        // @ts-ignore
-        const { presetName } = await prompt({
-          name: 'presetName',
-          message: 'Preset name',
-          type: 'input',
-          initial: 'default',
-        });
-      }
-    }
+    );
+    await downloadTask.run();
 
     this.log();
-    this.log(`${STAR} Successfully created your project! ${STAR}`);
+    this.log(`  ${STAR} Successfully created your project! ${STAR}`);
     this.log();
+  }
 
-    const parentTree = ux.tree();
-    const projectTree = ux.tree();
-    const srcTree = ux.tree();
-    srcTree.insert('index.js').insert('app.js').insert('config.js');
-    projectTree.insert('src', srcTree);
-    parentTree.insert('helloworld', projectTree);
-    parentTree.display();
+  async catch(error: JovoCliError) {
+    this.error(`There was a problem:\n${error}`);
   }
 }
