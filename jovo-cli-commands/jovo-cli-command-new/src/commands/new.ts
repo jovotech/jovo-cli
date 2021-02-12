@@ -240,9 +240,13 @@ export class New extends BaseCommand<NewEvents> {
     );
     await downloadTask.run();
 
+    await this.$emitter!.run('new', context);
+
     this.log();
     this.log(`  ${STAR} Successfully created your project! ${STAR}`);
     this.log();
+
+    await this.$emitter!.run('after.new', context);
   }
 
   async catch(error: JovoCliError) {
