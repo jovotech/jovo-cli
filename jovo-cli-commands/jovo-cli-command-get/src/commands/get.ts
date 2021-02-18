@@ -2,10 +2,10 @@ import { flags } from '@oclif/command';
 import { Input } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
-  BaseCommand,
   JovoCli,
   JovoCliError,
   JovoCliPluginContext,
+  PluginCommand,
   printSubHeadline,
   Project,
 } from 'jovo-cli-core';
@@ -18,7 +18,7 @@ export interface GetEvents {
   'after.get': JovoCliPluginContext;
 }
 
-export class Get extends BaseCommand<GetEvents> {
+export class Get extends PluginCommand<GetEvents> {
   static id: string = 'get';
   static description: string = 'Downloads an existing platform project into the platforms folder.';
   static examples: string[] = [
