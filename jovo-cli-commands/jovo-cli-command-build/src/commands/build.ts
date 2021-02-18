@@ -2,7 +2,6 @@ import { flags } from '@oclif/command';
 import { Input } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
-  BaseCommand,
   validateLocale,
   promptForPlatform,
   JovoCliPluginContext,
@@ -12,6 +11,7 @@ import {
   TADA,
   wait,
   JovoCli,
+  PluginCommand,
 } from 'jovo-cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -23,7 +23,7 @@ export interface BuildEvents {
   'reverse.build': JovoCliPluginContext;
 }
 
-export class Build extends BaseCommand<BuildEvents> {
+export class Build extends PluginCommand<BuildEvents> {
   static id: string = 'build';
   static description: string =
     'Build platform-specific language models based on jovo models folder.';
@@ -44,6 +44,7 @@ export class Build extends BaseCommand<BuildEvents> {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en|de|etc>',
+      multiple: true,
     }),
     platform: flags.string({
       char: 'p',
@@ -65,28 +66,19 @@ export class Build extends BaseCommand<BuildEvents> {
   };
   static args = [];
 
-  async run() {
-    const { args, flags } = this.parse(Build);
-
-    await this.$emitter!.run('parse', { command: Build.id, flags, args });
-
-    this.log(`\n jovo build: ${Build.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
-
-    // Platform-independent validation.
-    validateLocale(flags.locale);
-
-    // Build plugin context, containing information about the current command environemnt.
-    const context: JovoCliPluginContext = {
-      command: Build.id,
-      locales: flags.locale ? [flags.locale] : jovo.$project!.getLocales(),
-      platforms: flags.platform ? [flags.platform] : jovo.getPlatforms(),
-      flags,
-      args,
+  install() {
+    this.actionSet = {
+      'before.build': [this.beforeBuild.bind(this)],
+      'build': [this.build.bind(this)],
     };
+  }
+
+  async beforeBuild(context: JovoCliPluginContext) {
+    // Platform-independent validation.
+    validateLocale(context.flags.locale as string);
 
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
-    if (flags.reverse) {
+    if (context.flags.reverse) {
       if (context.platforms.length !== 1) {
         const { platform } = await promptForPlatform(
           'Please select the platform you want to reverse build from:',
@@ -96,11 +88,11 @@ export class Build extends BaseCommand<BuildEvents> {
       }
 
       await this.$emitter!.run('reverse.build', context);
-      return;
+      this.uninstall();
     }
+  }
 
-    await this.$emitter!.run('before.build', context);
-
+  async build(context: JovoCliPluginContext) {
     // Create "fake" tasks for more verbose logs.
     const initTask: Task = new Task(`${TADA} Initializing build process`);
 
@@ -128,9 +120,28 @@ export class Build extends BaseCommand<BuildEvents> {
     if (!existsSync(buildPath)) {
       mkdirSync(buildPath);
     }
+  }
 
+  async run() {
+    const { args, flags } = this.parse(Build);
+
+    await this.$emitter!.run('parse', { command: Build.id, flags, args });
+
+    this.log(`\n jovo build: ${Build.description}`);
+    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+
+    // Build plugin context, containing information about the current command environemnt.
+    const context: JovoCliPluginContext = {
+      command: Build.id,
+      locales: flags.locale ? [flags.locale] : jovo.$project!.getLocales(),
+      platforms: flags.platform ? [flags.platform] : jovo.getPlatforms(),
+      flags,
+      args,
+    };
+
+    await this.$emitter!.run('before.build', context);
     await this.$emitter!.run('build', context);
-    await this.$emitter!.run('after.build');
+    await this.$emitter!.run('after.build', context);
 
     this.log();
     this.log('  Build completed.');
