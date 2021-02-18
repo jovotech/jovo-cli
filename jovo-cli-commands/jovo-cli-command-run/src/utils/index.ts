@@ -10,7 +10,8 @@ import {
   PackageVersionsNpm,
   printWarning,
 } from 'jovo-cli-core';
-import * as JovoWebhookConnector from 'jovo-webhook-connector';
+
+import * as JovoWebhookConnector from './JovoWebhookConnector';
 
 /**
  * Checks whether to display an update message for out-of-date packages or not.
@@ -76,7 +77,7 @@ export function instantiateJovoWebhook(
   }
 
   // Open socket redirect from server to localhost.
-  JovoWebhookConnector.open(webhookId, JOVO_WEBHOOK_URL, { post: options });
+  JovoWebhookConnector.open(webhookId, JOVO_WEBHOOK_URL, options);
 
   const debuggerUrl: string = `${JOVO_WEBHOOK_URL}/${webhookId}`;
 

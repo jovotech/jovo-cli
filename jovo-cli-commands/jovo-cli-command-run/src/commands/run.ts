@@ -6,11 +6,11 @@ import { accessSync } from 'fs';
 import resolveBin from 'resolve-bin';
 import { join as joinPaths } from 'path';
 import {
-  BaseCommand,
   JovoCli,
   JovoCliError,
   JovoCliPluginContext,
   PackageVersionsNpm,
+  PluginCommand,
   Project,
   Task,
 } from 'jovo-cli-core';
@@ -23,7 +23,7 @@ export interface RunEvents {
   'after.run': JovoCliPluginContext;
 }
 
-export class Run extends BaseCommand<RunEvents> {
+export class Run extends PluginCommand<RunEvents> {
   static id: string = 'run';
   static description: string = 'Runs a local development server (webhook).';
   static examples: string[] = [];
