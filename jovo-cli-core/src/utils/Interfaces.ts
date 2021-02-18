@@ -98,7 +98,6 @@ export interface ProjectProperties {
 
 export interface JovoCliPreset extends ProjectProperties {
   name: string;
-  key: string;
 }
 
 // ####### PACKAGE MANAGEMENT #######

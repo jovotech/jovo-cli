@@ -64,12 +64,21 @@ export class JovoUserConfig {
         plugins: ['jovo-cli-command-new', 'jovo-cli-command-run'],
         presets: [
           {
-            name: 'Default (JS)',
-            key: 'defaultJs',
+            name: 'Default_JS',
             projectName: 'helloworld',
             template: 'helloworld',
             locales: ['en'],
             language: 'javascript',
+            platforms: [],
+            linter: true,
+            unitTesting: true,
+          },
+          {
+            name: 'Default_TS',
+            projectName: 'helloworld',
+            template: 'helloworld',
+            locales: ['en'],
+            language: 'typescript',
             platforms: [],
             linter: true,
             unitTesting: true,
@@ -112,7 +121,7 @@ export class JovoUserConfig {
     const config: JovoUserConfigFile = this.get();
 
     const presets: JovoCliPreset[] = _get(config, 'cli.presets');
-    const preset: JovoCliPreset | undefined = presets.find((preset) => preset.key === presetKey);
+    const preset: JovoCliPreset | undefined = presets.find((preset) => preset.name === presetKey);
 
     if (!preset) {
       throw new JovoCliError(
@@ -133,8 +142,8 @@ export class JovoUserConfig {
     const config: JovoUserConfigFile = this.get();
 
     // Check if preset already exists.
-    if (config.cli.presets.find((p) => p.key === preset.key)) {
-      throw new JovoCliError(`Preset ${preset.key} already exists.`, 'jovo-cli-core');
+    if (config.cli.presets.find((p) => p.name === preset.name)) {
+      throw new JovoCliError(`Preset ${preset.name} already exists.`, 'jovo-cli-core');
     }
 
     config.cli.presets.push(preset);

@@ -23,8 +23,6 @@ export class Project {
     this.projectPath = projectPath;
 
     this.$config = new Config(this.projectPath, this.$stage);
-    // ToDo: Check for stage!!
-    console.log(this.$config);
     this.$configReader = new JovoConfigReader(this.$config.getContent());
 
     // Look for --stage in process.argv.

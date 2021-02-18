@@ -17,9 +17,10 @@ export class JovoCli {
   private static instance: JovoCli;
   private cliPlugins: JovoCliPlugin[] = [];
 
-  readonly $projectPath: string;
-  readonly $project?: Project;
   readonly $userConfig: JovoUserConfig;
+
+  $projectPath: string;
+  $project?: Project;
 
   constructor() {
     this.$projectPath = process.cwd();
@@ -39,10 +40,22 @@ export class JovoCli {
   }
 
   /**
+   * Initializes a new project at the provided path.
+   * @param path - Project path.
+   */
+  initializeProject(path: string) {
+    this.$projectPath = path;
+
+    if (this.isInProjectDirectory()) {
+      this.$project = Project.getInstance(this.$projectPath);
+    }
+  }
+
+  /**
    * Checks whether current working directory is a Jovo project.
    */
   isInProjectDirectory(): boolean {
-    if (!existsSync(this.$projectPath + 'package.json')) {
+    if (!existsSync(joinPaths(this.$projectPath, 'package.json'))) {
       return false;
     }
 
