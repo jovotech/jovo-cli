@@ -3,7 +3,7 @@ import { Collector } from './Collector';
 
 const hook: Hook<'init'> = async function ({ id }) {
   const collector = new Collector(this.config);
-  await collector.install(id as string);
+  await collector.install();
   this.config.plugins.push(collector);
 };
 
