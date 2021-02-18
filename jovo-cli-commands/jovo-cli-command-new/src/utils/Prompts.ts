@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { prompt } from 'enquirer';
 import {
   JovoCli,
@@ -20,12 +21,16 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
         name: string;
         value: string;
       } => {
+        // ToDo: Parse name with project props
+        const language: string = chalk.blueBright(preset.language);
+        const projectName: string = chalk.underline.blueBright(preset.projectName);
+        const output: string = `${preset.name} ("${projectName}", ${language})`;
         return {
-          name: preset.name,
-          value: preset.key,
+          name: output,
+          value: preset.name,
         };
       }),
-      { name: 'Manually select features...', value: 'manual' },
+      { name: 'Select features...', value: 'manual' },
     ],
     result() {
       // Since enquirer returns the prompt's name by default, we need to get the value manually.
@@ -45,14 +50,15 @@ export async function promptProjectProperties(args: any, flags: any): Promise<Pr
       initial: 'helloworld',
     },
     // Prompt for Template (single).
-    {
-      name: 'template',
-      message: 'Choose a template:',
-      type: 'select',
-      skip: !!flags.template,
-      initial: 0,
-      choices: ['helloworld', 'google', 'alexa'],
-    },
+    // ToDo: Prompt for template, store template-specific values (e.g. platform) for use in later prompts
+    // {
+    //   name: 'template',
+    //   message: 'Choose a template:',
+    //   type: 'select',
+    //   skip: !!flags.template,
+    //   initial: 0,
+    //   choices: ['helloworld', 'google', 'alexa'],
+    // },
     // Prompt for Programming Language (js/ts).
     {
       name: 'language',
