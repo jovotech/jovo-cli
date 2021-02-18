@@ -6,13 +6,13 @@ import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
 import {
   ANSWER_CANCEL,
-  BaseCommand,
   CRYSTAL_BALL,
   deleteFolderRecursive,
   JovoCli,
   JovoCliError,
   JovoCliPluginContext,
   JovoCliPreset,
+  PluginCommand,
   printHighlight,
   printSubHeadline,
   ProjectProperties,
@@ -21,7 +21,9 @@ import {
   Task,
   WRENCH,
 } from 'jovo-cli-core';
-import { downloadAndExtract } from '../utils';
+import { BuildEvents } from 'jovo-cli-command-build';
+
+import { downloadAndExtract, runNpmInstall } from '../utils';
 import { existsSync, mkdirSync } from 'fs';
 import {
   promptPreset,
@@ -42,7 +44,7 @@ export interface NewEvents {
   'after.new': NewPluginContext;
 }
 
-export class New extends BaseCommand<NewEvents> {
+export class New extends PluginCommand<NewEvents & BuildEvents> {
   static id: string = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -81,11 +83,11 @@ export class New extends BaseCommand<NewEvents> {
       description:
         'Selects a preconfigured preset from the wizard without going through the selection process.',
       dependsOn: ['no-wizard'],
-      options: jovo.$userConfig.getPresets().map((preset) => preset.key),
+      options: jovo.$userConfig.getPresets().map((preset) => preset.name),
     }),
     'build': flags.string({
       description: 'Runs build after "jovo new".',
-      options: jovo.getPlatforms(),
+      // options: jovo.getPlatforms(),
     }),
     'deploy': flags.boolean({
       description: 'Runs deploy after "jovo new --build".',
@@ -122,20 +124,6 @@ export class New extends BaseCommand<NewEvents> {
     this.log(`\n jovo new: ${New.description}`);
     this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
-    const context: NewPluginContext = {
-      projectName: args.directory,
-      template: flags.template || 'helloworldtest',
-      language: flags.language || 'typescript',
-      linter: false,
-      unitTesting: false,
-      command: New.id,
-      locales: flags.locale || ['en'],
-      // ToDo: What platforms to use?
-      platforms: [],
-      flags,
-      args,
-    };
-
     let preset: JovoCliPreset | undefined;
 
     if (!flags['no-wizard']) {
@@ -154,7 +142,6 @@ export class New extends BaseCommand<NewEvents> {
             const { presetName } = await promptPresetName();
             preset = {
               name: presetName,
-              key: presetName,
               ...options,
             };
 
@@ -170,7 +157,6 @@ export class New extends BaseCommand<NewEvents> {
         }
 
         if (error instanceof JovoCliError) {
-          console.log('HERE');
           throw error;
         }
 
@@ -180,7 +166,21 @@ export class New extends BaseCommand<NewEvents> {
       preset = jovo.$userConfig.getPreset(flags.preset);
     }
 
-    // Merge project properties with context object.
+    const context: NewPluginContext = {
+      projectName: args.directory,
+      template: flags.template || 'helloworldtest',
+      language: flags.language || 'typescript',
+      linter: false,
+      unitTesting: false,
+      command: New.id,
+      locales: flags.locale || ['en'],
+      // ToDo: What platforms to use?
+      platforms: [],
+      flags,
+      args,
+    };
+
+    // Merge preset's project properties with context object.
     if (preset) {
       const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
       _merge(context, contextPreset);
@@ -240,7 +240,36 @@ export class New extends BaseCommand<NewEvents> {
     );
     await downloadTask.run();
 
+    // Install npm dependencies.
+    if (!flags['skip-npminstall']) {
+      const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
+        return runNpmInstall();
+      });
+      await installNpmTask.run();
+    }
+
     await this.$emitter!.run('new', context);
+
+    // Initialize project.
+    jovo.initializeProject(joinPaths(jovo.$projectPath, context.projectName));
+
+    // Build project.
+    if (flags.build) {
+      this.log();
+      await this.$emitter.run('before.build', context);
+      await this.$emitter.run('build', context);
+      await this.$emitter.run('after.build', context);
+    }
+
+    // Deploy project.
+    // if (flags.deploy) {
+    //   tasks.add({
+    //     title: 'Deploying project...',
+    //     task(ctx) {
+    //       return new Listr(deployTask(ctx));
+    //     },
+    //   });
+    // }
 
     this.log();
     this.log(`  ${STAR} Successfully created your project! ${STAR}`);
