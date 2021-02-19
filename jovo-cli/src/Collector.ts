@@ -34,10 +34,6 @@ export class Collector extends Plugin {
       const plugins: JovoCliPlugin[] = jovo.loadPlugins();
 
       for (const plugin of plugins) {
-        // ToDo: Maybe better in Project.ts?
-        // Merge existing plugin config with plugin-specific values.
-        _merge(plugin.config, { pluginId: plugin.id, pluginType: plugin.type });
-
         // Install plugin commands.
         const pluginCommands: typeof PluginCommand[] = plugin.getCommands();
 

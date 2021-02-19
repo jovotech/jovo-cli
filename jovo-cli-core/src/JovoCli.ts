@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync } from 'fs';
 import { join as joinPaths } from 'path';
 import globalNpmModulesPath from 'global-modules';
+import _merge from 'lodash.merge';
 
 import {
   JovoCliPlugin,
@@ -9,7 +10,6 @@ import {
   JovoCliPluginType,
   JovoUserConfig,
 } from '.';
-
 import { Project } from './Project';
 import { JovoUserConfigFile, JOVO_WEBHOOK_URL, REPO_URL } from './utils';
 
@@ -77,6 +77,8 @@ export class JovoCli {
         name: '',
         path: '',
         options: {},
+        pluginId: '',
+        pluginType: '',
       };
       // Check plugin type.
       if (typeof plugin === 'string') {
@@ -110,6 +112,8 @@ export class JovoCli {
         // Load plugin from global 'node_modules/'.
         path: joinPaths(globalNpmModulesPath, plugin as string),
         options: {},
+        pluginId: '',
+        pluginType: '',
       };
 
       // If the plugin does not exist, skip it quietly.
@@ -147,6 +151,9 @@ export class JovoCli {
     for (const pluginConfig of pluginConfigs) {
       // Instantiate default class exported from plugin and pass config as parameter.
       const plugin: JovoCliPlugin = new (require(pluginConfig.path).default)(pluginConfig);
+
+      // Merge existing plugin config with plugin-specific values.
+      _merge(plugin.config, { pluginId: plugin.id, pluginType: plugin.type });
 
       // Register plugin.
       this.cliPlugins.push(plugin);

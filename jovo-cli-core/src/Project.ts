@@ -16,7 +16,7 @@ export class Project {
   private projectPath: string;
 
   readonly $stage?: string;
-  readonly $configReader?: JovoConfigReader;
+  readonly $configReader: JovoConfigReader;
   readonly $config: Config;
 
   constructor(projectPath: string) {
