@@ -31,15 +31,15 @@ export interface DefaultEvents {
 
 // ####### PLUGIN #######
 
-export type JovoCliPluginType = 'platform' | 'target' | 'command';
+export type JovoCliPluginType = 'platform' | 'target' | 'command' | '';
 
 export interface JovoCliPluginConfig {
   name: string;
   path: string;
   // ToDo: Config? See Gatsby.js.
   options: JovoCliPluginOptions;
-  pluginId?: string;
-  pluginType?: JovoCliPluginType;
+  pluginId: string;
+  pluginType: JovoCliPluginType;
 }
 
 export interface JovoCliConfigHooks {

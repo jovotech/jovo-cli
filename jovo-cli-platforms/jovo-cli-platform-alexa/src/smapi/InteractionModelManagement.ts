@@ -21,3 +21,24 @@ export async function getInteractionModel(
     throw getAskError('smapiGetInteractionModel', error.message);
   }
 }
+
+export async function updateInteractionModel(
+  skillId: string,
+  locale: string,
+  interactionModelPath: string,
+  stage: string,
+  askProfile?: string,
+) {
+  const cmd: string =
+    'ask smapi set-interaction-model ' +
+    `-s ${skillId} ` +
+    `-g ${stage} ` +
+    `-l ${locale} ` +
+    `${askProfile ? `-p ${askProfile}` : ''} ` +
+    `--interaction-model "file:${interactionModelPath}"`;
+  try {
+    await execAsync(cmd);
+  } catch (err) {
+    throw getAskError('smapiUpdateInteractionModel', err.message);
+  }
+}

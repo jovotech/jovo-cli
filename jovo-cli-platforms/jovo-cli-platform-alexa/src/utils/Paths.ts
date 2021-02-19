@@ -1,7 +1,7 @@
-import { Project } from 'jovo-cli-core';
+import { JovoCli } from 'jovo-cli-core';
 import { join as joinPaths } from 'path';
 
-const project = Project.getInstance();
+const jovo: JovoCli = JovoCli.getInstance();
 
 /**
  * Returns folder name for plugin.
@@ -15,7 +15,7 @@ export function getPlatformDirectory(): string {
  */
 export function getPlatformPath(): string {
   // ToDo: Necessary to pull out from plugin? e.g. ${pluginType}.${pluginId}
-  return joinPaths(project.getBuildPath(), getPlatformDirectory());
+  return joinPaths(jovo.$project!.getBuildPath(), getPlatformDirectory());
 }
 
 /**

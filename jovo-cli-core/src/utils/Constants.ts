@@ -18,3 +18,9 @@ export const STATION: string = get('station');
 export const CLOUD: string = get('cloud');
 export const CRYSTAL_BALL: string = get('crystal_ball');
 export const WRENCH: string = get('wrench');
+
+// ####### TARGETS #######
+export const TARGET_ALL = 'all';
+export const TARGET_ZIP = 'zip';
+export const TARGET_INFO = 'info';
+export const TARGET_MODEL = 'model';

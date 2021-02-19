@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import chalk from 'chalk';
-import { cli as ux } from 'cli-ux';
-import { JovoCliError } from 'jovo-cli-core';
+import _get from 'lodash.get';
+import { execAsync, JovoCliError } from 'jovo-cli-core';
 
 import { AskSkillList } from './Interfaces';
 
@@ -10,9 +10,59 @@ import { getAskConfigPath } from './Paths';
 export * from './Interfaces';
 export * from './Paths';
 
+/**
+ * Checks if ask cli is installed.
+ */
+export async function checkForAskCli() {
+  const cmd: string = `ask --version`;
+
+  try {
+    const stdout: string = await execAsync(cmd);
+    if (stdout.startsWith('2')) {
+      throw new JovoCliError(
+        'Jovo CLI requires ASK CLI @v2 or above.',
+        'jovo-cli-platform-alexa',
+        'Please update your ASK CLI using "npm install ask-cli -g".',
+      );
+    }
+  } catch (error) {
+    if (error instanceof JovoCliError) {
+      throw error;
+    }
+
+    throw new JovoCliError(
+      'Jovo requires ASK CLI',
+      'jovo-cli-platform-alexa',
+      'Install the ASK CLI with "npm install ask-cli -g". Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
+    );
+  }
+}
+
+/**
+ * Reads and returns ask config from .ask/ask-states.json.
+ */
 export function getAskConfig() {
   const content: string = readFileSync(getAskConfigPath(), 'utf-8');
   return JSON.parse(content);
+}
+
+/**
+ * Returns the defined sub locales for the given locale,
+ * e.g. en -> en-US, en-CA, ...
+ * @param config - Plugin config.
+ * @param locale - Locale to map sublocales for.
+ */
+export function getSubLocales(config: any, locale: string): string[] {
+  const locales = _get(config, `options.locales.${locale}`, []);
+
+  if (!locales.length) {
+    throw new JovoCliError(
+      `Could not retrieve locales mapping for language "${locale}"!`,
+      config.name,
+    );
+  }
+
+  return locales;
 }
 
 /**

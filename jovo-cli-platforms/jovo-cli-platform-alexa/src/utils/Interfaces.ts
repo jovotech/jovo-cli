@@ -1,3 +1,5 @@
+import { JovoCliPluginConfig, JovoCliPluginContext } from 'jovo-cli-core';
+
 export interface AskSkillList {
   skills: [
     {
@@ -9,4 +11,13 @@ export interface AskSkillList {
       lastUpdated: string;
     },
   ];
+}
+
+export interface JovoCliPluginContextAlexa extends JovoCliPluginContext {
+  skillId?: string;
+  askProfile?: string;
+}
+
+export interface JovoCliPluginConfigAlexa extends JovoCliPluginConfig {
+  askProfile?: string;
 }

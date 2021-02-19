@@ -4,14 +4,13 @@ import _get from 'lodash.get';
 import _set from 'lodash.set';
 import {
   ANSWER_CANCEL,
-  Hook,
   InstallEventArguments,
   JovoCliPluginContext,
   ParseEventArguments,
+  PluginHook,
   printAskProfile,
   promptListForProjectId,
   promptOverwrite,
-  promptOverwriteProjectFiles,
   Task,
 } from 'jovo-cli-core';
 import { GetEvents } from 'jovo-cli-command-get';
@@ -29,11 +28,15 @@ import {
   getModelsPath,
   getPlatformPath,
   getSkillJsonPath,
+  JovoCliPluginConfigAlexa,
+  JovoCliPluginContextAlexa,
   prepareSkillList,
 } from '../utils';
 import defaultFiles from '../utils/DefaultFiles.json';
 
-export class GetHook extends Hook<GetEvents & BuildEvents> {
+export class GetHook extends PluginHook<GetEvents & BuildEvents> {
+  $config!: JovoCliPluginConfigAlexa;
+
   install() {
     this.actionSet = {
       'install': [this.addCliOptions.bind(this)],
@@ -58,13 +61,23 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.args.platform && args.args.platform !== this.$config.pluginId!) {
+    if (args.args.platform && args.args.platform !== this.$config.pluginId) {
       this.uninstall();
     }
   }
 
-  async checkForExistingPlatformFiles(ctx: JovoCliPluginContext) {
-    if (!ctx.flags.overwrite && existsSync(getPlatformPath())) {
+  /**
+   * Updates the current context with plugin-specific values from --skill-id and --ask-profile.
+   * @param context - Plugin context.
+   */
+  updatePluginContext(context: JovoCliPluginContextAlexa) {
+    // ToDo: Where can the user define ASK profile?
+    context.askProfile = (context.flags['ask-profile'] as string) || this.$config.askProfile;
+    context.skillId = context.flags['skill-id'] as string;
+  }
+
+  async checkForExistingPlatformFiles(context: JovoCliPluginContextAlexa) {
+    if (!context.flags.overwrite && existsSync(getPlatformPath())) {
       const answer = await promptOverwrite('Found existing project files. How to proceed?');
       if (answer.overwrite === ANSWER_CANCEL) {
         this.uninstall();
@@ -72,14 +85,15 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
     }
   }
 
-  async get(ctx: JovoCliPluginContext) {
-    let skillId: string | undefined = this.getSkillId(ctx);
-    const askProfile: string = ctx.flags['ask-profile'] as string;
-    const getTask: Task = new Task(`Getting Alexa Skill projects ${printAskProfile(askProfile)}`);
+  async get(context: JovoCliPluginContextAlexa) {
+    let skillId: string | undefined = this.getSkillId(context);
+    const getTask: Task = new Task(
+      `Getting Alexa Skill projects ${printAskProfile(context.askProfile)}`,
+    );
 
     // If no skill id and thus no specified project can be found, try to prompt for one.
     if (!skillId) {
-      const skills: AskSkillList = await smapi.listSkills(askProfile);
+      const skills: AskSkillList = await smapi.listSkills(context.askProfile);
       const list = prepareSkillList(skills);
       try {
         const answer = await promptListForProjectId(list);
@@ -91,7 +105,11 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
     }
 
     const getSkillInformationTask: Task = new Task('Getting skill information', async () => {
-      const skillInformation = await smapi.getSkillInformation(skillId!, 'development', askProfile);
+      const skillInformation = await smapi.getSkillInformation(
+        skillId!,
+        'development',
+        context.askProfile,
+      );
       writeFileSync(getSkillJsonPath(), JSON.stringify(skillInformation, null, 2));
       this.setAlexaSkillId(skillId!);
 
@@ -99,7 +117,7 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
       const accountLinkingJson = await smapi.getAccountLinkingInformation(
         skillId!,
         'development',
-        askProfile,
+        context.askProfile,
       );
 
       if (accountLinkingJson) {
@@ -112,7 +130,7 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
     });
 
     const getModelsTask: Task = new Task('Getting Alexa Skill model files');
-    const alexaModelPath = getModelsPath();
+    const alexaModelPath: string = getModelsPath();
     if (!existsSync(alexaModelPath)) {
       mkdirSync(alexaModelPath, { recursive: true });
     }
@@ -120,8 +138,8 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
     const skillJson = require(getSkillJsonPath());
     const modelLocales: string[] = [];
 
-    if (ctx.flags.locale) {
-      modelLocales.push(ctx.flags.locale as string);
+    if (context.flags.locale) {
+      modelLocales.push(context.flags.locale as string);
     } else {
       const skillJsonLocales = _get(skillJson, 'manifest.publishingInformation.locales');
       modelLocales.push(...Object.keys(skillJsonLocales));
@@ -129,7 +147,12 @@ export class GetHook extends Hook<GetEvents & BuildEvents> {
 
     for (const locale of modelLocales) {
       const localeTask: Task = new Task(locale, async () => {
-        const model = await smapi.getInteractionModel(skillId!, locale, 'development', askProfile);
+        const model = await smapi.getInteractionModel(
+          skillId!,
+          locale,
+          'development',
+          context.askProfile,
+        );
         writeFileSync(getModelPath(locale), JSON.stringify(model, null, 2));
       });
       getModelsTask.add(localeTask);

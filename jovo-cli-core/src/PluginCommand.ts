@@ -23,7 +23,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
 ) {
   protected actionSet!: ActionSet<T & DefaultEvents>;
   protected $emitter!: Emitter<T & DefaultEvents>;
-  protected $config?: JovoCliPluginConfig;
+  protected $config!: JovoCliPluginConfig;
 
   /**
    * Loads command into CLI.
@@ -40,13 +40,13 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    */
   static async install(
     emitter: Emitter<Events>,
-    config?: JovoCliPluginConfig,
+    config: JovoCliPluginConfig,
   ): Promise<Config.Command.Plugin> {
     if (!this.prototype.$emitter) {
       this.prototype.$emitter = emitter;
     }
 
-    if (config && !this.prototype.$config) {
+    if (!this.prototype.$config) {
       this.prototype.$config = config;
     }
 
