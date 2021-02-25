@@ -1,11 +1,11 @@
 import { flags } from '@oclif/command';
-import { Input } from '@oclif/command/lib/flags';
+import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
   validateLocale,
   promptForPlatform,
   JovoCliPluginContext,
-  JovoCliError,
+  checkForProjectDirectory,
   Task,
   printSubHeadline,
   TADA,
@@ -28,7 +28,7 @@ export class Build extends PluginCommand<BuildEvents> {
   static description: string =
     'Build platform-specific language models based on jovo models folder.';
   static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
-  static flags: Input<any> = {
+  static flags: InputFlags<any> = {
     clean: flags.boolean({
       description:
         'Deletes all platform folders and executes a clean build. If --platform is specified, it deletes only the respective platforms folder.',
@@ -68,6 +68,7 @@ export class Build extends PluginCommand<BuildEvents> {
 
   install() {
     this.actionSet = {
+      'install': [checkForProjectDirectory],
       'before.build': [this.beforeBuild.bind(this)],
       'build': [this.build.bind(this)],
     };
@@ -146,9 +147,5 @@ export class Build extends PluginCommand<BuildEvents> {
     this.log();
     this.log('  Build completed.');
     this.log();
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }

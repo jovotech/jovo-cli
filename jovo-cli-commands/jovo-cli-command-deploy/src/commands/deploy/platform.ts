@@ -1,10 +1,13 @@
 import { flags } from '@oclif/command';
+import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
 import {
+  Emitter,
   JovoCli,
   JovoCliError,
+  JovoCliPluginConfig,
   JovoCliPluginContext,
   PluginCommand,
   TARGET_ALL,
@@ -34,17 +37,19 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     'jovo deploy --target zip',
   ];
 
+  static availablePlatforms: string[] = [];
+
   static flags: InputFlags<any> = {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en|de|etc>',
       multiple: true,
     }),
-    // ToDo: Get deploy targets from JovoCli. Allow to be set multiple times?
     platform: flags.string({
       char: 'p',
       description: 'Specifies a build platform.',
-      options: jovo.getPlatforms(),
+      options: DeployPlatform.availablePlatforms,
+      multiple: true,
     }),
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
@@ -60,7 +65,16 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       description: 'Location of model files.',
     }),
   };
-	static args = [];
+  static args = [];
+
+  static async install(
+    emitter: Emitter<DeployPlatformEvents>,
+    config: JovoCliPluginConfig,
+  ): Promise<Config.Command.Plugin> {
+    // Override PluginCommand.install() to fill options for --platform.
+    this.availablePlatforms.push(...jovo.getPlatforms());
+    return super.install(emitter, config);
+  }
 
   install() {
     this.actionSet = {
@@ -101,11 +115,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     await this.$emitter.run('after.deploy:platform', context);
 
     this.log();
-    this.log('  Build completed.');
+    this.log('  Platform deployment completed.');
     this.log();
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }
