@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import indentString from 'indent-string';
+import { WARNING } from './Constants';
 
 /**
  * Returns a string of a stage in white bold font.
@@ -38,5 +39,13 @@ export function printAskProfile(askProfile?: string): string {
  * @param message - Warning message to print.
  */
 export function printWarning(message: string) {
-  return chalk.yellow.bold(`[WARN] ${message}`);
+  return chalk.yellow.bold(`${WARNING} ${message}`);
+}
+
+/**
+ * Prints green code snippets.
+ * @param code - Code to print.
+ */
+export function printCode(code: string): string {
+  return chalk.green(code);
 }

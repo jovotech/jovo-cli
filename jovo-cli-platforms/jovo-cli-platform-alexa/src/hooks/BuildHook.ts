@@ -337,7 +337,6 @@ export class BuildHook extends PluginHook<BuildEvents> {
   getPluginEndpoint(): string {
     const config = jovo.$project!.$config.get();
     const endpoint = _get(this.$config, 'options.endpoint') || _get(config, 'endpoint');
-
     return jovo.resolveEndpoint(endpoint);
   }
 

@@ -3,11 +3,11 @@ import { Input } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
   JovoCli,
+  checkForProjectDirectory,
   JovoCliError,
   JovoCliPluginContext,
   PluginCommand,
   printSubHeadline,
-  Project,
 } from 'jovo-cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -56,6 +56,21 @@ export class Get extends PluginCommand<GetEvents> {
   };
   static args = [{ name: 'platform', options: jovo.getPlatforms(), required: true }];
 
+  install() {
+    this.actionSet = {
+      'install': [checkForProjectDirectory],
+      'before.get': [this.beforeGet.bind(this)],
+    };
+  }
+
+  beforeGet() {
+    // Create build/ folder depending on user config.
+    const buildPath: string = jovo.$project!.getBuildPath();
+    if (!existsSync(buildPath)) {
+      mkdirSync(buildPath);
+    }
+  }
+
   async run() {
     const { args, flags } = this.parse(Get);
 
@@ -73,13 +88,6 @@ export class Get extends PluginCommand<GetEvents> {
     };
 
     await this.$emitter!.run('before.get', context);
-
-    // Create build/ folder depending on user config.
-    const buildPath: string = jovo.$project!.getBuildPath();
-    if (!existsSync(buildPath)) {
-      mkdirSync(buildPath);
-    }
-
     await this.$emitter!.run('get', context);
     await this.$emitter!.run('after.get', context);
   }

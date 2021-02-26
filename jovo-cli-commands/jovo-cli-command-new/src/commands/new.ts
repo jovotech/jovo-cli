@@ -216,7 +216,7 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     await this.$emitter!.run('before.new');
 
     const newTask: Task = new Task(
-      `Creating new directory /${printHighlight(context.projectName)}`,
+      `Creating new directory ${printHighlight(context.projectName)}/`,
       () => {
         if (!existsSync(context.projectName)) {
           mkdirSync(context.projectName);
@@ -272,7 +272,7 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     // }
 
     this.log();
-    this.log(`  ${STAR} Successfully created your project! ${STAR}`);
+    this.log(`${STAR} Successfully created your project! ${STAR}`);
     this.log();
 
     await this.$emitter!.run('after.new', context);
