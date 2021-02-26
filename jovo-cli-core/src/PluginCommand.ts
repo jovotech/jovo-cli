@@ -3,7 +3,7 @@ import * as Config from '@oclif/config';
 import _get from 'lodash.get';
 import { Mixin } from 'ts-mixer';
 
-import { Emitter } from '.';
+import { Emitter, JovoCliError } from '.';
 import { EventHandler } from './EventHandler';
 import { ActionSet, DefaultEvents, Events, JovoCliConfigHooks, JovoCliPluginConfig } from './utils';
 
@@ -77,4 +77,12 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    * Declare run() as abstract again.
    */
   abstract run(): Promise<any>;
+
+  /**
+   * Catch possible errors and print them.
+   * @param error - JovoCliError.
+   */
+  async catch(error: JovoCliError) {
+    this.error(`There was a problem:\n${error}`);
+  }
 }

@@ -28,9 +28,7 @@ export function open(
 ): SocketIOClient.Socket {
   const socket: SocketIOClient.Socket = io.connect(webhookBaseUrl, {
     secure: true,
-    query: {
-      id,
-    },
+    query: { id },
   });
 
   socket.on('connect', () => {
@@ -40,6 +38,7 @@ export function open(
   socket.on('connect_error', (error: NodeJS.ErrnoException) => {
     console.error('Sorry, there seems to be an issue with the connection!');
     console.error(error);
+    process.exit();
   });
 
   // @ts-ignore
@@ -53,6 +52,10 @@ export function open(
         console.error(error.rawData);
         socket.emit(`response-${id}`, null);
       });
+  });
+
+  process.on('exit', () => {
+    socket.close();
   });
 
   return socket;

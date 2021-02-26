@@ -18,7 +18,8 @@ export async function checkForAskCli() {
 
   try {
     const stdout: string = await execAsync(cmd);
-    if (stdout.startsWith('2')) {
+    const majorVersion: string = stdout[0];
+    if (parseInt(majorVersion) < 2) {
       throw new JovoCliError(
         'Jovo CLI requires ASK CLI @v2 or above.',
         'jovo-cli-platform-alexa',
@@ -97,7 +98,7 @@ export function getAskError(method: string, stderror: string): JovoCliError {
   if (errorIndex > -1) {
     const errorString: string = stderror.substring(errorIndex + splitter.length);
     const parsedError = JSON.parse(errorString);
-    const payload = parsedError.response ? parsedError.response : parsedError;
+    const payload = _get(parsedError, 'detail.response', parsedError);
     const message: string = payload.message;
     let violations: string = '';
 

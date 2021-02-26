@@ -36,7 +36,6 @@ export type JovoCliPluginType = 'platform' | 'target' | 'command' | '';
 export interface JovoCliPluginConfig {
   name: string;
   path: string;
-  // ToDo: Config? See Gatsby.js.
   options: JovoCliPluginOptions;
   pluginId: string;
   pluginType: JovoCliPluginType;
@@ -46,7 +45,6 @@ export interface JovoCliConfigHooks {
   [key: string]: Function;
 }
 
-// ToDo: Export into plugins? hooks -> JovoCliBuildCommandOptions?
 export interface JovoCliPluginOptions {
   hooks?: JovoCliConfigHooks;
   files?: any;

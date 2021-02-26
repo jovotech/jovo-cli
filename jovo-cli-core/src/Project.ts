@@ -71,7 +71,6 @@ export class Project {
    * @param stage - Optional config stage.
    */
   getBuildDirectory(): string {
-    // ToDo: Check if $configReader is set, if not just return 'build'?
     return (
       (this.$configReader!.getConfigParameter('buildDirectory', this.$stage) as string) || 'build'
     );
@@ -89,7 +88,6 @@ export class Project {
    * @param stage - Optional config stage.
    */
   getModelsDirectory() {
-    // ToDo: Check if $configReader is set, if not just return 'build'?
     return (
       (this.$configReader!.getConfigParameter('modelsDirectory', this.$stage) as string) || 'models'
     );
@@ -215,7 +213,6 @@ export class Project {
     try {
       files.push(...readdirSync(this.getModelsPath()));
     } catch (error) {
-      // ToDo: Test if this can fail!
       throw new JovoCliError(error.message, 'jovo-cli');
     }
 

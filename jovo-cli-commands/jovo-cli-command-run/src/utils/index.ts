@@ -94,7 +94,7 @@ export function instantiateJovoWebhook(
       // Explicitly resume emitting data from the stream.
       process.stdin.resume();
       // Capture readable input as opposed to binary.
-      process.stdin.setEncoding('utf8');
+      process.stdin.setEncoding('utf-8');
 
       // Collect input text from input stream.
       let inputText: string = '';

@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { ERROR } from './utils';
 
 export class JovoCliError extends Error {
   private errorMsg: string[] = [];
@@ -8,7 +9,7 @@ export class JovoCliError extends Error {
   }
 
   logError() {
-    this.errorMsg.push(chalk.bgRed.bold(`[ERR] ${this.msg}\n`));
+    this.errorMsg.push(`${ERROR} ${chalk.bgRed.bold(`${this.msg}\n`)}`);
   }
 
   logProperty(key: string, value: string) {

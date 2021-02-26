@@ -14,7 +14,6 @@ export function getPlatformDirectory(): string {
  * Returns base path to platform's build folder.
  */
 export function getPlatformPath(): string {
-  // ToDo: Necessary to pull out from plugin? e.g. ${pluginType}.${pluginId}
   return joinPaths(jovo.$project!.getBuildPath(), getPlatformDirectory());
 }
 
