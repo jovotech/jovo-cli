@@ -71,7 +71,6 @@ export class GetHook extends PluginHook<GetEvents & BuildEvents> {
    * @param context - Plugin context.
    */
   updatePluginContext(context: JovoCliPluginContextAlexa) {
-    // ToDo: Where can the user define ASK profile?
     context.askProfile = (context.flags['ask-profile'] as string) || this.$config.askProfile;
     context.skillId = context.flags['skill-id'] as string;
   }

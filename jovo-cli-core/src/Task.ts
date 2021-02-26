@@ -10,7 +10,9 @@ export class Task {
 
   constructor(
     private title: string,
-    private action: Task[] | (() => string | void | Promise<string | void>) = [],
+    private action:
+      | Task[]
+      | (() => string[] | string | void | Promise<string[] | string | void>) = [],
   ) {}
 
   add(...actions: Task[]) {
@@ -61,10 +63,15 @@ export class Task {
       spinner.start();
 
       try {
-        const output = await this.action();
+        let output: string[] | string | void = await this.action();
         spinner.succeed();
         if (output) {
-          console.log(chalk.white.dim(indentString(`>> ${output}`, this.indentation + 2)));
+          if (!Array.isArray(output)) {
+            output = [output];
+          }
+          for (const str of output) {
+            console.log(chalk.white.dim(indentString(`>> ${str}`, this.indentation + 2)));
+          }
         }
       } catch (error) {
         spinner.fail();

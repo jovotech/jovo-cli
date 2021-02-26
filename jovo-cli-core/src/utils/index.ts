@@ -1,11 +1,11 @@
 import { exec, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
-import { join, join as joinPaths } from 'path';
+import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
 
 import { JovoCliError, PackageVersions, PackageVersionsNpm } from '..';
-import { Project } from '../Project';
 import { JovoCli } from '../JovoCli';
+import { printWarning } from './Prints';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -73,30 +73,29 @@ export function deleteFolderRecursive(path: string) {
  */
 export async function getPackages(packageRegex?: RegExp): Promise<PackageVersions> {
   const jovo: JovoCli = JovoCli.getInstance();
-  const projectPath: string = jovo.$projectPath;
   let packageFileName: string = '';
 
   // ToDo: Sufficient to just look in the package.json?
   // Get file name depending on what file exists.
-  if (existsSync(joinPaths(projectPath, 'package-lock.json'))) {
+  if (existsSync(joinPaths(jovo.$projectPath, 'package-lock.json'))) {
     packageFileName = 'package-lock.json';
-  } else if (existsSync(joinPaths(projectPath, 'package.json'))) {
+  } else if (existsSync(joinPaths(jovo.$projectPath, 'package.json'))) {
     packageFileName = 'package.json';
   } else {
     throw new JovoCliError(
       "Could not find an NPM dependency file, such as your project's package.json.",
-      'jovo-cli',
+      'jovo-cli-core',
     );
   }
 
-  const packagePath = joinPaths(projectPath, packageFileName);
+  const packagePath = joinPaths(jovo.$projectPath, packageFileName);
   let content;
   try {
     content = readFileSync(packagePath).toString();
   } catch (e) {
     throw new JovoCliError(
       `Something went wrong while reading your ${packageFileName} file.`,
-      'jovo-cli',
+      'jovo-cli-core',
     );
   }
 
@@ -146,9 +145,9 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     }
   }
 
-  if (existsSync(joinPaths(projectPath, 'package.json'))) {
+  if (existsSync(joinPaths(jovo.$projectPath, 'package.json'))) {
     try {
-      content = readFileSync(joinPaths(projectPath, 'package.json')).toString();
+      content = readFileSync(joinPaths(jovo.$projectPath, 'package.json')).toString();
       const packageJsonFileContent = JSON.parse(content);
 
       Object.keys(packageJsonFileContent.dependencies || {}).forEach((key: string) => {
@@ -195,4 +194,14 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   }
 
   return returnPackages;
+}
+
+export function checkForProjectDirectory() {
+  const jovo: JovoCli = JovoCli.getInstance();
+  if (!jovo.isInProjectDirectory()) {
+    console.log();
+    console.log(printWarning('To use this command, please go into the directory of a valid Jovo project.'));
+    console.log();
+    process.exit();
+  }
 }

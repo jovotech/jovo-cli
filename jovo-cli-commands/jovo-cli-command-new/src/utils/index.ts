@@ -42,7 +42,6 @@ export async function downloadAndExtract(
             const zip: AdmZip = new AdmZip(pathToZip);
             zip.extractAllTo(projectPath, true);
           } catch (error) {
-            // ToDo: Test!
             return reject(new JovoCliError(error.message, 'jovo-cli-command-new'));
           } finally {
             // Delete .zip file.

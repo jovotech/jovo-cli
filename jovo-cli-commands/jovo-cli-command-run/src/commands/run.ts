@@ -8,6 +8,8 @@ import { join as joinPaths } from 'path';
 import {
   JovoCli,
   JovoCliError,
+  checkForProjectDirectory,
+  printCode,
   JovoCliPluginContext,
   PackageVersionsNpm,
   PluginCommand,
@@ -20,7 +22,6 @@ import { ChildProcess, spawn } from 'child_process';
 export interface RunEvents {
   'before.run': JovoCliPluginContext;
   'run': JovoCliPluginContext;
-  'after.run': JovoCliPluginContext;
 }
 
 export class Run extends PluginCommand<RunEvents> {
@@ -40,10 +41,6 @@ export class Run extends PluginCommand<RunEvents> {
     'stage': flags.string({
       description: 'Takes configuration from specified stage.',
     }),
-    'watch': flags.boolean({
-      char: 'w',
-      description: 'Uses nodemon to watch files. Restarts immediately on file change.',
-    }),
     'webhook-only': flags.boolean({
       description: 'Starts the Jovo Webhook proxy without executing the code.',
     }),
@@ -60,14 +57,14 @@ export class Run extends PluginCommand<RunEvents> {
   };
   static args = [{ name: 'webhookFile', default: 'index.js' }];
 
-  async run(): Promise<void> {
-    const { args, flags } = this.parse(Run);
+  install() {
+    this.actionSet = {
+      'install': [checkForProjectDirectory],
+      'before.run': [this.checkForOutdatedPackages.bind(this)],
+    };
+  }
 
-    await this.$emitter!.run('parse', { command: Run.id, flags, args });
-
-    this.log(`\n jovo run: ${Run.description}`);
-    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
-
+  async checkForOutdatedPackages() {
     // Update message should be displayed in case old packages get used
     const outOfDatePackages: PackageVersionsNpm = await shouldUpdatePackages();
     if (Object.keys(outOfDatePackages).length) {
@@ -89,6 +86,15 @@ export class Run extends PluginCommand<RunEvents> {
 
       this.log(boxen(outputText.join('\n'), boxOptions));
     }
+  }
+
+  async run(): Promise<void> {
+    const { args, flags } = this.parse(Run);
+
+    await this.$emitter!.run('parse', { command: Run.id, flags, args });
+
+    this.log(`\n jovo run: ${Run.description}`);
+    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();
     const project: Project = jovo.$project!;
@@ -162,8 +168,13 @@ export class Run extends PluginCommand<RunEvents> {
       }
 
       if (!projectFolder) {
-        // ToDo: JovoCliError better here?
-        this.error('Could not find a project to run.');
+        throw new JovoCliError(
+          'Could not find a project to run.',
+          this.$config.name,
+          `Please check for your ${printCode(
+            args.webhookFile,
+          )} or provide your webhook file as a command argument.`,
+        );
       }
 
       const parameters: string[] = [
@@ -184,7 +195,6 @@ export class Run extends PluginCommand<RunEvents> {
         parameters.push('--stage', project.$stage);
       }
 
-      // ToDo: If this flag has been set, disable the "open debugger in browser" message.
       if (flags['disable-jovo-debugger']) {
         parameters.push('--disable-jovo-debugger');
       }
@@ -205,7 +215,7 @@ export class Run extends PluginCommand<RunEvents> {
         }
       }
 
-      const command: string = flags.watch ? resolveBin.sync('nodemon') : 'node';
+      const command: string = resolveBin.sync('nodemon');
 
       const nodeProcess: ChildProcess = spawn(command, parameters, {
         windowsVerbatimArguments: true,
@@ -216,22 +226,13 @@ export class Run extends PluginCommand<RunEvents> {
 
       await this.$emitter!.run('run', context);
 
-      nodeProcess.on('close', async (code: number) => {
-        if (code !== 0) {
-          // ToDo: Test!
-          await this.$emitter!.run('after.run', context);
-          this.exit(-1);
-        }
-      });
-
       // Pipe everyhing the node process prints to output stream.
       nodeProcess.stdout!.pipe(process.stdout);
       nodeProcess.stderr!.pipe(process.stderr);
 
       // Ensure our child process is terminated upon exit. This is needed in the situation
       // where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
-      process.on('exit', async () => {
-        await this.$emitter!.run('after.run', context);
+      process.on('exit', () => {
         nodeProcess.kill();
       });
     }

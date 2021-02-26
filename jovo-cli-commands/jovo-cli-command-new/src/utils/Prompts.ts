@@ -21,16 +21,15 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
         name: string;
         value: string;
       } => {
-        // ToDo: Parse name with project props
         const language: string = chalk.blueBright(preset.language);
         const projectName: string = chalk.underline.blueBright(preset.projectName);
-        const output: string = `${preset.name} ("${projectName}", ${language})`;
+        const output: string = `${preset.name} (${projectName}/, ${language})`;
         return {
           name: output,
           value: preset.name,
         };
       }),
-      { name: 'Select features...', value: 'manual' },
+      { name: 'Or manually select features...', value: 'manual' },
     ],
     result() {
       // Since enquirer returns the prompt's name by default, we need to get the value manually.
@@ -87,6 +86,7 @@ export async function promptProjectProperties(args: any, flags: any): Promise<Pr
       message: 'Type the locales you want to use (comma-seperated):',
       skip: !!flags.locale,
       type: 'list',
+      initial: ['en'],
       validate(locales: string[] | string) {
         if (typeof locales === 'string') {
           locales = [locales];
@@ -134,5 +134,15 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
     message: 'Preset name:',
     type: 'input',
     initial: 'default',
+    validate(presetName: string) {
+      if (/\s/g.test(presetName.trim())) {
+        return 'Preset name cannot include whitespace!';
+      }
+
+      return true;
+    },
+    result(presetName: string) {
+      return presetName.trim();
+    },
   })) as { presetName: string };
 }

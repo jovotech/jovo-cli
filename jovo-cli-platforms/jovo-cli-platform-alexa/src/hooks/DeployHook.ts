@@ -9,9 +9,10 @@ import {
   PluginHook,
   printAskProfile,
   printStage,
+  ROCKET,
   Task,
 } from 'jovo-cli-core';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from 'jovo-cli-command-deploy';
+import { DeployPlatformEvents, DeployPlatformPluginContext } from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 
 import * as smapi from '../smapi';
@@ -43,8 +44,9 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
   install() {
     this.actionSet = {
       'install': [this.addCliOptions.bind(this)],
-      'parse': [this.checkForPlatform.bind(this), this.updatePluginContext.bind(this)],
+      'parse': [this.checkForPlatform.bind(this)],
       'before.deploy:platform': [
+        this.updatePluginContext.bind(this),
         checkForAskCli.bind(this),
         this.checkForPlatformsFolder.bind(this),
       ],
@@ -76,23 +78,28 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    * @param context - Plugin context.
    */
   updatePluginContext(context: DeployPlatformPluginContextAlexa) {
-    // ToDo: Where can the user define ASK profile?
+    if (context.command !== 'deploy:platform') {
+      return;
+    }
+
     context.askProfile = (context.flags['ask-profile'] as string) || this.$config.askProfile;
     context.skillId = (context.flags['skill-id'] as string) || this.getSkillId();
   }
 
-  checkForPlatformsFolder() {
+  checkForPlatformsFolder(context: any) {
     if (!existsSync(getPlatformPath())) {
       throw new JovoCliError(
         `Couldn't find the platform folder ${getPlatformPath()}.`,
-        this.$config.pluginId,
+        this.$config.name,
         `Please use "jovo build" to create platform-specific files.`,
       );
     }
   }
 
   async deploy(context: DeployPlatformPluginContextAlexa) {
-    const deployTask: Task = new Task(`Deploying Alexa Skill ${printStage(jovo.$project!.$stage)}`);
+    const deployTask: Task = new Task(
+      `${ROCKET} Deploying Alexa Skill ${printStage(jovo.$project!.$stage)}`,
+    );
 
     if (!context.skillId) {
       // Create skill, if it doesn't exist already.
@@ -115,7 +122,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
           const skillInfo = this.getSkillInformation();
 
-          return `Skill Name: ${skillInfo.name} Skill ID: ${skillInfo.skillId} Invocation Name: ${skillInfo.invocationName} Endpoint: ${skillInfo.endpoint}`;
+          return [`Skill Name: ${skillInfo.name}`, `Skill ID: ${skillInfo.skillId}`];
         },
       );
 
@@ -135,13 +142,13 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
           const skillInfo = this.getSkillInformation();
 
-          return `Skill Name: ${skillInfo.name} Skill ID: ${skillInfo.skillId} Invocation Name: ${skillInfo.invocationName} Endpoint: ${skillInfo.endpoint}`;
+          return [`Skill Name: ${skillInfo.name}`, `Skill ID: ${skillInfo.skillId}`];
         },
       );
       deployTask.add(updateSkillTask);
     }
 
-    const deployInteractionModelTask: Task = new Task('Deploying Interaction Model');
+    const deployInteractionModelTask: Task = new Task(`${ROCKET} Deploying Interaction Model`);
     for (const locale of context.locales) {
       const deployLocales: string[] = [];
       // If locale is of format en, de, ..., try to get sublocales.
@@ -196,7 +203,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (err instanceof JovoCliError) {
         throw err;
       }
-      throw new JovoCliError(err.message, 'jovo-cli-platform-alexa');
+      throw new JovoCliError(err.message, this.$config.name);
     }
   }
 
@@ -231,7 +238,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
     try {
       return JSON.parse(readFileSync(getAskConfigPath(), 'utf8'));
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.pluginId);
+      throw new JovoCliError(err.message, this.$config.name);
     }
   }
 
@@ -242,28 +249,24 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
   /**
    * Returns skill information.
-   * ToDo: Test!
    */
   getSkillInformation() {
     try {
       const skillJson = require(getSkillJsonPath());
       const info = {
         name: '',
-        invocationName: '',
         skillId: this.getSkillId(),
-        endpoint: skillJson.manifest.apis.custom.endpoint.uri,
       };
 
       const locales = _get(skillJson, 'manifest.publishingInformation.locales', []);
 
       for (const locale of Object.keys(locales)) {
         info.name += locales[locale].name + ' (' + locale + ') ';
-        info.invocationName += this.getInvocationName(locale) + ' (' + locale + ') ';
       }
 
       return info;
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.pluginId);
+      throw new JovoCliError(err.message, this.$config.name);
     }
   }
 
