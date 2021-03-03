@@ -137,13 +137,15 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
           // Manually select project properties.
           const options: ProjectProperties = await promptProjectProperties(args, flags);
 
+          preset = {
+            name: '',
+            ...options,
+          };
+
           const { savePreset } = await promptSavePreset();
           if (savePreset) {
             const { presetName } = await promptPresetName();
-            preset = {
-              name: presetName,
-              ...options,
-            };
+            preset.name = presetName;
 
             jovo.$userConfig.savePreset(preset);
           }
@@ -183,6 +185,8 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     // Merge preset's project properties with context object.
     if (preset) {
       const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
+      console.log(contextPreset);
+      
       _merge(context, contextPreset);
     } else {
       // Directory is mandatory, so throw an error if omitted.

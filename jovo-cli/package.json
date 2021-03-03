@@ -5,6 +5,9 @@
   "bin": {
     "jovodev": "./bin/run"
   },
+  "scripts": {
+    "tsc": "tsc"
+  },
   "bugs": "https://github.com/rubenaeg/cli/issues",
   "dependencies": {
     "@oclif/command": "^1.8.0",
