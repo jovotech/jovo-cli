@@ -79,7 +79,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
+      'install': [checkForProjectDirectory.bind(null, DeployPlatform.id)],
       'before.deploy:platform': [this.checkForPlatformsFolder.bind(this)],
     };
   }
@@ -88,7 +88,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     if (!existsSync(jovo.$project!.getBuildPath())) {
       throw new JovoCliError(
         "Couldn't find a platform folder.",
-        'jovo-cli',
+        this.$config.name,
         'Please use "jovo build" to create platform-specific files.',
       );
     }

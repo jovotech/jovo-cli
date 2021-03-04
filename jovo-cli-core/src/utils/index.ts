@@ -6,6 +6,7 @@ import latestVersion from 'latest-version';
 import { JovoCliError, PackageVersions, PackageVersionsNpm } from '..';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
+import { InstallEventArguments } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -196,12 +197,19 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   return returnPackages;
 }
 
-export function checkForProjectDirectory() {
-  // ToDo: Check for command.
+/**
+ * Checks if the current working directory is a Jovo Project.
+ * @param command - Command Id for the current PluginCommand.
+ * @param args - Arguments for the currently executed command, including flags and args.
+ */
+export function checkForProjectDirectory(command: string, args: InstallEventArguments) {
   const jovo: JovoCli = JovoCli.getInstance();
-  if (!jovo.isInProjectDirectory()) {
+
+  if (command === args.command && !jovo.isInProjectDirectory()) {
     console.log();
-    console.log(printWarning('To use this command, please go into the directory of a valid Jovo project.'));
+    console.log(
+      printWarning('To use this command, please go into the directory of a valid Jovo project.'),
+    );
     console.log();
     process.exit();
   }

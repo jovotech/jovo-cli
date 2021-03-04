@@ -32,7 +32,7 @@ export async function checkForAskCli() {
     }
 
     throw new JovoCliError(
-      'Jovo requires ASK CLI',
+      'Jovo CLI requires ASK CLI',
       'jovo-cli-platform-alexa',
       'Install the ASK CLI with "npm install ask-cli -g". Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
     );

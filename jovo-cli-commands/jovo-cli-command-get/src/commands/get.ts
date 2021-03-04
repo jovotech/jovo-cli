@@ -58,7 +58,7 @@ export class Get extends PluginCommand<GetEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
+      'install': [checkForProjectDirectory.bind(null, Get.id)],
       'before.get': [this.beforeGet.bind(this)],
     };
   }

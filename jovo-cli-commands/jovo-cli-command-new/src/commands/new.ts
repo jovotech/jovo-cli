@@ -18,10 +18,12 @@ import {
   ProjectProperties,
   promptOverwrite,
   STAR,
+  TARGET_ALL,
   Task,
   WRENCH,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
+import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
 
 import { downloadAndExtract, runNpmInstall } from '../utils';
 import { existsSync, mkdirSync } from 'fs';
@@ -45,7 +47,7 @@ export interface NewEvents {
   'after.new': NewPluginContext;
 }
 
-export class New extends PluginCommand<NewEvents & BuildEvents> {
+export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
   static id: string = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -266,15 +268,17 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
       await this.$emitter.run('after.build', context);
     }
 
-    // Deploy project.
-    // if (flags.deploy) {
-    //   tasks.add({
-    //     title: 'Deploying project...',
-    //     task(ctx) {
-    //       return new Listr(deployTask(ctx));
-    //     },
-    //   });
-    // }
+    if (flags.deploy) {
+      this.log();
+      const deployContext: DeployPluginContext = {
+        ...context,
+        target: TARGET_ALL,
+        src: jovo.$project!.getBuildDirectory(),
+      };
+      await this.$emitter.run('before.deploy', deployContext);
+      await this.$emitter.run('deploy', deployContext);
+      await this.$emitter.run('after.deploy', deployContext);
+    }
 
     this.log();
     this.log(`${STAR} Successfully created your project! ${STAR}`);

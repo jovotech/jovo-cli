@@ -59,7 +59,7 @@ export class Run extends PluginCommand<RunEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
+      'install': [checkForProjectDirectory.bind(null, Run.id)],
       'before.run': [this.checkForOutdatedPackages.bind(this)],
     };
   }

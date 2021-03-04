@@ -47,7 +47,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       'parse': [this.checkForPlatform.bind(this)],
       'before.deploy:platform': [
         this.updatePluginContext.bind(this),
-        checkForAskCli.bind(this),
+        checkForAskCli,
         this.checkForPlatformsFolder.bind(this),
       ],
       'deploy:platform': [this.deploy.bind(this)],

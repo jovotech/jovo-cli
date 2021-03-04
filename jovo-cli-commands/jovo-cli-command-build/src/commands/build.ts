@@ -85,7 +85,7 @@ export class Build extends PluginCommand<BuildEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
+      'install': [checkForProjectDirectory.bind(null, Build.id)],
       'before.build': [this.beforeBuild.bind(this)],
       'build': [this.build.bind(this)],
     };

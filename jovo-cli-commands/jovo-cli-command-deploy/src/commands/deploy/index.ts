@@ -34,7 +34,7 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
+      'install': [checkForProjectDirectory.bind(null, Deploy.id)],
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
       'after.deploy': [this.afterDeploy.bind(this)],
