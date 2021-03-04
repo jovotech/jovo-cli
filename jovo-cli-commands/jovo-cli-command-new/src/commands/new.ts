@@ -34,6 +34,7 @@ import {
 
 const jovo: JovoCli = JovoCli.getInstance();
 
+// Extend JovoCliPluginContext with ProjectProperties.
 export interface NewPluginContext
   extends JovoCliPluginContext,
     Omit<ProjectProperties, 'name' | 'key'> {}
@@ -186,7 +187,7 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     if (preset) {
       const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
       console.log(contextPreset);
-      
+
       _merge(context, contextPreset);
     } else {
       // Directory is mandatory, so throw an error if omitted.

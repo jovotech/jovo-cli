@@ -11,7 +11,9 @@ import {
   JovoUserConfig,
 } from '.';
 import { Project } from './Project';
-import { JovoUserConfigFile, JOVO_WEBHOOK_URL, REPO_URL } from './utils';
+import { JovoUserConfigFile, JOVO_WEBHOOK_URL } from './utils';
+import { URL } from 'url';
+import { JovoCliError } from './JovoCliError';
 
 export class JovoCli {
   private static instance: JovoCli;
@@ -59,6 +61,8 @@ export class JovoCli {
       return false;
     }
 
+    // const packageJson
+
     // ToDo: Look for jovo-framework dependency in package.json.
 
     return existsSync(joinPaths(this.$projectPath, 'project.js'));
@@ -86,6 +90,9 @@ export class JovoCli {
         cliPlugin.name = plugin;
         cliPlugin.path = joinPaths(this.$projectPath, 'node_modules', plugin);
       } else {
+        if (!plugin.name) {
+          throw new JovoCliError('Could not find plugin name.', 'jovo-cli-core');
+        }
         cliPlugin.name = plugin.name;
         cliPlugin.path = joinPaths(this.$projectPath, 'node_modules', plugin.name);
         cliPlugin.options = plugin.options;
@@ -186,7 +193,8 @@ export class JovoCli {
    * Returns the default Jovo Webhook URL.
    */
   getJovoWebhookUrl(): string {
-    return joinPaths(JOVO_WEBHOOK_URL, this.$userConfig.getWebhookUuid());
+    const { href } = new URL(this.$userConfig.getWebhookUuid(), JOVO_WEBHOOK_URL);
+    return href;
   }
 
   // ####### PROJECT CREATION #######

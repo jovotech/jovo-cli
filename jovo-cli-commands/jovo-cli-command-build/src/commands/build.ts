@@ -1,4 +1,5 @@
 import { flags } from '@oclif/command';
+import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
@@ -12,6 +13,8 @@ import {
   wait,
   JovoCli,
   PluginCommand,
+  Emitter,
+  JovoCliPluginConfig,
 } from 'jovo-cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -25,9 +28,14 @@ export interface BuildEvents {
 
 export class Build extends PluginCommand<BuildEvents> {
   static id: string = 'build';
+
   static description: string =
     'Build platform-specific language models based on jovo models folder.';
+
   static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
+
+  static availablePlatforms: string[] = [];
+
   static flags: InputFlags<any> = {
     clean: flags.boolean({
       description:
@@ -49,7 +57,7 @@ export class Build extends PluginCommand<BuildEvents> {
     platform: flags.string({
       char: 'p',
       description: 'Specifies a build platform.',
-      options: jovo.getPlatforms(),
+      options: Build.availablePlatforms,
     }),
     reverse: flags.boolean({
       char: 'r',
@@ -65,6 +73,15 @@ export class Build extends PluginCommand<BuildEvents> {
     }),
   };
   static args = [];
+
+  static async install(
+    emitter: Emitter<BuildEvents>,
+    config: JovoCliPluginConfig,
+  ): Promise<Config.Command.Plugin> {
+    // Override PluginCommand.install() to fill options for --platform.
+    this.availablePlatforms.push(...jovo.getPlatforms());
+    return super.install(emitter, config);
+  }
 
   install() {
     this.actionSet = {

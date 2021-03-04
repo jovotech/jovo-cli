@@ -1,20 +1,20 @@
 import chalk from 'chalk';
-import { ERROR } from './utils';
+import { ERROR, printWarning } from './utils';
 
 export class JovoCliError extends Error {
-  private errorMsg: string[] = [];
+  private error: string[] = [];
 
   constructor(private msg: string, private module: string, private hint?: string) {
     super();
   }
 
   logError() {
-    this.errorMsg.push(`${ERROR} ${chalk.bgRed.bold(`${this.msg}\n`)}`);
+    this.error.push(`${ERROR} ${chalk.bgRed.bold(`${this.msg}\n`)}`);
   }
 
   logProperty(key: string, value: string) {
     key = `${key}:`.padEnd(10);
-    this.errorMsg.push(`${chalk.bold(key)}${value}`);
+    this.error.push(`${chalk.bold(key)}${value}`);
   }
 
   toString() {
@@ -25,6 +25,12 @@ export class JovoCliError extends Error {
       this.logProperty('Hint', this.hint);
     }
 
-    return `\n${this.errorMsg.join('\n')}\n`;
+    this.error.push(
+      chalk.grey(
+        '\nIf you think this is not on you, you can submit an issue here: https://github.com/jovotech/jovo-cli/issues.',
+      ),
+    );
+
+    return `\n${this.error.join('\n')}\n`;
   }
 }

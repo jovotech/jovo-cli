@@ -197,6 +197,7 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
 }
 
 export function checkForProjectDirectory() {
+  // ToDo: Check for command.
   const jovo: JovoCli = JovoCli.getInstance();
   if (!jovo.isInProjectDirectory()) {
     console.log();

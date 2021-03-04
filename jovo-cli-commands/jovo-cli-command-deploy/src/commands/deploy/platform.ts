@@ -1,15 +1,16 @@
 import { flags } from '@oclif/command';
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
-import chalk from 'chalk';
 import { existsSync } from 'fs';
 import {
+  checkForProjectDirectory,
   Emitter,
   JovoCli,
   JovoCliError,
   JovoCliPluginConfig,
   JovoCliPluginContext,
   PluginCommand,
+  printSubHeadline,
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
@@ -78,6 +79,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
+      'install': [checkForProjectDirectory],
       'before.deploy:platform': [this.checkForPlatformsFolder.bind(this)],
     };
   }
@@ -98,7 +100,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     await this.$emitter!.run('parse', { command: DeployPlatform.id, flags, args });
 
     this.log(`\n jovo deploy: ${DeployPlatform.description}`);
-    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/deploy\n'));
+    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
     const context: DeployPlatformPluginContext = {
       command: DeployPlatform.id,

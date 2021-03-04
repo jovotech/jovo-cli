@@ -38,6 +38,7 @@ export class Collector extends Plugin {
         const pluginCommands: typeof PluginCommand[] = plugin.getCommands();
 
         for (const PluginCommand of pluginCommands) {
+          // ToDo: Only install needed plugins!
           const command = await PluginCommand.install(emitter, plugin.config);
           this.commands.push(command);
         }

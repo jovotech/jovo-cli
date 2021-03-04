@@ -1,6 +1,11 @@
 import { Input as InputFlags } from '@oclif/command/lib/flags';
-import chalk from 'chalk';
-import { JovoCli, JovoCliPluginContext, PluginCommand, TARGET_ALL } from 'jovo-cli-core';
+import {
+  checkForProjectDirectory,
+  JovoCli,
+  PluginCommand,
+  printSubHeadline,
+  TARGET_ALL,
+} from 'jovo-cli-core';
 import { DeployPlatformEvents } from '..';
 import { DeployPlatformPluginContext } from './platform';
 
@@ -29,6 +34,7 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
+      'install': [checkForProjectDirectory],
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
       'after.deploy': [this.afterDeploy.bind(this)],
@@ -54,7 +60,7 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
     await this.$emitter!.run('parse', { command: Deploy.id, flags, args });
 
     this.log(`\n jovo deploy: ${Deploy.description}`);
-    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/deploy\n'));
+    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
     const context: DeployPluginContext = {
       command: Deploy.id,

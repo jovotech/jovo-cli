@@ -62,6 +62,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
       emitter.on(event, fn);
     }
 
+    // ToDo: Pull out, run from Collector.ts for only the needed plugin.
     // Run install event, so that commands can be enhanced before execution.
     await emitter.run('install', { command: this.id, flags: this.flags, args: this.args });
 
