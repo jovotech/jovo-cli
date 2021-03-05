@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
-    "cli-ux": "^5.5.1",
     "jovo-cli-command-build": "^1.0.0",
     "jovo-cli-command-deploy": "^1.0.0",
     "jovo-cli-command-get": "^1.0.0",

@@ -3,10 +3,10 @@ import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
 
-import { JovoCliError, PackageVersions, PackageVersionsNpm } from '..';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
-import { InstallEventArguments } from './Interfaces';
+import { JovoCliError } from '../JovoCliError';
+import { PackageVersions, PackageVersionsNpm } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -34,8 +34,6 @@ export function execAsync(cmd: string, options: ExecOptions = {}): Promise<strin
     });
   });
 }
-
-export function hellworld() {}
 
 /**
  * Waits for the provided amount of time.
@@ -165,7 +163,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     } catch (e) {
       throw new JovoCliError(
         `Something went wrong while reading your ${packageFileName} file.`,
-        'jovo-cli',
+        'jovo-cli-core',
       );
     }
   }
@@ -199,13 +197,11 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
 
 /**
  * Checks if the current working directory is a Jovo Project.
- * @param command - Command Id for the current PluginCommand.
- * @param args - Arguments for the currently executed command, including flags and args.
  */
-export function checkForProjectDirectory(command: string, args: InstallEventArguments) {
+export function checkForProjectDirectory() {
   const jovo: JovoCli = JovoCli.getInstance();
 
-  if (command === args.command && !jovo.isInProjectDirectory()) {
+  if (!jovo.isInProjectDirectory()) {
     console.log();
     console.log(
       printWarning('To use this command, please go into the directory of a valid Jovo project.'),

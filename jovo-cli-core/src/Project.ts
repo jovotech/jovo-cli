@@ -7,9 +7,10 @@ import _merge from 'lodash.merge';
 import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
-import { JovoCliPluginEntry, DEFAULT_LOCALE, JOVO_WEBHOOK_URL, execAsync } from './utils';
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
+import { JovoCliPluginEntry } from './utils/Interfaces';
+import { DEFAULT_LOCALE } from './utils/Constants';
 
 export class Project {
   private static instance: Project;
@@ -120,10 +121,10 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'jovo-cli');
+        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'jovo-cli-core');
       }
 
-      throw new JovoCliError(error.message, 'jovo-cli');
+      throw new JovoCliError(error.message, 'jovo-cli-core');
     }
   }
 
@@ -163,7 +164,7 @@ export class Project {
     if (!this.hasModelFiles([locale])) {
       throw new JovoCliError(
         `Model file for locale ${locale} to backup could not be found.`,
-        'jovo-cli',
+        'jovo-cli-core',
       );
     }
 
@@ -213,7 +214,7 @@ export class Project {
     try {
       files.push(...readdirSync(this.getModelsPath()));
     } catch (error) {
-      throw new JovoCliError(error.message, 'jovo-cli');
+      throw new JovoCliError(error.message, 'jovo-cli-core');
     }
 
     // If models folder doesn't contain any files, return default locale.
@@ -261,13 +262,5 @@ export class Project {
       packageFile.hasOwnProperty('devDependencies') &&
       packageFile.devDependencies.hasOwnProperty('typescript')
     );
-  }
-
-  /**
-   * Compile TypeScript code of Jovo project to JavaScript.
-   * @param sourceFolder - Optional source folder, uses project path by default.
-   */
-  async compileTypeScriptProject(sourceFolder: string = this.projectPath) {
-    await execAsync('npm run tsc', { cwd: sourceFolder });
   }
 }

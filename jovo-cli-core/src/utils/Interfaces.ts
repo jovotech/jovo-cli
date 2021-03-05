@@ -86,7 +86,6 @@ export interface JovoUserConfigFile {
 
 export interface ProjectProperties {
   projectName: string;
-  template: string;
   language: 'javascript' | 'typescript';
   platforms: string[];
   locales: string[];

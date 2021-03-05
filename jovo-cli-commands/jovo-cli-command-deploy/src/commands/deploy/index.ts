@@ -34,7 +34,6 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory.bind(null, Deploy.id)],
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
       'after.deploy': [this.afterDeploy.bind(this)],
@@ -55,6 +54,8 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Deploy);
 
     await this.$emitter!.run('parse', { command: Deploy.id, flags, args });

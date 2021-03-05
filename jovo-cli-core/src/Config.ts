@@ -3,7 +3,7 @@ import _get from 'lodash.get';
 import _merge from 'lodash.merge';
 import { join as joinPaths } from 'path';
 
-import { JovoCliError } from '.';
+import { JovoCliError } from './JovoCliError';
 import { ProjectConfig } from './utils';
 
 export class Config {
@@ -39,7 +39,7 @@ export class Config {
       const config: ProjectConfig = _cloneDeep(require(this.getPath()));
       return config;
     } catch (error) {
-      throw new JovoCliError('Could not load project configuration.', 'jovo-cli', error.message);
+      throw new JovoCliError('Could not load project configuration.', 'jovo-cli-core', error.message);
     }
   }
 

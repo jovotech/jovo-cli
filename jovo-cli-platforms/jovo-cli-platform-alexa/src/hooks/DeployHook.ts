@@ -12,7 +12,10 @@ import {
   ROCKET,
   Task,
 } from 'jovo-cli-core';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
+import {
+  DeployPlatformEvents,
+  DeployPlatformPluginContext,
+} from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 
 import * as smapi from '../smapi';
@@ -29,8 +32,6 @@ import {
   JovoCliPluginContextAlexa,
 } from '../utils';
 import DefaultFiles from '../utils/DefaultFiles.json';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export interface DeployPlatformPluginContextAlexa
   extends DeployPlatformPluginContext,
@@ -97,6 +98,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
   }
 
   async deploy(context: DeployPlatformPluginContextAlexa) {
+    const jovo: JovoCli = JovoCli.getInstance();
     const deployTask: Task = new Task(
       `${ROCKET} Deploying Alexa Skill ${printStage(jovo.$project!.$stage)}`,
     );

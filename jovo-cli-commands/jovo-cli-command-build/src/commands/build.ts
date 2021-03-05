@@ -85,7 +85,6 @@ export class Build extends PluginCommand<BuildEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory.bind(null, Build.id)],
       'before.build': [this.beforeBuild.bind(this)],
       'build': [this.build.bind(this)],
     };
@@ -141,6 +140,8 @@ export class Build extends PluginCommand<BuildEvents> {
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Build);
 
     await this.$emitter!.run('parse', { command: Build.id, flags, args });

@@ -3,17 +3,18 @@ import { join as joinPaths } from 'path';
 import globalNpmModulesPath from 'global-modules';
 import _merge from 'lodash.merge';
 
+import { JovoCliPlugin } from './JovoCliPlugin';
+import { Project } from './Project';
+import { JOVO_WEBHOOK_URL } from './utils/Constants';
 import {
-  JovoCliPlugin,
   JovoCliPluginConfig,
   JovoCliPluginEntry,
   JovoCliPluginType,
-  JovoUserConfig,
-} from '.';
-import { Project } from './Project';
-import { JovoUserConfigFile, JOVO_WEBHOOK_URL } from './utils';
+  JovoUserConfigFile,
+} from './utils/Interfaces';
 import { URL } from 'url';
 import { JovoCliError } from './JovoCliError';
+import { JovoUserConfig } from './JovoUserConfig';
 
 export class JovoCli {
   private static instance: JovoCli;
@@ -68,8 +69,8 @@ export class JovoCli {
     return existsSync(joinPaths(this.$projectPath, 'project.js'));
   }
 
-  collectLocalPlugins(): JovoCliPluginConfig[] {
-    const localPlugins: JovoCliPluginConfig[] = [];
+  collectLocalPlugins(): Array<JovoCliPluginConfig | JovoCliPlugin> {
+    const localPlugins: Array<JovoCliPluginConfig | JovoCliPlugin> = [];
     if (!this.$project) {
       return localPlugins;
     }
@@ -89,6 +90,9 @@ export class JovoCli {
         // Load plugin from 'node_modules/'.
         cliPlugin.name = plugin;
         cliPlugin.path = joinPaths(this.$projectPath, 'node_modules', plugin);
+      } else if (plugin instanceof JovoCliPlugin) {
+        localPlugins.push(plugin);
+        continue;
       } else {
         if (!plugin.name) {
           throw new JovoCliError('Could not find plugin name.', 'jovo-cli-core');
@@ -150,18 +154,20 @@ export class JovoCli {
    * Loads both local and global plugins and returns respective classes.
    */
   loadPlugins(): JovoCliPlugin[] {
-    const pluginConfigs: JovoCliPluginConfig[] = [
-      ...this.collectLocalPlugins(),
+    const pluginConfigs: Array<JovoCliPluginConfig | JovoCliPlugin> = [
       ...this.collectGlobalPlugins(),
+      ...this.collectLocalPlugins(),
     ];
 
     for (const pluginConfig of pluginConfigs) {
       // Instantiate default class exported from plugin and pass config as parameter.
-      const plugin: JovoCliPlugin = new (require(pluginConfig.path).default)(pluginConfig);
+      const plugin: JovoCliPlugin =
+        pluginConfig instanceof JovoCliPlugin
+          ? pluginConfig
+          : new (require(pluginConfig.path).default)(pluginConfig);
 
       // Merge existing plugin config with plugin-specific values.
       _merge(plugin.config, { pluginId: plugin.id, pluginType: plugin.type });
-
       // Register plugin.
       this.cliPlugins.push(plugin);
     }

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { ERROR, printWarning } from './utils';
+import { ERROR } from './utils/Constants';
 
 export class JovoCliError extends Error {
   private error: string[] = [];

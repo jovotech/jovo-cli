@@ -7,8 +7,11 @@ import { homedir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { join as joinPaths } from 'path';
 
-import { JovoCliError } from '.';
-import { JovoCliPreset, JovoUserConfigFile } from './utils';
+import { JovoCliError } from './JovoCliError';
+import chalk from 'chalk';
+import { JovoCliPreset, JovoUserConfigFile } from './utils/Interfaces';
+import { promptOverwrite } from './utils/Prompts';
+import { ANSWER_CANCEL } from './utils/Constants';
 
 export class JovoUserConfig {
   /**
@@ -61,25 +64,29 @@ export class JovoUserConfig {
         uuid: uuidv4(),
       },
       cli: {
-        plugins: ['jovo-cli-command-new', 'jovo-cli-command-run'],
+        plugins: [
+          'jovo-cli-command-build',
+          'jovo-cli-command-deploy',
+          'jovo-cli-command-get',
+          'jovo-cli-command-new',
+          'jovo-cli-command-run',
+        ],
         presets: [
           {
             name: 'Default_JS',
             projectName: 'helloworld',
-            template: 'helloworld',
             locales: ['en'],
             language: 'javascript',
-            platforms: [],
+            platforms: ['alexa', 'google'],
             linter: true,
             unitTesting: true,
           },
           {
             name: 'Default_TS',
             projectName: 'helloworld',
-            template: 'helloworld',
             locales: ['en'],
             language: 'typescript',
-            platforms: [],
+            platforms: ['alexa', 'google'],
             linter: true,
             unitTesting: true,
           },
@@ -138,12 +145,23 @@ export class JovoUserConfig {
    * Saves preset to .jovo/config.
    * @param preset - Preset to save.
    */
-  savePreset(preset: JovoCliPreset) {
+  async savePreset(preset: JovoCliPreset) {
     const config: JovoUserConfigFile = this.get();
 
     // Check if preset already exists.
     if (config.cli.presets.find((p) => p.name === preset.name)) {
-      throw new JovoCliError(`Preset ${preset.name} already exists.`, 'jovo-cli-core');
+      const { overwrite } = await promptOverwrite(
+        `Preset ${preset.name} already exists. Do you want to overwrite it?`,
+      );
+      if (overwrite === ANSWER_CANCEL) {
+        throw new JovoCliError(
+          `Preset ${chalk.bold(preset.name)} already exists.`,
+          'jovo-cli-core',
+        );
+      } else {
+        // Remove existing preset.
+        config.cli.presets.filter((p) => p.name !== preset.name);
+      }
     }
 
     config.cli.presets.push(preset);

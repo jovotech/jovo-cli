@@ -58,7 +58,6 @@ export class Get extends PluginCommand<GetEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory.bind(null, Get.id)],
       'before.get': [this.beforeGet.bind(this)],
     };
   }
@@ -72,6 +71,8 @@ export class Get extends PluginCommand<GetEvents> {
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Get);
 
     await this.$emitter!.run('parse', { command: Get.id, flags, args });

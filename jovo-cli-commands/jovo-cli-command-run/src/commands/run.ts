@@ -16,7 +16,7 @@ import {
   Project,
   Task,
 } from 'jovo-cli-core';
-import { shouldUpdatePackages, instantiateJovoWebhook } from '../utils';
+import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
 import { ChildProcess, spawn } from 'child_process';
 
 export interface RunEvents {
@@ -59,7 +59,6 @@ export class Run extends PluginCommand<RunEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory.bind(null, Run.id)],
       'before.run': [this.checkForOutdatedPackages.bind(this)],
     };
   }
@@ -88,7 +87,9 @@ export class Run extends PluginCommand<RunEvents> {
     }
   }
 
-  async run(): Promise<void> {
+  async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Run);
 
     await this.$emitter!.run('parse', { command: Run.id, flags, args });
@@ -129,7 +130,7 @@ export class Run extends PluginCommand<RunEvents> {
       if (project.isTypeScriptProject()) {
         if (flags.tsc) {
           const task: Task = new Task('Compiling TypeScript', async () => {
-            await project.compileTypeScriptProject(srcDir);
+            await compileTypeScriptProject(srcDir);
           });
 
           await task.run();
@@ -145,7 +146,7 @@ export class Run extends PluginCommand<RunEvents> {
           const task: Task = new Task(
             'Cannot find dist/ folder. Start compiling TypeScript',
             async () => {
-              await project.compileTypeScriptProject(srcDir);
+              await compileTypeScriptProject(srcDir);
             },
           );
 

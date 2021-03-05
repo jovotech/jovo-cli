@@ -3,6 +3,7 @@ import open from 'open';
 import _get from 'lodash.get';
 import {
   CLOUD,
+  execAsync,
   getPackageVersionsNpm,
   JovoCli,
   JovoUserConfigFile,
@@ -14,12 +15,19 @@ import {
 import * as JovoWebhookConnector from './JovoWebhookConnector';
 
 /**
+ * Compile TypeScript code of Jovo project to JavaScript.
+ * @param sourceFolder - Source folder.
+ */
+export async function compileTypeScriptProject(sourceFolder: string) {
+  await execAsync('npm run tsc', { cwd: sourceFolder });
+}
+
+/**
  * Checks whether to display an update message for out-of-date packages or not.
  * Returns an array of out-of-date packages.
  */
 export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
   const jovo: JovoCli = JovoCli.getInstance();
-
   const jovoConfig: JovoUserConfigFile = jovo.$userConfig.get();
   // Calculate update interval (24 hours) into ms.
   const updateInterval: number = 24 * 60 * 60 * 1000;
