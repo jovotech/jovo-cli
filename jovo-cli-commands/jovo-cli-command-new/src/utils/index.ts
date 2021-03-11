@@ -2,9 +2,7 @@ import { createWriteStream, unlinkSync, WriteStream } from 'fs';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import AdmZip from 'adm-zip';
 import { join as joinPaths } from 'path';
-import { execAsync, JovoCli, JovoCliError, REPO_URL } from 'jovo-cli-core';
-
-const jovo: JovoCli = JovoCli.getInstance();
+import { execAsync, JovoCliError, REPO_URL } from 'jovo-cli-core';
 
 /**
  * Downloads and extracts a template.
@@ -61,11 +59,9 @@ export async function downloadAndExtract(
   });
 }
 
-export async function runNpmInstall() {
+export async function runNpmInstall(projectPath: string) {
   try {
-    await execAsync('npm install', { cwd: jovo.$projectPath });
-    // Update jovo-framework dependency in package.json.
-    await execAsync('npm i jovo-framework -S', { cwd: jovo.$projectPath });
+    await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
     throw new JovoCliError(error.message, 'jovo-cli-command-new');
   }

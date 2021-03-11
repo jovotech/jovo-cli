@@ -4,7 +4,6 @@ import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
   validateLocale,
-  promptForPlatform,
   JovoCliPluginContext,
   checkForProjectDirectory,
   Task,
@@ -16,6 +15,7 @@ import {
   Emitter,
   JovoCliPluginConfig,
 } from 'jovo-cli-core';
+import { promptForPlatform } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -97,10 +97,7 @@ export class Build extends PluginCommand<BuildEvents> {
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
     if (context.flags.reverse) {
       if (context.platforms.length !== 1) {
-        const { platform } = await promptForPlatform(
-          'Please select the platform you want to reverse build from:',
-          jovo.getPlatforms(),
-        );
+        const { platform } = await promptForPlatform(jovo.getPlatforms());
         context.platforms = [platform];
       }
 

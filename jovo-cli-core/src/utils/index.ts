@@ -210,3 +210,7 @@ export function checkForProjectDirectory() {
     process.exit();
   }
 }
+
+export function configure(object: any) {
+  return object;
+}

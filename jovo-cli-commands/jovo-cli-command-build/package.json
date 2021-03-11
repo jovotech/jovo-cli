@@ -18,6 +18,7 @@
 		"listr": "^0.14.3",
 		"node-emoji": "^1.10.0",
 		"parse-json": "^5.1.0",
+		"prompts": "^2.4.0",
 		"rxjs": "^6.6.3"
 	},
 	"devDependencies": {
@@ -25,6 +26,7 @@
 		"@types/node": "^14.14.22",
 		"@types/node-emoji": "^1.8.1",
 		"@types/parse-json": "^4.0.0",
+		"@types/prompts": "^2.0.9",
 		"@types/rimraf": "^3.0.0",
 		"fancy-test": "^1.4.10",
 		"jest": "^26.6.3",
