@@ -6,7 +6,8 @@
     "jovodev": "./bin/run"
   },
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "link": "npm link && lerna add jovo-cli-core --scope jovodev --no-bootstrap"
   },
   "bugs": "https://github.com/rubenaeg/cli/issues",
   "dependencies": {
