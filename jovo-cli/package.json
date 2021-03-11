@@ -18,7 +18,6 @@
     "@oclif/plugin-plugins": "^1.9.1",
     "chalk": "^4.1.0",
     "cli-ux": "^5.5.0",
-    "jovo-cli-core": "^1.0.0",
     "listr": "^0.14.3",
     "lodash.merge": "^4.6.2",
     "node-emoji": "^1.10.0",
