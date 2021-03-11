@@ -44,13 +44,6 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   ): Promise<Config.Command.Plugin> {
     super.install(emitter, config);
 
-    // Go through config, register hooks.
-    const projectHooks: JovoCliConfigHooks = _get(config, 'options.hooks', {});
-    for (const [event, fn] of Object.entries(projectHooks)) {
-      // @ts-ignore
-      emitter.on(event, fn);
-    }
-
     return (this as any) as Config.Command.Plugin;
   }
 

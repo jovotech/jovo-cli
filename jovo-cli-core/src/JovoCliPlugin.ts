@@ -2,7 +2,7 @@ import { JovoCliPluginConfig, JovoCliPluginType } from './utils';
 
 export abstract class JovoCliPlugin {
   abstract type: JovoCliPluginType;
-  id!: string;
+  abstract id: string;
 
   get config() {
     return this._config;

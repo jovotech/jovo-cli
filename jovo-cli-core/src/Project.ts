@@ -8,22 +8,24 @@ import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
 import { JovoCliError } from './JovoCliError';
-import { Config } from './Config';
-import { JovoCliPluginEntry } from './utils/Interfaces';
+import { ProjectConfig } from './ProjectConfig';
 import { DEFAULT_LOCALE } from './utils/Constants';
+import { JovoCliPlugin } from './JovoCliPlugin';
+import { JovoCliPluginConfig } from './utils/Interfaces';
 
 export class Project {
   private static instance: Project;
+
   private projectPath: string;
 
-  readonly $stage?: string;
   readonly $configReader: JovoConfigReader;
-  readonly $config: Config;
+  readonly $config: ProjectConfig;
+  readonly $stage?: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
 
-    this.$config = new Config(this.projectPath, this.$stage);
+    this.$config = new ProjectConfig(this.projectPath, this.$stage);
     this.$configReader = new JovoConfigReader(this.$config.getContent());
 
     // Look for --stage in process.argv.
@@ -54,17 +56,6 @@ export class Project {
     }
 
     return this.instance;
-  }
-
-  /**
-   * Returns cli plugins from config.
-   * ToDo: Staging for e.g. project.dev.js!
-   */
-  getCliPlugins(): JovoCliPluginEntry[] {
-    const plugins: JovoCliPluginEntry[] =
-      (this.$configReader!.getConfigParameter('plugins', this.$stage) as JovoCliPluginEntry[]) ||
-      [];
-    return plugins;
   }
 
   /**
@@ -262,5 +253,25 @@ export class Project {
       packageFile.hasOwnProperty('devDependencies') &&
       packageFile.devDependencies.hasOwnProperty('typescript')
     );
+  }
+
+  loadPlugins(): JovoCliPlugin[] {
+    const plugins: JovoCliPlugin[] = [];
+
+    const projectPlugins: JovoCliPlugin[] =
+      (this.$configReader!.getConfigParameter('plugins', this.$stage) as JovoCliPlugin[]) || [];
+
+    for (const plugin of projectPlugins) {
+      // Get plugin id and type from plugin instance and merge them into plugin config.
+      const pluginConfig: JovoCliPluginConfig = {
+        // ToDo: Better identifier for error handling? -> plugin.id = 'build', not verbose enough?
+        pluginId: plugin.id,
+        pluginType: plugin.type,
+      };
+      _merge(plugin.config, pluginConfig);
+
+      plugins.push(plugin);
+    }
+    return plugins;
   }
 }

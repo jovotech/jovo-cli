@@ -7,5 +7,5 @@ export * from './Project';
 export * from './JovoCliPlugin';
 export * from './JovoCliError';
 export * from './JovoUserConfig';
-export * from './Config';
+export * from './ProjectConfig';
 export * from './JovoCli';

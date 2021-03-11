@@ -71,7 +71,7 @@ export function getSubLocales(config: any, locale: string): string[] {
  * @param askSkillList - List of Alexa Skills returned by the ASK CLI.
  */
 export function prepareSkillList(askSkillList: AskSkillList) {
-  const choices: Array<{ name: string; value: string }> = [];
+  const choices: Array<{ title: string; value: string }> = [];
   for (const item of askSkillList.skills) {
     const key: string = Object.keys(item.nameByLocale)[0];
     let message: string = item.nameByLocale[key];
@@ -83,7 +83,7 @@ export function prepareSkillList(askSkillList: AskSkillList) {
       ` ${chalk.grey(item.skillId)}`;
 
     choices.push({
-      name: message,
+      title: message,
       value: item.skillId,
     });
   }

@@ -7,10 +7,6 @@ export abstract class PluginHook<T extends Events = DefaultEvents> extends Event
   protected $emitter!: Emitter<T & DefaultEvents>;
   protected $config!: JovoCliPluginConfig;
 
-  static install(emitter: Emitter<Events>, config: JovoCliPluginConfig) {
-    super.install(emitter, config);
-  }
-
   /**
    * Abstract install function to hook into events.
    */

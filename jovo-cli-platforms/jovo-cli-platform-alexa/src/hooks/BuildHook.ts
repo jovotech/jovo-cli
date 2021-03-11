@@ -128,7 +128,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       if (!locale) {
         throw new JovoCliError(
           `Could not find platform models for locale: ${locale}`,
-          this.$config.name,
+          this.$config.pluginId!,
         );
       }
 
@@ -179,7 +179,10 @@ export class BuildHook extends PluginHook<BuildEvents> {
         }
         const nativeData: JovoModelData | undefined = jovoModel.exportJovoModel();
         if (!nativeData) {
-          throw new JovoCliError('Alexa files did not contain any valid data.', this.$config.name);
+          throw new JovoCliError(
+            'Alexa files did not contain any valid data.',
+            this.$config.pluginId!,
+          );
         }
 
         _merge(modelFile, nativeData);
@@ -334,7 +337,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       if (error instanceof JovoCliError) {
         throw error;
       }
-      throw new JovoCliError(error.message, this.$config.name);
+      throw new JovoCliError(error.message, this.$config.pluginId!);
     }
   }
 

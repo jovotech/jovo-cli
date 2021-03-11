@@ -91,7 +91,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
     if (!existsSync(getPlatformPath())) {
       throw new JovoCliError(
         `Couldn't find the platform folder ${getPlatformPath()}.`,
-        this.$config.name,
+        this.$config.pluginId,
         `Please use "jovo build" to create platform-specific files.`,
       );
     }
@@ -205,7 +205,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (err instanceof JovoCliError) {
         throw err;
       }
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginId);
     }
   }
 
@@ -240,7 +240,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
     try {
       return JSON.parse(readFileSync(getAskConfigPath(), 'utf8'));
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginId);
     }
   }
 
@@ -268,7 +268,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
       return info;
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginId);
     }
   }
 

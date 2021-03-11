@@ -4,6 +4,7 @@ import {
   DefaultEvents,
   Emitter,
   JovoCli,
+  JovoCliConfigHooks,
   JovoCliPlugin,
   PluginCommand,
   PluginHook,
@@ -40,6 +41,7 @@ export class Collector extends Plugin {
         for (const pluginCommand of pluginCommands) {
           const command = await pluginCommand.install(emitter, plugin.config);
 
+          // Move the command currently being executed to the beginning.
           if (pluginCommand.id === commandId) {
             this.commands.unshift(command);
           } else {
@@ -52,6 +54,20 @@ export class Collector extends Plugin {
 
         for (const pluginHook of pluginHooks) {
           pluginHook.install(emitter, plugin.config);
+        }
+      }
+
+      // Load hooks from project configuration.
+      if (jovo.isInProjectDirectory()) {
+        const hooks: JovoCliConfigHooks = jovo.$project!.$configReader.getConfigParameter(
+          'hooks',
+          jovo.$project!.$stage,
+        ) as JovoCliConfigHooks;
+        for (const [eventKey, events] of Object.entries(hooks)) {
+          for (const event of events) {
+            // @ts-ignore
+            emitter.on(eventKey, event);
+          }
         }
       }
 

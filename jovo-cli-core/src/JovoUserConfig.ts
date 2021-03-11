@@ -160,7 +160,7 @@ export class JovoUserConfig {
         );
       } else {
         // Remove existing preset.
-        config.cli.presets.filter((p) => p.name !== preset.name);
+        config.cli.presets = config.cli.presets.filter((p) => p.name !== preset.name);
       }
     }
 
