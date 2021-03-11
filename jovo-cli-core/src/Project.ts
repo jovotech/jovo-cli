@@ -262,14 +262,13 @@ export class Project {
       (this.$configReader!.getConfigParameter('plugins', this.$stage) as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
-      // Get plugin id and type from plugin instance and merge them into plugin config.
+      // Get plugin id, name and type from plugin instance and merge them into plugin config.
       const pluginConfig: JovoCliPluginConfig = {
-        // ToDo: Better identifier for error handling? -> plugin.id = 'build', not verbose enough?
         pluginId: plugin.id,
+        pluginName: plugin.constructor.name,
         pluginType: plugin.type,
       };
       _merge(plugin.config, pluginConfig);
-
       plugins.push(plugin);
     }
     return plugins;

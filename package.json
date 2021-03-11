@@ -3,5 +3,11 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.22.1"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "tsc": "lerna run tsc --ignore jovo-cli-platform-google",
+    "linkCommands": "lerna run link --scope jovo-cli-command-*",
+    "devSetup": "npm run linkCommands && npm run bootstrap && npm run tsc"
   }
 }

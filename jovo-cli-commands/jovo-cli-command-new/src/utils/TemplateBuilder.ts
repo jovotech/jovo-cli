@@ -17,7 +17,7 @@ export async function build(props: ProjectProperties) {
   for (const selectedPlatform of props.platforms) {
     const platform = PLATFORMS[selectedPlatform];
     projectConfig = insert(
-      `const { ${platform.cliPlugin} } = require(\'${platform.path}\');\n`,
+      `const { default: ${platform.cliPlugin} } = require(\'${platform.path}/cli\');\n`,
       projectConfig,
       0,
     );

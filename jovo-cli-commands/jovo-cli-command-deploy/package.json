@@ -4,14 +4,14 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "link": "npm link && lerna add jovo-cli-core --scope jovo-cli-command-deploy --no-bootstrap"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@oclif/command": "^1.8.0",
-    "chalk": "^4.1.0",
-    "jovo-cli-core": "^1.0.0"
+    "chalk": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.22",

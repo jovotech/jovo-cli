@@ -171,7 +171,7 @@ export class Run extends PluginCommand<RunEvents> {
       if (!projectFolder) {
         throw new JovoCliError(
           'Could not find a project to run.',
-          this.$config.pluginId!,
+          this.$config.pluginName!,
           `Please check for your ${printCode(
             args.webhookFile,
           )} or provide your webhook file as a command argument.`,

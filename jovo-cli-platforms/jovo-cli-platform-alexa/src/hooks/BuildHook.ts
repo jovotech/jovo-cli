@@ -46,7 +46,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.flags.platform && args.flags.platform !== this.$config.pluginId!) {
+    if (args.flags.platform && args.flags.platform !== this.$config.pluginName!) {
       this.uninstall();
     }
   }
@@ -111,7 +111,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
   async buildReverse(context: JovoCliPluginContext) {
     const jovo: JovoCli = JovoCli.getInstance();
     // Since platform can be prompted for, check if this plugin should actually be executed again.
-    if (!context.platforms.includes(this.$config.pluginId!)) {
+    if (!context.platforms.includes(this.$config.pluginName!)) {
       return;
     }
     // Get locales to reverse build from. If --locale is not specified, reverse build from every locale
@@ -128,7 +128,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       if (!locale) {
         throw new JovoCliError(
           `Could not find platform models for locale: ${locale}`,
-          this.$config.pluginId!,
+          this.$config.pluginName!,
         );
       }
 
@@ -181,7 +181,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
         if (!nativeData) {
           throw new JovoCliError(
             'Alexa files did not contain any valid data.',
-            this.$config.pluginId!,
+            this.$config.pluginName!,
           );
         }
 
@@ -201,9 +201,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
    */
   createAlexaProjectFiles(context: JovoCliPluginContext) {
     const jovo: JovoCli = JovoCli.getInstance();
-    const files: FileObject = FileBuilder.normalizeFileObject(
-      _get(this.$config, 'options.files', {}),
-    );
+    const files: FileObject = FileBuilder.normalizeFileObject(_get(this.$config, 'files', {}));
 
     // If platforms folder doesn't exist, take default files and parse them with project.js config into FileBuilder.
     const projectFiles: FileObject = jovo.$project!.hasPlatform(getPlatformDirectory())
@@ -232,6 +230,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
     }
 
     const skillName: string = jovo.$project!.getProjectName();
+
     for (const locale of context.locales) {
       const buildLocales: string[] = [];
       // If locale is of format en, de, ..., try to get sublocales.
@@ -337,7 +336,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       if (error instanceof JovoCliError) {
         throw error;
       }
-      throw new JovoCliError(error.message, this.$config.pluginId!);
+      throw new JovoCliError(error.message, this.$config.pluginName!);
     }
   }
 

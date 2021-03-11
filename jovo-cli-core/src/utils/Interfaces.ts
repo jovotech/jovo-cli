@@ -36,14 +36,14 @@ export type JovoCliPluginType = 'platform' | 'target' | 'command' | '';
 
 export interface JovoCliPluginConfig {
   pluginId?: string;
+  pluginName?: string;
   pluginType?: JovoCliPluginType;
   hooks?: JovoCliConfigHooks;
   files?: any;
-  [key: string]: any;
 }
 
 export interface JovoCliConfigHooks {
-  [key: string]: Function[] ;
+  [key: string]: Function[];
 }
 
 export interface JovoCliPluginContext {

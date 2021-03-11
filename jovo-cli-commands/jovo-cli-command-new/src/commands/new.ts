@@ -25,7 +25,7 @@ import {
 import { BuildEvents } from 'jovo-cli-command-build';
 import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
 import { copySync } from 'fs-extra';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
 
 import { downloadAndExtract, runNpmInstall } from '../utils';
 import {
@@ -248,6 +248,20 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     }
 
     await this.$emitter!.run('new', context);
+
+    // ! Link project dependencies for local setup.
+    // Link jovo-cli-core.
+    rmdirSync(joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'), { recursive: true });
+    symlinkSync(
+      '../../cli/jovo-cli-core',
+      joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'),
+    );
+
+    // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
+    symlinkSync(
+      '../../../cli/jovo-cli-platforms/jovo-cli-platform-alexa',
+      joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
+    );
 
     // Initialize project.
     jovo.initializeProject(joinPaths(jovo.$projectPath, context.projectName));
