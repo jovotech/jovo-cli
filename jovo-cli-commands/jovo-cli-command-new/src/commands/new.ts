@@ -24,15 +24,17 @@ import {
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
 import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
+import { copySync } from 'fs-extra';
+import { existsSync, mkdirSync } from 'fs';
 
 import { downloadAndExtract, runNpmInstall } from '../utils';
-import { existsSync, mkdirSync } from 'fs';
 import {
   promptPreset,
   promptPresetName,
   promptProjectProperties,
   promptSavePreset,
 } from '../utils/Prompts';
+import * as TemplateBuilder from '../utils/TemplateBuilder';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -58,18 +60,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
   ];
   // Defines flags for this command, such as --help.
   static flags: Input<any> = {
-    'template': flags.string({
-      char: 't',
-      description: 'Name of the template.',
-      parse(template: string) {
-        if (!/^[0-9a-zA-Z-/_]+$/.test(template)) {
-          console.log('Please use a valid template name.');
-          process.exit();
-        }
-
-        return template.replace('/', '-');
-      },
-    }),
     'locale': flags.string({
       char: 'l',
       description: 'Locale of the language model.',
@@ -101,6 +91,9 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     }),
     'no-wizard': flags.boolean({
       description: 'Disables wizard.',
+    }),
+    'overwrite': flags.boolean({
+      description: 'Forces overwriting an existing project.',
     }),
   };
   // Defines arguments that can be passed to the command.
@@ -150,17 +143,12 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
             const { presetName } = await promptPresetName();
             preset.name = presetName;
 
-            jovo.$userConfig.savePreset(preset);
+            await jovo.$userConfig.savePreset(preset);
           }
         } else {
           preset = jovo.$userConfig.getPreset(selectedPreset);
         }
       } catch (error) {
-        // If no error is given, i.e. user cancelled process, return and exit. Explicitly check, if error.length is 0, as it is undefined on JovoCliError.
-        if (error.length === 0) {
-          return;
-        }
-
         if (error instanceof JovoCliError) {
           throw error;
         }
@@ -173,7 +161,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
 
     const context: NewPluginContext = {
       projectName: args.directory,
-      template: flags.template || 'helloworldtest',
       language: flags.language || 'typescript',
       linter: false,
       unitTesting: false,
@@ -188,32 +175,32 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     // Merge preset's project properties with context object.
     if (preset) {
       const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
-      console.log(contextPreset);
 
       _merge(context, contextPreset);
-    } else {
-      // Directory is mandatory, so throw an error if omitted.
-      if (!context.projectName) {
-        throw new JovoCliError(
-          'Please provide a directory.',
-          'jovo-cli-command-new',
-          'For more information, run "jovo new --help".',
-        );
-      }
+    }
+
+    // Directory is mandatory, so throw an error if omitted.
+    if (!context.projectName) {
+      throw new JovoCliError(
+        'Please provide a directory.',
+        'jovo-cli-command-new',
+        'For more information, run "jovo new --help".',
+      );
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
     if (jovo.hasExistingProject(context.projectName)) {
-      const { overwrite } = await promptOverwrite(
-        `The directory ${printHighlight(
-          context.projectName,
-        )} already exists. What would you like to do?`,
-      );
-      if (overwrite === ANSWER_CANCEL) {
-        return;
-      } else {
-        deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
+      if (!flags.overwrite) {
+        const { overwrite } = await promptOverwrite(
+          `The directory ${printHighlight(
+            context.projectName,
+          )} already exists. What would you like to do?`,
+        );
+        if (overwrite === ANSWER_CANCEL) {
+          process.exit();
+        }
       }
+      deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
     }
 
     this.log();
@@ -233,24 +220,29 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     );
     await newTask.run();
 
-    const downloadTask: Task = new Task(
-      `Downloading and extracting template ${context.template}`,
-      async () => {
-        // ToDo: What if multiple locales are provided?
-        await downloadAndExtract(
-          context.projectName,
-          context.template,
-          context.locales[0],
-          context.language,
-        );
-      },
-    );
+    const downloadTask: Task = new Task('Downloading and extracting template', async () => {
+      // await downloadAndExtract(
+      //   context.projectName,
+      //   context.template,
+      //   context.locales[0],
+      //   context.language,
+      // );
+      copySync(
+        joinPaths(jovo.$projectPath, 'template'),
+        joinPaths(jovo.$projectPath, context.projectName),
+      );
+    });
     await downloadTask.run();
+
+    const prepareTask: Task = new Task('Preparing template', async () =>
+      TemplateBuilder.build(context),
+    );
+    await prepareTask.run();
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        return runNpmInstall();
+        await runNpmInstall(joinPaths(jovo.$projectPath, context.projectName));
       });
       await installNpmTask.run();
     }
