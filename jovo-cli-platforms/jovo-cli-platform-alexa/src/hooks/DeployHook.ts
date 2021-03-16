@@ -1,7 +1,7 @@
-import { flags } from '@oclif/command';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
 import {
+  flags,
   InstallEventArguments,
   JovoCli,
   JovoCliError,

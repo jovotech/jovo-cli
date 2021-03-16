@@ -8,7 +8,7 @@ import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
 import { JovoCliError } from './JovoCliError';
-import { ProjectConfig } from './ProjectConfig';
+import { Config } from './Config';
 import { DEFAULT_LOCALE } from './utils/Constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { JovoCliPluginConfig } from './utils/Interfaces';
@@ -18,15 +18,11 @@ export class Project {
 
   private projectPath: string;
 
-  readonly $configReader: JovoConfigReader;
-  readonly $config: ProjectConfig;
+  readonly $config: Config;
   readonly $stage?: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
-
-    this.$config = new ProjectConfig(this.projectPath, this.$stage);
-    this.$configReader = new JovoConfigReader(this.$config.getContent());
 
     // Look for --stage in process.argv.
     const stageIndex: number = process.argv.findIndex((el) => el === '--stage');
@@ -34,11 +30,7 @@ export class Project {
     if (stageIndex > -1) {
       this.$stage = process.argv[stageIndex + 1];
     } else {
-      const defaultStage: string = this.$configReader.getConfigParameter('defaultStage') as string;
-
-      if (defaultStage) {
-        this.$stage = defaultStage;
-      } else if (process.env.JOVO_STAGE) {
+      if (process.env.JOVO_STAGE) {
         this.$stage = process.env.JOVO_STAGE;
       } else if (process.env.STAGE) {
         this.$stage = process.env.STAGE;
@@ -46,6 +38,14 @@ export class Project {
       } else if (process.env.NODE_ENV) {
         this.$stage = process.env.NODE_ENV;
       }
+    }
+
+    this.$config = new Config(this.projectPath, this.$stage);
+
+
+    // If stage was not explicitly defined, try to get it from config.
+    if (!this.$stage) {
+      this.$stage = this.$config.getParameter('defaultStage') as string | undefined;
     }
   }
 
@@ -63,9 +63,7 @@ export class Project {
    * @param stage - Optional config stage.
    */
   getBuildDirectory(): string {
-    return (
-      (this.$configReader!.getConfigParameter('buildDirectory', this.$stage) as string) || 'build'
-    );
+    return (this.$config.getParameter('buildDirectory') as string) || 'build';
   }
 
   /**
@@ -80,9 +78,7 @@ export class Project {
    * @param stage - Optional config stage.
    */
   getModelsDirectory() {
-    return (
-      (this.$configReader!.getConfigParameter('modelsDirectory', this.$stage) as string) || 'models'
-    );
+    return (this.$config.getParameter('modelsDirectory') as string) || 'models';
   }
 
   /**
@@ -255,11 +251,11 @@ export class Project {
     );
   }
 
-  loadPlugins(): JovoCliPlugin[] {
+  collectPlugins(): JovoCliPlugin[] {
     const plugins: JovoCliPlugin[] = [];
 
     const projectPlugins: JovoCliPlugin[] =
-      (this.$configReader!.getConfigParameter('plugins', this.$stage) as JovoCliPlugin[]) || [];
+      (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
       // Get plugin id, name and type from plugin instance and merge them into plugin config.

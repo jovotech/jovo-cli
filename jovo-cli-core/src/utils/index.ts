@@ -211,6 +211,14 @@ export function checkForProjectDirectory() {
   }
 }
 
-export function configure(object: any) {
-  return object;
+/**
+ * Customizer for _.mergeWith() to merge arrays instead of overwriting.
+ * @param objValue - Array to merge into source.
+ * @param srcValue - Source array.
+ */
+export function mergeArrayCustomizer(target: any[], source: any[]) {
+  // Since _.merge simply overwrites the original array, concatenate them instead.
+  if (Array.isArray(target) && Array.isArray(source)) {
+    return target.concat(source);
+  }
 }

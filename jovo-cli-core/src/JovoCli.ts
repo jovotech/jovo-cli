@@ -11,7 +11,7 @@ import { JovoCliPluginConfig, JovoCliPluginType, JovoUserConfigFile } from './ut
 import { URL } from 'url';
 import { JovoCliError } from './JovoCliError';
 import { JovoUserConfig } from './JovoUserConfig';
-import { ProjectConfig } from './ProjectConfig';
+import { Config } from './Config';
 
 export class JovoCli {
   private static instance: JovoCli;
@@ -70,17 +70,17 @@ export class JovoCli {
       return false;
     }
 
-    return existsSync(joinPaths(this.$projectPath, ProjectConfig.getFileName()));
+    return existsSync(joinPaths(this.$projectPath, Config.getFileName()));
   }
 
-  collectCommandPlugins(): JovoCliPlugin[] {
+  async collectCommandPlugins(): Promise<JovoCliPlugin[]> {
     const globalPlugins: JovoCliPlugin[] = [];
 
     const config: JovoUserConfigFile = this.$userConfig.get();
 
     for (const pluginId of config.cli?.plugins || []) {
       // Load plugin from global 'node_modules/'.
-      const pluginPath: string = joinPaths(globalNpmModulesPath, pluginId);
+      const pluginPath: string = joinPaths(globalNpmModulesPath, pluginId, 'dist', 'index.js');
 
       // If the plugin does not exist, skip it quietly.
       if (!existsSync(pluginPath)) {
@@ -93,7 +93,8 @@ export class JovoCli {
       };
 
       // ToDo: Possible to pass config via project configuration?
-      const plugin: JovoCliPlugin = new (require(pluginPath).default)(pluginConfig);
+      // const plugin: JovoCliPlugin = new (require(pluginPath).default)(pluginConfig);
+      const plugin: JovoCliPlugin = new (await import(pluginPath)).default(pluginConfig);
 
       globalPlugins.push(plugin);
     }
@@ -104,11 +105,11 @@ export class JovoCli {
   /**
    * Loads both project plugins and command plugins and returns respective classes.
    */
-  loadPlugins(): JovoCliPlugin[] {
-    this.cliPlugins.push(...this.collectCommandPlugins());
+  async loadPlugins(): Promise<JovoCliPlugin[]> {
+    this.cliPlugins.push(...(await this.collectCommandPlugins()));
 
     if (this.$project) {
-      this.cliPlugins.push(...this.$project.loadPlugins());
+      this.cliPlugins.push(...this.$project.collectPlugins());
     }
 
     return this.cliPlugins;

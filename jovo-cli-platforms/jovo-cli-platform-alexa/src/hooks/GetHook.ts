@@ -1,9 +1,9 @@
-import { flags } from '@oclif/command';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
 import {
   ANSWER_CANCEL,
+  flags,
   InstallEventArguments,
   JovoCliPluginContext,
   ParseEventArguments,

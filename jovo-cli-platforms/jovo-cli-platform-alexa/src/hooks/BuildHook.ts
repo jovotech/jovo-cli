@@ -19,6 +19,7 @@ import {
   PluginHook,
   JovoCli,
   wait,
+  mergeArrayCustomizer,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
 import { FileBuilder, FileObject } from 'filebuilder';
@@ -386,22 +387,18 @@ export class BuildHook extends PluginHook<BuildEvents> {
     const jovo: JovoCli = JovoCli.getInstance();
     const model: JovoModelData = jovo.$project!.getModel(locale);
 
-    // Create customizer to concat model arrays instead of overwriting them.
-    const mergeCustomizer: Function = (objValue: any[], srcValue: any) => {
-      // Since _.merge simply overwrites the original array, concatenate them instead.
-      if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      }
-    };
-
     // Merge model with configured language model in project.js.
     _mergeWith(
       model,
-      jovo.$project!.$configReader.getConfigParameter(`languageModel.${locale}`) || {},
-      mergeCustomizer,
+      jovo.$project!.$config.getParameter(`languageModel.${locale}`) || {},
+      mergeArrayCustomizer,
     );
     // Merge model with configured, platform-specific language model in project.js.
-    _mergeWith(model, _get(this.$config, `options.languageModel.${locale}`, {}), mergeCustomizer);
+    _mergeWith(
+      model,
+      _get(this.$config, `options.languageModel.${locale}`, {}),
+      mergeArrayCustomizer,
+    );
 
     return model;
   }
