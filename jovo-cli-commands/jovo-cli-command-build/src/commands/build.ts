@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
@@ -14,6 +13,7 @@ import {
   PluginCommand,
   Emitter,
   JovoCliPluginConfig,
+  flags,
 } from 'jovo-cli-core';
 import { promptForPlatform } from '../utils';
 

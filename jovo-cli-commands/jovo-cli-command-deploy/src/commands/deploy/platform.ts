@@ -1,10 +1,10 @@
-import { flags } from '@oclif/command';
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,
   Emitter,
+  flags,
   JovoCli,
   JovoCliError,
   JovoCliPluginConfig,

@@ -1,7 +1,7 @@
 import { join as joinPaths } from 'path';
 import { omit } from 'lomit';
 import _set from 'lodash.set';
-import { ProjectConfig, JovoCli, ProjectProperties } from 'jovo-cli-core';
+import { Config as ProjectConfig, JovoCli, ProjectProperties } from 'jovo-cli-core';
 import { copyFileSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import { PLATFORMS } from './Constants';
@@ -17,7 +17,7 @@ export async function build(props: ProjectProperties) {
   for (const selectedPlatform of props.platforms) {
     const platform = PLATFORMS[selectedPlatform];
     projectConfig = insert(
-      `const { default: ${platform.cliPlugin} } = require(\'${platform.path}/cli\');\n`,
+      `const { ${platform.cliPlugin} } = require(\'${platform.path}/cli\');\n`,
       projectConfig,
       0,
     );

@@ -3,7 +3,7 @@ import { New } from './commands';
 
 export * from './commands';
 
-export default class JovoCliCommandNew extends JovoCliPlugin {
+export class NewCommand extends JovoCliPlugin {
   id: string = 'new';
   type: JovoCliPluginType = 'command';
 
@@ -11,3 +11,5 @@ export default class JovoCliCommandNew extends JovoCliPlugin {
     return [New];
   }
 }
+
+export default NewCommand;

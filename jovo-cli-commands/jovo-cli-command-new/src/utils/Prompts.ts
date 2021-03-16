@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import prompt from 'prompts';
 import {
   JovoCli,
   JovoCliPreset,
   printHighlight,
   ProjectProperties,
+  prompt,
   validateLocale,
 } from 'jovo-cli-core';
 

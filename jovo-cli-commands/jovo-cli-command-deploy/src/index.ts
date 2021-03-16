@@ -3,7 +3,7 @@ import { Deploy, DeployCode, DeployPlatform } from './commands';
 
 export * from './commands';
 
-export default class JovoCliCommandDeploy extends JovoCliPlugin {
+export class DeployCommand extends JovoCliPlugin {
   id: string = 'deploy';
   type: JovoCliPluginType = 'command';
 
@@ -11,3 +11,5 @@ export default class JovoCliCommandDeploy extends JovoCliPlugin {
     return [Deploy, DeployCode, DeployPlatform];
   }
 }
+
+export default DeployCommand;

@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import { Input } from '@oclif/command/lib/flags';
 import boxen from 'boxen';
 import chalk from 'chalk';
@@ -15,6 +14,7 @@ import {
   PluginCommand,
   Project,
   Task,
+  flags,
 } from 'jovo-cli-core';
 import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
 import { ChildProcess, spawn } from 'child_process';
@@ -114,10 +114,7 @@ export class Run extends PluginCommand<RunEvents> {
       instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout });
       await this.$emitter!.run('run', context);
     } else {
-      const srcDir: string = project.$configReader!.getConfigParameter(
-        'src',
-        project.$stage,
-      ) as string;
+      const srcDir: string = project.$config.getParameter('src') as string;
 
       // Construct array of directories where to check for the webhook file.
       // Always check in the root directory.

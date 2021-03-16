@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import { Input } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
@@ -8,6 +7,7 @@ import {
   JovoCliPluginContext,
   PluginCommand,
   printSubHeadline,
+  flags,
 } from 'jovo-cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();

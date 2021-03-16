@@ -32,7 +32,7 @@ export class Collector extends Plugin {
   async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>) {
     try {
       const jovo: JovoCli = JovoCli.getInstance();
-      const plugins: JovoCliPlugin[] = jovo.loadPlugins();
+      const plugins: JovoCliPlugin[] = await jovo.loadPlugins();
 
       for (const plugin of plugins) {
         // Install plugin commands.
@@ -59,9 +59,8 @@ export class Collector extends Plugin {
 
       // Load hooks from project configuration.
       if (jovo.isInProjectDirectory()) {
-        const hooks: JovoCliConfigHooks = jovo.$project!.$configReader.getConfigParameter(
+        const hooks: JovoCliConfigHooks = jovo.$project!.$config.getParameter(
           'hooks',
-          jovo.$project!.$stage,
         ) as JovoCliConfigHooks;
         for (const [eventKey, events] of Object.entries(hooks)) {
           for (const event of events) {

@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
 import { join as joinPaths } from 'path';
@@ -8,6 +7,7 @@ import {
   ANSWER_CANCEL,
   CRYSTAL_BALL,
   deleteFolderRecursive,
+  flags,
   JovoCli,
   JovoCliError,
   JovoCliPluginContext,
@@ -27,7 +27,7 @@ import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
 
-import { downloadAndExtract, runNpmInstall } from '../utils';
+import { runNpmInstall } from '../utils';
 import {
   promptPreset,
   promptPresetName,
