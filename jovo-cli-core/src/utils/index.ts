@@ -47,7 +47,7 @@ export function wait(ms: number): Promise<void> {
 
 /**
  * Recursively deletes all files and folders within a directory.
- * @param path
+ * @param path - Path to directory to delete.
  */
 export function deleteFolderRecursive(path: string) {
   if (existsSync(path)) {

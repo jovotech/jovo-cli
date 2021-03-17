@@ -9,7 +9,7 @@ import { mergeArrayCustomizer, ProjectConfigObject } from './utils';
 import { JovoCliPlugin } from './JovoCliPlugin';
 
 export class Config {
-  private config?: ProjectConfigObject;
+  private readonly config: ProjectConfigObject;
 
   constructor(private projectPath: string, private stage?: string) {
     const configContent = this.getContent();
@@ -64,7 +64,6 @@ export class Config {
    */
   getContent(): ProjectConfigObject {
     try {
-      // ToDo: Need to clone deep?
       const config: ProjectConfigObject = require(this.getPath());
       return config;
     } catch (error) {

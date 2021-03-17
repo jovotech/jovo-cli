@@ -14,7 +14,7 @@ import { JovoUserConfig } from './JovoUserConfig';
 import { Config } from './Config';
 
 export class JovoCli {
-  private static instance: JovoCli;
+  private static instance?: JovoCli;
   private cliPlugins: JovoCliPlugin[] = [];
 
   readonly $userConfig: JovoUserConfig;
@@ -73,12 +73,12 @@ export class JovoCli {
     return existsSync(joinPaths(this.$projectPath, Config.getFileName()));
   }
 
-  async collectCommandPlugins(): Promise<JovoCliPlugin[]> {
+  collectCommandPlugins(): JovoCliPlugin[] {
     const globalPlugins: JovoCliPlugin[] = [];
 
-    const config: JovoUserConfigFile = this.$userConfig.get();
+    const plugins: string[] = (this.$userConfig.getParameter('cli.plugins') as string[]) || [];
 
-    for (const pluginId of config.cli?.plugins || []) {
+    for (const pluginId of plugins) {
       // Load plugin from global 'node_modules/'.
       const pluginPath: string = joinPaths(globalNpmModulesPath, pluginId, 'dist', 'index.js');
 
@@ -93,8 +93,7 @@ export class JovoCli {
       };
 
       // ToDo: Possible to pass config via project configuration?
-      // const plugin: JovoCliPlugin = new (require(pluginPath).default)(pluginConfig);
-      const plugin: JovoCliPlugin = new (await import(pluginPath)).default(pluginConfig);
+      const plugin: JovoCliPlugin = new (require(pluginPath).default)(pluginConfig);
 
       globalPlugins.push(plugin);
     }
@@ -105,8 +104,8 @@ export class JovoCli {
   /**
    * Loads both project plugins and command plugins and returns respective classes.
    */
-  async loadPlugins(): Promise<JovoCliPlugin[]> {
-    this.cliPlugins.push(...(await this.collectCommandPlugins()));
+  loadPlugins(): JovoCliPlugin[] {
+    this.cliPlugins.push(...this.collectCommandPlugins());
 
     if (this.$project) {
       this.cliPlugins.push(...this.$project.collectPlugins());
