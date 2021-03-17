@@ -22,7 +22,7 @@ import {
   mergeArrayCustomizer,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'filebuilder';
+import { FileBuilder, FileObject } from 'jovo-filebuilder';
 import { JovoModelAlexa, JovoModelAlexaData } from 'jovo-model-alexa';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 
@@ -346,8 +346,8 @@ export class BuildHook extends PluginHook<BuildEvents> {
    */
   getPluginEndpoint(): string {
     const jovo: JovoCli = JovoCli.getInstance();
-    const config = jovo.$project!.$config.get();
-    const endpoint = _get(this.$config, 'options.endpoint') || _get(config, 'endpoint');
+    const endpoint =
+      _get(this.$config, 'options.endpoint') || jovo.$project!.$config.getParameter('endpoint');
     return jovo.resolveEndpoint(endpoint);
   }
 
