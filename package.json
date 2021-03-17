@@ -7,6 +7,6 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "tsc": "lerna run tsc --ignore jovo-cli-platform-google",
-    "devSetup": "lerna run link && npm run bootstrap && npm run tsc"
+    "devSetup": "npm run bootstrap && lerna run link && npm run tsc"
   }
 }
