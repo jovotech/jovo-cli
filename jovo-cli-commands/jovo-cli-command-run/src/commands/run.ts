@@ -76,14 +76,14 @@ export class Run extends PluginCommand<RunEvents> {
 
       outputText.push('\nUse "jovo update" to get the newest versions.');
 
-      const boxOptions: boxen.Options = {
-        padding: 1,
-        margin: 1,
-        borderColor: 'yellow',
-        borderStyle: 'round',
-      };
-
-      this.log(boxen(outputText.join('\n'), boxOptions));
+      this.log(
+        boxen(outputText.join('\n'), {
+          padding: 1,
+          margin: 1,
+          borderColor: 'yellow',
+          borderStyle: 'round',
+        }),
+      );
     }
   }
 
@@ -108,7 +108,7 @@ export class Run extends PluginCommand<RunEvents> {
       args,
     };
 
-    this.$emitter!.run('before.run', context);
+    await this.$emitter!.run('before.run', context);
 
     if (flags['webhook-only']) {
       instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout });

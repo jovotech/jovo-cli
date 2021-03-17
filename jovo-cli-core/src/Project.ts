@@ -42,7 +42,6 @@ export class Project {
 
     this.$config = new Config(this.projectPath, this.$stage);
 
-
     // If stage was not explicitly defined, try to get it from config.
     if (!this.$stage) {
       this.$stage = this.$config.getParameter('defaultStage') as string | undefined;

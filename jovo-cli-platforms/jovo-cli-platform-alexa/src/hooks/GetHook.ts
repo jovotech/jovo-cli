@@ -15,7 +15,7 @@ import {
 } from 'jovo-cli-core';
 import { GetEvents } from 'jovo-cli-command-get';
 import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'filebuilder';
+import { FileBuilder, FileObject } from 'jovo-filebuilder';
 
 import * as smapi from '../smapi';
 import {

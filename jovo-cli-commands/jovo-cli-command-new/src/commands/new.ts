@@ -27,14 +27,14 @@ import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
 
-import { runNpmInstall } from '../utils';
 import {
+  runNpmInstall,
   promptPreset,
   promptPresetName,
   promptProjectProperties,
   promptSavePreset,
-} from '../utils/Prompts';
-import * as TemplateBuilder from '../utils/TemplateBuilder';
+  TemplateBuilder,
+} from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
 

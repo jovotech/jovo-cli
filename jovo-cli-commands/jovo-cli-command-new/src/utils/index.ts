@@ -4,6 +4,9 @@ import AdmZip from 'adm-zip';
 import { join as joinPaths } from 'path';
 import { execAsync, JovoCliError, REPO_URL } from 'jovo-cli-core';
 
+export * from './Prompts';
+export * as TemplateBuilder from './TemplateBuilder';
+
 /**
  * Downloads and extracts a template.
  * @param projectPath - Path to download and extract the template to.

@@ -32,7 +32,7 @@ export class Collector extends Plugin {
   async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>) {
     try {
       const jovo: JovoCli = JovoCli.getInstance();
-      const plugins: JovoCliPlugin[] = await jovo.loadPlugins();
+      const plugins: JovoCliPlugin[] = jovo.loadPlugins();
 
       for (const plugin of plugins) {
         // Install plugin commands.

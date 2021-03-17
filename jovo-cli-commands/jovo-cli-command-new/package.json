@@ -4,9 +4,8 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "link": "npm link && lerna add jovo-cli-core --scope jovo-cli-command-new --no-bootstrap && lerna add jovo-cli-command-build --scope jovo-cli-command-new --no-bootstrap && lerna add jovo-cli-command-deploy --scope jovo-cli-command-new --no-bootstrap"
+    "link": "npx symlink-dir . \"$(npm config get prefix)\"/lib/node_modules/jovo-cli-command-new"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +16,9 @@
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "fs-extra": "^9.1.0",
+    "jovo-cli-command-build": "^1.0.0",
+    "jovo-cli-command-deploy": "^1.0.0",
+    "jovo-cli-core": "^1.0.0",
     "latest-version": "^5.1.0",
     "lodash.merge": "^4.6.2",
     "lodash.mergewith": "^4.6.2",
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@types/adm-zip": "^0.4.33",
     "@types/fs-extra": "^9.0.8",
+    "@types/jest": "^26.0.20",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.mergewith": "^4.6.6",
     "@types/lodash.pick": "^4.4.6",

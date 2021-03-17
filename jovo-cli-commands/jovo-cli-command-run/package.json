@@ -4,9 +4,8 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "jest",
     "tsc": "tsc",
-    "link": "npm link && lerna add jovo-cli-core --scope jovo-cli-command-run --no-bootstrap"
+    "link": "npx symlink-dir . \"$(npm config get prefix)\"/lib/node_modules/jovo-cli-command-run"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +16,7 @@
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
     "indent-string": "^4.0.0",
+    "jovo-cli-core": "^1.0.0",
     "keypress": "^0.2.1",
     "listr": "^0.14.3",
     "lodash.get": "^4.4.2",

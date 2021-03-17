@@ -4,16 +4,17 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "link": "npm link && lerna add jovo-cli-core --scope jovo-cli-command-get --no-bootstrap"
+    "link": "npx symlink-dir . \"$(npm config get prefix)\"/lib/node_modules/jovo-cli-command-get"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@oclif/command": "^1.8.0"
+    "@oclif/command": "^1.8.0",
+    "jovo-cli-core": "^1.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "@types/node": "^14.14.22",
     "@types/node-emoji": "^1.8.1",
     "@types/parse-json": "^4.0.0",

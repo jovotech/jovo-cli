@@ -1,9 +1,9 @@
 import { join as joinPaths } from 'path';
 import { omit } from 'lomit';
 import _set from 'lodash.set';
-import { Config as ProjectConfig, JovoCli, ProjectProperties } from 'jovo-cli-core';
 import { copyFileSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
+import { Config as ProjectConfig, JovoCli, ProjectProperties } from 'jovo-cli-core';
 import { PLATFORMS } from './Constants';
 
 export async function build(props: ProjectProperties) {
