@@ -7,7 +7,7 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "link": "node link.js"
+    "link": "node bin/link"
   },
   "bugs": "https://github.com/rubenaeg/cli/issues",
   "dependencies": {

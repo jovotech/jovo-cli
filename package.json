@@ -5,7 +5,7 @@
     "lerna": "^3.22.1"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap --hoist",
     "tsc": "lerna run tsc --ignore jovo-cli-platform-google",
     "link": "lerna run link",
     "devSetup": "npm run bootstrap && npm run link && npm run tsc"

@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "tsc": "tsc",
-    "link": "node link.js"
+    "link": "node bin/link"
   },
   "author": "",
   "license": "ISC",
