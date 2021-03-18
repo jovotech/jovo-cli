@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "tsc": "tsc",
-    "link": "npx symlink-dir . \"$(npm config get prefix)\"/lib/node_modules/jovo-cli-command-build"
+    "link": "node link.js"
   },
   "author": "",
   "license": "ISC",
@@ -29,8 +29,10 @@
     "@types/prompts": "^2.0.9",
     "@types/rimraf": "^3.0.0",
     "fancy-test": "^1.4.10",
+    "global-modules": "^2.0.0",
     "jest": "^26.6.3",
     "rimraf": "^3.0.2",
+    "symlink-dir": "^4.1.0",
     "ts-jest": "^26.4.4",
     "typescript": "^4.1.3"
   }
