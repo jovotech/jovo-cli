@@ -12,7 +12,7 @@ export class Config {
   private readonly config: ProjectConfigObject;
 
   constructor(private projectPath: string, private stage?: string) {
-    const configContent = this.getContent();
+    const configContent: ProjectConfigObject = this.getContent();
     if (!stage) {
       this.stage = _get(configContent, 'defaultStage');
     }

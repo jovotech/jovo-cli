@@ -2,9 +2,10 @@
   "name": "jovo-cli-core",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "tsc": "tsc"
   },
   "author": "",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@types/global-modules": "^2.0.0",
+    "@types/jest": "^26.0.20",
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.keyby": "^4.6.6",

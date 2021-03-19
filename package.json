@@ -8,6 +8,7 @@
     "bootstrap": "lerna bootstrap --hoist",
     "tsc": "lerna run tsc --ignore jovo-cli-platform-google",
     "link": "lerna run link",
+    "test": "lerna run test",
     "devSetup": "npm run bootstrap && npm run link && npm run tsc"
   }
 }

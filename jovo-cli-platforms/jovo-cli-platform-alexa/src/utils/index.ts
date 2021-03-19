@@ -22,7 +22,7 @@ export async function checkForAskCli() {
     if (parseInt(majorVersion) < 2) {
       throw new JovoCliError(
         'Jovo CLI requires ASK CLI @v2 or above.',
-        'jovo-cli-platform-alexa',
+        'AlexaCli',
         'Please update your ASK CLI using "npm install ask-cli -g".',
       );
     }
@@ -33,7 +33,7 @@ export async function checkForAskCli() {
 
     throw new JovoCliError(
       'Jovo CLI requires ASK CLI',
-      'jovo-cli-platform-alexa',
+      'AlexaCli',
       'Install the ASK CLI with "npm install ask-cli -g". Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
     );
   }
@@ -92,7 +92,7 @@ export function prepareSkillList(askSkillList: AskSkillList) {
 }
 
 export function getAskError(method: string, stderror: string): JovoCliError {
-  const module: string = 'jovo-cli-platform-alexa';
+  const module: string = 'AlexaCli';
   const splitter: string = '[Error]: ';
 
   const errorIndex: number = stderror.indexOf(splitter);

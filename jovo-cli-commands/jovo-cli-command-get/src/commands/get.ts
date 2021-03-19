@@ -1,3 +1,4 @@
+import * as Config from '@oclif/config';
 import { Input } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
@@ -8,6 +9,8 @@ import {
   PluginCommand,
   printSubHeadline,
   flags,
+  Emitter,
+  JovoCliPluginConfig,
 } from 'jovo-cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -26,7 +29,7 @@ export class Get extends PluginCommand<GetEvents> {
     'jovo get googleAction --project-id testproject-xxxxxx',
   ];
   // Includes all available platforms, which will be initialized on install().
-  static AVAILABLE_PLATFORMS: string[] = [];
+  static availablePlatforms: string[] = [];
   static flags: Input<any> = {
     locale: flags.string({
       char: 'l',
@@ -54,7 +57,16 @@ export class Get extends PluginCommand<GetEvents> {
       description: 'Forces overwrite of existing project.',
     }),
   };
-  static args = [{ name: 'platform', options: jovo.getPlatforms(), required: true }];
+  static args = [{ name: 'platform', options: Get.availablePlatforms, required: true }];
+
+  static async install(
+    emitter: Emitter<GetEvents>,
+    config: JovoCliPluginConfig,
+  ): Promise<Config.Command.Plugin> {
+    // Override PluginCommand.install() to fill options for --platform.
+    this.availablePlatforms.push(...jovo.getPlatforms());
+    return super.install(emitter, config);
+  }
 
   install() {
     this.actionSet = {

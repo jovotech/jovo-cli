@@ -42,7 +42,7 @@ export class JovoUserConfig {
 
       // Else propagate error.
       throw new JovoCliError(
-        'Error while trying to parse ./jovo/config.',
+        'Error while trying to parse .jovo/config.',
         'jovo-cli-core',
         error.message,
       );

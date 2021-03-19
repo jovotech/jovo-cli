@@ -142,8 +142,6 @@ export class JovoCli {
     return href;
   }
 
-  // ####### PROJECT CREATION #######
-
   /**
    * Checks, if given directory already exists.
    * @param directory - Directory name.

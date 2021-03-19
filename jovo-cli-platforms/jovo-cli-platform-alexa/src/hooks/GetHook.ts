@@ -61,7 +61,7 @@ export class GetHook extends PluginHook<GetEvents & BuildEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.args.platform && args.args.platform !== this.$config.pluginName) {
+    if (args.args.platform && args.args.platform !== this.$config.pluginId) {
       this.uninstall();
     }
   }

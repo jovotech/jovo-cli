@@ -319,7 +319,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
           // Should actually never happen but who knows
           throw new JovoCliError(
             `Could not build Alexa files for locale "${buildLocale}"!`,
-            'jovo-cli-platform-alexa',
+            this.$config.pluginName!,
           );
         }
 

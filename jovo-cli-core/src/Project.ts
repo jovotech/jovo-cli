@@ -256,6 +256,7 @@ export class Project {
     const projectPlugins: JovoCliPlugin[] =
       (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
+    // ToDo: Check if plugin is instance of JovoCliPlugin.
     for (const plugin of projectPlugins) {
       // Get plugin id, name and type from plugin instance and merge them into plugin config.
       const pluginConfig: JovoCliPluginConfig = {

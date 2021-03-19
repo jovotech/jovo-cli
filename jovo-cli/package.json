@@ -32,6 +32,7 @@
     "@types/node": "^14.14.22",
     "@types/node-emoji": "^1.8.1",
     "global-modules": "^2.0.0",
+    "global-prefix": "^3.0.0",
     "globby": "^10.0.2",
     "jest": "^26.6.3",
     "lerna": "^3.22.1",

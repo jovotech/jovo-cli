@@ -4,12 +4,12 @@ import { ERROR } from './utils/Constants';
 export class JovoCliError extends Error {
   private error: string[] = [];
 
-  constructor(private msg: string, private module: string, private hint?: string) {
+  constructor(readonly message: string, readonly module: string, readonly hint?: string) {
     super();
   }
 
   logError() {
-    this.error.push(`${ERROR} ${chalk.bgRed.bold(`${this.msg}\n`)}`);
+    this.error.push(`${ERROR} ${chalk.bgRed.bold(`${this.message}\n`)}`);
   }
 
   logProperty(key: string, value: string) {

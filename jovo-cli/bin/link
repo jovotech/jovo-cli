@@ -1,19 +1,17 @@
 #!/usr/bin/env node
 const { join } = require('path');
-const globalModules = require('global-modules');
+const globalPrefix = require('global-prefix');
 const symlinkDir = require('symlink-dir');
 const { platform } = require('os');
 const { copyFileSync } = require('fs');
 
 (async () => {
-    let execPath;
-    console.log(platform());
-    if(platform() === 'win32') {
-        await symlinkDir('.', join(globalModules, 'jovodev'));
-        copyFileSync('bin/jovodev', join(globalModules, '..', 'jovodev'));
-        copyFileSync('bin/jovodev.ps1', join(globalModules, '..', 'jovodev.ps1'));
-        copyFileSync('bin/jovodev.cmd', join(globalModules, '..', 'jovodev.cmd'));
-    } else {
-        await symlinkDir(join('./', 'bin', 'run'), join(globalModules, 'jovodev'));
-    }
+  if (platform() === 'win32') {
+    await symlinkDir('.', join(globalPrefix, 'jovodev'));
+    copyFileSync('bin/jovodev', join(globalPrefix, 'jovodev'));
+    copyFileSync('bin/jovodev.ps1', join(globalPrefix, 'jovodev.ps1'));
+    copyFileSync('bin/jovodev.cmd', join(globalPrefix, 'jovodev.cmd'));
+  } else {
+    await symlinkDir(join('./', 'bin', 'run'), join(globalPrefix, 'bin', 'jovodev'));
+  }
 })();
