@@ -2,7 +2,7 @@ import { createWriteStream, unlinkSync, WriteStream } from 'fs';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import AdmZip from 'adm-zip';
 import { join as joinPaths } from 'path';
-import { execAsync, JovoCliError, REPO_URL } from 'jovo-cli-core';
+import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from 'jovo-cli-core';
 
 export * from './Prompts';
 export * as TemplateBuilder from './TemplateBuilder';
@@ -68,4 +68,81 @@ export async function runNpmInstall(projectPath: string) {
   } catch (error) {
     throw new JovoCliError(error.message, 'jovo-cli-command-new');
   }
+}
+
+/**
+ * Inserts a substring into a provided string at an index.
+ * @param substr - Substring to be inserted.
+ * @param str - String to insert the substring into.
+ * @param index - Position of where to insert the substring.
+ */
+export function insert(substr: string, str: string, index: number): string {
+  return str.substring(0, index) + substr + str.substring(index);
+}
+
+/**
+ * Gets plugins from Jovo Marketplace.
+ */
+export function fetchMarketPlace(): MarketplacePlugin[] {
+  // ToDo: Fetch from API.
+  const plugins: MarketplacePlugin[] = [
+    {
+      name: 'Dashbot Analytics',
+      module: 'DashbotAnalytics',
+      package: '@jovotech/analytics-dashbot',
+      description: 'Add conversational analytics to your app',
+      tags: 'monitoring, analytics',
+    },
+    {
+      name: 'Google Analytics',
+      module: 'GoogleAnalytics',
+      package: '@jovotech/analytics-googleanalytics',
+      description: 'Track usage data with the popular analytics platform',
+      tags: 'monitoring, analytics',
+    },
+    {
+      name: 'DynamoDB',
+      module: 'DynamoDb',
+      package: '@jovotech/db-dynamodb',
+      description: 'Store user data in a DynamoDB database on AWS',
+      tags: 'databases',
+    },
+    {
+      name: 'FileDB',
+      module: 'FileDb',
+      package: '@jovotech/db-filedb',
+      description: 'Store user data in a local JSON file for fast prototyping and debugging',
+      tags: 'databases',
+    },
+    {
+      name: 'MongoDB',
+      module: 'MongoDb',
+      package: '@jovotech/db-mongodb',
+      description: 'Store user data in a MongoDB database',
+      tags: 'databases',
+    },
+    {
+      name: 'Amazon Alexa',
+      module: 'Alexa',
+      cliModule: 'AlexaCli',
+      package: 'jovo-platform-alexa',
+      description: "Build apps for Amazon's Alexa assistant platform",
+      tags: 'platforms',
+    },
+    {
+      name: 'Google Assistant (Conversational)',
+      module: 'GoogleAssistant',
+      cliModule: 'GoogleAssistantCli',
+      package: 'jovo-platform-googleassistantconv',
+      description: "Build Conversational Actions for Google's Assistant platform",
+      tags: 'platforms',
+    },
+  ];
+
+  // Convert tags into arrays.
+  for (const plugin of plugins) {
+    plugin.tags = (plugin.tags as string).split(',');
+  }
+
+  return plugins;
 }

@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import {
   JovoCli,
   JovoCliPreset,
+  MarketplacePlugin,
   printHighlight,
   ProjectProperties,
   prompt,
@@ -42,7 +43,11 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
   );
 }
 
-export async function promptProjectProperties(args: any, flags: any): Promise<ProjectProperties> {
+export async function promptProjectProperties(
+  args: any,
+  flags: any,
+  platforms: prompt.Choice[],
+): Promise<ProjectProperties> {
   const props: ProjectProperties = await prompt(
     [
       {
@@ -66,10 +71,7 @@ export async function promptProjectProperties(args: any, flags: any): Promise<Pr
         name: 'platforms',
         message: 'Choose the platforms you want to use (select with space):',
         type: 'multiselect',
-        choices: [
-          { title: 'Alexa', value: 'alexa' },
-          { title: 'Google', value: 'google' },
-        ],
+        choices: platforms,
       },
       {
         name: 'locales',
@@ -153,6 +155,40 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
       format(presetName: string) {
         return presetName.trim();
       },
+    },
+    {
+      onCancel() {
+        process.exit();
+      },
+    },
+  );
+}
+
+export async function promptServer(servers: prompt.Choice[]): Promise<{ server: string }> {
+  return await prompt(
+    {
+      name: 'server',
+      message: 'Which server do you want to use?',
+      type: 'select',
+      choices: servers,
+    },
+    {
+      onCancel() {
+        process.exit();
+      },
+    },
+  );
+}
+
+export async function promptPlugins(
+  plugins: prompt.Choice[],
+): Promise<{ plugins: MarketplacePlugin[] }> {
+  return await prompt(
+    {
+      name: 'plugins',
+      message: 'Which plugins do you want to use?',
+      type: 'multiselect',
+      choices: plugins,
     },
     {
       onCancel() {

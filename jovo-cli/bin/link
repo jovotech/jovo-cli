@@ -5,24 +5,24 @@ const { platform } = require('os');
 const { copyFileSync } = require('fs');
 const { exec } = require('child_process');
 
-  exec('npm config get prefix', async (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
+exec('npm config get prefix', async (error, stdout, stderr) => {
+  if (error) {
+    console.log(`error: ${error.message}`);
+    return;
+  }
+  if (stderr) {
+    console.log(`stderr: ${stderr}`);
+    return;
+  }
 
-    const globalPrefix = stdout.replace(/\r?\n|\r/, '');
+  const globalPrefix = stdout.replace(/\r?\n|\r/, '');
 
-    if (platform() === 'win32') {
-      await symlinkDir('.', join(globalPrefix, 'node_modules', 'jovodev'));
-      copyFileSync('bin/jovodev', join(globalPrefix, 'jovodev'));
-      copyFileSync('bin/jovodev.ps1', join(globalPrefix, 'jovodev.ps1'));
-      copyFileSync('bin/jovodev.cmd', join(globalPrefix, 'jovodev.cmd'));
-    } else {
-      await symlinkDir(join('./', 'bin', 'run'), join(globalPrefix, 'bin', 'jovodev'));
-    }
-  });
+  if (platform() === 'win32') {
+    await symlinkDir('.', join(globalPrefix, 'node_modules', 'jovodev'));
+    copyFileSync('bin/jovodev', join(globalPrefix, 'jovodev'));
+    copyFileSync('bin/jovodev.ps1', join(globalPrefix, 'jovodev.ps1'));
+    copyFileSync('bin/jovodev.cmd', join(globalPrefix, 'jovodev.cmd'));
+  } else {
+    await symlinkDir(join('./', 'bin', 'run'), join(globalPrefix, 'bin', 'jovodev'));
+  }
+});

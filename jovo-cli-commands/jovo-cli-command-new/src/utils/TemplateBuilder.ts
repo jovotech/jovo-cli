@@ -3,8 +3,13 @@ import { omit } from 'lomit';
 import _set from 'lodash.set';
 import { copyFileSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
-import { Config as ProjectConfig, JovoCli, ProjectProperties } from 'jovo-cli-core';
-import { PLATFORMS } from './Constants';
+import {
+  Config as ProjectConfig,
+  JovoCli,
+  MarketplacePlugin,
+  ProjectProperties,
+} from 'jovo-cli-core';
+import { insert } from '.';
 
 export async function build(props: ProjectProperties) {
   const jovo: JovoCli = JovoCli.getInstance();
@@ -14,16 +19,15 @@ export async function build(props: ProjectProperties) {
   // Read project configuration, enhance with platform plugins.
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
   const cliPluginsComment: string = '// Add Jovo CLI plugins here.';
-  for (const selectedPlatform of props.platforms) {
-    const platform = PLATFORMS[selectedPlatform];
+  for (const platform of props.platforms as MarketplacePlugin[]) {
     projectConfig = insert(
-      `const { ${platform.cliPlugin} } = require(\'${platform.path}/cli\');\n`,
+      `const { ${platform.cliModule} } = require(\'${platform.package}/cli\');\n`,
       projectConfig,
       0,
     );
 
     const index: number = projectConfig.indexOf(cliPluginsComment) + cliPluginsComment.length;
-    projectConfig = insert(`\n\t\tnew ${platform.cliPlugin}(),`, projectConfig, index);
+    projectConfig = insert(`\n\t\tnew ${platform.cliModule}(),`, projectConfig, index);
   }
   writeFileSync(projectConfigPath, projectConfig);
 
@@ -31,9 +35,12 @@ export async function build(props: ProjectProperties) {
   const packageJsonPath: string = joinPaths(projectPath, 'package.json');
   let packageJson = require(packageJsonPath);
 
-  for (const selectedPlatform of props.platforms) {
-    const platform = PLATFORMS[selectedPlatform];
-    _set(packageJson, `dependencies["${platform.path}"]`, `^${await latestVersion(platform.path)}`);
+  for (const platform of props.platforms as MarketplacePlugin[]) {
+    _set(
+      packageJson,
+      `dependencies["${platform.package}"]`,
+      `^${await latestVersion(platform.package)}`,
+    );
   }
 
   const omittedPackages: string[] = [];
@@ -71,20 +78,19 @@ export async function build(props: ProjectProperties) {
   const appConfigPath: string = joinPaths(
     projectPath,
     'src',
-    isTypeScriptProject ? 'jovo.config.ts' : 'jovo.config.js',
+    isTypeScriptProject ? 'app.ts' : 'app.js',
   );
   let appConfig = readFileSync(appConfigPath, 'utf-8');
   const pluginsComment: string = '// Add Jovo plugins here.';
-  for (const selectedPlatform of props.platforms) {
-    const platform = PLATFORMS[selectedPlatform];
+  for (const platform of props.platforms as MarketplacePlugin[]) {
     appConfig = insert(
-      `import { ${platform.frameworkPlugin} } from \'${platform.path}\';\n`,
+      `import { ${platform.module} } from \'${platform.package}\';\n`,
       appConfig,
       0,
     );
 
     const index: number = appConfig.indexOf(pluginsComment) + pluginsComment.length;
-    appConfig = insert(`\n\t\tnew ${platform.frameworkPlugin}(),`, appConfig, index);
+    appConfig = insert(`\n\t\tnew ${platform.module}(),`, appConfig, index);
   }
   writeFileSync(appConfigPath, appConfig);
 
@@ -96,14 +102,4 @@ export async function build(props: ProjectProperties) {
       joinPaths(projectPath, modelsDirectory, `${locale}.json`),
     );
   }
-}
-
-/**
- * Inserts a substring into a provided string at an index.
- * @param substr - Substring to be inserted.
- * @param str - String to insert the substring into.
- * @param index - Position of where to insert the substring.
- */
-function insert(substr: string, str: string, index: number): string {
-  return str.substring(0, index) + substr + str.substring(index);
 }

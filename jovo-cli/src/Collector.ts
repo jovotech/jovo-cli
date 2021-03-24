@@ -62,12 +62,18 @@ export class Collector extends Plugin {
         const hooks: JovoCliConfigHooks = jovo.$project!.$config.getParameter(
           'hooks',
         ) as JovoCliConfigHooks;
-        for (const [eventKey, events] of Object.entries(hooks)) {
-          for (const event of events) {
-            // @ts-ignore
-            emitter.on(eventKey, event);
+        if (hooks) {
+          for (const [eventKey, events] of Object.entries(hooks)) {
+            for (const event of events) {
+              // @ts-ignore
+              emitter.on(eventKey, event);
+            }
           }
         }
+      }
+
+      if (!this.commands.length) {
+        return;
       }
 
       // Run install middleware for currently executed command.

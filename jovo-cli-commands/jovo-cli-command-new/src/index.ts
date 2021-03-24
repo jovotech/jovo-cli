@@ -1,5 +1,6 @@
 import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
 import { New } from './commands';
+import { NewStage } from './commands/stage';
 
 export * from './commands';
 
@@ -8,7 +9,7 @@ export class NewCommand extends JovoCliPlugin {
   type: JovoCliPluginType = 'command';
 
   getCommands() {
-    return [New];
+    return [New, NewStage];
   }
 }
 

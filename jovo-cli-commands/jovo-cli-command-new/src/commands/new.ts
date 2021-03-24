@@ -12,10 +12,12 @@ import {
   JovoCliError,
   JovoCliPluginContext,
   JovoCliPreset,
+  MarketplacePlugin,
   PluginCommand,
   printHighlight,
   printSubHeadline,
   ProjectProperties,
+  prompt,
   promptOverwrite,
   STAR,
   TARGET_ALL,
@@ -34,6 +36,7 @@ import {
   promptProjectProperties,
   promptSavePreset,
   TemplateBuilder,
+  fetchMarketPlace,
 } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -121,6 +124,9 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: JovoCliPreset | undefined;
+    const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
+      plugin.tags.includes('platforms'),
+    );
 
     if (!flags['no-wizard']) {
       this.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
@@ -131,7 +137,11 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
 
         if (selectedPreset === 'manual') {
           // Manually select project properties.
-          const options: ProjectProperties = await promptProjectProperties(args, flags);
+          const platforms: prompt.Choice[] = platformPlugins.map((plugin) => ({
+            title: plugin.name,
+            value: plugin,
+          }));
+          const options: ProjectProperties = await promptProjectProperties(args, flags, platforms);
 
           preset = {
             name: '',
@@ -166,7 +176,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
       unitTesting: false,
       command: New.id,
       locales: flags.locale || ['en'],
-      // ToDo: What platforms to use?
       platforms: [],
       flags,
       args,
@@ -253,13 +262,13 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     // Link jovo-cli-core.
     rmdirSync(joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'), { recursive: true });
     symlinkSync(
-      '../../cli/jovo-cli-core',
+      joinPaths('..', '..', 'cli', 'jovo-cli-core'),
       joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'),
     );
 
     // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
     symlinkSync(
-      '../../../cli/jovo-cli-platforms/jovo-cli-platform-alexa',
+      joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
       joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
     );
 
