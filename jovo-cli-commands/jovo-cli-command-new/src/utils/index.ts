@@ -141,7 +141,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
 
   // Convert tags into arrays.
   for (const plugin of plugins) {
-    plugin.tags = (plugin.tags as string).split(',');
+    plugin.tags = (plugin.tags as string).replace(/\s/g, '').split(',');
   }
 
   return plugins;

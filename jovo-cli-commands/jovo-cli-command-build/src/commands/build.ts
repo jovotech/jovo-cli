@@ -143,8 +143,8 @@ export class Build extends PluginCommand<BuildEvents> {
 
     await this.$emitter!.run('parse', { command: Build.id, flags, args });
 
-    this.log(`\n jovo build: ${Build.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    console.log(`\n jovo build: ${Build.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
     const context: JovoCliPluginContext = {
@@ -159,8 +159,8 @@ export class Build extends PluginCommand<BuildEvents> {
     await this.$emitter!.run('build', context);
     await this.$emitter!.run('after.build', context);
 
-    this.log();
-    this.log('  Build completed.');
-    this.log();
+    console.log();
+    console.log('  Build completed.');
+    console.log();
   }
 }

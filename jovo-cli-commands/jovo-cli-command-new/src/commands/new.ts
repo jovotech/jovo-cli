@@ -120,8 +120,8 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
 
     await this.$emitter!.run('parse', { command: New.id, flags, args });
 
-    this.log(`\n jovo new: ${New.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
+    console.log(`\n jovo new: ${New.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: JovoCliPreset | undefined;
     const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
@@ -129,8 +129,8 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
     );
 
     if (!flags['no-wizard']) {
-      this.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
-      this.log();
+      console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
+      console.log();
 
       try {
         const { selectedPreset } = await promptPreset();
@@ -212,9 +212,9 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
       deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
     }
 
-    this.log();
-    this.log(`  ${WRENCH} I'm setting everything up`);
-    this.log();
+    console.log();
+    console.log(`  ${WRENCH} I'm setting everything up`);
+    console.log();
 
     await this.$emitter!.run('before.new');
 
@@ -277,14 +277,14 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
 
     // Build project.
     if (flags.build) {
-      this.log();
+      console.log();
       await this.$emitter.run('before.build', context);
       await this.$emitter.run('build', context);
       await this.$emitter.run('after.build', context);
     }
 
     if (flags.deploy) {
-      this.log();
+      console.log();
       const deployContext: DeployPluginContext = {
         ...context,
         target: TARGET_ALL,
@@ -295,9 +295,9 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
       await this.$emitter.run('after.deploy', deployContext);
     }
 
-    this.log();
-    this.log(`${STAR} Successfully created your project! ${STAR}`);
-    this.log();
+    console.log();
+    console.log(`${STAR} Successfully created your project! ${STAR}`);
+    console.log();
 
     await this.$emitter!.run('after.new', context);
   }

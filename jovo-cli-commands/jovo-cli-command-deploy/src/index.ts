@@ -1,7 +1,9 @@
 import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
-import { Deploy, DeployCode, DeployPlatform } from './commands';
+import { Deploy } from './commands/deploy';
+import { DeployCode } from './commands/deploy:code';
+import { DeployPlatform } from './commands/deploy:platform';
 
-export * from './commands';
+export * from './commands/deploy';
 
 export class DeployCommand extends JovoCliPlugin {
   id: string = 'deploy';

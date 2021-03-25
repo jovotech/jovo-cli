@@ -76,7 +76,7 @@ export class Run extends PluginCommand<RunEvents> {
 
       outputText.push('\nUse "jovo update" to get the newest versions.');
 
-      this.log(
+      console.log(
         boxen(outputText.join('\n'), {
           padding: 1,
           margin: 1,
@@ -94,8 +94,8 @@ export class Run extends PluginCommand<RunEvents> {
 
     await this.$emitter!.run('parse', { command: Run.id, flags, args });
 
-    this.log(`\n jovo run: ${Run.description}`);
-    this.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
+    console.log(`\n jovo run: ${Run.description}`);
+    console.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();
     const project: Project = jovo.$project!;
@@ -131,7 +131,7 @@ export class Run extends PluginCommand<RunEvents> {
           });
 
           await task.run();
-          this.log();
+          console.log();
         }
 
         // If project is written in typescript, look in ./dist/ for webhook file.
@@ -148,7 +148,7 @@ export class Run extends PluginCommand<RunEvents> {
           );
 
           await task.run();
-          this.log();
+          console.log();
         }
       } else {
         // In regular JavaScript project, look into src/.

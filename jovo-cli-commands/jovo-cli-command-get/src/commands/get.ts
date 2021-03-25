@@ -89,8 +89,8 @@ export class Get extends PluginCommand<GetEvents> {
 
     await this.$emitter!.run('parse', { command: Get.id, flags, args });
 
-    this.log(`\n jovo get: ${Get.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
+    console.log(`\n jovo get: ${Get.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
 
     const context: JovoCliPluginContext = {
       command: Get.id,

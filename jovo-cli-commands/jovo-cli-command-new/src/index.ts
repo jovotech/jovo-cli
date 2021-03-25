@@ -1,6 +1,6 @@
 import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
 import { New } from './commands';
-import { NewStage } from './commands/stage';
+import { NewStage } from './commands/new:stage';
 
 export * from './commands';
 
