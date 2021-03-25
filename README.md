@@ -7,6 +7,9 @@ The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech
 :exclamation: If you don't have access to the [repository](https://github.com/rubenaeg/filebuilder), please contact ruben@jovo.tech. :exclamation:
 
 - [Development Setup](#development-setup)
+  - [Install the Jovo Filebuilder](äinstall-the-jovo-filebuilder)
+  - [Download the template for `jovo new`](#download-the-template-for-jovo-new)
+  - [Install the Jovo CLI](#install-the-jovo-cli)
 
 ## Development Setup
 
@@ -50,3 +53,11 @@ $ cd jovo-cli/
 # Run the NPM script devSetup, which will install dependencies, compile TypeScript and link all necessary packages.
 $ npm run devSetup
 ```
+
+## Usage
+
+Once you installed everything, run `jovodev` to confirm everything is working. The output should look similar to this:
+
+![Output](./img/jovodev.png)
+
+If you want help with any command, just type `jovodev {COMMAND} --help`.
