@@ -4,12 +4,17 @@
 
 The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech/jovo-cli)) is the center of voice app development with the Jovo Framework. With it, you can quickly create new Jovo projects, create language models and deploy them to the voice platforms, and run your voice apps locally for easy prototyping and testing.
 
-:exclamation: If you don't have access to the [repository](https://github.com/rubenaeg/filebuilder), please contact ruben@jovo.tech. :exclamation:
+:exclamation: If you don't have access to any of these repositories, please contact ruben@jovo.tech. :exclamation:
+
+- [Jovo Filebuilder](https://github.com/rubenaeg/filebuilder)
+- [Template](https://github.com/rubenaeg/jovo-template-dev)
+- [Jovo CLI](https://github.com/rubenaeg/jovo-cli)
 
 - [Development Setup](#development-setup)
   - [Install the Jovo Filebuilder](äinstall-the-jovo-filebuilder)
   - [Download the template for `jovo new`](#download-the-template-for-jovo-new)
   - [Install the Jovo CLI](#install-the-jovo-cli)
+- [Usage](#usage)
 
 ## Development Setup
 
@@ -49,6 +54,9 @@ $ git clone git@github.com:rubenaeg/jovo-cli.git
 
 # Switch directories.
 $ cd jovo-cli/
+
+# Switch branch to v4.
+$ git checkout v4
 
 # Run the NPM script devSetup, which will install dependencies, compile TypeScript and link all necessary packages.
 $ npm run devSetup
