@@ -4,7 +4,6 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFi
 import tv4 from 'tv4';
 import _get from 'lodash.get';
 import _merge from 'lodash.merge';
-import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
 import { JovoCliError } from './JovoCliError';
@@ -14,7 +13,7 @@ import { JovoCliPlugin } from './JovoCliPlugin';
 import { JovoCliPluginConfig } from './utils/Interfaces';
 
 export class Project {
-  private static instance: Project;
+  private static instance?: Project;
 
   private projectPath: string;
 
@@ -32,9 +31,6 @@ export class Project {
     } else {
       if (process.env.JOVO_STAGE) {
         this.$stage = process.env.JOVO_STAGE;
-      } else if (process.env.STAGE) {
-        this.$stage = process.env.STAGE;
-        // ToDo: Is this still contemporary?
       } else if (process.env.NODE_ENV) {
         this.$stage = process.env.NODE_ENV;
       }
@@ -177,8 +173,9 @@ export class Project {
    * @param locale - Locale to save the model under.
    */
   saveModel(model: JovoModelData, locale: string) {
-    if (!existsSync(this.getModelsPath())) {
-      mkdirSync(this.getModelsPath());
+    const modelsPath: string = this.getModelsPath();
+    if (!existsSync(modelsPath)) {
+      mkdirSync(modelsPath);
     }
 
     // Check if model file is json or JavaScript
@@ -195,13 +192,7 @@ export class Project {
       return [DEFAULT_LOCALE];
     }
 
-    const files: string[] = [];
-
-    try {
-      files.push(...readdirSync(this.getModelsPath()));
-    } catch (error) {
-      throw new JovoCliError(error.message, 'jovo-cli-core');
-    }
+    const files: string[] = readdirSync(this.getModelsPath());
 
     // If models folder doesn't contain any files, return default locale.
     if (!files.length) {

@@ -10,6 +10,8 @@ The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech
 - [Template](https://github.com/rubenaeg/jovo-template-dev)
 - [Jovo CLI](https://github.com/rubenaeg/jovo-cli)
 
+---
+
 - [Development Setup](#development-setup)
   - [Install the Jovo Filebuilder](äinstall-the-jovo-filebuilder)
   - [Download the template for `jovo new`](#download-the-template-for-jovo-new)

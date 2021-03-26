@@ -9,7 +9,7 @@ import {
   Project,
 } from '../src';
 
-jest.mock('global-modules', () => resolve('test/__mocks__/plugins'));
+jest.mock('global-modules', () => resolve(joinPaths('test', '__mocks__', 'plugins')));
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
 describe('JovoCli.getInstance()', () => {
