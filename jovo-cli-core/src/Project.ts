@@ -4,26 +4,24 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFi
 import tv4 from 'tv4';
 import _get from 'lodash.get';
 import _merge from 'lodash.merge';
-import { JovoConfigReader } from 'jovo-config';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
-import { JovoCliPluginEntry, DEFAULT_LOCALE, JOVO_WEBHOOK_URL, execAsync } from './utils';
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
+import { DEFAULT_LOCALE } from './utils/Constants';
+import { JovoCliPlugin } from './JovoCliPlugin';
+import { JovoCliPluginConfig } from './utils/Interfaces';
 
 export class Project {
-  private static instance: Project;
+  private static instance?: Project;
+
   private projectPath: string;
 
-  readonly $stage?: string;
-  readonly $configReader: JovoConfigReader;
   readonly $config: Config;
+  readonly $stage?: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
-
-    this.$config = new Config(this.projectPath, this.$stage);
-    this.$configReader = new JovoConfigReader(this.$config.getContent());
 
     // Look for --stage in process.argv.
     const stageIndex: number = process.argv.findIndex((el) => el === '--stage');
@@ -31,18 +29,18 @@ export class Project {
     if (stageIndex > -1) {
       this.$stage = process.argv[stageIndex + 1];
     } else {
-      const defaultStage: string = this.$configReader.getConfigParameter('defaultStage') as string;
-
-      if (defaultStage) {
-        this.$stage = defaultStage;
-      } else if (process.env.JOVO_STAGE) {
+      if (process.env.JOVO_STAGE) {
         this.$stage = process.env.JOVO_STAGE;
-      } else if (process.env.STAGE) {
-        this.$stage = process.env.STAGE;
-        // ToDo: Is this still contemporary?
       } else if (process.env.NODE_ENV) {
         this.$stage = process.env.NODE_ENV;
       }
+    }
+
+    this.$config = new Config(this.projectPath, this.$stage);
+
+    // If stage was not explicitly defined, try to get it from config.
+    if (!this.$stage) {
+      this.$stage = this.$config.getParameter('defaultStage') as string | undefined;
     }
   }
 
@@ -56,24 +54,11 @@ export class Project {
   }
 
   /**
-   * Returns cli plugins from config.
-   * ToDo: Staging for e.g. project.dev.js!
-   */
-  getCliPlugins(): JovoCliPluginEntry[] {
-    const plugins: JovoCliPluginEntry[] =
-      (this.$configReader!.getConfigParameter('plugins', this.$stage) as JovoCliPluginEntry[]) ||
-      [];
-    return plugins;
-  }
-
-  /**
    * Returns directory name for build folder.
    * @param stage - Optional config stage.
    */
   getBuildDirectory(): string {
-    return (
-      (this.$configReader!.getConfigParameter('buildDirectory', this.$stage) as string) || 'build'
-    );
+    return (this.$config.getParameter('buildDirectory') as string) || 'build';
   }
 
   /**
@@ -88,9 +73,7 @@ export class Project {
    * @param stage - Optional config stage.
    */
   getModelsDirectory() {
-    return (
-      (this.$configReader!.getConfigParameter('modelsDirectory', this.$stage) as string) || 'models'
-    );
+    return (this.$config.getParameter('modelsDirectory') as string) || 'models';
   }
 
   /**
@@ -120,10 +103,10 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'jovo-cli');
+        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'jovo-cli-core');
       }
 
-      throw new JovoCliError(error.message, 'jovo-cli');
+      throw new JovoCliError(error.message, 'jovo-cli-core');
     }
   }
 
@@ -163,7 +146,7 @@ export class Project {
     if (!this.hasModelFiles([locale])) {
       throw new JovoCliError(
         `Model file for locale ${locale} to backup could not be found.`,
-        'jovo-cli',
+        'jovo-cli-core',
       );
     }
 
@@ -190,8 +173,9 @@ export class Project {
    * @param locale - Locale to save the model under.
    */
   saveModel(model: JovoModelData, locale: string) {
-    if (!existsSync(this.getModelsPath())) {
-      mkdirSync(this.getModelsPath());
+    const modelsPath: string = this.getModelsPath();
+    if (!existsSync(modelsPath)) {
+      mkdirSync(modelsPath);
     }
 
     // Check if model file is json or JavaScript
@@ -208,13 +192,7 @@ export class Project {
       return [DEFAULT_LOCALE];
     }
 
-    const files: string[] = [];
-
-    try {
-      files.push(...readdirSync(this.getModelsPath()));
-    } catch (error) {
-      throw new JovoCliError(error.message, 'jovo-cli');
-    }
+    const files: string[] = readdirSync(this.getModelsPath());
 
     // If models folder doesn't contain any files, return default locale.
     if (!files.length) {
@@ -263,11 +241,23 @@ export class Project {
     );
   }
 
-  /**
-   * Compile TypeScript code of Jovo project to JavaScript.
-   * @param sourceFolder - Optional source folder, uses project path by default.
-   */
-  async compileTypeScriptProject(sourceFolder: string = this.projectPath) {
-    await execAsync('npm run tsc', { cwd: sourceFolder });
+  collectPlugins(): JovoCliPlugin[] {
+    const plugins: JovoCliPlugin[] = [];
+
+    const projectPlugins: JovoCliPlugin[] =
+      (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
+
+    // ToDo: Check if plugin is instance of JovoCliPlugin.
+    for (const plugin of projectPlugins) {
+      // Get plugin id, name and type from plugin instance and merge them into plugin config.
+      const pluginConfig: JovoCliPluginConfig = {
+        pluginId: plugin.id,
+        pluginName: plugin.constructor.name,
+        pluginType: plugin.type,
+      };
+      _merge(plugin.config, pluginConfig);
+      plugins.push(plugin);
+    }
+    return plugins;
   }
 }

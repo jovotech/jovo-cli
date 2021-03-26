@@ -20,4 +20,5 @@ export interface JovoCliPluginContextAlexa extends JovoCliPluginContext {
 
 export interface JovoCliPluginConfigAlexa extends JovoCliPluginConfig {
   askProfile?: string;
+  locales?: { [key: string]: string[] };
 }

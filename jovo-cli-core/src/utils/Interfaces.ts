@@ -1,6 +1,7 @@
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
 import { JovoConfig } from 'jovo-config';
+import { JovoCliPlugin } from '../JovoCliPlugin';
 
 // ####### EVENT EMITTER #######
 
@@ -34,28 +35,20 @@ export interface DefaultEvents {
 export type JovoCliPluginType = 'platform' | 'target' | 'command' | '';
 
 export interface JovoCliPluginConfig {
-  name: string;
-  path: string;
-  options: JovoCliPluginOptions;
-  pluginId: string;
-  pluginType: JovoCliPluginType;
+  pluginId?: string;
+  pluginName?: string;
+  pluginType?: JovoCliPluginType;
+  hooks?: JovoCliConfigHooks;
+  files?: any;
 }
 
 export interface JovoCliConfigHooks {
-  [key: string]: Function;
+  [key: string]: Function[];
 }
-
-export interface JovoCliPluginOptions {
-  hooks?: JovoCliConfigHooks;
-  files?: any;
-  [key: string]: any;
-}
-
-export type JovoCliPluginEntry = string | JovoCliPluginConfig;
 
 export interface JovoCliPluginContext {
   command: string;
-  platforms: string[];
+  platforms: string[] | MarketplacePlugin[];
   locales: string[];
   flags: { [key: string]: string | boolean | string[] };
   args: { [key: string]: string };
@@ -67,10 +60,13 @@ export interface DeployConfiguration {
   target?: string[];
 }
 
-export interface ProjectConfig extends JovoConfig {
-  // ToDo: What do we really need?
+export interface ProjectConfigObject extends JovoConfig {
   deploy?: DeployConfiguration;
   endpoint?: string;
+  plugins?: JovoCliPlugin[];
+  hooks?: { [key: string]: Function };
+  defaultStage?: string;
+  stages?: { [key: string]: ProjectConfigObject };
 }
 
 export interface JovoUserConfigFile {
@@ -78,7 +74,7 @@ export interface JovoUserConfigFile {
     uuid: string;
   };
   cli: {
-    plugins: JovoCliPluginEntry[];
+    plugins: string[];
     presets: JovoCliPreset[];
   };
   timeLastUpdateMessage?: string | number;
@@ -86,9 +82,8 @@ export interface JovoUserConfigFile {
 
 export interface ProjectProperties {
   projectName: string;
-  template: string;
   language: 'javascript' | 'typescript';
-  platforms: string[];
+  platforms: string[] | MarketplacePlugin[];
   locales: string[];
   linter: boolean;
   unitTesting: boolean;
@@ -115,4 +110,13 @@ export interface PackageVersionsNpm {
     npm: string;
     inPackageJson: boolean;
   };
+}
+
+export interface MarketplacePlugin {
+  name: string;
+  module: string;
+  cliModule?: string;
+  package: string;
+  description: string;
+  tags: string | string[];
 }

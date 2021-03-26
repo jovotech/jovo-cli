@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
 import { join as joinPaths } from 'path';
@@ -8,29 +7,37 @@ import {
   ANSWER_CANCEL,
   CRYSTAL_BALL,
   deleteFolderRecursive,
+  flags,
   JovoCli,
   JovoCliError,
   JovoCliPluginContext,
   JovoCliPreset,
+  MarketplacePlugin,
   PluginCommand,
   printHighlight,
   printSubHeadline,
   ProjectProperties,
+  prompt,
   promptOverwrite,
   STAR,
+  TARGET_ALL,
   Task,
   WRENCH,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
+import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
+import { copySync } from 'fs-extra';
+import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
 
-import { downloadAndExtract, runNpmInstall } from '../utils';
-import { existsSync, mkdirSync } from 'fs';
 import {
+  runNpmInstall,
   promptPreset,
   promptPresetName,
   promptProjectProperties,
   promptSavePreset,
-} from '../utils/Prompts';
+  TemplateBuilder,
+  fetchMarketPlace,
+} from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -45,7 +52,7 @@ export interface NewEvents {
   'after.new': NewPluginContext;
 }
 
-export class New extends PluginCommand<NewEvents & BuildEvents> {
+export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
   static id: string = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -56,18 +63,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
   ];
   // Defines flags for this command, such as --help.
   static flags: Input<any> = {
-    'template': flags.string({
-      char: 't',
-      description: 'Name of the template.',
-      parse(template: string) {
-        if (!/^[0-9a-zA-Z-/_]+$/.test(template)) {
-          console.log('Please use a valid template name.');
-          process.exit();
-        }
-
-        return template.replace('/', '-');
-      },
-    }),
     'locale': flags.string({
       char: 'l',
       description: 'Locale of the language model.',
@@ -100,6 +95,9 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     'no-wizard': flags.boolean({
       description: 'Disables wizard.',
     }),
+    'overwrite': flags.boolean({
+      description: 'Forces overwriting an existing project.',
+    }),
   };
   // Defines arguments that can be passed to the command.
   static args: Args.Input = [
@@ -122,21 +120,28 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
 
     await this.$emitter!.run('parse', { command: New.id, flags, args });
 
-    this.log(`\n jovo new: ${New.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
+    console.log(`\n jovo new: ${New.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: JovoCliPreset | undefined;
+    const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
+      plugin.tags.includes('platforms'),
+    );
 
     if (!flags['no-wizard']) {
-      this.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
-      this.log();
+      console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
+      console.log();
 
       try {
         const { selectedPreset } = await promptPreset();
 
         if (selectedPreset === 'manual') {
           // Manually select project properties.
-          const options: ProjectProperties = await promptProjectProperties(args, flags);
+          const platforms: prompt.Choice[] = platformPlugins.map((plugin) => ({
+            title: plugin.name,
+            value: plugin,
+          }));
+          const options: ProjectProperties = await promptProjectProperties(args, flags, platforms);
 
           preset = {
             name: '',
@@ -148,17 +153,12 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
             const { presetName } = await promptPresetName();
             preset.name = presetName;
 
-            jovo.$userConfig.savePreset(preset);
+            await jovo.$userConfig.savePreset(preset);
           }
         } else {
           preset = jovo.$userConfig.getPreset(selectedPreset);
         }
       } catch (error) {
-        // If no error is given, i.e. user cancelled process, return and exit. Explicitly check, if error.length is 0, as it is undefined on JovoCliError.
-        if (error.length === 0) {
-          return;
-        }
-
         if (error instanceof JovoCliError) {
           throw error;
         }
@@ -171,13 +171,11 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
 
     const context: NewPluginContext = {
       projectName: args.directory,
-      template: flags.template || 'helloworldtest',
       language: flags.language || 'typescript',
       linter: false,
       unitTesting: false,
       command: New.id,
       locales: flags.locale || ['en'],
-      // ToDo: What platforms to use?
       platforms: [],
       flags,
       args,
@@ -186,37 +184,37 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     // Merge preset's project properties with context object.
     if (preset) {
       const contextPreset: Partial<JovoCliPreset> = _pick(preset, Object.keys(context));
-      console.log(contextPreset);
 
       _merge(context, contextPreset);
-    } else {
-      // Directory is mandatory, so throw an error if omitted.
-      if (!context.projectName) {
-        throw new JovoCliError(
-          'Please provide a directory.',
-          'jovo-cli-command-new',
-          'For more information, run "jovo new --help".',
-        );
-      }
+    }
+
+    // Directory is mandatory, so throw an error if omitted.
+    if (!context.projectName) {
+      throw new JovoCliError(
+        'Please provide a directory.',
+        'jovo-cli-command-new',
+        'For more information, run "jovo new --help".',
+      );
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
     if (jovo.hasExistingProject(context.projectName)) {
-      const { overwrite } = await promptOverwrite(
-        `The directory ${printHighlight(
-          context.projectName,
-        )} already exists. What would you like to do?`,
-      );
-      if (overwrite === ANSWER_CANCEL) {
-        return;
-      } else {
-        deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
+      if (!flags.overwrite) {
+        const { overwrite } = await promptOverwrite(
+          `The directory ${printHighlight(
+            context.projectName,
+          )} already exists. What would you like to do?`,
+        );
+        if (overwrite === ANSWER_CANCEL) {
+          process.exit();
+        }
       }
+      deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
     }
 
-    this.log();
-    this.log(`  ${WRENCH} I'm setting everything up`);
-    this.log();
+    console.log();
+    console.log(`  ${WRENCH} I'm setting everything up`);
+    console.log();
 
     await this.$emitter!.run('before.new');
 
@@ -231,54 +229,75 @@ export class New extends PluginCommand<NewEvents & BuildEvents> {
     );
     await newTask.run();
 
-    const downloadTask: Task = new Task(
-      `Downloading and extracting template ${context.template}`,
-      async () => {
-        // ToDo: What if multiple locales are provided?
-        await downloadAndExtract(
-          context.projectName,
-          context.template,
-          context.locales[0],
-          context.language,
-        );
-      },
-    );
+    const downloadTask: Task = new Task('Downloading and extracting template', async () => {
+      // await downloadAndExtract(
+      //   context.projectName,
+      //   context.template,
+      //   context.locales[0],
+      //   context.language,
+      // );
+      copySync(
+        joinPaths(jovo.$projectPath, 'template'),
+        joinPaths(jovo.$projectPath, context.projectName),
+      );
+    });
     await downloadTask.run();
+
+    const prepareTask: Task = new Task('Preparing template', async () =>
+      TemplateBuilder.build(context),
+    );
+    await prepareTask.run();
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        return runNpmInstall();
+        await runNpmInstall(joinPaths(jovo.$projectPath, context.projectName));
       });
       await installNpmTask.run();
     }
 
     await this.$emitter!.run('new', context);
 
+    // ! Link project dependencies for local setup.
+    // Link jovo-cli-core.
+    rmdirSync(joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'), { recursive: true });
+    symlinkSync(
+      joinPaths('..', '..', 'cli', 'jovo-cli-core'),
+      joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'),
+    );
+
+    // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
+    symlinkSync(
+      joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
+      joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
+    );
+
     // Initialize project.
     jovo.initializeProject(joinPaths(jovo.$projectPath, context.projectName));
 
     // Build project.
     if (flags.build) {
-      this.log();
+      console.log();
       await this.$emitter.run('before.build', context);
       await this.$emitter.run('build', context);
       await this.$emitter.run('after.build', context);
     }
 
-    // Deploy project.
-    // if (flags.deploy) {
-    //   tasks.add({
-    //     title: 'Deploying project...',
-    //     task(ctx) {
-    //       return new Listr(deployTask(ctx));
-    //     },
-    //   });
-    // }
+    if (flags.deploy) {
+      console.log();
+      const deployContext: DeployPluginContext = {
+        ...context,
+        target: TARGET_ALL,
+        src: jovo.$project!.getBuildDirectory(),
+      };
+      await this.$emitter.run('before.deploy', deployContext);
+      await this.$emitter.run('deploy', deployContext);
+      await this.$emitter.run('after.deploy', deployContext);
+    }
 
-    this.log();
-    this.log(`${STAR} Successfully created your project! ${STAR}`);
-    this.log();
+    console.log();
+    console.log(`${STAR} Successfully created your project! ${STAR}`);
+    console.log();
 
     await this.$emitter!.run('after.new', context);
   }

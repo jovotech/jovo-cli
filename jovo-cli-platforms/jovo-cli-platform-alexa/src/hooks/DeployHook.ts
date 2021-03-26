@@ -1,7 +1,7 @@
-import { flags } from '@oclif/command';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
 import {
+  flags,
   InstallEventArguments,
   JovoCli,
   JovoCliError,
@@ -12,7 +12,10 @@ import {
   ROCKET,
   Task,
 } from 'jovo-cli-core';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
+import {
+  DeployPlatformEvents,
+  DeployPlatformPluginContext,
+} from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 
 import * as smapi from '../smapi';
@@ -30,8 +33,6 @@ import {
 } from '../utils';
 import DefaultFiles from '../utils/DefaultFiles.json';
 
-const jovo: JovoCli = JovoCli.getInstance();
-
 export interface DeployPlatformPluginContextAlexa
   extends DeployPlatformPluginContext,
     JovoCliPluginContextAlexa {
@@ -47,7 +48,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       'parse': [this.checkForPlatform.bind(this)],
       'before.deploy:platform': [
         this.updatePluginContext.bind(this),
-        checkForAskCli.bind(this),
+        checkForAskCli,
         this.checkForPlatformsFolder.bind(this),
       ],
       'deploy:platform': [this.deploy.bind(this)],
@@ -68,7 +69,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.args.platform && args.args.platform !== this.$config.pluginId) {
+    if (args.args.platform && args.args.platform !== this.$config.pluginName) {
       this.uninstall();
     }
   }
@@ -90,13 +91,14 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
     if (!existsSync(getPlatformPath())) {
       throw new JovoCliError(
         `Couldn't find the platform folder ${getPlatformPath()}.`,
-        this.$config.name,
+        this.$config.pluginName!,
         `Please use "jovo build" to create platform-specific files.`,
       );
     }
   }
 
   async deploy(context: DeployPlatformPluginContextAlexa) {
+    const jovo: JovoCli = JovoCli.getInstance();
     const deployTask: Task = new Task(
       `${ROCKET} Deploying Alexa Skill ${printStage(jovo.$project!.$stage)}`,
     );
@@ -203,7 +205,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (err instanceof JovoCliError) {
         throw err;
       }
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginName!);
     }
   }
 
@@ -238,7 +240,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
     try {
       return JSON.parse(readFileSync(getAskConfigPath(), 'utf8'));
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginName!);
     }
   }
 
@@ -266,7 +268,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
       return info;
     } catch (err) {
-      throw new JovoCliError(err.message, this.$config.name);
+      throw new JovoCliError(err.message, this.$config.pluginName!);
     }
   }
 

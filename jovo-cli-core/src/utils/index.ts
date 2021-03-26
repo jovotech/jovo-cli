@@ -3,9 +3,10 @@ import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
 
-import { JovoCliError, PackageVersions, PackageVersionsNpm } from '..';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
+import { JovoCliError } from '../JovoCliError';
+import { PackageVersions, PackageVersionsNpm } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -34,8 +35,6 @@ export function execAsync(cmd: string, options: ExecOptions = {}): Promise<strin
   });
 }
 
-export function hellworld() {}
-
 /**
  * Waits for the provided amount of time.
  * @param ms - Time to wait in ms.
@@ -48,7 +47,7 @@ export function wait(ms: number): Promise<void> {
 
 /**
  * Recursively deletes all files and folders within a directory.
- * @param path
+ * @param path - Path to directory to delete.
  */
 export function deleteFolderRecursive(path: string) {
   if (existsSync(path)) {
@@ -164,7 +163,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     } catch (e) {
       throw new JovoCliError(
         `Something went wrong while reading your ${packageFileName} file.`,
-        'jovo-cli',
+        'jovo-cli-core',
       );
     }
   }
@@ -196,13 +195,30 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
   return returnPackages;
 }
 
+/**
+ * Checks if the current working directory is a Jovo Project.
+ */
 export function checkForProjectDirectory() {
-  // ToDo: Check for command.
   const jovo: JovoCli = JovoCli.getInstance();
+
   if (!jovo.isInProjectDirectory()) {
     console.log();
-    console.log(printWarning('To use this command, please go into the directory of a valid Jovo project.'));
+    console.log(
+      printWarning('To use this command, please go into the directory of a valid Jovo project.'),
+    );
     console.log();
     process.exit();
+  }
+}
+
+/**
+ * Customizer for _.mergeWith() to merge arrays instead of overwriting.
+ * @param objValue - Array to merge into source.
+ * @param srcValue - Source array.
+ */
+export function mergeArrayCustomizer(target: any[], source: any[]) {
+  // Since _.merge simply overwrites the original array, concatenate them instead.
+  if (Array.isArray(target) && Array.isArray(source)) {
+    return target.concat(source);
   }
 }

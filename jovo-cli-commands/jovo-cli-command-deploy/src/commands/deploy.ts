@@ -6,8 +6,7 @@ import {
   printSubHeadline,
   TARGET_ALL,
 } from 'jovo-cli-core';
-import { DeployPlatformEvents } from '..';
-import { DeployPlatformPluginContext } from './platform';
+import { DeployPlatformEvents, DeployPlatformPluginContext } from './deploy:platform';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -34,7 +33,6 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
       'after.deploy': [this.afterDeploy.bind(this)],
@@ -55,12 +53,14 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Deploy);
 
     await this.$emitter!.run('parse', { command: Deploy.id, flags, args });
 
-    this.log(`\n jovo deploy: ${Deploy.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
+    console.log(`\n jovo deploy: ${Deploy.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
     const context: DeployPluginContext = {
       command: Deploy.id,
@@ -76,8 +76,8 @@ export class Deploy extends PluginCommand<DeployEvents & DeployPlatformEvents> {
     await this.$emitter.run('deploy', context);
     await this.$emitter.run('after.deploy', context);
 
-    this.log();
-    this.log('  Deployment completed.');
-    this.log();
+    console.log();
+    console.log('  Deployment completed.');
+    console.log();
   }
 }

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import _get from 'lodash.get';
 import { execAsync, JovoCliError } from 'jovo-cli-core';
 
-import { AskSkillList } from './Interfaces';
+import { AskSkillList, JovoCliPluginConfigAlexa } from './Interfaces';
 
 import { getAskConfigPath } from './Paths';
 
@@ -22,7 +22,7 @@ export async function checkForAskCli() {
     if (parseInt(majorVersion) < 2) {
       throw new JovoCliError(
         'Jovo CLI requires ASK CLI @v2 or above.',
-        'jovo-cli-platform-alexa',
+        'AlexaCli',
         'Please update your ASK CLI using "npm install ask-cli -g".',
       );
     }
@@ -32,8 +32,8 @@ export async function checkForAskCli() {
     }
 
     throw new JovoCliError(
-      'Jovo requires ASK CLI',
-      'jovo-cli-platform-alexa',
+      'Jovo CLI requires ASK CLI',
+      'AlexaCli',
       'Install the ASK CLI with "npm install ask-cli -g". Read more here: https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html',
     );
   }
@@ -53,13 +53,14 @@ export function getAskConfig() {
  * @param config - Plugin config.
  * @param locale - Locale to map sublocales for.
  */
-export function getSubLocales(config: any, locale: string): string[] {
-  const locales = _get(config, `options.locales.${locale}`, []);
+export function getSubLocales(config: JovoCliPluginConfigAlexa, locale: string): string[] {
+  const locales = _get(config, `locales.${locale}`, []);
 
   if (!locales.length) {
     throw new JovoCliError(
       `Could not retrieve locales mapping for language "${locale}"!`,
-      config.name,
+      config.pluginName!,
+      'Alexa does not support generic locales, please specify locales in your project configuration.',
     );
   }
 
@@ -71,7 +72,7 @@ export function getSubLocales(config: any, locale: string): string[] {
  * @param askSkillList - List of Alexa Skills returned by the ASK CLI.
  */
 export function prepareSkillList(askSkillList: AskSkillList) {
-  const choices: Array<{ name: string; value: string }> = [];
+  const choices: Array<{ title: string; value: string }> = [];
   for (const item of askSkillList.skills) {
     const key: string = Object.keys(item.nameByLocale)[0];
     let message: string = item.nameByLocale[key];
@@ -83,7 +84,7 @@ export function prepareSkillList(askSkillList: AskSkillList) {
       ` ${chalk.grey(item.skillId)}`;
 
     choices.push({
-      name: message,
+      title: message,
       value: item.skillId,
     });
   }
@@ -91,7 +92,7 @@ export function prepareSkillList(askSkillList: AskSkillList) {
 }
 
 export function getAskError(method: string, stderror: string): JovoCliError {
-  const module: string = 'jovo-cli-platform-alexa';
+  const module: string = 'AlexaCli';
   const splitter: string = '[Error]: ';
 
   const errorIndex: number = stderror.indexOf(splitter);

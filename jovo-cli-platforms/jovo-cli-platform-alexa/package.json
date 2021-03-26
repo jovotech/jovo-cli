@@ -4,14 +4,13 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "link": "npm link jovo-filebuilder"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
-    "cli-ux": "^5.5.1",
     "jovo-cli-command-build": "^1.0.0",
     "jovo-cli-command-deploy": "^1.0.0",
     "jovo-cli-command-get": "^1.0.0",
@@ -26,6 +25,7 @@
     "node-emoji": "^1.10.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.has": "^4.5.6",
     "@types/lodash.merge": "^4.6.6",

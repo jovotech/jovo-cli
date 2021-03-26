@@ -1,10 +1,10 @@
-import { flags } from '@oclif/command';
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,
   Emitter,
+  flags,
   JovoCli,
   JovoCliError,
   JovoCliPluginConfig,
@@ -79,7 +79,6 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
       'before.deploy:platform': [this.checkForPlatformsFolder.bind(this)],
     };
   }
@@ -88,19 +87,21 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     if (!existsSync(jovo.$project!.getBuildPath())) {
       throw new JovoCliError(
         "Couldn't find a platform folder.",
-        'jovo-cli',
+        this.$config.pluginName!,
         'Please use "jovo build" to create platform-specific files.',
       );
     }
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(DeployPlatform);
 
     await this.$emitter!.run('parse', { command: DeployPlatform.id, flags, args });
 
-    this.log(`\n jovo deploy: ${DeployPlatform.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
+    console.log(`\n jovo deploy: ${DeployPlatform.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
     const context: DeployPlatformPluginContext = {
       command: DeployPlatform.id,
@@ -116,8 +117,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     await this.$emitter.run('deploy:platform', context);
     await this.$emitter.run('after.deploy:platform', context);
 
-    this.log();
-    this.log('  Platform deployment completed.');
-    this.log();
+    console.log();
+    console.log('  Platform deployment completed.');
+    console.log();
   }
 }

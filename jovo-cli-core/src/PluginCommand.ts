@@ -42,37 +42,10 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
     emitter: Emitter<Events>,
     config: JovoCliPluginConfig,
   ): Promise<Config.Command.Plugin> {
-    if (!this.prototype.$emitter) {
-      this.prototype.$emitter = emitter;
-    }
-
-    if (!this.prototype.$config) {
-      this.prototype.$config = config;
-    }
-
-    // Load action set.
-    this.prototype.install();
-    // Register events to emitter.
-    this.prototype.loadActionSet();
-
-    // Go through config, register hooks.
-    const projectHooks: JovoCliConfigHooks = _get(config, 'options.hooks', {});
-    for (const [event, fn] of Object.entries(projectHooks)) {
-      // @ts-ignore
-      emitter.on(event, fn);
-    }
-
-    // ToDo: Pull out, run from Collector.ts for only the needed plugin.
-    // Run install event, so that commands can be enhanced before execution.
-    await emitter.run('install', { command: this.id, flags: this.flags, args: this.args });
+    super.install(emitter, config);
 
     return (this as any) as Config.Command.Plugin;
   }
-
-  /**
-   * Abstract install function to hook into events.
-   */
-  install() {}
 
   /**
    * Declare run() as abstract again.

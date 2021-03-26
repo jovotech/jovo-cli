@@ -3,6 +3,7 @@ import open from 'open';
 import _get from 'lodash.get';
 import {
   CLOUD,
+  execAsync,
   getPackageVersionsNpm,
   JovoCli,
   JovoUserConfigFile,
@@ -14,20 +15,28 @@ import {
 import * as JovoWebhookConnector from './JovoWebhookConnector';
 
 /**
+ * Compile TypeScript code of Jovo project to JavaScript.
+ * @param sourceFolder - Source folder.
+ */
+export async function compileTypeScriptProject(sourceFolder: string) {
+  await execAsync('npm run tsc', { cwd: sourceFolder });
+}
+
+/**
  * Checks whether to display an update message for out-of-date packages or not.
  * Returns an array of out-of-date packages.
  */
 export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
   const jovo: JovoCli = JovoCli.getInstance();
-
-  const jovoConfig: JovoUserConfigFile = jovo.$userConfig.get();
+  const jovoUserConfig: JovoUserConfigFile = jovo.$userConfig.get();
   // Calculate update interval (24 hours) into ms.
   const updateInterval: number = 24 * 60 * 60 * 1000;
 
   // Check if it's time to update the user again.
-  if (jovoConfig.hasOwnProperty('timeLastUpdateMessage')) {
+  if (jovoUserConfig.timeLastUpdateMessage) {
     // Convert parameter into ms and add it to the time the update message was shown last.
-    const nextDisplayTime = new Date(jovoConfig.timeLastUpdateMessage!).getTime() + updateInterval;
+    const nextDisplayTime =
+      new Date(jovoUserConfig.timeLastUpdateMessage).getTime() + updateInterval;
 
     if (new Date().getTime() < nextDisplayTime) {
       return {};
@@ -46,8 +55,8 @@ export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
 
   if (Object.keys(outOfDatePackages).length) {
     // If there is at least one out-of-date package, update timeLastUpdateMessage and return true.
-    jovoConfig.timeLastUpdateMessage = new Date().toISOString();
-    jovo.$userConfig.save(jovoConfig);
+    jovoUserConfig.timeLastUpdateMessage = new Date().toISOString();
+    jovo.$userConfig.save(jovoUserConfig);
   }
 
   return outOfDatePackages;
@@ -66,7 +75,7 @@ export function instantiateJovoWebhook(
 
   const webhookId: string = jovo.$userConfig.getWebhookUuid();
   // Get endpoint directly from config to skip eval() from $configReader.
-  const endpointRaw: string = _get(jovo.$project!.$config.get(), 'endpoint') as string;
+  const endpointRaw: string = jovo.$project!.$config.getParameter('endpoint') as string;
   // Resolve endpoint. Transforms `JOVO_WEBHOOK_URL` to actual webhook url.
   const endpoint: string = jovo.resolveEndpoint(endpointRaw);
 

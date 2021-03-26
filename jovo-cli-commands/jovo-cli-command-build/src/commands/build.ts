@@ -1,10 +1,8 @@
-import { flags } from '@oclif/command';
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { existsSync, mkdirSync } from 'fs';
 import {
   validateLocale,
-  promptForPlatform,
   JovoCliPluginContext,
   checkForProjectDirectory,
   Task,
@@ -15,7 +13,9 @@ import {
   PluginCommand,
   Emitter,
   JovoCliPluginConfig,
+  flags,
 } from 'jovo-cli-core';
+import { promptForPlatform } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -85,7 +85,6 @@ export class Build extends PluginCommand<BuildEvents> {
 
   install() {
     this.actionSet = {
-      'install': [checkForProjectDirectory],
       'before.build': [this.beforeBuild.bind(this)],
       'build': [this.build.bind(this)],
     };
@@ -98,10 +97,7 @@ export class Build extends PluginCommand<BuildEvents> {
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
     if (context.flags.reverse) {
       if (context.platforms.length !== 1) {
-        const { platform } = await promptForPlatform(
-          'Please select the platform you want to reverse build from:',
-          jovo.getPlatforms(),
-        );
+        const { platform } = await promptForPlatform(jovo.getPlatforms());
         context.platforms = [platform];
       }
 
@@ -141,12 +137,14 @@ export class Build extends PluginCommand<BuildEvents> {
   }
 
   async run() {
+    checkForProjectDirectory();
+
     const { args, flags } = this.parse(Build);
 
     await this.$emitter!.run('parse', { command: Build.id, flags, args });
 
-    this.log(`\n jovo build: ${Build.description}`);
-    this.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    console.log(`\n jovo build: ${Build.description}`);
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
     const context: JovoCliPluginContext = {
@@ -161,8 +159,8 @@ export class Build extends PluginCommand<BuildEvents> {
     await this.$emitter!.run('build', context);
     await this.$emitter!.run('after.build', context);
 
-    this.log();
-    this.log('  Build completed.');
-    this.log();
+    console.log();
+    console.log('  Build completed.');
+    console.log();
   }
 }

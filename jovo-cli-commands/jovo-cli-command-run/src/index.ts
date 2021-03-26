@@ -3,10 +3,13 @@ import { Run } from './commands';
 
 export * from './commands';
 
-export default class JovoCliCommandRun extends JovoCliPlugin {
+export class RunCommand extends JovoCliPlugin {
+  id: string = 'run';
   type: JovoCliPluginType = 'command';
 
   getCommands() {
     return [Run];
   }
 }
+
+export default RunCommand;

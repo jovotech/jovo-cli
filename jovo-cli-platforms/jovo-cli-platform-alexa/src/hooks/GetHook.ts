@@ -1,9 +1,9 @@
-import { flags } from '@oclif/command';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
 import _set from 'lodash.set';
 import {
   ANSWER_CANCEL,
+  flags,
   InstallEventArguments,
   JovoCliPluginContext,
   ParseEventArguments,
@@ -15,7 +15,7 @@ import {
 } from 'jovo-cli-core';
 import { GetEvents } from 'jovo-cli-command-get';
 import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'filebuilder';
+import { FileBuilder, FileObject } from 'jovo-filebuilder';
 
 import * as smapi from '../smapi';
 import {

@@ -7,14 +7,23 @@ import { homedir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { join as joinPaths } from 'path';
 
-import { JovoCliError } from '.';
-import { JovoCliPreset, JovoUserConfigFile } from './utils';
+import { JovoCliError } from './JovoCliError';
+import chalk from 'chalk';
+import { JovoCliPreset, JovoUserConfigFile } from './utils/Interfaces';
+import { promptOverwrite } from './utils/Prompts';
+import { ANSWER_CANCEL } from './utils/Constants';
 
 export class JovoUserConfig {
+  private config: JovoUserConfigFile;
+
+  constructor() {
+    this.config = this.get();
+  }
+
   /**
    * Returns the path of the Jovo user config.
    */
-  getPath(): string {
+  static getPath(): string {
     return joinPaths('.jovo', 'config');
   }
 
@@ -23,7 +32,7 @@ export class JovoUserConfig {
    */
   get(): JovoUserConfigFile {
     try {
-      const data: string = readFileSync(joinPaths(homedir(), this.getPath()), 'utf-8');
+      const data: string = readFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       // If file cannot be found, create it.
@@ -33,7 +42,7 @@ export class JovoUserConfig {
 
       // Else propagate error.
       throw new JovoCliError(
-        'Error while trying to parse ./jovo/config.',
+        'Error while trying to parse .jovo/config.',
         'jovo-cli-core',
         error.message,
       );
@@ -50,6 +59,7 @@ export class JovoUserConfig {
     }
 
     writeFileSync(joinPaths(homedir(), '.jovo', 'config'), JSON.stringify(config, null, 2));
+    this.config = config;
   }
 
   /**
@@ -61,25 +71,29 @@ export class JovoUserConfig {
         uuid: uuidv4(),
       },
       cli: {
-        plugins: ['jovo-cli-command-new', 'jovo-cli-command-run'],
+        plugins: [
+          'jovo-cli-command-build',
+          'jovo-cli-command-deploy',
+          'jovo-cli-command-get',
+          'jovo-cli-command-new',
+          'jovo-cli-command-run',
+        ],
         presets: [
           {
             name: 'Default_JS',
             projectName: 'helloworld',
-            template: 'helloworld',
             locales: ['en'],
             language: 'javascript',
-            platforms: [],
+            platforms: ['alexa'],
             linter: true,
             unitTesting: true,
           },
           {
             name: 'Default_TS',
             projectName: 'helloworld',
-            template: 'helloworld',
             locales: ['en'],
             language: 'typescript',
-            platforms: [],
+            platforms: ['alexa'],
             linter: true,
             unitTesting: true,
           },
@@ -91,25 +105,27 @@ export class JovoUserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), this.getPath()), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), JSON.stringify(config, null, 2));
 
     return config;
+  }
+
+  getParameter(path: string): object | string[] | string | undefined {
+    return _get(this.config, path);
   }
 
   /**
    * Returns the webhook uuid for the current user from the Jovo user config.
    */
   getWebhookUuid(): string {
-    const config: JovoUserConfigFile = this.get();
-    return config.webhook.uuid;
+    return this.getParameter('webhook.uuid') as string;
   }
 
   /**
    * Gets array of presets defined inside .jovo/config.
    */
   getPresets(): JovoCliPreset[] {
-    const config: JovoUserConfigFile = this.get();
-    return config.cli.presets;
+    return this.getParameter('cli.presets') as JovoCliPreset[];
   }
 
   /**
@@ -118,9 +134,7 @@ export class JovoUserConfig {
    * @throws JovoCliError, if the preset could not be found.
    */
   getPreset(presetKey: string): JovoCliPreset {
-    const config: JovoUserConfigFile = this.get();
-
-    const presets: JovoCliPreset[] = _get(config, 'cli.presets');
+    const presets: JovoCliPreset[] = this.getPresets();
     const preset: JovoCliPreset | undefined = presets.find((preset) => preset.name === presetKey);
 
     if (!preset) {
@@ -138,16 +152,25 @@ export class JovoUserConfig {
    * Saves preset to .jovo/config.
    * @param preset - Preset to save.
    */
-  savePreset(preset: JovoCliPreset) {
-    const config: JovoUserConfigFile = this.get();
-
+  async savePreset(preset: JovoCliPreset) {
     // Check if preset already exists.
-    if (config.cli.presets.find((p) => p.name === preset.name)) {
-      throw new JovoCliError(`Preset ${preset.name} already exists.`, 'jovo-cli-core');
+    if (this.config.cli.presets.find((p) => p.name === preset.name)) {
+      const { overwrite } = await promptOverwrite(
+        `Preset ${preset.name} already exists. Do you want to overwrite it?`,
+      );
+      if (overwrite === ANSWER_CANCEL) {
+        throw new JovoCliError(
+          `Preset ${chalk.bold(preset.name)} already exists.`,
+          'jovo-cli-core',
+        );
+      } else {
+        // Remove existing preset.
+        this.config.cli.presets = this.config.cli.presets.filter((p) => p.name !== preset.name);
+      }
     }
 
-    config.cli.presets.push(preset);
+    this.config.cli.presets.push(preset);
 
-    this.save(config);
+    this.save(this.config);
   }
 }
