@@ -12,11 +12,8 @@ import {
   ROCKET,
   Task,
 } from 'jovo-cli-core';
-import {
-  DeployPlatformEvents,
-  DeployPlatformPluginContext,
-} from '../../../../jovo-cli-commands/jovo-cli-command-deploy/dist';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { DeployPlatformEvents, DeployPlatformPluginContext } from 'jovo-cli-command-deploy';
 
 import * as smapi from '../smapi';
 import {
