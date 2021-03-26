@@ -48,7 +48,7 @@ export interface JovoCliConfigHooks {
 
 export interface JovoCliPluginContext {
   command: string;
-  platforms: string[] | MarketplacePlugin[];
+  platforms: string[];
   locales: string[];
   flags: { [key: string]: string | boolean | string[] };
   args: { [key: string]: string };
@@ -80,10 +80,19 @@ export interface JovoUserConfigFile {
   timeLastUpdateMessage?: string | number;
 }
 
+export interface MarketplacePlugin {
+  name: string;
+  module: string;
+  cliModule?: string;
+  package: string;
+  description: string;
+  tags: string | string[];
+}
+
 export interface ProjectProperties {
   projectName: string;
   language: 'javascript' | 'typescript';
-  platforms: string[] | MarketplacePlugin[];
+  platforms: MarketplacePlugin[];
   locales: string[];
   linter: boolean;
   unitTesting: boolean;
@@ -110,13 +119,4 @@ export interface PackageVersionsNpm {
     npm: string;
     inPackageJson: boolean;
   };
-}
-
-export interface MarketplacePlugin {
-  name: string;
-  module: string;
-  cliModule?: string;
-  package: string;
-  description: string;
-  tags: string | string[];
 }

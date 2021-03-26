@@ -20,12 +20,9 @@ import {
   prompt,
   promptOverwrite,
   STAR,
-  TARGET_ALL,
   Task,
   WRENCH,
 } from 'jovo-cli-core';
-import { BuildEvents } from 'jovo-cli-command-build';
-import { DeployEvents, DeployPluginContext } from 'jovo-cli-command-deploy';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
 
@@ -41,10 +38,11 @@ import {
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-// Extend JovoCliPluginContext with ProjectProperties.
 export interface NewPluginContext
-  extends JovoCliPluginContext,
-    Omit<ProjectProperties, 'name' | 'key'> {}
+  extends Omit<JovoCliPluginContext, 'platforms'>,
+    Omit<ProjectProperties, 'name' | 'key'> {
+  platforms: MarketplacePlugin[];
+}
 
 export interface NewEvents {
   'before.new': NewPluginContext;
@@ -52,7 +50,7 @@ export interface NewEvents {
   'after.new': NewPluginContext;
 }
 
-export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
+export class New extends PluginCommand<NewEvents> {
   static id: string = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -80,14 +78,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
         'Selects a preconfigured preset from the wizard without going through the selection process.',
       dependsOn: ['no-wizard'],
       options: jovo.$userConfig.getPresets().map((preset) => preset.name),
-    }),
-    'build': flags.string({
-      description: 'Runs build after "jovo new".',
-      // options: jovo.getPlatforms(),
-    }),
-    'deploy': flags.boolean({
-      description: 'Runs deploy after "jovo new --build".',
-      dependsOn: ['build'],
     }),
     'skip-npminstall': flags.boolean({
       description: 'Skips "npm install".',
@@ -151,6 +141,7 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
           const { savePreset } = await promptSavePreset();
           if (savePreset) {
             const { presetName } = await promptPresetName();
+
             preset.name = presetName;
 
             await jovo.$userConfig.savePreset(preset);
@@ -271,29 +262,6 @@ export class New extends PluginCommand<NewEvents & BuildEvents & DeployEvents> {
       joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
       joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
     );
-
-    // Initialize project.
-    jovo.initializeProject(joinPaths(jovo.$projectPath, context.projectName));
-
-    // Build project.
-    if (flags.build) {
-      console.log();
-      await this.$emitter.run('before.build', context);
-      await this.$emitter.run('build', context);
-      await this.$emitter.run('after.build', context);
-    }
-
-    if (flags.deploy) {
-      console.log();
-      const deployContext: DeployPluginContext = {
-        ...context,
-        target: TARGET_ALL,
-        src: jovo.$project!.getBuildDirectory(),
-      };
-      await this.$emitter.run('before.deploy', deployContext);
-      await this.$emitter.run('deploy', deployContext);
-      await this.$emitter.run('after.deploy', deployContext);
-    }
 
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);
