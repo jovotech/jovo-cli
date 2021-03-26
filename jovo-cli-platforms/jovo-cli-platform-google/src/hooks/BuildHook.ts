@@ -20,6 +20,7 @@ import {
   PluginHook,
   JovoCli,
   wait,
+  mergeArrayCustomizer,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
 import { FileBuilder, FileObject } from 'filebuilder';
@@ -48,7 +49,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.flags.platform && args.flags.platform !== this.$config.pluginId!) {
+    if (args.flags.platform && args.flags.platform !== this.$config.pluginName!) {
       this.uninstall();
     }
   }
@@ -288,7 +289,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
     if (!defaultLocale) {
       throw new JovoCliError(
         'Could not find a default locale.',
-        this.$config.name,
+        this.$config.pluginName,
         'Try adding the property "defaultLocale" to your project.js.',
       );
     }
@@ -358,12 +359,12 @@ export class BuildHook extends PluginHook<BuildEvents> {
     const { invocation } = this.getModel(locale);
 
     if (typeof invocation === 'object') {
-      const platformInvocation: string = invocation[this.$config.pluginId!];
+      const platformInvocation: string = invocation[this.$config.pluginName!];
 
       if (!platformInvocation) {
         throw new JovoCliError(
           `Can\'t find invocation name for locale ${locale}.`,
-          this.$config.name,
+          this.$config.pluginName,
         );
       }
 
@@ -380,22 +381,18 @@ export class BuildHook extends PluginHook<BuildEvents> {
   getModel(locale: string): JovoModelData {
     const model: JovoModelData = jovo.$project!.getModel(locale);
 
-    // Create customizer to concat model arrays instead of overwriting them.
-    const mergeCustomizer: Function = (objValue: any[], srcValue: any) => {
-      // Since _.merge simply overwrites the original array, concatenate them instead.
-      if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      }
-    };
-
     // Merge model with configured language model in project.js.
     _mergeWith(
       model,
-      jovo.$project!.$configReader.getConfigParameter(`languageModel.${locale}`) || {},
-      mergeCustomizer,
+      project.$config.getParameter(`languageModel.${locale}`) || {},
+      mergeArrayCustomizer,
     );
     // Merge model with configured, platform-specific language model in project.js.
-    _mergeWith(model, _get(this.$config, `options.languageModel.${locale}`, {}), mergeCustomizer);
+    _mergeWith(
+      model,
+      _get(this.$config, `options.languageModel.${locale}`, {}),
+      mergeArrayCustomizer,
+    );
 
     return model;
   }
