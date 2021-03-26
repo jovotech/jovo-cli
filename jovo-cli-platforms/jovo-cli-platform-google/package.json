@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "link": "npm link jovo-filebuilder"
   },
   "author": "",
   "license": "ISC",

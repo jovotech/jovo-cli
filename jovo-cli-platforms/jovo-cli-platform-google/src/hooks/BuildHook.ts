@@ -23,7 +23,7 @@ import {
   mergeArrayCustomizer,
 } from 'jovo-cli-core';
 import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'filebuilder';
+import { FileBuilder, FileObject } from 'jovo-filebuilder';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 import { JovoModelGoogle } from 'jovo-model-google';
 
@@ -289,7 +289,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
     if (!defaultLocale) {
       throw new JovoCliError(
         'Could not find a default locale.',
-        this.$config.pluginName,
+        this.$config.pluginName!,
         'Try adding the property "defaultLocale" to your project.js.',
       );
     }
@@ -364,7 +364,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       if (!platformInvocation) {
         throw new JovoCliError(
           `Can\'t find invocation name for locale ${locale}.`,
-          this.$config.pluginName,
+          this.$config.pluginName!,
         );
       }
 
@@ -384,7 +384,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
     // Merge model with configured language model in project.js.
     _mergeWith(
       model,
-      project.$config.getParameter(`languageModel.${locale}`) || {},
+      jovo.$project!.$config.getParameter(`languageModel.${locale}`) || {},
       mergeArrayCustomizer,
     );
     // Merge model with configured, platform-specific language model in project.js.
