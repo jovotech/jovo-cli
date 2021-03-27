@@ -6,7 +6,7 @@ import {
   printSubHeadline,
   TARGET_ALL,
 } from 'jovo-cli-core';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from './deploy:platform';
+import { DeployPlatformEvents, DeployPlatformPluginContext } from './deploy.platform';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
