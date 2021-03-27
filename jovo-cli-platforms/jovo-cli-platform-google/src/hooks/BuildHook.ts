@@ -94,7 +94,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
           jovo.$project!.$stage,
         )}\n`,
       ) +
-      printSubHeadline(`Path: ./${jovo.$project!.getBuildDirectory()}${getPlatformDirectory()}`);
+      printSubHeadline(`Path: ./${jovo.$project!.getBuildDirectory()}/${getPlatformDirectory()}`);
 
     // Define main build task.
     const buildTask: Task = new Task(buildTaskTitle);
@@ -304,7 +304,6 @@ export class BuildHook extends PluginHook<BuildEvents> {
    */
   resolveProjectLocales(locales: string[]): GoogleActionProjectLocales {
     const projectLocales: GoogleActionProjectLocales = {};
-    console.log(locales);
 
     // Get project locales to build.
     // Since Google Conversational Actions require at least one specific locale (e.g. en-US for en),
@@ -320,7 +319,6 @@ export class BuildHook extends PluginHook<BuildEvents> {
       projectLocales[locale] = _uniq(locales);
     }
 
-    console.log(projectLocales);
     return projectLocales;
   }
 
