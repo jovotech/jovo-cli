@@ -37,13 +37,13 @@ export class Emitter<T extends Events> extends EventEmitter {
    * @param args - Possible arguments that get passed to all listener functions.
    */
   async run<K extends keyof T>(event: K, ...args: T[K][]) {
-    const fns: Function[] = this.listeners(event as string);
+    const fns: Function[] = this.listeners(event as string).reverse();
     if (!fns) {
       return false;
     }
 
-    for (const fn of fns) {
-      await fn(...args);
+    for (let i = fns.length - 1; i >= 0; i--) {
+      await fns[i](...args);
     }
 
     return true;

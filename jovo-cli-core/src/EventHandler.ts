@@ -42,7 +42,7 @@ export class EventHandler {
       }
 
       for (const fn of value) {
-        this.$emitter!.off(key, fn);
+        this.$emitter.off(key, fn);
       }
     }
   }

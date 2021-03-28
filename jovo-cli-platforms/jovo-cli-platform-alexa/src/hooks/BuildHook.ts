@@ -47,7 +47,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
   checkForPlatform(args: ParseEventArguments) {
     // Check if this plugin should be used or not.
-    if (args.flags.platform && args.flags.platform !== this.$config.pluginName!) {
+    if (args.flags.platform && args.flags.platform !== this.$config.pluginId) {
       this.uninstall();
     }
   }
@@ -112,7 +112,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
   async buildReverse(context: JovoCliPluginContext) {
     const jovo: JovoCli = JovoCli.getInstance();
     // Since platform can be prompted for, check if this plugin should actually be executed again.
-    if (!context.platforms.includes(this.$config.pluginName!)) {
+    if (!context.platforms.includes(this.$config.pluginId!)) {
       return;
     }
     // Get locales to reverse build from. If --locale is not specified, reverse build from every locale

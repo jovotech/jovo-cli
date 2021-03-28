@@ -4,7 +4,7 @@ import {
   JovoCliPlugin,
   JovoCliPluginConfig,
   JovoCliPluginType,
-  ProjectConfigObject,
+  ProjectConfigFile,
 } from '../src';
 
 describe('new Config()', () => {
@@ -50,7 +50,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -67,7 +67,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -85,7 +85,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -148,7 +148,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent.stages).toBeUndefined();
@@ -173,7 +173,7 @@ describe('getContent()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config(resolve(joinPaths('test', '__mocks__')));
-    const configContent: ProjectConfigObject = config.getContent();
+    const configContent: ProjectConfigFile = config.getContent();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
