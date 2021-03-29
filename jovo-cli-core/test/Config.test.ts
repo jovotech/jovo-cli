@@ -7,6 +7,46 @@ import {
   ProjectConfigFile,
 } from '../src';
 
+describe('Config.getInstance()', () => {
+  beforeEach(() => {
+    delete Config['instance'];
+  });
+
+  test('should return instance of Config', () => {
+    const mockedGetContent: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getContent')
+      .mockReturnThis();
+    const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
+
+    expect(Config['instance']).toBeUndefined();
+    const config: Config = Config.getInstance('');
+
+    expect(config).toBeDefined();
+    expect(Config['instance']).toBeDefined();
+    expect(config === Config['instance']).toBeTruthy();
+
+    mockedGetContent.mockRestore();
+    mockedGet.mockRestore();
+  });
+
+  test('should not return instance of Config if one exists already', () => {
+    const mockedGetContent: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getContent')
+      .mockReturnThis();
+    const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
+
+    expect(Config['instance']).toBeUndefined();
+    const config1: Config = Config.getInstance('');
+    expect(Config['instance']).toBeDefined();
+
+    const config2: Config = Config.getInstance('');
+    expect(config1 === config2).toBeTruthy();
+
+    mockedGetContent.mockRestore();
+    mockedGet.mockRestore();
+  });
+});
+
 describe('new Config()', () => {
   test('should load the config', () => {
     const mockedGetContent: jest.SpyInstance = jest

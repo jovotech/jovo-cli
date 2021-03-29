@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import { Events } from '.';
+import { Events } from './utils/Interfaces';
 
-export declare interface Emitter<T extends Events> {
+export declare interface Emitter<T extends Events = Events> {
   on<K extends keyof T>(event: K, listener: (v: T[K]) => void): this;
   off<K extends keyof T>(event: K, listener: (v: T[K]) => void): this;
 }

@@ -36,7 +36,7 @@ export class Project {
       }
     }
 
-    this.$config = new Config(this.projectPath, this.$stage);
+    this.$config = Config.getInstance(this.projectPath, this.$stage);
 
     // If stage was not explicitly defined, try to get it from config.
     if (!this.$stage) {
@@ -44,7 +44,10 @@ export class Project {
     }
   }
 
-  // Returns singleton project instance.
+  /**
+   * Returns singleton project instance.
+   * @param projectPath - Current project path.
+   */
   static getInstance(projectPath: string): Project {
     if (!this.instance) {
       this.instance = new Project(projectPath);

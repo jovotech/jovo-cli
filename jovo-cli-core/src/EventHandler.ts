@@ -1,5 +1,5 @@
-import { ActionSet, Emitter } from '.';
-import { Events, JovoCliPluginConfig } from './utils';
+import { Emitter } from './EventEmitter';
+import { ActionSet, Events, JovoCliPluginConfig } from './utils/Interfaces';
 
 export class EventHandler {
   protected actionSet?: ActionSet<any>;

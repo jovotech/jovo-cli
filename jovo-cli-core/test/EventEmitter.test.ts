@@ -1,0 +1,80 @@
+import { Emitter } from '../src';
+
+describe('new Emitter<T>()', () => {
+  // * This test tests type safety, thus does not need to be run.
+  test.skip('should instantiate the emitter and give type safety', () => {
+    type T = { Foo1: 'Bar1' };
+    type K = { Foo2: 'Bar2' };
+    const emitter: Emitter<T & K> = new Emitter<T & K>();
+
+    emitter.on('Foo1', (arg: 'Bar1') => {});
+    emitter.on('Foo2', (arg: 'Bar2') => {});
+    emitter.off('Foo1', () => {});
+    emitter.off('Foo2', () => {});
+    emitter.run('Foo1', 'Bar1');
+    emitter.run('Foo2', 'Bar2');
+  });
+});
+
+describe('off()', () => {
+  test('should successfully remove an event', () => {
+    const emitter: Emitter = new Emitter();
+
+    const fn: jest.Mock = jest.fn();
+    emitter.on('event', fn);
+    expect(emitter.listeners('event')).toHaveLength(1);
+    emitter.off('event', fn);
+    expect(emitter.listeners('event')).toHaveLength(0);
+  });
+});
+
+describe('on()', () => {
+  test('should successfully add an event', () => {
+    const emitter: Emitter = new Emitter();
+    expect(emitter.listeners('event')).toHaveLength(0);
+
+    const fn: (v: any) => void = () => {};
+    emitter.on('event', fn);
+
+    expect(emitter.listeners('event')).toHaveLength(1);
+    expect(emitter.listeners('event')[0]).toStrictEqual(fn);
+  });
+});
+
+describe('run()', () => {
+  test('should successfully run a synchronous event', () => {
+    const emitter: Emitter = new Emitter();
+
+    const fn: jest.Mock = jest.fn();
+    emitter.on('event', fn);
+    emitter.run('event');
+
+    expect(fn).toBeCalledTimes(1);
+  });
+
+  test('should successfully pass parameters to functions', () => {
+    const emitter: Emitter = new Emitter();
+
+    const fn: jest.Mock = jest.fn();
+    emitter.on('event', fn);
+    emitter.run('event', 'Foo');
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith('Foo');
+  });
+
+  test('should successfully run an asynchronous event', async () => {
+    const emitter: Emitter = new Emitter();
+
+    const promise: Promise<void> = new Promise((res) => {
+      res();
+    });
+    const fn: jest.Mock = jest.fn().mockImplementation(() => promise);
+    emitter.on('event', fn);
+    await emitter.run('event');
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toReturn();
+    expect(fn).toReturnWith<Promise<void>>(promise);
+  });
+});

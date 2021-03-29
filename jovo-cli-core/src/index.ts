@@ -1,5 +1,5 @@
 import prompt from 'prompts';
-import { ProjectConfigObject } from './utils';
+import { ProjectConfigFile } from './utils/Interfaces';
 
 export { flags } from '@oclif/command';
 export { prompt };
@@ -17,7 +17,7 @@ export * from './Config';
 export * from './JovoCli';
 
 export class ProjectConfig {
-  constructor(config: ProjectConfigObject) {
+  constructor(config: ProjectConfigFile) {
     Object.assign(this, config);
   }
 }
