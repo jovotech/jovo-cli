@@ -4,8 +4,48 @@ import {
   JovoCliPlugin,
   JovoCliPluginConfig,
   JovoCliPluginType,
-  ProjectConfigObject,
+  ProjectConfigFile,
 } from '../src';
+
+describe('Config.getInstance()', () => {
+  beforeEach(() => {
+    delete Config['instance'];
+  });
+
+  test('should return instance of Config', () => {
+    const mockedGetContent: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getContent')
+      .mockReturnThis();
+    const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
+
+    expect(Config['instance']).toBeUndefined();
+    const config: Config = Config.getInstance('');
+
+    expect(config).toBeDefined();
+    expect(Config['instance']).toBeDefined();
+    expect(config === Config['instance']).toBeTruthy();
+
+    mockedGetContent.mockRestore();
+    mockedGet.mockRestore();
+  });
+
+  test('should not return instance of Config if one exists already', () => {
+    const mockedGetContent: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getContent')
+      .mockReturnThis();
+    const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
+
+    expect(Config['instance']).toBeUndefined();
+    const config1: Config = Config.getInstance('');
+    expect(Config['instance']).toBeDefined();
+
+    const config2: Config = Config.getInstance('');
+    expect(config1 === config2).toBeTruthy();
+
+    mockedGetContent.mockRestore();
+    mockedGet.mockRestore();
+  });
+});
 
 describe('new Config()', () => {
   test('should load the config', () => {
@@ -50,7 +90,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -67,7 +107,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -85,7 +125,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -148,7 +188,7 @@ describe('get()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigObject = config.get();
+    const configContent: ProjectConfigFile = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent.stages).toBeUndefined();
@@ -173,7 +213,7 @@ describe('getContent()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config(resolve(joinPaths('test', '__mocks__')));
-    const configContent: ProjectConfigObject = config.getContent();
+    const configContent: ProjectConfigFile = config.getContent();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');

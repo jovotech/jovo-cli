@@ -3,9 +3,10 @@ import * as Config from '@oclif/config';
 import _get from 'lodash.get';
 import { Mixin } from 'ts-mixer';
 
-import { Emitter, JovoCliError } from '.';
 import { EventHandler } from './EventHandler';
-import { ActionSet, DefaultEvents, Events, JovoCliConfigHooks, JovoCliPluginConfig } from './utils';
+import { Emitter } from './EventEmitter';
+import { JovoCliError } from './JovoCliError';
+import { ActionSet, DefaultEvents, Events, JovoCliPluginConfig } from './utils/Interfaces';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.

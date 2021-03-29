@@ -4,16 +4,12 @@ import { JovoModelData } from 'jovo-model';
 import { join as joinPaths, resolve } from 'path';
 import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
 
-jest.mock('../src/Config');
 jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
-delete process.env.NODE_ENV;
+jest.spyOn(Config.prototype, 'getContent').mockReturnThis();
+jest.spyOn(Config.prototype, 'get').mockReturnThis();
+jest.spyOn(Config, 'getInstance').mockReturnValue(new Config(''));
 
 const testPath: string = resolve(joinPaths('test', 'tmpTestFolderProject'));
-
-beforeEach(() => {
-  jest.clearAllMocks();
-  jest.restoreAllMocks();
-});
 
 describe('Project.getInstance()', () => {
   beforeEach(() => {
@@ -41,10 +37,17 @@ describe('Project.getInstance()', () => {
 
 describe('new Project()', () => {
   test('should instantiate project with project path, config and undefined stage', () => {
+    delete process.env.NODE_ENV;
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue(undefined);
+
     const project: Project = new Project('testPath');
     expect(project['projectPath']).toMatch('testPath');
     expect(project.$config).toBeDefined();
     expect(project.$stage).toBeUndefined();
+
+    mocked.mockRestore();
   });
 
   test('should get the stage from command arguments', () => {
@@ -73,37 +76,40 @@ describe('new Project()', () => {
   });
 
   test('should get the stage from config', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest.fn().mockReturnValue('dev'),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue('dev');
+
     const project: Project = new Project('');
     expect(project.$stage).toBeDefined();
     expect(project.$stage).toMatch('dev');
+
+    mocked.mockRestore();
   });
 });
 
 describe('getBuildDirectory()', () => {
   test('should return default directory "build/"', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest.fn().mockReturnValue(undefined),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue(undefined);
+
     const project: Project = new Project('');
     expect(project.getBuildDirectory()).toMatch('build');
+
+    mocked.mockRestore();
   });
 
   test('should return configured directory from project configuration', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest
-        .fn()
-        .mockReturnValueOnce(undefined)
-        .mockReturnValue('modifiedBuildDirectory'),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValueOnce(undefined)
+      .mockReturnValue('modifiedBuildDirectory');
 
     const project: Project = new Project('');
     expect(project.getBuildDirectory()).toMatch('modifiedBuildDirectory');
+
+    mocked.mockRestore();
   });
 });
 
@@ -120,25 +126,26 @@ describe('getBuildPath()', () => {
 
 describe('getModelsDirectory()', () => {
   test('should return default directory "models/"', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest.fn().mockReturnValue(undefined),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue(undefined);
+
     const project: Project = new Project('');
     expect(project.getModelsDirectory()).toMatch('models');
+
+    mocked.mockRestore();
   });
 
   test('should return configured directory from project configuration', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest
-        .fn()
-        .mockReturnValueOnce(undefined)
-        .mockReturnValue('modifiedModelsDirectory'),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValueOnce(undefined)
+      .mockReturnValue('modifiedModelsDirectory');
 
     const project: Project = new Project('');
     expect(project.getModelsDirectory()).toMatch('modifiedModelsDirectory');
+
+    mocked.mockRestore();
   });
 });
 
@@ -487,15 +494,16 @@ describe('isTypeScriptProject()', () => {
 
 describe('collectPlugins()', () => {
   test('should return an empty array if no plugins could be found', () => {
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest.fn().mockReturnValue([]),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue([]);
 
     const project: Project = new Project('');
     const plugins: JovoCliPlugin[] = project.collectPlugins();
 
     expect(plugins).toHaveLength(0);
+
+    mocked.mockRestore();
   });
 
   test('should merge and return plugins', () => {
@@ -504,10 +512,9 @@ describe('collectPlugins()', () => {
       joinPaths('test', '__mocks__', 'plugins', 'CommandPlugin', 'dist'),
     );
     const plugin: JovoCliPlugin = new (require(pluginFolder).default)({ hello: 'world' });
-    // @ts-ignore
-    Config.mockImplementationOnce(() => ({
-      getParameter: jest.fn().mockReturnValue([plugin]),
-    }));
+    const mocked: jest.SpyInstance = jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValue([plugin]);
 
     const project: Project = new Project('');
     const plugins: JovoCliPlugin[] = project.collectPlugins();
@@ -519,5 +526,7 @@ describe('collectPlugins()', () => {
     expect(plugins[0].config.hello).toMatch('world');
     expect(plugins[0].config).toHaveProperty('pluginId');
     expect(plugins[0].config.pluginId).toMatch('commandPlugin');
+
+    mocked.mockRestore();
   });
 });

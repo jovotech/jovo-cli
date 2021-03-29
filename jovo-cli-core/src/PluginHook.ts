@@ -1,6 +1,6 @@
-import { Emitter, ActionSet } from '.';
 import { EventHandler } from './EventHandler';
-import { DefaultEvents, Events, JovoCliPluginConfig } from './utils';
+import { Emitter } from './EventEmitter';
+import { ActionSet, DefaultEvents, Events, JovoCliPluginConfig } from './utils/Interfaces';
 
 export abstract class PluginHook<T extends Events = DefaultEvents> extends EventHandler {
   protected actionSet!: ActionSet<T & DefaultEvents>;

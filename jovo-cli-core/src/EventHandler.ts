@@ -1,5 +1,5 @@
-import { ActionSet, Emitter } from '.';
-import { Events, JovoCliPluginConfig } from './utils';
+import { Emitter } from './EventEmitter';
+import { ActionSet, Events, JovoCliPluginConfig } from './utils/Interfaces';
 
 export class EventHandler {
   protected actionSet?: ActionSet<any>;
@@ -42,7 +42,7 @@ export class EventHandler {
       }
 
       for (const fn of value) {
-        this.$emitter!.off(key, fn);
+        this.$emitter.off(key, fn);
       }
     }
   }

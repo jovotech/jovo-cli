@@ -114,9 +114,6 @@ export class New extends PluginCommand<NewEvents> {
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: JovoCliPreset | undefined;
-    const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
-      plugin.tags.includes('platforms'),
-    );
 
     if (!flags['no-wizard']) {
       console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
@@ -127,6 +124,9 @@ export class New extends PluginCommand<NewEvents> {
 
         if (selectedPreset === 'manual') {
           // Manually select project properties.
+          const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
+            plugin.tags.includes('platforms'),
+          );
           const platforms: prompt.Choice[] = platformPlugins.map((plugin) => ({
             title: plugin.name,
             value: plugin,
@@ -257,11 +257,25 @@ export class New extends PluginCommand<NewEvents> {
       joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'),
     );
 
-    // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
-    symlinkSync(
-      joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
-      joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
-    );
+    for (const platform of context.platforms) {
+      if (platform.module === 'Alexa') {
+        // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
+        symlinkSync(
+          joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
+          joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
+        );
+        continue;
+      }
+
+      if (platform.module === 'GoogleAssistant') {
+        // Link jovo-cli-platform-google to jovo-platform-googleassistantconv/cli.
+        symlinkSync(
+          joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-google'),
+          joinPaths(context.projectName, 'node_modules', 'jovo-platform-googleassistantconv', 'cli'),
+        );
+        continue;
+      }
+    }
 
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);

@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "link": "npm link jovo-filebuilder"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "node-emoji": "^1.10.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.has": "^4.5.6",
     "@types/lodash.merge": "^4.6.6",

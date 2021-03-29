@@ -60,13 +60,13 @@ export interface DeployConfiguration {
   target?: string[];
 }
 
-export interface ProjectConfigObject extends JovoConfig {
+export interface ProjectConfigFile extends JovoConfig {
   deploy?: DeployConfiguration;
   endpoint?: string;
   plugins?: JovoCliPlugin[];
   hooks?: { [key: string]: Function };
   defaultStage?: string;
-  stages?: { [key: string]: ProjectConfigObject };
+  stages?: { [key: string]: ProjectConfigFile };
 }
 
 export interface JovoUserConfigFile {
