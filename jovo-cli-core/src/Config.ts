@@ -9,7 +9,7 @@ import { mergeArrayCustomizer, ProjectConfigObject } from './utils';
 import { JovoCliPlugin } from './JovoCliPlugin';
 
 export class Config {
-  private readonly config: ProjectConfigObject;
+  private static instance?: Config;
 
   constructor(private projectPath: string, private stage?: string) {
     const configContent: ProjectConfigObject = this.getContent();
@@ -20,6 +20,18 @@ export class Config {
     this.config = this.get();
   }
 
+  /**
+   * Returns singleton project instance.
+   * @param projectPath - Current project path.
+   * @param stage - Optional stage.
+   */
+  static getInstance(projectPath: string, stage?: string): Config {
+    if (!this.instance) {
+      console.log('Instantiating new Config Instance...');
+      this.instance = new Config(projectPath, stage);
+    }
+    return this.instance;
+  }
   /**
    * Returns configuration, considering the stage. If no stage is set, just returns this.getConfigContent().
    */
