@@ -60,8 +60,8 @@ $ cd jovo-cli/
 # Switch branch to v4.
 $ git checkout v4
 
-# Run the NPM script devSetup, which will install dependencies, compile TypeScript and link all necessary packages.
-$ npm run devSetup
+# Run the NPM script setup:dev, which will install dependencies, compile TypeScript and link all necessary packages.
+$ npm run setup:dev
 ```
 
 ## Usage

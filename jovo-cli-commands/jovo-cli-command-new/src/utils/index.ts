@@ -173,11 +173,11 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
 
 /**
  * ! Links available plugins to the new MVP dependency structure.
- * @param projectName - Project directory. If running this function from within a Jovo project, leave it empty.
+ * @param projectPath - Project directory. If running this function from within a Jovo project, leave it empty.
  */
-export function linkPlugins(projectName: string = '') {
-  if (!existsSync(joinPaths(projectName, 'node_modules', '@jovotech'))) {
-    mkdirSync(joinPaths(projectName, 'node_modules', '@jovotech'));
+export async function linkPlugins(projectPath: string = '') {
+  if (!existsSync(joinPaths(projectPath, 'node_modules', '@jovotech'))) {
+    mkdirSync(joinPaths(projectPath, 'node_modules', '@jovotech'));
   }
 
   let cliPath: string;
@@ -194,7 +194,7 @@ export function linkPlugins(projectName: string = '') {
   }
 
   const marketplacePlugins: MarketplacePlugin[] = fetchMarketPlace();
-  const packageJson = require(resolve(joinPaths(projectName, 'package.json')));
+  const packageJson = require(resolve(joinPaths(projectPath, 'package.json')));
   const dependencies: string[] = [
     ...Object.keys(packageJson.dependencies),
     ...Object.keys(packageJson.devDependencies),
@@ -210,51 +210,24 @@ export function linkPlugins(projectName: string = '') {
       }
 
       copySync(
-        joinPaths(projectName, 'node_modules', pkg),
-        joinPaths(projectName, 'node_modules', marketplacePlugin.package),
+        joinPaths(projectPath, 'node_modules', pkg),
+        joinPaths(projectPath, 'node_modules', marketplacePlugin.package),
       );
 
       // ! Link platforms.
       if (marketplacePlugin.module === 'Alexa') {
-        symlinkSync(
-          joinPaths(
-            '..',
-            '..',
-            '..',
-            '..',
-            cliPath,
-            'jovo-cli-platforms',
-            'jovo-cli-platform-alexa',
-          ),
-          joinPaths(projectName, 'node_modules', '@jovotech', 'platform-alexa', 'cli'),
-        );
+        await execAsync('npm link @jovotech/platform-alexa/cli', {
+          cwd: projectPath,
+        });
       }
 
       if (marketplacePlugin.module === 'GoogleAssistant') {
-        symlinkSync(
-          joinPaths(
-            '..',
-            '..',
-            '..',
-            '..',
-            cliPath,
-            'jovo-cli-platforms',
-            'jovo-cli-platform-google',
-          ),
-          joinPaths(
-            projectName,
-            'node_modules',
-            '@jovotech',
-            'platform-googleassistantconv',
-            'cli',
-          ),
-        );
+        await execAsync('npm link @jovotech/platform-googleassistantconv/cli', {
+          cwd: projectPath,
+        });
       }
     }
   }
 
-  symlinkSync(
-    joinPaths('..', '..', '..', cliPath, 'jovo-cli-core'),
-    joinPaths(projectName, 'node_modules', '@jovotech', 'cli-core'),
-  );
+  await execAsync('npm link @jovotech/cli/core', { cwd: projectPath });
 }

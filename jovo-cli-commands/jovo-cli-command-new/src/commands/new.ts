@@ -255,7 +255,7 @@ export class New extends PluginCommand<NewEvents> {
     }
 
     // ! Rename dependencies to fit to the current MVP structure and link project dependencies for local setup.
-    linkPlugins(resolve(context.projectName));
+    await linkPlugins(resolve(context.projectName));
 
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);

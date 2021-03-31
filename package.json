@@ -9,6 +9,6 @@
     "tsc": "lerna run tsc",
     "link": "lerna run link",
     "test": "lerna run test",
-    "devSetup": "npm run bootstrap && npm run link && npm run tsc"
+    "setup:dev": "npm run bootstrap && npm run link && npm run tsc"
   }
 }

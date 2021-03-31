@@ -145,7 +145,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       }
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
-      linkPlugins();
+      await linkPlugins();
     });
     stageTask.add(addPluginsTask, installTask);
 
