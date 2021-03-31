@@ -1,8 +1,9 @@
-import { createWriteStream, unlinkSync, WriteStream } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, symlinkSync, unlinkSync, WriteStream } from 'fs';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import AdmZip from 'adm-zip';
-import { join as joinPaths } from 'path';
+import { join as joinPaths, resolve } from 'path';
 import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from 'jovo-cli-core';
+import { copySync } from 'fs-extra';
 
 export * from './Prompts';
 export * as TemplateBuilder from './TemplateBuilder';
@@ -88,8 +89,9 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
   const plugins: MarketplacePlugin[] = [
     {
       name: 'Dashbot Analytics',
-      module: 'DashbotAnalytics',
+      module: 'DashbotUniversal',
       package: '@jovotech/analytics-dashbot',
+      npmPackage: 'jovo-analytics-dashbot',
       description: 'Add conversational analytics to your app',
       tags: 'monitoring, analytics',
     },
@@ -97,6 +99,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'Google Analytics',
       module: 'GoogleAnalytics',
       package: '@jovotech/analytics-googleanalytics',
+      npmPackage: 'jovo-analytics-googleanalytics',
       description: 'Track usage data with the popular analytics platform',
       tags: 'monitoring, analytics',
     },
@@ -104,6 +107,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'DynamoDB',
       module: 'DynamoDb',
       package: '@jovotech/db-dynamodb',
+      npmPackage: 'jovo-db-dynamodb',
       description: 'Store user data in a DynamoDB database on AWS',
       tags: 'databases',
     },
@@ -111,6 +115,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'FileDB',
       module: 'FileDb',
       package: '@jovotech/db-filedb',
+      npmPackage: 'jovo-db-filedb',
       description: 'Store user data in a local JSON file for fast prototyping and debugging',
       tags: 'databases',
     },
@@ -118,6 +123,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'MongoDB',
       module: 'MongoDb',
       package: '@jovotech/db-mongodb',
+      npmPackage: 'jovo-db-mongodb',
       description: 'Store user data in a MongoDB database',
       tags: 'databases',
     },
@@ -125,7 +131,8 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'Amazon Alexa',
       module: 'Alexa',
       cliModule: 'AlexaCli',
-      package: 'jovo-platform-alexa',
+      package: '@jovotech/platform-alexa',
+      npmPackage: 'jovo-platform-alexa',
       description: "Build apps for Amazon's Alexa assistant platform",
       tags: 'platforms',
     },
@@ -133,9 +140,26 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'Google Assistant (Conversational)',
       module: 'GoogleAssistant',
       cliModule: 'GoogleAssistantCli',
-      package: 'jovo-platform-googleassistantconv',
+      package: '@jovotech/platform-googleassistantconv',
+      npmPackage: 'jovo-platform-googleassistantconv',
       description: "Build Conversational Actions for Google's Assistant platform",
       tags: 'platforms',
+    },
+    {
+      name: 'Jovo Framework',
+      module: 'App',
+      package: '@jovotech/framework',
+      npmPackage: 'jovo-framework',
+      description: 'Jovo Framework',
+      tags: '',
+    },
+    {
+      name: 'Jovo Debugger',
+      module: 'Debugger',
+      package: '@jovotech/plugin-debugger',
+      npmPackage: 'jovo-plugin-debugger',
+      description: 'Jovo Debugger',
+      tags: '',
     },
   ];
 
@@ -145,4 +169,92 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
   }
 
   return plugins;
+}
+
+/**
+ * ! Links available plugins to the new MVP dependency structure.
+ * @param projectName - Project directory. If running this function from within a Jovo project, leave it empty.
+ */
+export function linkPlugins(projectName: string = '') {
+  if (!existsSync(joinPaths(projectName, 'node_modules', '@jovotech'))) {
+    mkdirSync(joinPaths(projectName, 'node_modules', '@jovotech'));
+  }
+
+  let cliPath: string;
+  if (existsSync(joinPaths('./', 'cli'))) {
+    cliPath = 'cli';
+  } else if (existsSync(joinPaths('./', 'jovo-cli'))) {
+    cliPath = 'jovo-cli';
+  } else if (existsSync(joinPaths('..', 'cli'))) {
+    cliPath = 'cli';
+  } else if (existsSync(joinPaths('..', 'jovo-cli'))) {
+    cliPath = 'jovo-cli';
+  } else {
+    throw new JovoCliError('Could not find Jovo CLI path.', 'NewCommand');
+  }
+
+  const marketplacePlugins: MarketplacePlugin[] = fetchMarketPlace();
+  const packageJson = require(resolve(joinPaths(projectName, 'package.json')));
+  const dependencies: string[] = [
+    ...Object.keys(packageJson.dependencies),
+    ...Object.keys(packageJson.devDependencies),
+  ];
+  for (const pkg of dependencies) {
+    if (/^jovo-[a-zA-Z\-]*$/.test(pkg)) {
+      const marketplacePlugin: MarketplacePlugin | undefined = marketplacePlugins.find(
+        (plugin) => plugin.npmPackage === pkg,
+      );
+
+      if (!marketplacePlugin) {
+        throw new JovoCliError(`Could not find ${pkg} in marketplace.`, 'NewCommand');
+      }
+
+      copySync(
+        joinPaths(projectName, 'node_modules', pkg),
+        joinPaths(projectName, 'node_modules', marketplacePlugin.package),
+      );
+
+      // ! Link platforms.
+      if (marketplacePlugin.module === 'Alexa') {
+        symlinkSync(
+          joinPaths(
+            '..',
+            '..',
+            '..',
+            '..',
+            cliPath,
+            'jovo-cli-platforms',
+            'jovo-cli-platform-alexa',
+          ),
+          joinPaths(projectName, 'node_modules', '@jovotech', 'platform-alexa', 'cli'),
+        );
+      }
+
+      if (marketplacePlugin.module === 'GoogleAssistant') {
+        symlinkSync(
+          joinPaths(
+            '..',
+            '..',
+            '..',
+            '..',
+            cliPath,
+            'jovo-cli-platforms',
+            'jovo-cli-platform-google',
+          ),
+          joinPaths(
+            projectName,
+            'node_modules',
+            '@jovotech',
+            'platform-googleassistantconv',
+            'cli',
+          ),
+        );
+      }
+    }
+  }
+
+  symlinkSync(
+    joinPaths('..', '..', '..', 'cli', 'jovo-cli-core'),
+    joinPaths(projectName, 'node_modules', '@jovotech', 'cli-core'),
+  );
 }

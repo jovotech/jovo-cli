@@ -6,6 +6,7 @@ import latestVersion from 'latest-version';
 import {
   Config as ProjectConfig,
   JovoCli,
+  JovoCliError,
   MarketplacePlugin,
   ProjectProperties,
 } from 'jovo-cli-core';
@@ -36,11 +37,15 @@ export async function build(props: ProjectProperties) {
   let packageJson = require(packageJsonPath);
 
   for (const platform of props.platforms as MarketplacePlugin[]) {
-    _set(
-      packageJson,
-      `dependencies["${platform.package}"]`,
-      `^${await latestVersion(platform.package)}`,
-    );
+    try {
+      const version: string = await latestVersion(platform.npmPackage);
+      _set(packageJson, `dependencies["${platform.npmPackage}"]`, `^${version}`);
+    } catch (error) {
+      throw new JovoCliError(
+        `Could not retrieve latest version for ${platform.npmPackage}`,
+        'NewCommand',
+      );
+    }
   }
 
   const omittedPackages: string[] = [];

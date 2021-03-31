@@ -79,7 +79,7 @@ export class Task {
           throw error;
         }
 
-        throw new JovoCliError(error.message, 'jovo-cli-core');
+        throw new JovoCliError(error.message, 'JovoCliCore');
       }
     }
   }

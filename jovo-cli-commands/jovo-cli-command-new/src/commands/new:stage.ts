@@ -1,6 +1,6 @@
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-import { join as joinPaths } from 'path';
+import { join as joinPaths, resolve } from 'path';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
 import {
@@ -9,7 +9,6 @@ import {
   flags,
   JovoCliError,
   JovoCliPluginContext,
-  MarketplacePlugin,
   PluginCommand,
   printHighlight,
   printSubHeadline,
@@ -18,10 +17,19 @@ import {
   SPARKLES,
   Task,
   wait,
+  WRENCH,
 } from 'jovo-cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 
-import { promptPlugins, insert, fetchMarketPlace, promptServer } from '../utils';
+import {
+  promptPlugins,
+  insert,
+  fetchMarketPlace,
+  promptServer,
+  runNpmInstall,
+  linkPlugins,
+} from '../utils';
+import latestVersion from 'latest-version';
 
 export interface NewStageEvents {
   'before.new:stage': JovoCliPluginContext;
@@ -107,7 +115,10 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
     const { plugins } = await promptPlugins(availablePlugins);
 
-    const stageTask: Task = new Task('Creating new stage...', async () => {
+    console.log();
+    const stageTask: Task = new Task(`${WRENCH} Creating new stage...`);
+
+    const addPluginsTask: Task = new Task('Generating staged files', async () => {
       // Create app.{stage}.ts.
       let stagedApp: string = readFileSync(joinPaths('__mocks__', 'app.stage.ts'), 'utf-8');
       const pluginsComment: string = '// Add Jovo plugins here.';
@@ -126,6 +137,17 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       writeFileSync(joinPaths('src', `app.${context.args.stage}.ts`), stagedApp);
       await wait(500);
     });
+
+    const installTask: Task = new Task('Installing plugins', async () => {
+      const packageJson = require(resolve('package.json'));
+      for (const plugin of plugins) {
+        packageJson.dependencies[plugin.npmPackage] = await latestVersion(plugin.npmPackage);
+      }
+      writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+      await runNpmInstall('./');
+      linkPlugins();
+    });
+    stageTask.add(addPluginsTask, installTask);
 
     await stageTask.run();
   }

@@ -1,6 +1,6 @@
 import { args as Args } from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-import { join as joinPaths } from 'path';
+import { join as joinPaths, resolve } from 'path';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
 import {
@@ -24,7 +24,7 @@ import {
   WRENCH,
 } from 'jovo-cli-core';
 import { copySync } from 'fs-extra';
-import { existsSync, mkdirSync, rmdirSync, symlinkSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 
 import {
   runNpmInstall,
@@ -34,6 +34,7 @@ import {
   promptSavePreset,
   TemplateBuilder,
   fetchMarketPlace,
+  linkPlugins,
 } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -45,8 +46,6 @@ export interface NewPluginContext
 }
 
 export interface NewEvents {
-  'before.new': NewPluginContext;
-  'new': NewPluginContext;
   'after.new': NewPluginContext;
 }
 
@@ -207,8 +206,6 @@ export class New extends PluginCommand<NewEvents> {
     console.log(`  ${WRENCH} I'm setting everything up`);
     console.log();
 
-    await this.$emitter!.run('before.new');
-
     const newTask: Task = new Task(
       `Creating new directory ${printHighlight(context.projectName)}/`,
       () => {
@@ -227,8 +224,18 @@ export class New extends PluginCommand<NewEvents> {
       //   context.locales[0],
       //   context.language,
       // );
+      let templatePath: string;
+
+      if (existsSync(joinPaths('./', 'template'))) {
+        templatePath = 'template';
+      } else if (existsSync(joinPaths('./', 'jovo-template-dev'))) {
+        templatePath = 'jovo-template-dev';
+      } else {
+        throw new JovoCliError('Template could not be found.', 'NewCommand');
+      }
+
       copySync(
-        joinPaths(jovo.$projectPath, 'template'),
+        joinPaths(jovo.$projectPath, templatePath),
         joinPaths(jovo.$projectPath, context.projectName),
       );
     });
@@ -247,40 +254,14 @@ export class New extends PluginCommand<NewEvents> {
       await installNpmTask.run();
     }
 
-    await this.$emitter!.run('new', context);
-
-    // ! Link project dependencies for local setup.
-    // Link jovo-cli-core.
-    rmdirSync(joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'), { recursive: true });
-    symlinkSync(
-      joinPaths('..', '..', 'cli', 'jovo-cli-core'),
-      joinPaths(context.projectName, 'node_modules', 'jovo-cli-core'),
-    );
-
-    for (const platform of context.platforms) {
-      if (platform.module === 'Alexa') {
-        // Link jovo-cli-platform-alexa to jovo-platform-alexa/cli.
-        symlinkSync(
-          joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-alexa'),
-          joinPaths(context.projectName, 'node_modules', 'jovo-platform-alexa', 'cli'),
-        );
-        continue;
-      }
-
-      if (platform.module === 'GoogleAssistant') {
-        // Link jovo-cli-platform-google to jovo-platform-googleassistantconv/cli.
-        symlinkSync(
-          joinPaths('..', '..', '..', 'cli', 'jovo-cli-platforms', 'jovo-cli-platform-google'),
-          joinPaths(context.projectName, 'node_modules', 'jovo-platform-googleassistantconv', 'cli'),
-        );
-        continue;
-      }
-    }
+    // ! Rename dependencies to fit to the current MVP structure and link project dependencies for local setup.
+    linkPlugins(resolve(context.projectName));
 
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);
     console.log();
 
+    // ToDo: Load project so plugins can hook into after.new?
     await this.$emitter!.run('after.new', context);
   }
 
