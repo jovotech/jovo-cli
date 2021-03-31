@@ -254,7 +254,7 @@ export function linkPlugins(projectName: string = '') {
   }
 
   symlinkSync(
-    joinPaths('..', '..', '..', 'cli', 'jovo-cli-core'),
+    joinPaths('..', '..', '..', cliPath, 'jovo-cli-core'),
     joinPaths(projectName, 'node_modules', '@jovotech', 'cli-core'),
   );
 }
