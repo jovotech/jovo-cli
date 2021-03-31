@@ -126,7 +126,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       for (const plugin of plugins) {
         stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
         stagedApp = insert(
-          `\n\tnew ${plugin.module}(),`,
+          `\n\t\tnew ${plugin.module}(),`,
           stagedApp,
           stagedApp.indexOf(pluginsComment) + pluginsComment.length,
         );
