@@ -3,15 +3,15 @@ import { join as joinPaths } from 'path';
 import globalNpmModulesPath from 'global-modules';
 import _merge from 'lodash.merge';
 import _get from 'lodash.get';
+import { URL } from 'url';
 
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { Project } from './Project';
-import { JOVO_WEBHOOK_URL } from './utils/Constants';
-import { JovoCliPluginConfig, JovoCliPluginType, JovoUserConfigFile } from './utils/Interfaces';
-import { URL } from 'url';
 import { JovoCliError } from './JovoCliError';
 import { JovoUserConfig } from './JovoUserConfig';
 import { Config } from './Config';
+import { JovoCliPluginConfig, JovoCliPluginType } from './utils/Interfaces';
+import { JOVO_WEBHOOK_URL } from './utils/Constants';
 
 export class JovoCli {
   private static instance?: JovoCli;

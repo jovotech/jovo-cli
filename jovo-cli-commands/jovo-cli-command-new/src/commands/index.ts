@@ -1,2 +1,2 @@
 export * from './new';
-export * from './new:stage';
+export * from './new.stage';

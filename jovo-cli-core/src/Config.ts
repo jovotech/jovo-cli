@@ -5,14 +5,16 @@ import _mergeWith from 'lodash.mergewith';
 import { join as joinPaths } from 'path';
 
 import { JovoCliError } from './JovoCliError';
-import { mergeArrayCustomizer, ProjectConfigObject } from './utils';
 import { JovoCliPlugin } from './JovoCliPlugin';
+import { mergeArrayCustomizer } from './utils';
+import { ProjectConfigFile } from './utils/Interfaces';
 
 export class Config {
-  private readonly config: ProjectConfigObject;
+  private static instance?: Config;
+  private readonly config: ProjectConfigFile;
 
   constructor(private projectPath: string, private stage?: string) {
-    const configContent: ProjectConfigObject = this.getContent();
+    const configContent: ProjectConfigFile = this.getContent();
     if (!stage) {
       this.stage = _get(configContent, 'defaultStage');
     }
@@ -21,13 +23,25 @@ export class Config {
   }
 
   /**
+   * Returns singleton project instance.
+   * @param projectPath - Current project path.
+   * @param stage - Optional stage.
+   */
+  static getInstance(projectPath: string, stage?: string): Config {
+    if (!this.instance) {
+      this.instance = new Config(projectPath, stage);
+    }
+    return this.instance;
+  }
+
+  /**
    * Returns configuration, considering the stage. If no stage is set, just returns this.getConfigContent().
    */
-  get(): ProjectConfigObject {
-    const config: ProjectConfigObject = this.getContent();
+  get(): ProjectConfigFile {
+    const config: ProjectConfigFile = this.getContent();
 
     if (this.stage) {
-      const stagedConfig: ProjectConfigObject | undefined = _get(config, `stages.${this.stage}`);
+      const stagedConfig: ProjectConfigFile | undefined = _get(config, `stages.${this.stage}`);
       if (stagedConfig) {
         _mergeWith(config, stagedConfig, mergeArrayCustomizer);
 
@@ -62,9 +76,9 @@ export class Config {
   /**
    * Reads and returns the content of the project's config file.
    */
-  getContent(): ProjectConfigObject {
+  getContent(): ProjectConfigFile {
     try {
-      const config: ProjectConfigObject = require(this.getPath());
+      const config: ProjectConfigFile = require(this.getPath());
       return config;
     } catch (error) {
       throw new JovoCliError(
