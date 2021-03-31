@@ -1,4 +1,4 @@
-import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
+import { JovoCliPlugin, JovoCliPluginType } from '@jovotech/cli-core';
 import { BuildHook } from './hooks';
 
 export class GoogleAssistantCli extends JovoCliPlugin {

@@ -20,9 +20,9 @@ import {
   JovoCli,
   wait,
   mergeArrayCustomizer,
-} from 'jovo-cli-core';
-import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'jovo-filebuilder';
+} from '@jovotech/cli-core';
+import { BuildEvents } from '@jovotech/cli-command-build';
+import { FileBuilder, FileObject } from '@jovotech/filebuilder';
 import { JovoModelAlexa, JovoModelAlexaData } from 'jovo-model-alexa';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 

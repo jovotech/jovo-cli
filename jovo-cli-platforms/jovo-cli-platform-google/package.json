@@ -1,17 +1,17 @@
 {
-  "name": "jovo-cli-platform-google",
+  "name": "@jovotech/platform-googleassistantconv",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "tsc": "tsc",
-    "link": "npm link jovo-filebuilder"
+    "link": "node bin/link && npm link @jovotech/filebuilder"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jovo-cli-command-build": "^1.0.0",
-    "jovo-cli-core": "^1.0.0",
+    "@jovotech/cli-command-build": "^1.0.0",
+    "@jovotech/cli-core": "^1.0.0",
     "jovo-model": "^3.0.1",
     "jovo-model-google": "^3.0.8",
     "lodash.get": "^4.4.2",

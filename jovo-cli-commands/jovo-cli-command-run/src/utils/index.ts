@@ -10,7 +10,7 @@ import {
   JOVO_WEBHOOK_URL,
   PackageVersionsNpm,
   printWarning,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 
 import * as JovoWebhookConnector from './JovoWebhookConnector';
 

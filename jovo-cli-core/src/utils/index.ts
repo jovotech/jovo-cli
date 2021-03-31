@@ -83,7 +83,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
   } else {
     throw new JovoCliError(
       "Could not find an NPM dependency file, such as your project's package.json.",
-      'jovo-cli-core',
+      '@jovotech/cli-core',
     );
   }
 
@@ -94,7 +94,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
   } catch (e) {
     throw new JovoCliError(
       `Something went wrong while reading your ${packageFileName} file.`,
-      'jovo-cli-core',
+      '@jovotech/cli-core',
     );
   }
 
@@ -163,7 +163,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     } catch (e) {
       throw new JovoCliError(
         `Something went wrong while reading your ${packageFileName} file.`,
-        'jovo-cli-core',
+        '@jovotech/cli-core',
       );
     }
   }

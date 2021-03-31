@@ -12,10 +12,10 @@ import {
   promptListForProjectId,
   promptOverwrite,
   Task,
-} from 'jovo-cli-core';
-import { GetEvents } from 'jovo-cli-command-get';
-import { BuildEvents } from 'jovo-cli-command-build';
-import { FileBuilder, FileObject } from 'jovo-filebuilder';
+} from '@jovotech/cli-core';
+import { GetEvents } from '@jovotech/cli-command-get';
+import { BuildEvents } from '@jovotech/cli-command-build';
+import { FileBuilder, FileObject } from '@jovotech/filebuilder';
 
 import * as smapi from '../smapi';
 import {

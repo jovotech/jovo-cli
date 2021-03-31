@@ -2,7 +2,7 @@ import { createWriteStream, existsSync, mkdirSync, symlinkSync, unlinkSync, Writ
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import AdmZip from 'adm-zip';
 import { join as joinPaths, resolve } from 'path';
-import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from 'jovo-cli-core';
+import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
 
 export * from './Prompts';
@@ -44,7 +44,7 @@ export async function downloadAndExtract(
             const zip: AdmZip = new AdmZip(pathToZip);
             zip.extractAllTo(projectPath, true);
           } catch (error) {
-            return reject(new JovoCliError(error.message, 'jovo-cli-command-new'));
+            return reject(new JovoCliError(error.message, '@jovotech/cli-command-new'));
           } finally {
             // Delete .zip file.
             unlinkSync(pathToZip);
@@ -55,10 +55,10 @@ export async function downloadAndExtract(
       }
 
       if (res.status === 404) {
-        return reject(new JovoCliError('Could not find template.', 'jovo-cli-command-new'));
+        return reject(new JovoCliError('Could not find template.', '@jovotech/cli-command-new'));
       }
     } catch (error) {
-      return reject(new JovoCliError('Could not download template.', 'jovo-cli-command-new'));
+      return reject(new JovoCliError('Could not download template.', '@jovotech/cli-command-new'));
     }
   });
 }
@@ -67,7 +67,7 @@ export async function runNpmInstall(projectPath: string) {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
-    throw new JovoCliError(error.message, 'jovo-cli-command-new');
+    throw new JovoCliError(error.message, '@jovotech/cli-command-new');
   }
 }
 
@@ -229,5 +229,5 @@ export async function linkPlugins(projectPath: string = '') {
     }
   }
 
-  await execAsync('npm link @jovotech/cli/core', { cwd: projectPath });
+  await execAsync('npm link @jovotech/cli-core', { cwd: projectPath });
 }

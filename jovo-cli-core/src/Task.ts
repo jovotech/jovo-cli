@@ -19,7 +19,7 @@ export class Task {
     if (!Array.isArray(this.action)) {
       throw new JovoCliError(
         "Can't push Task instance if the current Task is a function.",
-        'jovo-cli-core',
+        '@jovotech/cli-core',
         'Consider converting the provided function to a Task instance.',
       );
     }

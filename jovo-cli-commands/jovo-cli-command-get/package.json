@@ -1,5 +1,5 @@
 {
-  "name": "jovo-cli-command-get",
+  "name": "@jovotech/cli-command-get",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@oclif/command": "^1.8.0",
-    "jovo-cli-core": "^1.0.0"
+    "@jovotech/cli-core": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

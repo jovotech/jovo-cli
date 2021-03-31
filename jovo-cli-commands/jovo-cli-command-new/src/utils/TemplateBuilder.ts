@@ -9,7 +9,7 @@ import {
   JovoCliError,
   MarketplacePlugin,
   ProjectProperties,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { insert } from '.';
 
 export async function build(props: ProjectProperties) {

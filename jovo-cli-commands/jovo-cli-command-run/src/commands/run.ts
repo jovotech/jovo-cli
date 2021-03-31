@@ -15,7 +15,7 @@ import {
   Project,
   Task,
   flags,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
 import { ChildProcess, spawn } from 'child_process';
 

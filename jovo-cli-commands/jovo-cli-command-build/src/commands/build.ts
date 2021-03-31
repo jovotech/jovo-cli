@@ -14,7 +14,7 @@ import {
   Emitter,
   JovoCliPluginConfig,
   flags,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();

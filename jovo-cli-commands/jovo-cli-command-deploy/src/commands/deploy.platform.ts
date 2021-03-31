@@ -14,7 +14,7 @@ import {
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
 

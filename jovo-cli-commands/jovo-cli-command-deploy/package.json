@@ -1,5 +1,5 @@
 {
-  "name": "jovo-cli-command-deploy",
+  "name": "@jovotech/cli-command-deploy",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "chalk": "^4.1.0",
-    "jovo-cli-core": "^1.0.0"
+    "@jovotech/cli-core": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

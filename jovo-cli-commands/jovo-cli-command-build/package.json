@@ -1,5 +1,5 @@
 {
-  "name": "jovo-cli-command-build",
+  "name": "@jovotech/cli-command-build",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
@@ -14,7 +14,7 @@
     "@oclif/test": "^1.2.8",
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
-    "jovo-cli-core": "^1.0.0",
+    "@jovotech/cli-core": "^1.0.0",
     "listr": "^0.14.3",
     "node-emoji": "^1.10.0",
     "parse-json": "^5.1.0",

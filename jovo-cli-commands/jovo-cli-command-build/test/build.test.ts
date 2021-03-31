@@ -1,6 +1,6 @@
 import { spawn, spawnSync, SpawnSyncReturns } from 'child_process';
 import { mkdirSync } from 'fs';
-import { deleteFolderRecursive } from 'jovo-cli-core';
+import { deleteFolderRecursive } from '@jovotech/cli-core';
 import { join as joinPaths } from 'path';
 import rimraf from 'rimraf';
 import * as cli from 'cli';

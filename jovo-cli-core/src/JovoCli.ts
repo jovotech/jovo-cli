@@ -51,7 +51,7 @@ export class JovoCli {
     } else {
       throw new JovoCliError(
         `Project could not be instantiated for ${this.$projectPath}`,
-        'jovo-cli-core',
+        '@jovotech/cli-core',
       );
     }
   }

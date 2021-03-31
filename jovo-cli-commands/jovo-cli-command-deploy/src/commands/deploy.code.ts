@@ -1,5 +1,5 @@
 import { Input as InputFlags } from '@oclif/command/lib/flags';
-import { flags, JovoCli, PluginCommand } from 'jovo-cli-core';
+import { flags, JovoCli, PluginCommand } from '@jovotech/cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
 

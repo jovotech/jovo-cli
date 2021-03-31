@@ -8,7 +8,7 @@ import {
   JovoCliPlugin,
   PluginCommand,
   PluginHook,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 
 export class Collector extends Plugin {
   get topics() {

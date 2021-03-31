@@ -11,9 +11,9 @@ import {
   printStage,
   ROCKET,
   Task,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from 'jovo-cli-command-deploy';
+import { DeployPlatformEvents, DeployPlatformPluginContext } from '@jovotech/cli-command-deploy';
 
 import * as smapi from '../smapi';
 import {

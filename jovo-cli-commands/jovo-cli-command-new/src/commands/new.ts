@@ -22,7 +22,7 @@ import {
   STAR,
   Task,
   WRENCH,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync } from 'fs';
 
@@ -153,7 +153,7 @@ export class New extends PluginCommand<NewEvents> {
           throw error;
         }
 
-        throw new JovoCliError(error.message, 'jovo-cli-command-new');
+        throw new JovoCliError(error.message, '@jovotech/cli-command-new');
       }
     } else if (flags.preset) {
       preset = jovo.$userConfig.getPreset(flags.preset);
@@ -182,7 +182,7 @@ export class New extends PluginCommand<NewEvents> {
     if (!context.projectName) {
       throw new JovoCliError(
         'Please provide a directory.',
-        'jovo-cli-command-new',
+        '@jovotech/cli-command-new',
         'For more information, run "jovo new --help".',
       );
     }

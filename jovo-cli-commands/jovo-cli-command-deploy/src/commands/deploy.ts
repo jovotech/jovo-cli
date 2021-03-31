@@ -5,7 +5,7 @@ import {
   PluginCommand,
   printSubHeadline,
   TARGET_ALL,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { DeployPlatformEvents, DeployPlatformPluginContext } from './deploy.platform';
 
 const jovo: JovoCli = JovoCli.getInstance();

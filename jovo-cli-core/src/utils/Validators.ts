@@ -10,7 +10,7 @@ export function validateLocale(locale?: string) {
   if (locale && !localeRegexp.test(locale)) {
     throw new JovoCliError(
       `Locale ${locale} is not valid.`,
-      'jovo-cli-core',
+      '@jovotech/cli-core',
       'Valid locales are en, en-US, ...',
     );
   }

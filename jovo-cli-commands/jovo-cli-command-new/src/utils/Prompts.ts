@@ -7,7 +7,7 @@ import {
   ProjectProperties,
   prompt,
   validateLocale,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
 

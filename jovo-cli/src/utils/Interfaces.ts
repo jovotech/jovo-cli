@@ -1,5 +1,5 @@
 import { Command } from '@oclif/config';
-import { DefaultEvents, Emitter } from 'jovo-cli-core';
+import { DefaultEvents, Emitter } from '@jovotech/cli-core';
 
 export interface CommandClass {
   id: string;

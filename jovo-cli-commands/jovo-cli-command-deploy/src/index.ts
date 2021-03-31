@@ -1,4 +1,4 @@
-import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
+import { JovoCliPlugin, JovoCliPluginType } from '@jovotech/cli-core';
 import { Deploy } from './commands/deploy';
 import { DeployCode } from './commands/deploy.code';
 import { DeployPlatform } from './commands/deploy.platform';

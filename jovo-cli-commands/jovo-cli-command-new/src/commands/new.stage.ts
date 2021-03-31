@@ -18,7 +18,7 @@ import {
   Task,
   wait,
   WRENCH,
-} from 'jovo-cli-core';
+} from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 
 import {

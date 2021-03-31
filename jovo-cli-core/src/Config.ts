@@ -54,7 +54,7 @@ export class Config {
             throw new JovoCliError(
               `Plugin ${plugin} is not an instance of JovoCliPlugin.`,
               'JovoCliCore',
-              'Make sure your plugin inherits JovoCliPlugin provided by jovo-cli-core.',
+              'Make sure your plugin inherits JovoCliPlugin provided by @jovotech/cli-core.',
             );
           }
 
@@ -83,7 +83,7 @@ export class Config {
     } catch (error) {
       throw new JovoCliError(
         'Could not load project configuration.',
-        'jovo-cli-core',
+        '@jovotech/cli-core',
         error.message,
       );
     }

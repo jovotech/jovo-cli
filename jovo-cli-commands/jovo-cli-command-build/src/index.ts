@@ -1,4 +1,4 @@
-import { JovoCliPlugin, JovoCliPluginType } from 'jovo-cli-core';
+import { JovoCliPlugin, JovoCliPluginType } from '@jovotech/cli-core';
 import { Build } from './commands';
 
 export * from './commands';

@@ -1,5 +1,5 @@
 {
-  "name": "jovo-cli-core",
+  "name": "@jovotech/cli-core",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/src/index.js",

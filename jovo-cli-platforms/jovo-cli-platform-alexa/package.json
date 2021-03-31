@@ -1,20 +1,20 @@
 {
-  "name": "jovo-cli-platform-alexa",
+  "name": "@jovotech/platform-alexa",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "tsc": "tsc",
-    "link": "npm link jovo-filebuilder"
+    "link": "node bin/link && npm link @jovotech/filebuilder"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
-    "jovo-cli-command-build": "^1.0.0",
-    "jovo-cli-command-deploy": "^1.0.0",
-    "jovo-cli-command-get": "^1.0.0",
-    "jovo-cli-core": "^1.0.0",
+    "@jovotech/cli-command-build": "^1.0.0",
+    "@jovotech/cli-command-deploy": "^1.0.0",
+    "@jovotech/cli-command-get": "^1.0.0",
+    "@jovotech/cli-core": "^1.0.0",
     "jovo-model": "^3.0.1",
     "jovo-model-alexa": "^3.0.1",
     "lodash.get": "^4.4.2",
