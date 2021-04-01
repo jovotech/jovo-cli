@@ -67,7 +67,10 @@ export async function runNpmInstall(projectPath: string) {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
-    throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
+    // Suppress NPM warnings.
+    if (!error.stderr.includes('WARN')) {
+      throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
+    }
   }
 }
 
