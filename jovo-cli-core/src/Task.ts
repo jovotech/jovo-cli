@@ -70,7 +70,7 @@ export class Task {
             output = [output];
           }
           for (const str of output) {
-            console.log(chalk.white.dim(indentString(`>> ${str}`, this.indentation + 2)));
+            console.log(chalk.white.dim(indentString(`${str}`, this.indentation + 2)));
           }
         }
       } catch (error) {

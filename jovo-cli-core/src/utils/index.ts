@@ -24,13 +24,17 @@ export function execAsync(cmd: string, options: ExecOptions = {}): Promise<strin
   return new Promise((resolve, reject) => {
     exec(cmd, options, (error, stdout, stderr) => {
       if (error) {
-        return reject(error);
-      }
-      if (stderr && !stdout) {
-        return reject(stderr);
-      }
+        reject(error);
+      } else if (stderr) {
+        if (stdout) {
+          stderr = stderr + stdout;
+        }
 
-      resolve(stdout);
+        reject(stderr);
+      } else {
+        // Resolve only if no error is reported.
+        resolve(stdout);
+      }
     });
   });
 }

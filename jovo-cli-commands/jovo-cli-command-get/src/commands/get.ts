@@ -57,7 +57,7 @@ export class Get extends PluginCommand<GetEvents> {
       description: 'Forces overwrite of existing project.',
     }),
   };
-  static args = [{ name: 'platform', options: Get.availablePlatforms, required: true }];
+  static args = [{ name: 'platform', description: 'Platform to get files from.', options: Get.availablePlatforms, required: true }];
 
   static async install(
     emitter: Emitter<GetEvents>,

@@ -50,7 +50,6 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       char: 'p',
       description: 'Specifies a build platform.',
       options: DeployPlatform.availablePlatforms,
-      multiple: true,
     }),
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
