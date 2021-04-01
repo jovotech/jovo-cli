@@ -9,6 +9,7 @@ The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech
 - [Jovo Filebuilder](https://github.com/rubenaeg/filebuilder)
 - [Template](https://github.com/rubenaeg/jovo-template-dev)
 - [Jovo CLI](https://github.com/rubenaeg/jovo-cli)
+- [Jovo Framework](https://github.com/rubenaeg/jovo-framework)
 
 ---
 
@@ -16,7 +17,9 @@ The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech
   - [Install the Jovo Filebuilder](äinstall-the-jovo-filebuilder)
   - [Download the template for `jovo new`](#download-the-template-for-jovo-new)
   - [Install the Jovo CLI](#install-the-jovo-cli)
+  - [Setup Platform CLI Plugins from the Jovo Framework](#setup-platform-cli-plugins-from-the-jovo-framework)
 - [Usage](#usage)
+- [Troubleshooting](#troubleshooting)
 
 ## Development Setup
 
@@ -34,7 +37,7 @@ $ git clone git@github.com:rubenaeg/filebuilder.git
 $ cd filebuilder/
 
 # Run the NPM script devSetup, which will install dependencies, compile TypeScript and link the package, so it is available globally on your machine.
-$ npm run devSetup
+$ npm run setup:dev
 ```
 
 ### Download the template for `jovo new`
@@ -43,7 +46,7 @@ $ npm run devSetup
 
 ```sh
 # Clone the template. It's important to clone this repo into template/!
-$ git clone git@github.com:rubenaeg/jovo-template-dev.git template
+$ git clone git@github.com:rubenaeg/jovo-template-dev.git
 ```
 
 ### Install the Jovo CLI
@@ -64,6 +67,29 @@ $ git checkout v4
 $ npm run setup:dev
 ```
 
+### Setup Platform CLI Plugins from the Jovo Framework
+
+With v4 of the Jovo CLI, CLI plugins (e.g. for platforms such as Amazon Alexa) sit in their respective folder inside the Jovo Framework. So, to use those plugins, you'll need to download the Jovo Framework and set them up for local use.
+
+```sh
+# Clone the Jovo Framework
+#   with SSH.
+$ git clone git@github.com:rubenaeg/jovo-framework.git
+#   with HTTPS.
+$ git clone https://github.com/rubenaeg/jovo-framework.git
+#   with the GitHub CLI.
+$ gh repo clone rubenaeg/jovo-framework
+
+# Switch directories.
+$ cd jovo-framework
+
+# Switch the current branch.
+$ git checkout v4dev
+
+# Run the NPM script setup:dev, which will install dependencies, compile TypeScript and link all necessary packages.
+$ npm run setup:dev
+```
+
 ## Usage
 
 Once you installed everything, run `jovodev` to confirm everything is working. The output should look similar to this:
@@ -71,3 +97,7 @@ Once you installed everything, run `jovodev` to confirm everything is working. T
 ![Output](./img/jovodev.png)
 
 If you want help with any command, just type `jovodev {COMMAND} --help`.
+
+## Troubleshooting
+
+If the CLI reports that it can't find a command, try deleting your `~/.jovo/config`, as the new Jovo CLI comes with some updates to the configuration structure.
