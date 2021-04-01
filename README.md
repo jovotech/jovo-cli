@@ -30,8 +30,13 @@ To configure the Jovo CLI for development, you'll need to complete a few steps b
 Since the Jovo Filebuilder is not yet registered on NPM, you have to install and link it by yourself.
 
 ```sh
-# Clone the Jovo Filebuilder.
+# Clone the Jovo Filebuilder
+# 	with SSH.
 $ git clone git@github.com:rubenaeg/filebuilder.git
+# 	with HTTPS.
+$ git clone https://github.com/rubenaeg/filebuilder.git
+# 	with the GitHub CLI.
+$ gh repo clone rubenaeg/filebuilder
 
 # Switch directories.
 $ cd filebuilder/
@@ -45,8 +50,13 @@ $ npm run setup:dev
 `jovo new` currently uses a template folder to create new projects from. If you run `jovo new`, it's important that your working directory is the parent directory of the template repo, otherwise the CLI won't find the folder, resulting in an error.
 
 ```sh
-# Clone the template. It's important to clone this repo into template/!
+# Clone the template
+# 	with SSH.
 $ git clone git@github.com:rubenaeg/jovo-template-dev.git
+#		with HTTPS.
+$ git clone https://github.com/rubenaeg/jovo-template-dev.git
+# 	with the GitHub CLI.
+$ gh repo clone rubenaeg/jovo-template-dev
 ```
 
 ### Install the Jovo CLI
@@ -54,8 +64,13 @@ $ git clone git@github.com:rubenaeg/jovo-template-dev.git
 Now that you completed all prerequisites, you can go on and install the Jovo CLI.
 
 ```sh
-# Clone the CLI repository.
+# Clone the Jovo CLI
+# 	with SSH.
 $ git clone git@github.com:rubenaeg/jovo-cli.git
+# 	with HTTPS.
+$ git clone https://github.com/rubenaeg/jovo-cli.git
+# 	with the GitHub CLI.
+$ gh repo clone rubenaeg/jovo-cli
 
 # Switch directories.
 $ cd jovo-cli/
