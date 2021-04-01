@@ -67,7 +67,7 @@ export async function runNpmInstall(projectPath: string) {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
-    throw new JovoCliError(error.message, '@jovotech/cli-command-new');
+    throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
   }
 }
 
@@ -227,5 +227,9 @@ export async function linkPlugins(projectPath: string = '') {
     }
   }
 
-  await execAsync(`npm link ${linkedPackages.join(' ')}`, { cwd: projectPath });
+  try {
+    await execAsync(`npm link ${linkedPackages.join(' ')}`, { cwd: projectPath });
+  } catch (error) {
+    throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
+  }
 }

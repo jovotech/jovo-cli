@@ -6,6 +6,7 @@ import {
   execAsync,
   getPackageVersionsNpm,
   JovoCli,
+  JovoCliError,
   JovoUserConfigFile,
   JOVO_WEBHOOK_URL,
   PackageVersionsNpm,
@@ -19,7 +20,11 @@ import * as JovoWebhookConnector from './JovoWebhookConnector';
  * @param sourceFolder - Source folder.
  */
 export async function compileTypeScriptProject(sourceFolder: string) {
-  await execAsync('npm run tsc', { cwd: sourceFolder });
+  try {
+    await execAsync('npm run tsc', { cwd: sourceFolder });
+  } catch (error) {
+    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run');
+  }
 }
 
 /**
