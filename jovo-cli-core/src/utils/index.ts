@@ -1,4 +1,4 @@
-import { exec, ExecOptions } from 'child_process';
+import { exec, ExecException, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
@@ -20,20 +20,19 @@ export * from './Prints';
  * @param cmd
  * @param options
  */
-export function execAsync(cmd: string, options: ExecOptions = {}): Promise<string> {
+export function execAsync(
+  cmd: string,
+  options: ExecOptions = {},
+): Promise<{ stdout?: string; stderr?: string }> {
   return new Promise((resolve, reject) => {
-    exec(cmd, options, (error, stdout, stderr) => {
+    exec(cmd, options, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
-        reject(error);
+        reject({ stderr: error.message, stdout });
       } else if (stderr) {
-        if (stdout) {
-          stderr = stderr + stdout;
-        }
-
-        reject(stderr);
+        reject({ stderr, stdout });
       } else {
         // Resolve only if no error is reported.
-        resolve(stdout);
+        resolve({ stdout });
       }
     });
   });
