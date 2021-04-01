@@ -22,7 +22,7 @@ export async function build(props: ProjectProperties) {
   const cliPluginsComment: string = '// Add Jovo CLI plugins here.';
   for (const platform of props.platforms as MarketplacePlugin[]) {
     projectConfig = insert(
-      `const { ${platform.cliModule} } = require(\'${platform.package}/cli\');\n`,
+      `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
       projectConfig,
       0,
     );

@@ -199,6 +199,8 @@ export async function linkPlugins(projectPath: string = '') {
     ...Object.keys(packageJson.dependencies),
     ...Object.keys(packageJson.devDependencies),
   ];
+  const linkedPackages: string[] = ['@jovotech/cli-core'];
+
   for (const pkg of dependencies) {
     if (/^jovo-[a-zA-Z\-]*$/.test(pkg)) {
       const marketplacePlugin: MarketplacePlugin | undefined = marketplacePlugins.find(
@@ -216,18 +218,14 @@ export async function linkPlugins(projectPath: string = '') {
 
       // ! Link platforms.
       if (marketplacePlugin.module === 'Alexa') {
-        await execAsync('npm link @jovotech/platform-alexa/cli', {
-          cwd: projectPath,
-        });
+        linkedPackages.push('@jovotech/platform-alexa');
       }
 
       if (marketplacePlugin.module === 'GoogleAssistant') {
-        await execAsync('npm link @jovotech/platform-googleassistantconv/cli', {
-          cwd: projectPath,
-        });
+        linkedPackages.push('@jovotech/platform-googleassistantconv');
       }
     }
   }
 
-  await execAsync('npm link @jovotech/cli-core', { cwd: projectPath });
+  await execAsync(`npm link ${linkedPackages.join(' ')}`, { cwd: projectPath });
 }

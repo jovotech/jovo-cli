@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const { join } = require('path');
-const globalModules = require('global-modules');
 const symlinkDir = require('symlink-dir');
+const { npm } = require('global-dirs');
 
 (async () => {
-    await symlinkDir('.', join(globalModules, '@jovotech/cli-command-run'));
+    await symlinkDir('.', join(npm.packages, '@jovotech', 'cli-command-run'));
 })();

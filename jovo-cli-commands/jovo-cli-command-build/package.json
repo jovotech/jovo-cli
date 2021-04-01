@@ -10,11 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jovotech/cli-core": "^1.0.0",
     "@oclif/command": "^1.8.0",
     "@oclif/test": "^1.2.8",
     "chalk": "^4.1.0",
     "enquirer": "^2.3.6",
-    "@jovotech/cli-core": "^1.0.0",
+    "global-dirs": "^3.0.0",
     "listr": "^0.14.3",
     "node-emoji": "^1.10.0",
     "parse-json": "^5.1.0",

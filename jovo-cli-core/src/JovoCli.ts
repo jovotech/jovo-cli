@@ -1,9 +1,9 @@
 import { existsSync } from 'fs';
 import { join as joinPaths } from 'path';
-import globalNpmModulesPath from 'global-modules';
 import _merge from 'lodash.merge';
 import _get from 'lodash.get';
 import { URL } from 'url';
+import { npm } from 'global-dirs';
 
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { Project } from './Project';
@@ -80,7 +80,7 @@ export class JovoCli {
 
     for (const pluginId of plugins) {
       // Load plugin from global 'node_modules/'.
-      const pluginPath: string = joinPaths(globalNpmModulesPath, pluginId, 'dist', 'index.js');
+      const pluginPath: string = joinPaths(npm.packages, pluginId, 'dist', 'index.js');
 
       // If the plugin does not exist, skip it quietly.
       if (!existsSync(pluginPath)) {

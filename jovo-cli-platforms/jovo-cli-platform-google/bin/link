@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 const { join } = require('path');
-const globalModules = require('global-modules');
 const symlinkDir = require('symlink-dir');
+const { npm } = require('global-dirs');
 
 (async () => {
-  await symlinkDir('.', join(globalModules, '@jovotech/platform-googleassistantconv'));
+    await symlinkDir('.', join(npm.packages, '@jovotech', 'platform-googleassistantconv'));
+    await symlinkDir(join(npm.packages, '@jovotech', 'filebuilder'), join('node_modules', '@jovotech', 'filebuilder'));
 })();
