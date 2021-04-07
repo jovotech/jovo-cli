@@ -1,10 +1,8 @@
 {
   "packages": [
-    "jovo-cli",
-    "jovo-cli-core",
-    "jovo-cli-platforms/*",
-    "jovo-cli-commands/*",
-    "jovo-cli-integrations/*"
+    "cli",
+    "core",
+    "commands/*"
   ],
   "version": "0.0.0"
 }
