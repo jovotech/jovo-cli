@@ -3,6 +3,8 @@ import { flags, JovoCli, PluginCommand } from '@jovotech/cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
+export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.deploy:code';
+
 export class DeployCode extends PluginCommand {
   static id: string = 'deploy:code';
   static description: string = 'Deploys project code.';

@@ -1,10 +1,16 @@
-import { PluginConfig, PluginType } from './utils';
+import { Plugin } from './Plugin';
+import { PluginConfig, PluginContext, PluginType } from './utils';
 
 export abstract class JovoCliPlugin {
-  abstract type: PluginType;
-  abstract id: string;
+  abstract readonly type: PluginType;
+  abstract readonly id: string;
 
-  constructor(readonly config: PluginConfig = {}) {}
+  readonly config: PluginConfig;
+  readonly supportedLocales: string[] = [];
+
+  constructor(config: PluginConfig = {}) {
+    this.config = config;
+  }
 
   getCommands(): any[] {
     return [];
@@ -12,5 +18,11 @@ export abstract class JovoCliPlugin {
 
   getHooks(): any[] {
     return [];
+  }
+
+  setPluginContext(context: PluginContext) {
+    for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
+      (plugin as typeof Plugin).prototype['$context'] = context;
+    }
   }
 }

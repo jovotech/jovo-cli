@@ -10,7 +10,7 @@ import { Project } from './Project';
 import { JovoCliError } from './JovoCliError';
 import { JovoUserConfig } from './JovoUserConfig';
 import { Config } from './Config';
-import { PluginConfig, PluginType } from './utils/Interfaces';
+import { PluginConfig, PluginContext, PluginType } from './utils/Interfaces';
 import { JOVO_WEBHOOK_URL } from './utils/Constants';
 
 export class JovoCli {
@@ -87,13 +87,8 @@ export class JovoCli {
         continue;
       }
 
-      const pluginConfig: PluginConfig = {
-        pluginId,
-        pluginType: 'command',
-      };
-
       // ToDo: Possible to pass config via project configuration?
-      const plugin: JovoCliPlugin = new (require(pluginPath).default)(pluginConfig);
+      const plugin: JovoCliPlugin = new (require(pluginPath).default)();
 
       globalPlugins.push(plugin);
     }
@@ -112,6 +107,16 @@ export class JovoCli {
     }
 
     return this.cliPlugins;
+  }
+
+  /**
+   * Passes a deep copy without reference of the provided context to each CLI plugin.
+   * @param context
+   */
+  setPluginContext(context: PluginContext) {
+    for (const plugin of this.cliPlugins) {
+      plugin.setPluginContext(Object.assign({}, context));
+    }
   }
 
   getPluginsWithType(type: PluginType): JovoCliPlugin[] {

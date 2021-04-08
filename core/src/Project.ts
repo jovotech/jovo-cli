@@ -106,7 +106,10 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(`Could not find model file for locale: ${locale}`, '@jovotech/cli-core');
+        throw new JovoCliError(
+          `Could not find model file for locale: ${locale}`,
+          '@jovotech/cli-core',
+        );
       }
 
       throw new JovoCliError(error.message, '@jovotech/cli-core');
@@ -250,15 +253,11 @@ export class Project {
     const projectPlugins: JovoCliPlugin[] =
       (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
-    // ToDo: Check if plugin is instance of JovoCliPlugin.
     for (const plugin of projectPlugins) {
-      // Get plugin id, name and type from plugin instance and merge them into plugin config.
-      const pluginConfig: PluginConfig = {
-        pluginId: plugin.id,
-        pluginName: plugin.constructor.name,
-        pluginType: plugin.type,
-      };
-      _merge(plugin.config, pluginConfig);
+      if (!(plugin instanceof JovoCliPlugin)) {
+        throw new JovoCliError(`${plugin} is not a JovoCliPlugin.`, 'JovoCliCore');
+      }
+
       plugins.push(plugin);
     }
     return plugins;

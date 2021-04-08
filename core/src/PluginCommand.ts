@@ -3,10 +3,11 @@ import * as Config from '@oclif/config';
 import _get from 'lodash.get';
 import { Mixin } from 'ts-mixer';
 
-import { EventHandler } from './EventHandler';
+import { Plugin } from './Plugin';
 import { Emitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
 import { ActionSet, DefaultEvents, Events, PluginConfig } from './utils/Interfaces';
+import { JovoCliPlugin } from './JovoCliPlugin';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -19,12 +20,11 @@ class OclifCommand extends Command {
 }
 
 export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mixin(
-  EventHandler,
+  Plugin,
   OclifCommand,
 ) {
-  protected actionSet!: ActionSet<T & DefaultEvents>;
-  protected $emitter!: Emitter<T & DefaultEvents>;
-  protected $config!: PluginConfig;
+  protected actionSet!: ActionSet<T | DefaultEvents>;
+  protected $emitter!: Emitter<T | DefaultEvents>;
 
   /**
    * Loads command into CLI.
@@ -40,10 +40,11 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    * @param config - The command plugins config.
    */
   static async install(
-    emitter: Emitter<Events>,
+    plugin: JovoCliPlugin,
+    emitter: Emitter,
     config: PluginConfig,
   ): Promise<Config.Command.Plugin> {
-    super.install(emitter, config);
+    super.install(plugin, emitter, config);
 
     return (this as any) as Config.Command.Plugin;
   }

@@ -18,6 +18,7 @@ import {
   Task,
   wait,
   WRENCH,
+  JovoCli,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 
@@ -31,11 +32,7 @@ import {
 } from '../utils';
 import latestVersion from 'latest-version';
 
-export interface NewStageEvents {
-  'before.new:stage': PluginContext;
-  'new:stage': PluginContext;
-  'after.new:stage': PluginContext;
-}
+export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage';
 
 export class NewStage extends PluginCommand<NewStageEvents> {
   static id: string = 'new:stage';
@@ -65,13 +62,13 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     };
   }
 
-  async checkForExistingStage(context: PluginContext) {
-    const appFileName: string = `app.${context.args.stage}.ts`;
+  async checkForExistingStage() {
+    const appFileName: string = `app.${this.$context.args.stage}.ts`;
 
-    if (existsSync(joinPaths('src', appFileName)) && !context.flags.overwrite) {
+    if (existsSync(joinPaths('src', appFileName)) && !this.$context.flags.overwrite) {
       const { overwrite } = await promptOverwrite(
         `Stage ${printHighlight(
-          context.args.stage,
+          this.$context.args.stage,
         )} already exists. Do you want to overwrite it's files?`,
       );
 
@@ -81,7 +78,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     }
   }
 
-  async createNewStage(context: PluginContext) {
+  async createNewStage() {
     const servers: prompt.Choice[] = [
       {
         title: 'Express',
@@ -134,7 +131,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
       stagedApp = insert(`\nexport * from './${serverFileName}';\n`, stagedApp, stagedApp.length);
 
-      writeFileSync(joinPaths('src', `app.${context.args.stage}.ts`), stagedApp);
+      writeFileSync(joinPaths('src', `app.${this.$context.args.stage}.ts`), stagedApp);
       await wait(500);
     });
 
@@ -161,24 +158,22 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     console.log(`\n jovo new:stage: ${NewStage.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage\n'));
 
+    const jovo: JovoCli = JovoCli.getInstance();
     const context: PluginContext = {
       command: NewStage.id,
-      platforms: [],
-      locales: {},
+      platforms: jovo.getPlatforms(),
+      locales: jovo.$project!.getLocales(),
       flags,
       args,
     };
+    jovo.setPluginContext(context);
 
-    await this.$emitter.run('before.new:stage', context);
-    await this.$emitter.run('new:stage', context);
-    await this.$emitter.run('after.new:stage', context);
+    await this.$emitter.run('before.new:stage');
+    await this.$emitter.run('new:stage');
+    await this.$emitter.run('after.new:stage');
 
     console.log();
     console.log(`${SPARKLES} Successfully created a new stage. ${SPARKLES}`);
     console.log();
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }

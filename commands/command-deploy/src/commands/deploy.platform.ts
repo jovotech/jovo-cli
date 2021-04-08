@@ -14,8 +14,8 @@ import {
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
-  localeReducer,
 } from '@jovotech/cli-core';
+import DeployCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -24,11 +24,10 @@ export interface DeployPlatformPluginContext extends PluginContext {
   src: string;
 }
 
-export interface DeployPlatformEvents {
-  'before.deploy:platform': DeployPlatformPluginContext;
-  'deploy:platform': DeployPlatformPluginContext;
-  'after.deploy:platform': DeployPlatformPluginContext;
-}
+export type DeployPlatformEvents =
+  | 'before.deploy:platform'
+  | 'deploy:platform'
+  | 'after.deploy:platform';
 
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id: string = 'deploy:platform';
@@ -70,12 +69,13 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static args = [];
 
   static async install(
+    plugin: DeployCommand,
     emitter: Emitter<DeployPlatformEvents>,
     config: PluginConfig,
   ): Promise<Config.Command.Plugin> {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...jovo.getPlatforms());
-    return super.install(emitter, config);
+    return super.install(plugin, emitter, config);
   }
 
   install() {
@@ -88,7 +88,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     if (!existsSync(jovo.$project!.getBuildPath())) {
       throw new JovoCliError(
         "Couldn't find a platform folder.",
-        this.$config.pluginName!,
+        this.$plugin.constructor.name,
         'Please use "jovo build" to create platform-specific files.',
       );
     }
@@ -106,17 +106,18 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
     const context: DeployPlatformPluginContext = {
       command: DeployPlatform.id,
-      platforms: flags.platform ? [...flags.platform] : jovo.getPlatforms(),
-      locales: (flags.locale || jovo.$project!.getLocales()).reduce(localeReducer, {}),
+      platforms: flags.platform || jovo.getPlatforms(),
+      locales: flags.locale || jovo.$project!.getLocales(),
       target: flags.target,
       src: flags.src || jovo.$project!.getBuildDirectory(),
       flags,
       args,
     };
+    jovo.setPluginContext(context);
 
-    await this.$emitter.run('before.deploy:platform', context);
-    await this.$emitter.run('deploy:platform', context);
-    await this.$emitter.run('after.deploy:platform', context);
+    await this.$emitter.run('before.deploy:platform');
+    await this.$emitter.run('deploy:platform');
+    await this.$emitter.run('after.deploy:platform');
 
     console.log();
     console.log('  Platform deployment completed.');

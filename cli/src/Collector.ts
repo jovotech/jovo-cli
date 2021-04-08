@@ -39,7 +39,7 @@ export class Collector extends Plugin {
         const pluginCommands: typeof PluginCommand[] = plugin.getCommands();
 
         for (const pluginCommand of pluginCommands) {
-          const command = await pluginCommand.install(emitter, plugin.config);
+          const command = await pluginCommand.install(plugin, emitter, plugin.config);
 
           // Move the command currently being executed to the beginning.
           if (pluginCommand.id === commandId) {
@@ -53,15 +53,13 @@ export class Collector extends Plugin {
         const pluginHooks: typeof PluginHook[] = plugin.getHooks();
 
         for (const pluginHook of pluginHooks) {
-          pluginHook.install(emitter, plugin.config);
+          pluginHook.install(plugin, emitter, plugin.config);
         }
       }
 
       // Load hooks from project configuration.
       if (jovo.isInProjectDirectory()) {
-        const hooks: ConfigHooks = jovo.$project!.$config.getParameter(
-          'hooks',
-        ) as ConfigHooks;
+        const hooks: ConfigHooks = jovo.$project!.$config.getParameter('hooks') as ConfigHooks;
         if (hooks) {
           for (const [eventKey, events] of Object.entries(hooks)) {
             for (const event of events) {
@@ -80,7 +78,6 @@ export class Collector extends Plugin {
       const { id: command, flags, args } = this.commands[0];
       await emitter.run('install', {
         command,
-        // @ts-ignore
         flags,
         args,
       });

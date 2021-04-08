@@ -7,7 +7,7 @@ import _merge from 'lodash.merge';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
-import { LocaleMap, PackageVersions, PackageVersionsNpm, PluginContext } from './Interfaces';
+import { PackageVersions, PackageVersionsNpm } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -228,46 +228,4 @@ export function mergeArrayCustomizer(target: any[], source: any[]) {
   if (Array.isArray(target) && Array.isArray(source)) {
     return target.concat(source);
   }
-}
-
-/**
- * Reducer for Array.prototype.reduce() to map implicit locales to a LocaleMap.
- * If some locales are not mapped explicitly by the user, they still need to be included in the LocaleMap.
- * This function does this automatically.
- * @param localeMap - Map of resolved model locales.
- * @param locale - Current locale.
- */
-export function localeReducer(localeMap: LocaleMap, locale: string): LocaleMap {
-  localeMap[locale] = [locale];
-  return localeMap;
-}
-
-/**
- * Resolves model locales to their respective build locales.
- * @param supportedLocales - Array of platform-specific supported locales.
- * @param context - Current plugin context.
- */
-export function resolveLocales(
-  locales: LocaleMap = {},
-  supportedLocales: string[],
-  context: PluginContext,
-) {
-  for (const [modelLocale, resolvedLocales] of Object.entries(locales)) {
-    // Check if resolvedLocales includes glob patterns such as en-*.
-    const globPattern: string | undefined = (resolvedLocales as string[]).find((locale) =>
-      /[a-zA-Z]{2}-\*/.test(locale),
-    );
-    if (globPattern) {
-      // Transform glob pattern to generic locale, en-* -> en.
-      const genericLocale: string = globPattern.replace('-*', '');
-      // Get every matching locale for the provided generic locale.
-      const availableLocales: string[] = supportedLocales.filter((locale) =>
-        locale.includes(genericLocale),
-      );
-      locales[modelLocale] = availableLocales;
-      continue;
-    }
-  }
-
-  _merge(context.locales, locales);
 }

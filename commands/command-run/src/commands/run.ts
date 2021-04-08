@@ -12,18 +12,13 @@ import {
   PluginContext,
   PackageVersionsNpm,
   PluginCommand,
-  Project,
   Task,
   flags,
-  localeReducer,
 } from '@jovotech/cli-core';
 import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
 import { ChildProcess, spawn } from 'child_process';
 
-export interface RunEvents {
-  'before.run': PluginContext;
-  'run': PluginContext;
-}
+export type RunEvents = 'before.run' | 'run';
 
 export class Run extends PluginCommand<RunEvents> {
   static id: string = 'run';
@@ -103,16 +98,17 @@ export class Run extends PluginCommand<RunEvents> {
     const context: PluginContext = {
       command: Run.id,
       platforms: jovo.getPlatforms(),
-      locales: (flags.locale || jovo.$project!.getLocales()).reduce(localeReducer, {}),
+      locales: flags.locale || jovo.$project!.getLocales(),
       flags,
       args,
     };
+    jovo.setPluginContext(context);
 
-    await this.$emitter!.run('before.run', context);
+    await this.$emitter!.run('before.run');
 
     if (flags['webhook-only']) {
       instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout });
-      await this.$emitter!.run('run', context);
+      await this.$emitter!.run('run');
     } else {
       const srcDir: string = jovo.$project!.$config.getParameter('src') as string;
 
@@ -222,7 +218,7 @@ export class Run extends PluginCommand<RunEvents> {
 
       instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout }, nodeProcess);
 
-      await this.$emitter!.run('run', context);
+      await this.$emitter!.run('run');
 
       // Pipe everyhing the node process prints to output stream.
       nodeProcess.stdout!.pipe(process.stdout);
@@ -234,9 +230,5 @@ export class Run extends PluginCommand<RunEvents> {
         nodeProcess.kill();
       });
     }
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }

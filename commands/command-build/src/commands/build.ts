@@ -1,9 +1,8 @@
 import * as Config from '@oclif/config';
 import { Input as InputFlags } from '@oclif/command/lib/flags';
-import { DeployEvents, DeployPluginContext } from '@jovotech/cli-command-deploy';
+import { DeployEvents } from '@jovotech/cli-command-deploy';
 import { existsSync, mkdirSync } from 'fs';
 import {
-  validateLocale,
   PluginContext,
   checkForProjectDirectory,
   Task,
@@ -15,22 +14,17 @@ import {
   Emitter,
   PluginConfig,
   flags,
-  TARGET_ALL,
-  LocaleMap,
-  localeReducer,
+  JovoCliError,
+  JovoCliPlugin,
 } from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
+import BuildCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export interface BuildEvents {
-  'before.build': PluginContext;
-  'build': PluginContext;
-  'after.build': PluginContext;
-  'reverse.build': PluginContext;
-}
+export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
 
-export class Build extends PluginCommand<BuildEvents & DeployEvents> {
+export class Build extends PluginCommand<BuildEvents | DeployEvents> {
   static id: string = 'build';
 
   static description: string =
@@ -48,6 +42,7 @@ export class Build extends PluginCommand<BuildEvents & DeployEvents> {
     deploy: flags.boolean({
       char: 'd',
       description: 'Runs deploy after build.',
+      exclusive: ['reverse'],
     }),
     force: flags.boolean({
       description: 'Forces overwrite of existing project for reverse build.',
@@ -67,6 +62,7 @@ export class Build extends PluginCommand<BuildEvents & DeployEvents> {
     reverse: flags.boolean({
       char: 'r',
       description: 'Builds Jovo language model from platform specific language model.',
+      exclusive: ['deploy'],
     }),
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
@@ -80,35 +76,22 @@ export class Build extends PluginCommand<BuildEvents & DeployEvents> {
   static args = [];
 
   static async install(
+    plugin: BuildCommand,
     emitter: Emitter<BuildEvents>,
     config: PluginConfig,
   ): Promise<Config.Command.Plugin> {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...jovo.getPlatforms());
-    return super.install(emitter, config);
+    return super.install(plugin, emitter, config);
   }
 
   install() {
     this.actionSet = {
-      'before.build': [this.beforeBuild.bind(this)],
-      'build': [this.build.bind(this)],
+      build: [this.build.bind(this)],
     };
   }
 
-  async beforeBuild(context: PluginContext) {
-    // If --reverse flag has been set and more than one platform has been specified, prompt for one.
-    if (context.flags.reverse) {
-      if (context.platforms.length !== 1) {
-        const { platform } = await promptForPlatform(jovo.getPlatforms());
-        context.platforms = [platform];
-      }
-
-      await this.$emitter!.run('reverse.build', context);
-      this.uninstall();
-    }
-  }
-
-  async build(context: PluginContext) {
+  async build() {
     // Create "fake" tasks for more verbose logs.
     const initTask: Task = new Task(`${TADA} Initializing build process`);
 
@@ -116,14 +99,14 @@ export class Build extends PluginCommand<BuildEvents & DeployEvents> {
       'Collecting platform configuration from project.js.',
       async () => {
         await wait(500);
-        return `Platforms: ${context.platforms.join(',')}`;
+        return `Platforms: ${this.$context.platforms.join(',')}`;
       },
     );
     const collectModelsTask: Task = new Task(
       `Collecting Jovo language model files from ./${jovo.$project!.getModelsDirectory()} folder.`,
       async () => {
         await wait(500);
-        return `Locales: ${Object.keys(context.locales).join(',')}`;
+        return `Locales: ${this.$context.locales.join(',')}`;
       },
     );
 
@@ -149,29 +132,35 @@ export class Build extends PluginCommand<BuildEvents & DeployEvents> {
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
-
     const context: PluginContext = {
       command: Build.id,
-      locales: (flags.locale || jovo.$project!.getLocales()).reduce(localeReducer, {}),
-      platforms: flags.platform ? [...flags.platform] : jovo.getPlatforms(),
+      locales: flags.locale || jovo.$project!.getLocales(),
+      platforms: flags.platform || jovo.getPlatforms(),
       flags,
       args,
     };
+    jovo.setPluginContext(context);
 
-    await this.$emitter.run('before.build', context);
-    await this.$emitter.run('build', context);
-    await this.$emitter.run('after.build', context);
+    // If --reverse flag has been set and more than one platform has been specified, prompt for one.
+    if (flags.reverse) {
+      if (context.platforms.length !== 1) {
+        const { platform } = await promptForPlatform(jovo.getPlatforms());
+        context.platforms = [platform];
+      }
+
+      await this.$emitter!.run('reverse.build');
+      return;
+    }
+
+    await this.$emitter.run('before.build');
+    await this.$emitter.run('build');
+    await this.$emitter.run('after.build');
 
     if (flags.deploy) {
       console.log();
-      const deployContext: DeployPluginContext = {
-        ...context,
-        target: TARGET_ALL,
-        src: jovo.$project!.getBuildDirectory(),
-      };
-      await this.$emitter.run('before.deploy', deployContext);
-      await this.$emitter.run('deploy', deployContext);
-      await this.$emitter.run('after.deploy', deployContext);
+      await this.$emitter.run('before.deploy');
+      await this.$emitter.run('deploy');
+      await this.$emitter.run('after.deploy');
     }
 
     console.log();

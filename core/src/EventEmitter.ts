@@ -2,22 +2,22 @@ import { EventEmitter } from 'events';
 import { Events } from './utils/Interfaces';
 
 export declare interface Emitter<T extends Events = Events> {
-  on<K extends keyof T>(event: K, listener: (v: T[K]) => void): this;
-  off<K extends keyof T>(event: K, listener: (v: T[K]) => void): this;
+  on(event: T, listener: (...v: any[]) => void): this;
+  off(event: T, listener: (...v: any[]) => void): this;
 }
 
-export class Emitter<T extends Events> extends EventEmitter {
+export class Emitter<T extends Events = Events> extends EventEmitter {
   /**
    * Calls each listener registered for event, in order of registration.
    * @param event - The event.
    * @param args - Possible arguments that get passed to all listener functions.
    * @deprecated Please use the async function run() instead.
    */
-  emit<K extends keyof T>(event: K, ...args: T[K][]) {
-    return super.emit(event as string, ...args);
+  emit(event: T, ...args: any[]) {
+    return super.emit(event, ...args);
   }
 
-  listeners(event: string): Function[] {
+  listeners(event: T): Function[] {
     // @ts-ignore
     const events: Function[] | Function | undefined = this._events[event];
     if (!events) {
@@ -36,8 +36,8 @@ export class Emitter<T extends Events> extends EventEmitter {
    * @param event - The event.
    * @param args - Possible arguments that get passed to all listener functions.
    */
-  async run<K extends keyof T>(event: K, ...args: T[K][]) {
-    const fns: Function[] = this.listeners(event as string).reverse();
+  async run(event: T, ...args: any[]) {
+    const fns: Function[] = this.listeners(event).reverse();
     if (!fns) {
       return false;
     }

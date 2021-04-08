@@ -45,11 +45,7 @@ export interface NewPluginContext
   platforms: MarketplacePlugin[];
 }
 
-export interface NewEvents {
-  'after.new': NewPluginContext;
-}
-
-export class New extends PluginCommand<NewEvents> {
+export class New extends PluginCommand {
   static id: string = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -260,12 +256,5 @@ export class New extends PluginCommand<NewEvents> {
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);
     console.log();
-
-    // ToDo: Load project so plugins can hook into after.new?
-    await this.$emitter!.run('after.new', context);
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }

@@ -11,19 +11,15 @@ import {
   flags,
   Emitter,
   PluginConfig,
-  localeReducer,
 } from '@jovotech/cli-core';
 import { BuildEvents } from '@jovotech/cli-command-build';
+import GetCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export interface GetEvents {
-  'before.get': PluginContext;
-  'get': PluginContext;
-  'after.get': PluginContext;
-}
+export type GetEvents = 'before.get' | 'get' | 'after.get';
 
-export class Get extends PluginCommand<GetEvents & BuildEvents> {
+export class Get extends PluginCommand<BuildEvents | GetEvents> {
   static id: string = 'get';
   static description: string = 'Downloads an existing platform project into the platforms folder.';
   static examples: string[] = [
@@ -69,12 +65,13 @@ export class Get extends PluginCommand<GetEvents & BuildEvents> {
   ];
 
   static async install(
+    plugin: GetCommand,
     emitter: Emitter<GetEvents>,
     config: PluginConfig,
   ): Promise<Config.Command.Plugin> {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...jovo.getPlatforms());
-    return super.install(emitter, config);
+    return super.install(plugin, emitter, config);
   }
 
   install() {
@@ -104,21 +101,18 @@ export class Get extends PluginCommand<GetEvents & BuildEvents> {
     const context: PluginContext = {
       command: Get.id,
       platforms: [args.platform],
-      locales: (flags.locale || jovo.$project!.getLocales()).reduce(localeReducer, {}),
+      locales: flags.locale || jovo.$project!.getLocales(),
       flags,
       args,
     };
+    jovo.setPluginContext(context);
 
-    await this.$emitter!.run('before.get', context);
-    await this.$emitter!.run('get', context);
-    await this.$emitter!.run('after.get', context);
+    await this.$emitter!.run('before.get');
+    await this.$emitter!.run('get');
+    await this.$emitter!.run('after.get');
 
     if (flags.build) {
-      await this.$emitter.run('reverse.build', context);
+      await this.$emitter.run('reverse.build');
     }
-  }
-
-  async catch(error: JovoCliError) {
-    this.error(`There was a problem:\n${error}`);
   }
 }

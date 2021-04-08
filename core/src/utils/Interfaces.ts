@@ -5,12 +5,10 @@ import { JovoCliPlugin } from '../JovoCliPlugin';
 
 // ####### EVENT EMITTER #######
 
-export type Events = {
-  [key in string | symbol]: any;
-};
+export type Events = string;
 
 export type ActionSet<T extends Events = DefaultEvents> = {
-  [K in keyof T]?: Array<(v: T[K]) => void>;
+  [K in T]?: Array<(...v: any[]) => void>;
 };
 
 export interface InstallEventArguments {
@@ -25,21 +23,15 @@ export interface ParseEventArguments {
   args: { [key: string]: string };
 }
 
-export interface DefaultEvents {
-  install: InstallEventArguments;
-  parse: ParseEventArguments;
-}
+export type DefaultEvents = 'install' | 'parse';
 
 // ####### PLUGIN #######
 
 export type PluginType = 'platform' | 'target' | 'command' | '';
 
 export interface PluginConfig {
-  pluginId?: string;
-  pluginName?: string;
-  pluginType?: PluginType;
   files?: any;
-  locales?: LocaleMap;
+  locales?: { [locale: string]: string[] };
 }
 
 export interface ConfigHooks {
@@ -49,13 +41,9 @@ export interface ConfigHooks {
 export interface PluginContext {
   command: string;
   platforms: string[];
-  locales: LocaleMap;
+  locales: string[];
   flags: { [key: string]: string | boolean | string[] };
   args: { [key: string]: string };
-}
-
-export interface LocaleMap {
-  [modelLocale: string]: string[];
 }
 
 // ####### CONFIG #######
