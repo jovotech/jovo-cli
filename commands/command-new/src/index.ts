@@ -1,8 +1,9 @@
 import { JovoCliPlugin, PluginType } from '@jovotech/cli-core';
-import { New } from './commands';
+import { New } from './commands/new';
 import { NewStage } from './commands/new.stage';
 
-export * from './commands';
+export * from './commands/new';
+export * from './commands/new.stage';
 
 export class NewCommand extends JovoCliPlugin {
   id: string = 'new';

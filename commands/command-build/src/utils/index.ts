@@ -1,5 +1,6 @@
 import { prompt } from 'prompts';
 
+
 /**
  * Prompts for the platform to use.
  * @param message - Custom message to use in prompt.

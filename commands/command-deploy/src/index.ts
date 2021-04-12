@@ -1,4 +1,4 @@
-import { JovoCliPlugin, PluginType } from '@jovotech/cli-core';
+import { JovoCliPlugin, PluginCommand, PluginType } from '@jovotech/cli-core';
 import { Deploy } from './commands/deploy';
 import { DeployCode } from './commands/deploy.code';
 import { DeployPlatform } from './commands/deploy.platform';
@@ -11,7 +11,7 @@ export class DeployCommand extends JovoCliPlugin {
   id: string = 'deploy';
   type: PluginType = 'command';
 
-  getCommands() {
+  getCommands(): typeof PluginCommand[] {
     return [Deploy, DeployCode, DeployPlatform];
   }
 }

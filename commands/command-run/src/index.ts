@@ -1,7 +1,7 @@
 import { JovoCliPlugin, PluginType } from '@jovotech/cli-core';
-import { Run } from './commands';
+import { Run } from './commands/run';
 
-export * from './commands';
+export * from './commands/run';
 
 export class RunCommand extends JovoCliPlugin {
   id: string = 'run';

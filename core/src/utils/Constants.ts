@@ -27,6 +27,7 @@ export const ROCKET: string = SUPPORTS_EMOJI ? get('rocket') : '';
 export const WARNING: string = SUPPORTS_EMOJI ? get('warning') : chalk.yellow('[WARN]');
 export const ERROR: string = SUPPORTS_EMOJI ? get('x') : chalk.bgRed('[ERR]');
 export const SPARKLES: string = SUPPORTS_EMOJI ? get('sparkles') : '';
+export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with_hook:') : '';
 
 // ####### TARGETS #######
 export const TARGET_ALL: string = 'all';

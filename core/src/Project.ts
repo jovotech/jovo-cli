@@ -10,7 +10,6 @@ import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './utils/Constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
-import { PluginConfig } from './utils/Interfaces';
 
 export class Project {
   private static instance?: Project;
@@ -255,7 +254,8 @@ export class Project {
 
     for (const plugin of projectPlugins) {
       if (!(plugin instanceof JovoCliPlugin)) {
-        throw new JovoCliError(`${plugin} is not a JovoCliPlugin.`, 'JovoCliCore');
+        // @ts-ignore
+        throw new JovoCliError(`${plugin.constructor.name} is not a JovoCliPlugin.`, 'JovoCliCore');
       }
 
       plugins.push(plugin);
