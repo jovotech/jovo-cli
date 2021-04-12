@@ -1,21 +1,38 @@
 import * as Config from '@oclif/config';
-import { Input } from '@oclif/command/lib/flags';
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+import * as Parser from '@oclif/parser';
 import { existsSync, mkdirSync } from 'fs';
 import {
   JovoCli,
   checkForProjectDirectory,
-  JovoCliError,
   PluginContext,
   PluginCommand,
   printSubHeadline,
   flags,
   Emitter,
   PluginConfig,
+  CliFlags,
+  CliArgs,
+  createTypedArguments,
+  ParseContext,
 } from '@jovotech/cli-core';
 import { BuildEvents } from '@jovotech/cli-command-build';
 import GetCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
+
+export type GetArgs = CliArgs<typeof Get>;
+export type GetFlags = CliFlags<typeof Get>;
+
+export interface ParseContextGet extends ParseContext {
+  args: GetArgs;
+  flags: GetFlags;
+}
+
+export interface GetContext extends PluginContext {
+  flags: CliFlags<typeof Get>;
+  args: CliArgs<typeof Get>;
+}
 
 export type GetEvents = 'before.get' | 'get' | 'after.get';
 
@@ -28,10 +45,11 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
   ];
   // Includes all available platforms, which will be initialized on install().
   static availablePlatforms: string[] = [];
-  static flags: Input<any> = {
+  static flags = {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en|de|etc>',
+      multiple: true,
     }),
     target: flags.string({
       char: 't',
@@ -55,14 +73,14 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
       description: 'Forces overwrite of existing project.',
     }),
   };
-  static args = [
+  static args = createTypedArguments([
     {
       name: 'platform',
       description: 'Platform to get files from.',
       options: Get.availablePlatforms,
       required: true,
     },
-  ];
+  ]);
 
   static async install(
     plugin: GetCommand,
@@ -91,14 +109,14 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
   async run() {
     checkForProjectDirectory();
 
-    const { args, flags } = this.parse(Get);
+    const { args, flags }: Pick<ParseContextGet, 'flags' | 'args'> = this.parse(Get);
 
-    await this.$emitter!.run('parse', { command: Get.id, flags, args });
+    await this.$emitter.run('parse', { command: Get.id, flags, args });
 
     console.log(`\n jovo get: ${Get.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
 
-    const context: PluginContext = {
+    const context: GetContext = {
       command: Get.id,
       platforms: [args.platform],
       locales: flags.locale || jovo.$project!.getLocales(),
@@ -107,9 +125,9 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     };
     jovo.setPluginContext(context);
 
-    await this.$emitter!.run('before.get');
-    await this.$emitter!.run('get');
-    await this.$emitter!.run('after.get');
+    await this.$emitter.run('before.get');
+    await this.$emitter.run('get');
+    await this.$emitter.run('after.get');
 
     if (flags.build) {
       await this.$emitter.run('reverse.build');

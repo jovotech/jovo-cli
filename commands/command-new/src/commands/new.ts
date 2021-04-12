@@ -1,5 +1,5 @@
-import { args as Args } from '@oclif/parser';
-import { Input } from '@oclif/command/lib/flags';
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+import * as Parser from '@oclif/parser';
 import { join as joinPaths, resolve } from 'path';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
@@ -10,7 +10,6 @@ import {
   flags,
   JovoCli,
   JovoCliError,
-  PluginContext,
   Preset,
   MarketplacePlugin,
   PluginCommand,
@@ -22,6 +21,9 @@ import {
   STAR,
   Task,
   WRENCH,
+  CliFlags,
+  CliArgs,
+  createTypedArguments,
 } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync } from 'fs';
@@ -39,12 +41,6 @@ import {
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export interface NewPluginContext
-  extends Omit<PluginContext, 'platforms'>,
-    Omit<ProjectProperties, 'name' | 'key'> {
-  platforms: MarketplacePlugin[];
-}
-
 export class New extends PluginCommand {
   static id: string = 'new';
   // Prints out a description for this command.
@@ -55,7 +51,7 @@ export class New extends PluginCommand {
     'jovo new jovo-example-project --locale de --language typescript',
   ];
   // Defines flags for this command, such as --help.
-  static flags: Input<any> = {
+  static flags = {
     'locale': flags.string({
       char: 'l',
       description: 'Locale of the language model.',
@@ -85,7 +81,7 @@ export class New extends PluginCommand {
     }),
   };
   // Defines arguments that can be passed to the command.
-  static args: Args.Input = [
+  static args = createTypedArguments([
     {
       name: 'directory',
       description: 'Project directory.',
@@ -98,12 +94,12 @@ export class New extends PluginCommand {
         return directory;
       },
     },
-  ];
+  ]);
 
   async run() {
-    const { args, flags } = this.parse(New);
-
-    await this.$emitter!.run('parse', { command: New.id, flags, args });
+    const { args, flags }: { args: CliArgs<typeof New>; flags: CliFlags<typeof New> } = this.parse(
+      New,
+    );
 
     console.log(`\n jovo new: ${New.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
@@ -116,7 +112,6 @@ export class New extends PluginCommand {
 
       try {
         const { selectedPreset } = await promptPreset();
-
         if (selectedPreset === 'manual') {
           // Manually select project properties.
           const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
@@ -155,27 +150,24 @@ export class New extends PluginCommand {
       preset = jovo.$userConfig.getPreset(flags.preset);
     }
 
-    const context: NewPluginContext = {
+    const projectProperties: ProjectProperties = {
       projectName: args.directory,
-      language: flags.language || 'typescript',
+      language: (flags.language as 'javascript' | 'typescript') || 'typescript',
       linter: false,
       unitTesting: false,
-      command: New.id,
       locales: flags.locale || ['en'],
       platforms: [],
-      flags,
-      args,
     };
 
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(context));
+      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(projectProperties));
 
-      _merge(context, contextPreset);
+      _merge(projectProperties, contextPreset);
     }
 
     // Directory is mandatory, so throw an error if omitted.
-    if (!context.projectName) {
+    if (!projectProperties.projectName) {
       throw new JovoCliError(
         'Please provide a directory.',
         '@jovotech/cli-command-new',
@@ -184,18 +176,18 @@ export class New extends PluginCommand {
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
-    if (jovo.hasExistingProject(context.projectName)) {
+    if (jovo.hasExistingProject(projectProperties.projectName)) {
       if (!flags.overwrite) {
         const { overwrite } = await promptOverwrite(
           `The directory ${printHighlight(
-            context.projectName,
+            projectProperties.projectName,
           )} already exists. What would you like to do?`,
         );
         if (overwrite === ANSWER_CANCEL) {
           process.exit();
         }
       }
-      deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
+      deleteFolderRecursive(joinPaths(process.cwd(), projectProperties.projectName));
     }
 
     console.log();
@@ -203,12 +195,12 @@ export class New extends PluginCommand {
     console.log();
 
     const newTask: Task = new Task(
-      `Creating new directory ${printHighlight(context.projectName)}/`,
+      `Creating new directory ${printHighlight(projectProperties.projectName)}/`,
       () => {
-        if (!existsSync(context.projectName)) {
-          mkdirSync(context.projectName);
+        if (!existsSync(projectProperties.projectName)) {
+          mkdirSync(projectProperties.projectName);
         }
-        return joinPaths(jovo.$projectPath, context.projectName);
+        return joinPaths(jovo.$projectPath, projectProperties.projectName);
       },
     );
     await newTask.run();
@@ -232,26 +224,26 @@ export class New extends PluginCommand {
 
       copySync(
         joinPaths(jovo.$projectPath, templatePath),
-        joinPaths(jovo.$projectPath, context.projectName),
+        joinPaths(jovo.$projectPath, projectProperties.projectName),
       );
     });
     await downloadTask.run();
 
     const prepareTask: Task = new Task('Preparing template', async () =>
-      TemplateBuilder.build(context),
+      TemplateBuilder.build(projectProperties),
     );
     await prepareTask.run();
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(jovo.$projectPath, context.projectName));
+        await runNpmInstall(joinPaths(jovo.$projectPath, projectProperties.projectName));
       });
       await installNpmTask.run();
     }
 
     // ! Rename dependencies to fit to the current MVP structure and link project dependencies for local setup.
-    await linkPlugins(resolve(context.projectName));
+    await linkPlugins(resolve(projectProperties.projectName));
 
     console.log();
     console.log(`${STAR} Successfully created your project! ${STAR}`);

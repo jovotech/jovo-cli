@@ -1,5 +1,5 @@
-import { args as Args } from '@oclif/parser';
-import { Input } from '@oclif/command/lib/flags';
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+import * as Parser from '@oclif/parser';
 import { join as joinPaths, resolve } from 'path';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
@@ -7,7 +7,6 @@ import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
   flags,
-  JovoCliError,
   PluginContext,
   PluginCommand,
   printHighlight,
@@ -19,8 +18,13 @@ import {
   wait,
   WRENCH,
   JovoCli,
+  CliFlags,
+  createTypedArguments,
+  CliArgs,
+  ParseContext,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
+import latestVersion from 'latest-version';
 
 import {
   promptPlugins,
@@ -30,7 +34,19 @@ import {
   runNpmInstall,
   linkPlugins,
 } from '../utils';
-import latestVersion from 'latest-version';
+
+export type NewStageArgs = CliArgs<typeof NewStage>;
+export type NewStageFlags = CliFlags<typeof NewStage>;
+
+export interface NewStageContext extends PluginContext {
+  args: NewStageArgs;
+  flags: NewStageFlags;
+}
+
+export interface ParseContextNewStage extends ParseContext {
+  args: NewStageArgs;
+  flags: NewStageFlags;
+}
 
 export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage';
 
@@ -41,19 +57,21 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   // Prints out examples for this command.
   static examples: string[] = [];
   // Defines flags for this command, such as --help.
-  static flags: Input<any> = {
+  static flags = {
     overwrite: flags.boolean({
       description: 'Forces overwriting an existing project.',
     }),
   };
   // Defines arguments that can be passed to the command.
-  static args: Args.Input = [
+  static args = createTypedArguments([
     {
       name: 'stage',
       description: 'Name of the stage.',
       required: true,
     },
-  ];
+  ]);
+
+  $context!: NewStageContext;
 
   install() {
     this.actionSet = {
@@ -151,15 +169,15 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
   async run() {
     checkForProjectDirectory();
-    const { args, flags } = this.parse(NewStage);
+    const { args, flags }: Pick<ParseContextNewStage, 'args' | 'flags'> = this.parse(NewStage);
 
-    await this.$emitter!.run('parse', { command: NewStage.id, flags, args });
+    await this.$emitter.run('parse', { command: NewStage.id, flags, args });
 
     console.log(`\n jovo new:stage: ${NewStage.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();
-    const context: PluginContext = {
+    const context: NewStageContext = {
       command: NewStage.id,
       platforms: jovo.getPlatforms(),
       locales: jovo.$project!.getLocales(),

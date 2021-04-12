@@ -1,14 +1,14 @@
-import { Emitter } from '../src';
+import { Emitter, Events } from '../src';
 
 describe('new Emitter<T>()', () => {
   // * This test tests type safety, thus does not need to be run.
   test.skip('should instantiate the emitter and give type safety', () => {
-    type T = { Foo1: 'Bar1' };
-    type K = { Foo2: 'Bar2' };
-    const emitter: Emitter<T & K> = new Emitter<T & K>();
+    type T = 'Foo1';
+    type K = 'Foo2';
+    const emitter: Emitter<T | K> = new Emitter<T | K>();
 
-    emitter.on('Foo1', (arg: 'Bar1') => {});
-    emitter.on('Foo2', (arg: 'Bar2') => {});
+    emitter.on('Foo1', () => {});
+    emitter.on('Foo2', () => {});
     emitter.off('Foo1', () => {});
     emitter.off('Foo2', () => {});
     emitter.run('Foo1', 'Bar1');

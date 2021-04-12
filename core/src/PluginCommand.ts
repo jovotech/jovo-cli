@@ -1,9 +1,10 @@
 import Command from '@oclif/command';
 import * as Config from '@oclif/config';
+import * as Parser from '@oclif/parser';
 import _get from 'lodash.get';
 import { Mixin } from 'ts-mixer';
 
-import { Plugin } from './Plugin';
+import { PluginComponent } from './PluginComponent';
 import { Emitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
 import { ActionSet, DefaultEvents, Events, PluginConfig } from './utils/Interfaces';
@@ -14,13 +15,15 @@ import { JovoCliPlugin } from './JovoCliPlugin';
  * * Workaround, since mixin() can't support abstract classes.
  */
 class OclifCommand extends Command {
+  static args: Parser.args.Input;
+
   run(): PromiseLike<any> {
     throw new Error('Method not implemented.');
   }
 }
 
 export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mixin(
-  Plugin,
+  PluginComponent,
   OclifCommand,
 ) {
   protected actionSet!: ActionSet<T | DefaultEvents>;

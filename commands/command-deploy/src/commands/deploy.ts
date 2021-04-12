@@ -1,32 +1,26 @@
-import { Input as InputFlags } from '@oclif/command/lib/flags';
 import {
   checkForProjectDirectory,
+  CliFlags,
   JovoCli,
-  JovoCliError,
   PluginCommand,
+  PluginContext,
   printSubHeadline,
-  TARGET_ALL,
 } from '@jovotech/cli-core';
-import { DeployPlatformEvents, DeployPlatformPluginContext } from './deploy.platform';
+import { DeployPlatformEvents } from './deploy.platform';
 import { DeployCodeEvents } from './deploy.code';
 
 const jovo: JovoCli = JovoCli.getInstance();
-
-export interface DeployPluginContext extends DeployPlatformPluginContext {}
 
 export type DeployEvents = 'before.deploy' | 'deploy' | 'after.deploy';
 
 export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | DeployCodeEvents> {
   static id: string = 'deploy';
   static description: string = 'Deploys the project to the voice platform.';
-
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
   ];
-
-  static flags: InputFlags<any> = {};
-
+  static flags = {};
   static args = [];
 
   install() {
@@ -57,18 +51,16 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
 
     const { args, flags } = this.parse(Deploy);
 
-    await this.$emitter!.run('parse', { command: Deploy.id, flags, args });
+    await this.$emitter.run('parse', { command: Deploy.id, flags, args });
 
     console.log(`\n jovo deploy: ${Deploy.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
-    const context: DeployPluginContext = {
+    const context: PluginContext = {
       command: Deploy.id,
-      platforms: flags.platform ? [flags.platform] : jovo.getPlatforms(),
+      platforms: jovo.getPlatforms(),
       locales: jovo.$project!.getLocales(),
-      target: TARGET_ALL,
-      src: jovo.$project!.getBuildDirectory(),
-      flags,
+      flags: flags as CliFlags<any>,
       args,
     };
     jovo.setPluginContext(context);

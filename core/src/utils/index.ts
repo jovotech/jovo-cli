@@ -7,7 +7,7 @@ import _merge from 'lodash.merge';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
-import { PackageVersions, PackageVersionsNpm } from './Interfaces';
+import { CommandArgument, PackageVersions, PackageVersionsNpm, TypeFromArray } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -228,4 +228,15 @@ export function mergeArrayCustomizer(target: any[], source: any[]) {
   if (Array.isArray(target) && Array.isArray(source)) {
     return target.concat(source);
   }
+}
+
+/**
+ * Function to create typed command arguments.
+ * @param args
+ */
+export function createTypedArguments<
+  NAMES extends string[],
+  ARGS extends CommandArgument<TypeFromArray<NAMES>>[]
+>(args: ARGS): TypeFromArray<ARGS>[] {
+  return args;
 }

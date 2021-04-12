@@ -1,4 +1,6 @@
-import { Plugin } from './Plugin';
+import { PluginCommand } from './PluginCommand';
+import { PluginComponent } from './PluginComponent';
+import { PluginHook } from './PluginHook';
 import { PluginConfig, PluginContext, PluginType } from './utils';
 
 export abstract class JovoCliPlugin {
@@ -12,17 +14,17 @@ export abstract class JovoCliPlugin {
     this.config = config;
   }
 
-  getCommands(): any[] {
+  getCommands(): typeof PluginCommand[] {
     return [];
   }
 
-  getHooks(): any[] {
+  getHooks(): typeof PluginHook[] {
     return [];
   }
 
   setPluginContext(context: PluginContext) {
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
-      (plugin as typeof Plugin).prototype['$context'] = context;
+      ((plugin as any) as typeof PluginComponent).prototype['$context'] = context;
     }
   }
 }

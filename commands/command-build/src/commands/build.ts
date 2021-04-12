@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config';
-import { Input as InputFlags } from '@oclif/command/lib/flags';
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+import * as Parser from '@oclif/parser';
 import { DeployEvents } from '@jovotech/cli-command-deploy';
 import { existsSync, mkdirSync } from 'fs';
 import {
@@ -14,27 +15,34 @@ import {
   Emitter,
   PluginConfig,
   flags,
-  JovoCliError,
-  JovoCliPlugin,
+  REVERSE_ARROWS,
+  CliFlags,
+  ParseContext,
 } from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
 import BuildCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
+export type BuildFlags = CliFlags<typeof Build>;
+
+export interface BuildContext extends PluginContext {
+  flags: BuildFlags;
+}
+
+export interface ParseContextBuild extends ParseContext {
+  flags: BuildFlags;
+}
+
 export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
 
 export class Build extends PluginCommand<BuildEvents | DeployEvents> {
   static id: string = 'build';
-
   static description: string =
     'Build platform-specific language models based on jovo models folder.';
-
   static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
-
   static availablePlatforms: string[] = [];
-
-  static flags: InputFlags<any> = {
+  static flags = {
     clean: flags.boolean({
       description:
         'Deletes all platform folders and executes a clean build. If --platform is specified, it deletes only the respective platforms folder.',
@@ -132,7 +140,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
-    const context: PluginContext = {
+    const context: BuildContext = {
       command: Build.id,
       locales: flags.locale || jovo.$project!.getLocales(),
       platforms: flags.platform || jovo.getPlatforms(),
@@ -148,7 +156,11 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
         context.platforms = [platform];
       }
 
-      await this.$emitter!.run('reverse.build');
+      await this.$emitter.run('reverse.build');
+
+      console.log();
+      console.log(`  ${REVERSE_ARROWS} Reverse build completed.`);
+      console.log();
       return;
     }
 

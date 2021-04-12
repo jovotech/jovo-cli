@@ -7,20 +7,19 @@ import {
   Config as ProjectConfig,
   JovoCli,
   JovoCliError,
-  MarketplacePlugin,
   ProjectProperties,
 } from '@jovotech/cli-core';
 import { insert } from '.';
 
-export async function build(props: ProjectProperties) {
+export async function build(projectProperties: ProjectProperties) {
   const jovo: JovoCli = JovoCli.getInstance();
-  const projectPath: string = joinPaths(jovo.$projectPath, props.projectName);
+  const projectPath: string = joinPaths(jovo.$projectPath, projectProperties.projectName);
   const projectConfigPath: string = joinPaths(projectPath, ProjectConfig.getFileName());
 
   // Read project configuration, enhance with platform plugins.
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
   const cliPluginsComment: string = '// Add Jovo CLI plugins here.';
-  for (const platform of props.platforms as MarketplacePlugin[]) {
+  for (const platform of projectProperties.platforms) {
     projectConfig = insert(
       `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
       projectConfig,
@@ -36,7 +35,7 @@ export async function build(props: ProjectProperties) {
   const packageJsonPath: string = joinPaths(projectPath, 'package.json');
   let packageJson = require(packageJsonPath);
 
-  for (const platform of props.platforms as MarketplacePlugin[]) {
+  for (const platform of projectProperties.platforms) {
     try {
       const version: string = await latestVersion(platform.npmPackage);
       _set(packageJson, `dependencies["${platform.npmPackage}"]`, `^${version}`);
@@ -50,7 +49,7 @@ export async function build(props: ProjectProperties) {
 
   const omittedPackages: string[] = [];
   // Check if ESLint is set, if not, delete package.json entries and config.
-  if (!props.linter) {
+  if (!projectProperties.linter) {
     rmSync(joinPaths(projectPath, '.eslintrc.js'));
     omittedPackages.push(
       'devDependencies.eslint',
@@ -62,7 +61,7 @@ export async function build(props: ProjectProperties) {
     );
   }
 
-  if (!props.unitTesting) {
+  if (!projectProperties.unitTesting) {
     rmSync(joinPaths(projectPath, 'jest.config.js'));
     rmdirSync(joinPaths(projectPath, 'test'), { recursive: true });
     omittedPackages.push(
@@ -87,7 +86,7 @@ export async function build(props: ProjectProperties) {
   );
   let appConfig = readFileSync(appConfigPath, 'utf-8');
   const pluginsComment: string = '// Add Jovo plugins here.';
-  for (const platform of props.platforms as MarketplacePlugin[]) {
+  for (const platform of projectProperties.platforms) {
     appConfig = insert(
       `import { ${platform.module} } from \'${platform.package}\';\n`,
       appConfig,
@@ -101,7 +100,7 @@ export async function build(props: ProjectProperties) {
 
   // Provide language models for each locale.
   const modelsDirectory: string = 'models';
-  for (const locale of props.locales) {
+  for (const locale of projectProperties.locales) {
     copyFileSync(
       joinPaths(projectPath, modelsDirectory, 'en.json'),
       joinPaths(projectPath, modelsDirectory, `${locale}.json`),

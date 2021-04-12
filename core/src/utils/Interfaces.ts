@@ -1,7 +1,10 @@
-import { args as Args } from '@oclif/parser';
+import * as Parser from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
 import { JovoConfig } from 'jovo-config';
 import { JovoCliPlugin } from '../JovoCliPlugin';
+import { PluginCommand } from '../PluginCommand';
+
+export type TypeFromArray<T extends unknown[]> = T[number];
 
 // ####### EVENT EMITTER #######
 
@@ -11,16 +14,17 @@ export type ActionSet<T extends Events = DefaultEvents> = {
   [K in T]?: Array<(...v: any[]) => void>;
 };
 
-export interface InstallEventArguments {
+export interface InstallContext {
   command: string;
+  // ToDo: Specific typing?
   flags: Input<any>;
-  args: Args.Input;
+  args: Parser.args.Input;
 }
 
-export interface ParseEventArguments {
+export interface ParseContext {
   command: string;
-  flags: { [key: string]: string | boolean | string[] };
-  args: { [key: string]: string };
+  flags: CliFlags<any>;
+  args: CliArgs<any>;
 }
 
 export type DefaultEvents = 'install' | 'parse';
@@ -42,7 +46,7 @@ export interface PluginContext {
   command: string;
   platforms: string[];
   locales: string[];
-  flags: { [key: string]: string | boolean | string[] };
+  flags: CliFlags<any>;
   args: { [key: string]: string };
 }
 
@@ -113,3 +117,23 @@ export interface PackageVersionsNpm {
     inPackageJson: boolean;
   };
 }
+
+// ####### CLI COMMAND #######
+export type CliFlags<COMMAND extends typeof PluginCommand> = COMMAND extends Parser.Input<infer T>
+  ? Parser.Output<T, any>['flags']
+  : never;
+
+export interface CommandArgument<NAME extends string> {
+  name: NAME;
+  parse?: Function;
+  required?: boolean;
+  description?: string;
+  hidden?: boolean;
+  default?: string;
+  options?: string[];
+}
+
+export type CliArgs<COMMAND extends typeof PluginCommand> = Record<
+  TypeFromArray<COMMAND['args']>['name'],
+  string
+>;

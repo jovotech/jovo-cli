@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config';
-import { Input as InputFlags } from '@oclif/command/lib/flags';
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,
@@ -14,14 +15,28 @@ import {
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
+  CliFlags,
+  createTypedArguments,
+  CliArgs,
+  ParseContext,
 } from '@jovotech/cli-core';
 import DeployCommand from '..';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export interface DeployPlatformPluginContext extends PluginContext {
+export type DeployPlatformFlags = CliFlags<typeof DeployPlatform>;
+export type DeployPlatformArgs = CliArgs<typeof DeployPlatform>;
+
+export interface DeployPlatformContext extends PluginContext {
+  args: DeployPlatformArgs;
+  flags: DeployPlatformFlags;
   target: typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL;
   src: string;
+}
+
+export interface ParseContextDeployPlatform extends ParseContext {
+  args: DeployPlatformArgs;
+  flags: DeployPlatformFlags;
 }
 
 export type DeployPlatformEvents =
@@ -32,24 +47,15 @@ export type DeployPlatformEvents =
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id: string = 'deploy:platform';
   static description: string = 'Deploys platform configuration.';
-
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
   ];
-
   static availablePlatforms: string[] = [];
-
-  static flags: InputFlags<any> = {
+  static flags = {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en|de|etc>',
-      multiple: true,
-    }),
-    platform: flags.string({
-      char: 'p',
-      description: 'Specifies a build platform.',
-      options: DeployPlatform.availablePlatforms,
       multiple: true,
     }),
     stage: flags.string({
@@ -66,7 +72,14 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       description: 'Location of model files.',
     }),
   };
-  static args = [];
+  static args = createTypedArguments([
+    {
+      name: 'platform',
+      required: true,
+      description: 'Specifies a build platform.',
+      options: DeployPlatform.availablePlatforms,
+    },
+  ]);
 
   static async install(
     plugin: DeployCommand,
@@ -97,16 +110,18 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   async run() {
     checkForProjectDirectory();
 
-    const { args, flags } = this.parse(DeployPlatform);
+    const { args, flags }: Pick<ParseContextDeployPlatform, 'args' | 'flags'> = this.parse(
+      DeployPlatform,
+    );
 
     await this.$emitter.run('parse', { command: DeployPlatform.id, flags, args });
 
     console.log(`\n jovo deploy: ${DeployPlatform.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
-    const context: DeployPlatformPluginContext = {
+    const context: DeployPlatformContext = {
       command: DeployPlatform.id,
-      platforms: flags.platform || jovo.getPlatforms(),
+      platforms: args.platform ? [args.platform] : jovo.getPlatforms(),
       locales: flags.locale || jovo.$project!.getLocales(),
       target: flags.target,
       src: flags.src || jovo.$project!.getBuildDirectory(),

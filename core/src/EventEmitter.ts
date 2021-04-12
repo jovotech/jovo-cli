@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 import { Events } from './utils/Interfaces';
 
 export declare interface Emitter<T extends Events = Events> {
-  on(event: T, listener: (...v: any[]) => void): this;
-  off(event: T, listener: (...v: any[]) => void): this;
+  on<K extends T>(event: K, listener: (...v: any[]) => void): this;
+  off<K extends T>(event: K, listener: (...v: any[]) => void): this;
 }
 
 export class Emitter<T extends Events = Events> extends EventEmitter {
@@ -13,11 +13,11 @@ export class Emitter<T extends Events = Events> extends EventEmitter {
    * @param args - Possible arguments that get passed to all listener functions.
    * @deprecated Please use the async function run() instead.
    */
-  emit(event: T, ...args: any[]) {
+  emit<K extends T>(event: K, ...args: any[]) {
     return super.emit(event, ...args);
   }
 
-  listeners(event: T): Function[] {
+  listeners<K extends T>(event: K): Function[] {
     // @ts-ignore
     const events: Function[] | Function | undefined = this._events[event];
     if (!events) {
@@ -36,7 +36,7 @@ export class Emitter<T extends Events = Events> extends EventEmitter {
    * @param event - The event.
    * @param args - Possible arguments that get passed to all listener functions.
    */
-  async run(event: T, ...args: any[]) {
+  async run<K extends T>(event: K, ...args: any[]) {
     const fns: Function[] = this.listeners(event).reverse();
     if (!fns) {
       return false;
