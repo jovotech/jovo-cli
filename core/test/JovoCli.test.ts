@@ -6,10 +6,17 @@ import {
   JovoCli,
   JovoCliPlugin,
   JovoUserConfig,
+  PluginContext,
+  PluginType,
   Project,
 } from '../src';
+import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
 
-jest.mock('global-modules', () => resolve(joinPaths('test', '__mocks__', 'plugins')));
+jest.mock('global-dirs', () => ({
+  npm: {
+    packages: resolve(joinPaths('test', '__mocks__', 'plugins')),
+  },
+}));
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
 describe('JovoCli.getInstance()', () => {
@@ -237,9 +244,10 @@ describe('getPluginsWithType()', () => {
   });
 
   test('should return an array containing plugins of the provided type', () => {
+    const plugin: CommandPlugin = new CommandPlugin();
     const jovo: JovoCli = new JovoCli();
-    // @ts-ignore;
-    jovo['cliPlugins'].push({ id: 'test', type: 'platform' });
+
+    jovo['cliPlugins'].push(plugin);
     const plugins: JovoCliPlugin[] = jovo.getPluginsWithType('platform');
 
     expect(Array.isArray(plugins)).toBeTruthy();
@@ -293,5 +301,42 @@ describe('collectCommandPlugins()', () => {
     expect(commandPlugins[0].id).toMatch('commandPlugin');
 
     mocked.mockRestore();
+  });
+});
+
+describe('loadPlugins()', () => {});
+
+describe('setPluginContext()', () => {
+  test('should pass a copy without reference to each plugin', () => {
+    const jovo: JovoCli = new JovoCli();
+    class Plugin extends JovoCliPlugin {
+      type: PluginType = 'command';
+      id: string = 'test';
+      context!: PluginContext;
+
+      setPluginContext: jest.Mock = jest.fn().mockImplementation((context: PluginContext) => {
+        this.context = context;
+      });
+    }
+
+    const plugin: Plugin = new Plugin();
+    jovo['cliPlugins'].push(plugin);
+
+    const context: PluginContext = {
+      command: 'test',
+      platforms: [],
+      locales: [],
+      flags: {},
+      args: {},
+    };
+    jovo.setPluginContext(context);
+
+    // Modify plugin context.
+    context.command = 'altered';
+
+    expect(plugin.setPluginContext).toBeCalledTimes(1);
+    expect(plugin.context).toHaveProperty('command');
+    // Check if plugin context was passed per reference.
+    expect(plugin.context.command).toMatch('test');
   });
 });

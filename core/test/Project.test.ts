@@ -3,6 +3,7 @@ import tv4 from 'tv4';
 import { JovoModelData } from 'jovo-model';
 import { join as joinPaths, resolve } from 'path';
 import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
+import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
 
 jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
 jest.spyOn(Config.prototype, 'getContent').mockReturnThis();
@@ -508,10 +509,8 @@ describe('collectPlugins()', () => {
 
   test('should merge and return plugins', () => {
     // Load mocked plugins.
-    const pluginFolder: string = resolve(
-      joinPaths('test', '__mocks__', 'plugins', 'CommandPlugin', 'dist'),
-    );
-    const plugin: JovoCliPlugin = new (require(pluginFolder).default)({ hello: 'world' });
+    const plugin: CommandPlugin = new CommandPlugin({ files: { foo: 'bar' } });
+
     const mocked: jest.SpyInstance = jest
       .spyOn(Config.prototype, 'getParameter')
       .mockReturnValue([plugin]);
@@ -521,11 +520,10 @@ describe('collectPlugins()', () => {
 
     expect(plugins).toHaveLength(1);
     expect(plugins[0]).toHaveProperty('config');
-    expect(plugins[0].config).toHaveProperty('hello');
-    // @ts-ignore
-    expect(plugins[0].config.hello).toMatch('world');
-    expect(plugins[0].config).toHaveProperty('pluginId');
-    expect(plugins[0].config.pluginId).toMatch('commandPlugin');
+    expect(plugins[0].config).toHaveProperty('files');
+    expect(plugins[0].config.files).toHaveProperty('foo');
+    expect(plugins[0].config.files.foo).toMatch('bar');
+    expect(plugins[0].id).toMatch('commandPlugin');
 
     mocked.mockRestore();
   });
