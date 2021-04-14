@@ -3,6 +3,7 @@ import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
 import _merge from 'lodash.merge';
+import stripAnsi from 'strip-ansi';
 
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
@@ -239,4 +240,12 @@ export function createTypedArguments<
   ARGS extends CommandArgument<TypeFromArray<NAMES>>[]
 >(args: ARGS): TypeFromArray<ARGS>[] {
   return args;
+}
+
+/**
+ * Strips ANSI escape codes from the provided string.
+ * @param output - String potentially containing ANSI escape codes to be stripped.
+ */
+export function getRawString(output: string): string {
+  return stripAnsi(output);
 }

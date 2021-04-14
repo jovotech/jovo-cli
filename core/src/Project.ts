@@ -183,7 +183,6 @@ export class Project {
       mkdirSync(modelsPath);
     }
 
-    // Check if model file is json or JavaScript
     const modelFilePath = `${this.getModelPath(locale)}.json`;
 
     writeFileSync(modelFilePath, JSON.stringify(model, null, 2));
