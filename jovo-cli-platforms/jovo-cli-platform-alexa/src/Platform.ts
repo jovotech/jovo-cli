@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command';
 import * as fs from 'fs';
 import * as inquirer from 'inquirer';
-import * as listr from 'listr';
+import listr from 'listr';
 import { ListrTask, ListrTaskWrapper } from 'listr';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -1329,7 +1329,7 @@ Endpoint: ${skillInfo.endpoint}`;
    * Returns skill id promise
    * @return {Promise<any>}
    */
-  getSkillIdPromise() {
+  getSkillIdPromise(): Promise<void> {
     return new Promise((resolve) => {
       fs.readFile(this.getAskConfigPath(), 'utf-8', (err, data) => {
         if (err) {
