@@ -22,9 +22,9 @@ export abstract class JovoCliPlugin {
     return [];
   }
 
-  setPluginContext(context: PluginContext) {
+  setPluginContext(context: PluginContext): void {
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
-      ((plugin as any) as typeof PluginComponent).prototype['$context'] = context;
+      ((plugin as unknown) as typeof PluginComponent).prototype['$context'] = context;
     }
   }
 }

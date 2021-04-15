@@ -8,16 +8,16 @@ export class JovoCliError extends Error {
     super();
   }
 
-  logError() {
+  logError(): void {
     this.error.push(`${ERROR} ${chalk.bgRed.bold(`${this.message}\n`)}`);
   }
 
-  logProperty(key: string, value: string) {
+  logProperty(key: string, value: string): void {
     key = `${key}:`.padEnd(10);
     this.error.push(`${chalk.bold(key)}${value}`);
   }
 
-  toString() {
+  toString(): string {
     this.logError();
     this.logProperty('Module', this.module);
 

@@ -7,6 +7,7 @@
   "scripts": {
     "test": "jest",
     "tsc": "tsc",
+    "eslint": "eslint src test --ext .ts --fix",
     "link": "node bin/link"
   },
   "author": "",
@@ -51,6 +52,11 @@
     "@types/prompts": "^2.0.9",
     "@types/tv4": "^1.2.29",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.12.0",
+    "@typescript-eslint/parser": "^4.12.0",
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "jest": "^26.6.3",
     "symlink-dir": "^4.1.0",
     "ts-jest": "^26.4.4",

@@ -1,4 +1,5 @@
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { join as joinPaths, resolve } from 'path';
 import _merge from 'lodash.merge';
@@ -42,7 +43,7 @@ import {
 const jovo: JovoCli = JovoCli.getInstance();
 
 export class New extends PluginCommand {
-  static id: string = 'new';
+  static id = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
   // Prints out examples for this command.
@@ -96,7 +97,7 @@ export class New extends PluginCommand {
     },
   ]);
 
-  async run() {
+  async run(): Promise<void> {
     const { args, flags }: { args: CliArgs<typeof New>; flags: CliFlags<typeof New> } = this.parse(
       New,
     );

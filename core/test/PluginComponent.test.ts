@@ -2,19 +2,23 @@ import { Emitter, JovoCliPlugin, PluginType } from '../src';
 import { PluginComponent } from '../src/PluginComponent';
 
 beforeEach(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   delete PluginComponent.prototype['$config'];
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   delete PluginComponent.prototype['$emitter'];
 });
 
 describe('EventHandler.install()', () => {
   test('should set $plugin, $emitter and $config if not set already', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(PluginComponent.prototype, 'loadActionSet').mockReturnThis();
+    const mocked: jest.SpyInstance = jest
+      .spyOn(PluginComponent.prototype, 'loadActionSet')
+      .mockReturnThis();
 
     class CliPlugin extends JovoCliPlugin {
       type: PluginType = 'command';
-      id: string = 'test';
+      id = 'test';
     }
     const eventHandler: PluginComponent = new PluginComponent();
     expect(eventHandler).not.toHaveProperty('$plugin');

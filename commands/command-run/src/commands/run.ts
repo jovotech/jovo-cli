@@ -1,4 +1,5 @@
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
 import chalk from 'chalk';
@@ -39,8 +40,8 @@ export interface ParseContextRun extends ParseContext {
 export type RunEvents = 'before.run' | 'run';
 
 export class Run extends PluginCommand<RunEvents> {
-  static id: string = 'run';
-  static description: string = 'Runs a local development server (webhook).';
+  static id = 'run';
+  static description = 'Runs a local development server (webhook).';
   static examples: string[] = [];
   static flags = {
     'port': flags.string({
@@ -71,13 +72,13 @@ export class Run extends PluginCommand<RunEvents> {
   };
   static args = createTypedArguments([{ name: 'webhookFile', default: 'index.js' }]);
 
-  install() {
+  install(): void {
     this.actionSet = {
       'before.run': [this.checkForOutdatedPackages.bind(this)],
     };
   }
 
-  async checkForOutdatedPackages() {
+  async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
     const outOfDatePackages: PackageVersionsNpm = await shouldUpdatePackages();
     if (Object.keys(outOfDatePackages).length) {
@@ -101,7 +102,7 @@ export class Run extends PluginCommand<RunEvents> {
     }
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
 
     const { args, flags }: Pick<ParseContextRun, 'args' | 'flags'> = this.parse(Run);
@@ -220,7 +221,7 @@ export class Run extends PluginCommand<RunEvents> {
     // Pass all parameters through to project process that gets set after "--".
     // Example: "jovo run -- --log-level 5".
     // ToDo: Not possible, since --log-level 5 will be parsed as argument.
-    let addActive: boolean = false;
+    let addActive = false;
     for (const parameter of process.argv) {
       if (addActive) {
         parameters.push(parameter);

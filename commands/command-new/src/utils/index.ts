@@ -1,10 +1,9 @@
-import { createWriteStream, existsSync, mkdirSync, symlinkSync, unlinkSync, WriteStream } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, unlinkSync, WriteStream } from 'fs';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import AdmZip from 'adm-zip';
 import { join as joinPaths, resolve } from 'path';
 import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
-import { exec } from 'child_process';
 
 export * from './Prompts';
 export * as TemplateBuilder from './TemplateBuilder';
@@ -21,9 +20,9 @@ export async function downloadAndExtract(
   template: string,
   locale: string,
   language: string,
-) {
-  const templateName: string = `${template}_${locale}.zip`;
-  const url: string = `${REPO_URL}/v3/${templateName}?language=${language}`;
+): Promise<void> {
+  const templateName = `${template}_${locale}.zip`;
+  const url = `${REPO_URL}/v3/${templateName}?language=${language}`;
 
   const config: AxiosRequestConfig = {
     method: 'GET',
@@ -64,7 +63,7 @@ export async function downloadAndExtract(
   });
 }
 
-export async function runNpmInstall(projectPath: string) {
+export async function runNpmInstall(projectPath: string): Promise<void> {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
@@ -177,22 +176,9 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
  * ! Links available plugins to the new MVP dependency structure.
  * @param projectPath - Project directory. If running this function from within a Jovo project, leave it empty.
  */
-export async function linkPlugins(projectPath: string = '') {
+export async function linkPlugins(projectPath = ''): Promise<void> {
   if (!existsSync(joinPaths(projectPath, 'node_modules', '@jovotech'))) {
     mkdirSync(joinPaths(projectPath, 'node_modules', '@jovotech'));
-  }
-
-  let cliPath: string;
-  if (existsSync(joinPaths('./', 'cli'))) {
-    cliPath = 'cli';
-  } else if (existsSync(joinPaths('./', 'jovo-cli'))) {
-    cliPath = 'jovo-cli';
-  } else if (existsSync(joinPaths('..', 'cli'))) {
-    cliPath = 'cli';
-  } else if (existsSync(joinPaths('..', 'jovo-cli'))) {
-    cliPath = 'jovo-cli';
-  } else {
-    throw new JovoCliError('Could not find Jovo CLI path.', 'NewCommand');
   }
 
   const marketplacePlugins: MarketplacePlugin[] = fetchMarketPlace();

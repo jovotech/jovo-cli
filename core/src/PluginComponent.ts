@@ -4,13 +4,15 @@ import { JovoCliPlugin } from './JovoCliPlugin';
 import { ActionSet, PluginConfig, PluginContext } from './utils/Interfaces';
 
 export class PluginComponent {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected actionSet!: ActionSet<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected $emitter!: Emitter<any>;
   protected $plugin!: JovoCliPlugin;
   protected $config!: PluginConfig;
   protected $context!: PluginContext;
 
-  static install(plugin: JovoCliPlugin, emitter: Emitter, config: PluginConfig) {
+  static install(plugin: JovoCliPlugin, emitter: Emitter, config: PluginConfig): void {
     if (!this.prototype.$plugin) {
       this.prototype.$plugin = plugin;
     }
@@ -29,9 +31,9 @@ export class PluginComponent {
     this.prototype.loadActionSet();
   }
 
-  install() {}
+  install(): void {}
 
-  loadActionSet() {
+  loadActionSet(): void {
     for (const [key, value] of Object.entries(this.actionSet || {})) {
       if (!value) {
         continue;
@@ -43,7 +45,7 @@ export class PluginComponent {
     }
   }
 
-  uninstall() {
+  uninstall(): void {
     for (const [key, value] of Object.entries(this.actionSet || {})) {
       if (!value) {
         continue;

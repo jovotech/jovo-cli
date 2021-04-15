@@ -14,7 +14,7 @@ export function printStage(stage?: string): string {
  * Returns a string of a white, bold text.
  * @param text - Text to highlight.
  */
-export function printHighlight(text: string) {
+export function printHighlight(text: string): string {
   return chalk.white.bold(text);
 }
 
@@ -38,7 +38,7 @@ export function printAskProfile(askProfile?: string): string {
  * Prints a yellow warning output.
  * @param message - Warning message to print.
  */
-export function printWarning(message: string) {
+export function printWarning(message: string): string {
   return chalk.yellow.bold(`${WARNING} ${message}`);
 }
 

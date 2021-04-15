@@ -41,18 +41,20 @@ export function open(
     process.exit();
   });
 
-  // @ts-ignore
-  socket.on(`request-${id}`, (data) => {
-    post(data.request, data.headers, data.params, options)
-      .then((result) => {
-        socket.emit(`response-${id}`, result);
-      })
-      .catch((error) => {
-        console.error('Local server did not return a valid JSON response:');
-        console.error(error.rawData);
-        socket.emit(`response-${id}`, null);
-      });
-  });
+  socket.on(
+    `request-${id}`,
+    (data: { request: object; headers: IncomingHttpHeaders; params: ParsedUrlQueryInput }) => {
+      post(data.request, data.headers, data.params, options)
+        .then((result) => {
+          socket.emit(`response-${id}`, result);
+        })
+        .catch((error) => {
+          console.error('Local server did not return a valid JSON response:');
+          console.error(error.rawData);
+          socket.emit(`response-${id}`, null);
+        });
+    },
+  );
 
   process.on('exit', () => {
     socket.close();
@@ -101,7 +103,7 @@ function post(
     const req: ClientRequest = request(config, (response: IncomingMessage) => {
       response.setEncoding('utf8');
 
-      let rawData: string = '';
+      let rawData = '';
 
       response.on('data', (chunk: string) => {
         rawData += chunk;

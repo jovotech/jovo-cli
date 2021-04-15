@@ -8,6 +8,7 @@
     "bootstrap": "lerna bootstrap --hoist",
     "tsc": "lerna run tsc",
     "link": "lerna run link",
+    "eslint": "lerna exec npm run eslint",
     "test": "lerna run test",
     "setup:dev": "npm run bootstrap && npm run link && npm run tsc"
   }

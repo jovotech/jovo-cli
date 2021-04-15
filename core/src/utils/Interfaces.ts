@@ -11,19 +11,22 @@ export type TypeFromArray<T extends unknown[]> = T[number];
 export type Events = string;
 
 export type ActionSet<T extends Events = DefaultEvents> = {
-  [K in T]?: Array<(...v: any[]) => void>;
+  [K in T]?: Array<(...v: unknown[]) => void>;
 };
 
 export interface InstallContext {
   command: string;
   // ToDo: Specific typing?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flags: Input<any>;
   args: Parser.args.Input;
 }
 
 export interface ParseContext {
   command: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flags: CliFlags<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: CliArgs<any>;
 }
 
@@ -33,8 +36,12 @@ export type DefaultEvents = 'install' | 'parse';
 
 export type PluginType = 'platform' | 'target' | 'command' | '';
 
+export interface Files {
+  [key: string]: string | Files;
+}
+
 export interface PluginConfig {
-  files?: any;
+  files?: Files;
   locales?: { [locale: string]: string[] };
 }
 
@@ -46,8 +53,10 @@ export interface PluginContext {
   command: string;
   platforms: string[];
   locales: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flags: CliFlags<any>;
-  args: { [key: string]: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  args: CliArgs<any>;
 }
 
 // ####### CONFIG #######
@@ -120,7 +129,8 @@ export interface PackageVersionsNpm {
 
 // ####### CLI COMMAND #######
 export type CliFlags<COMMAND extends typeof PluginCommand> = COMMAND extends Parser.Input<infer T>
-  ? Parser.Output<T, any>['flags']
+  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Parser.Output<T, any>['flags']
   : never;
 
 export interface CommandArgument<NAME extends string> {

@@ -1,4 +1,3 @@
-import { Input as InputFlags } from '@oclif/command/lib/flags';
 import { flags, JovoCli, PluginCommand } from '@jovotech/cli-core';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -6,15 +5,15 @@ const jovo: JovoCli = JovoCli.getInstance();
 export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.deploy:code';
 
 export class DeployCode extends PluginCommand {
-  static id: string = 'deploy:code';
-  static description: string = 'Deploys project code.';
+  static id = 'deploy:code';
+  static description = 'Deploys project code.';
 
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
   ];
 
-  static flags: InputFlags<any> = {
+  static flags = {
     locale: flags.string({
       char: 'l',
       description: 'Locale of the language model.\n<en|de|etc>',
@@ -41,5 +40,5 @@ export class DeployCode extends PluginCommand {
     }),
   };
 
-  async run() {}
+  async run(): Promise<void> {}
 }

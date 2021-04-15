@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config';
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { existsSync, mkdirSync } from 'fs';
 import {
@@ -37,8 +38,8 @@ export interface GetContext extends PluginContext {
 export type GetEvents = 'before.get' | 'get' | 'after.get';
 
 export class Get extends PluginCommand<BuildEvents | GetEvents> {
-  static id: string = 'get';
-  static description: string = 'Downloads an existing platform project into the platforms folder.';
+  static id = 'get';
+  static description = 'Downloads an existing platform project into the platforms folder.';
   static examples: string[] = [
     'jovo get alexaSkill --skill-id amzn1.ask.skill.xxxxxxxx',
     'jovo get googleAction --project-id testproject-xxxxxx',
@@ -92,13 +93,13 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     return super.install(plugin, emitter, config);
   }
 
-  install() {
+  install(): void {
     this.actionSet = {
       'before.get': [this.beforeGet.bind(this)],
     };
   }
 
-  beforeGet() {
+  beforeGet(): void {
     // Create build/ folder depending on user config.
     const buildPath: string = jovo.$project!.getBuildPath();
     if (!existsSync(buildPath)) {
@@ -106,7 +107,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     }
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
 
     const { args, flags }: Pick<ParseContextGet, 'flags' | 'args'> = this.parse(Get);

@@ -2,7 +2,6 @@ import { exec, ExecException, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
-import _merge from 'lodash.merge';
 import stripAnsi from 'strip-ansi';
 
 import { JovoCli } from '../JovoCli';
@@ -57,7 +56,7 @@ export function wait(ms: number): Promise<void> {
  * Recursively deletes all files and folders within a directory.
  * @param path - Path to directory to delete.
  */
-export function deleteFolderRecursive(path: string) {
+export function deleteFolderRecursive(path: string): void {
   if (existsSync(path)) {
     for (const file of readdirSync(path)) {
       const curPath: string = joinPaths(path, file);
@@ -80,7 +79,7 @@ export function deleteFolderRecursive(path: string) {
  */
 export async function getPackages(packageRegex?: RegExp): Promise<PackageVersions> {
   const jovo: JovoCli = JovoCli.getInstance();
-  let packageFileName: string = '';
+  let packageFileName = '';
 
   // ToDo: Sufficient to just look in the package.json?
   // Get file name depending on what file exists.
@@ -108,7 +107,7 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
 
   const packageFile = JSON.parse(content);
   const packages: PackageVersions = {};
-  const versionNumberRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
+  const versionNumberRegex = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 
   for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
     if (packageRegex && !dependencyKey.match(packageRegex)) {
@@ -139,14 +138,18 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
       }
     }
 
-    // @ts-ignore
     if (typeof dependency === 'object') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (dependency.version.match(versionNumberRegex)) {
         packages[dependencyKey] = {
-          dev: !!(dependency as any).dev,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          dev: !!dependency.dev,
           inPackageJson: false,
-          version: (dependency as any).version.replace('^', ''),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          version: dependency.version.replace('^', ''),
         };
       }
     }
@@ -206,7 +209,7 @@ export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<Packa
 /**
  * Checks if the current working directory is a Jovo Project.
  */
-export function checkForProjectDirectory() {
+export function checkForProjectDirectory(): void {
   const jovo: JovoCli = JovoCli.getInstance();
 
   if (!jovo.isInProjectDirectory()) {
@@ -224,7 +227,7 @@ export function checkForProjectDirectory() {
  * @param objValue - Array to merge into source.
  * @param srcValue - Source array.
  */
-export function mergeArrayCustomizer(target: any[], source: any[]) {
+export function mergeArrayCustomizer(target: unknown[], source: unknown[]): unknown[] | undefined {
   // Since _.merge simply overwrites the original array, concatenate them instead.
   if (Array.isArray(target) && Array.isArray(source)) {
     return target.concat(source);

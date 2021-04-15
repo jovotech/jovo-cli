@@ -1,7 +1,6 @@
 import Command from '@oclif/command';
 import * as Config from '@oclif/config';
 import * as Parser from '@oclif/parser';
-import _get from 'lodash.get';
 import { Mixin } from 'ts-mixer';
 
 import { PluginComponent } from './PluginComponent';
@@ -17,7 +16,7 @@ import { JovoCliPlugin } from './JovoCliPlugin';
 class OclifCommand extends Command {
   static args: Parser.args.Input;
 
-  run(): PromiseLike<any> {
+  run(): PromiseLike<unknown> {
     throw new Error('Method not implemented.');
   }
 }
@@ -49,19 +48,19 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   ): Promise<Config.Command.Plugin> {
     super.install(plugin, emitter, config);
 
-    return (this as any) as Config.Command.Plugin;
+    return (this as unknown) as Config.Command.Plugin;
   }
 
   /**
    * Declare run() as abstract again.
    */
-  abstract run(): Promise<any>;
+  abstract run(): Promise<unknown>;
 
   /**
    * Catch possible errors and print them.
    * @param error - JovoCliError.
    */
-  async catch(error: JovoCliError) {
+  async catch(error: JovoCliError): Promise<void> {
     this.error(`There was a problem:\n${error}`);
   }
 }

@@ -11,14 +11,14 @@ import {
 } from '@jovotech/cli-core';
 import { insert } from '.';
 
-export async function build(projectProperties: ProjectProperties) {
+export async function build(projectProperties: ProjectProperties): Promise<void> {
   const jovo: JovoCli = JovoCli.getInstance();
   const projectPath: string = joinPaths(jovo.$projectPath, projectProperties.projectName);
   const projectConfigPath: string = joinPaths(projectPath, ProjectConfig.getFileName());
 
   // Read project configuration, enhance with platform plugins.
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
-  const cliPluginsComment: string = '// Add Jovo CLI plugins here.';
+  const cliPluginsComment = '// Add Jovo CLI plugins here.';
   for (const platform of projectProperties.platforms) {
     projectConfig = insert(
       `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
@@ -85,7 +85,7 @@ export async function build(projectProperties: ProjectProperties) {
     isTypeScriptProject ? 'app.ts' : 'app.js',
   );
   let appConfig = readFileSync(appConfigPath, 'utf-8');
-  const pluginsComment: string = '// Add Jovo plugins here.';
+  const pluginsComment = '// Add Jovo plugins here.';
   for (const platform of projectProperties.platforms) {
     appConfig = insert(
       `import { ${platform.module} } from \'${platform.package}\';\n`,
@@ -99,7 +99,7 @@ export async function build(projectProperties: ProjectProperties) {
   writeFileSync(appConfigPath, appConfig);
 
   // Provide language models for each locale.
-  const modelsDirectory: string = 'models';
+  const modelsDirectory = 'models';
   for (const locale of projectProperties.locales) {
     copyFileSync(
       joinPaths(projectPath, modelsDirectory, 'en.json'),

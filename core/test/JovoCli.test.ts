@@ -183,7 +183,7 @@ describe('getJovoWebhookUrl()', () => {
 
 describe('resolveEndpoint()', () => {
   test('should resolve generic webhook url', () => {
-    const url: string = 'http://test.com';
+    const url = 'http://test.com';
     const mocked: jest.SpyInstance = jest
       .spyOn(JovoCli.prototype, 'getJovoWebhookUrl')
       .mockReturnValue(url);
@@ -196,7 +196,7 @@ describe('resolveEndpoint()', () => {
   });
 
   test('should return url as is', () => {
-    const url: string = 'http://test.com?foo=bar';
+    const url = 'http://test.com?foo=bar';
     const jovo: JovoCli = new JovoCli();
     expect(jovo.resolveEndpoint(url)).toMatch(url);
   });
@@ -220,6 +220,7 @@ describe('getPlatforms()', () => {
   test('should return an array of platform ids', () => {
     const mocked: jest.SpyInstance = jest
       .spyOn(JovoCli.prototype, 'getPluginsWithType')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .mockReturnValue([{ id: 'testPlatform' }]);
 
@@ -311,7 +312,7 @@ describe('setPluginContext()', () => {
     const jovo: JovoCli = new JovoCli();
     class Plugin extends JovoCliPlugin {
       type: PluginType = 'command';
-      id: string = 'test';
+      id = 'test';
       context!: PluginContext;
 
       setPluginContext: jest.Mock = jest.fn().mockImplementation((context: PluginContext) => {

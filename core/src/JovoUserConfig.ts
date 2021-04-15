@@ -1,8 +1,5 @@
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
-import _cloneDeep from 'lodash.clonedeep';
 import _get from 'lodash.get';
-import _merge from 'lodash.merge';
-import _set from 'lodash.set';
 import { homedir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { join as joinPaths } from 'path';
@@ -53,7 +50,7 @@ export class JovoUserConfig {
    * Saves the provided user config.
    * @param config - JovoUserConfig object.
    */
-  save(config: JovoUserConfigFile) {
+  save(config: JovoUserConfigFile): void {
     if (!existsSync(joinPaths(homedir(), '.jovo'))) {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
@@ -190,7 +187,7 @@ export class JovoUserConfig {
    * Saves preset to .jovo/config.
    * @param preset - Preset to save.
    */
-  async savePreset(preset: Preset) {
+  async savePreset(preset: Preset): Promise<void> {
     // Check if preset already exists.
     if (this.config.cli.presets.find((p) => p.name === preset.name)) {
       const { overwrite } = await promptOverwrite(

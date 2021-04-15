@@ -1,8 +1,7 @@
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { join as joinPaths, resolve } from 'path';
-import _merge from 'lodash.merge';
-import _pick from 'lodash.pick';
 import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
@@ -51,9 +50,9 @@ export interface ParseContextNewStage extends ParseContext {
 export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage';
 
 export class NewStage extends PluginCommand<NewStageEvents> {
-  static id: string = 'new:stage';
+  static id = 'new:stage';
   // Prints out a description for this command.
-  static description: string = 'Creates a new stage.';
+  static description = 'Creates a new stage.';
   // Prints out examples for this command.
   static examples: string[] = [];
   // Defines flags for this command, such as --help.
@@ -73,15 +72,15 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
   $context!: NewStageContext;
 
-  install() {
+  install(): void {
     this.actionSet = {
       'before.new:stage': [this.checkForExistingStage.bind(this)],
       'new:stage': [this.createNewStage.bind(this)],
     };
   }
 
-  async checkForExistingStage() {
-    const appFileName: string = `app.${this.$context.args.stage}.ts`;
+  async checkForExistingStage(): Promise<void> {
+    const appFileName = `app.${this.$context.args.stage}.ts`;
 
     if (existsSync(joinPaths('src', appFileName)) && !this.$context.flags.overwrite) {
       const { overwrite } = await promptOverwrite(
@@ -96,7 +95,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     }
   }
 
-  async createNewStage() {
+  async createNewStage(): Promise<void> {
     const servers: prompt.Choice[] = [
       {
         title: 'Express',
@@ -111,7 +110,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     ];
     const { server } = await promptServer(servers);
 
-    const serverFileName: string = `server.${server}`;
+    const serverFileName = `server.${server}`;
     copyFileSync(
       joinPaths('__mocks__', `${serverFileName}.ts`),
       joinPaths('src', `${serverFileName}.ts`),
@@ -136,7 +135,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     const addPluginsTask: Task = new Task('Generating staged files', async () => {
       // Create app.{stage}.ts.
       let stagedApp: string = readFileSync(joinPaths('__mocks__', 'app.stage.ts'), 'utf-8');
-      const pluginsComment: string = '// Add Jovo plugins here.';
+      const pluginsComment = '// Add Jovo plugins here.';
 
       for (const plugin of plugins) {
         stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
@@ -167,7 +166,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     await stageTask.run();
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
     const { args, flags }: Pick<ParseContextNewStage, 'args' | 'flags'> = this.parse(NewStage);
 

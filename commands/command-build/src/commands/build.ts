@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config';
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { DeployEvents } from '@jovotech/cli-command-deploy';
 import { existsSync, mkdirSync } from 'fs';
@@ -37,9 +38,8 @@ export interface ParseContextBuild extends ParseContext {
 export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
 
 export class Build extends PluginCommand<BuildEvents | DeployEvents> {
-  static id: string = 'build';
-  static description: string =
-    'Build platform-specific language models based on jovo models folder.';
+  static id = 'build';
+  static description = 'Build platform-specific language models based on jovo models folder.';
   static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
   static availablePlatforms: string[] = [];
   static flags = {
@@ -93,13 +93,13 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     return super.install(plugin, emitter, config);
   }
 
-  install() {
+  install(): void {
     this.actionSet = {
       build: [this.build.bind(this)],
     };
   }
 
-  async build() {
+  async build(): Promise<void> {
     // Create "fake" tasks for more verbose logs.
     const initTask: Task = new Task(`${TADA} Initializing build process`);
 
@@ -129,7 +129,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     }
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
 
     const { args, flags } = this.parse(Build);

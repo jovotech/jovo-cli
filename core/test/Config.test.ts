@@ -1,11 +1,6 @@
 import { join as joinPaths, resolve } from 'path';
-import {
-  Config,
-  JovoCliPlugin,
-  PluginConfig,
-  PluginType,
-  ProjectConfigFile,
-} from '../src';
+import { Config, ProjectConfigFile } from '../src';
+import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
 
 describe('Config.getInstance()', () => {
   beforeEach(() => {
@@ -141,6 +136,7 @@ describe('get()', () => {
       .spyOn(Config.prototype, 'getContent')
       .mockReturnValue({
         endpoint: 'test',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         plugins: ['invalid'],
         stages: { dev: { endpoint: 'dev' } },
@@ -155,33 +151,16 @@ describe('get()', () => {
   });
 
   test('should merge and return the config with merged plugins for the provided stage', () => {
+    const stagedPlugin: CommandPlugin = new CommandPlugin({ files: { foo2: 'bar2' } });
+    stagedPlugin.id = 'stagedCliPlugin';
+
     const mockedGetContent: jest.SpyInstance = jest
       .spyOn(Config.prototype, 'getContent')
       .mockReturnValue({
-        plugins: [
-          new (class CliPlugin extends JovoCliPlugin {
-            type: PluginType = 'command';
-            id: string = 'cliPlugin';
-            config: PluginConfig = {
-              files: {
-                foo1: 'bar1',
-              },
-            };
-          })(),
-        ],
+        plugins: [new CommandPlugin({ files: { foo1: 'bar1' } })],
         stages: {
           dev: {
-            plugins: [
-              new (class CliPlugin extends JovoCliPlugin {
-                type: PluginType = 'command';
-                id: string = 'stagedCliPlugin';
-                config: PluginConfig = {
-                  files: {
-                    foo2: 'bar2',
-                  },
-                };
-              })(),
-            ],
+            plugins: [stagedPlugin],
           },
         },
       });
@@ -194,11 +173,11 @@ describe('get()', () => {
     expect(configContent.stages).toBeUndefined();
     expect(configContent).toHaveProperty('plugins');
     expect(configContent.plugins).toHaveLength(1);
-    expect(configContent.plugins![0].id).toMatch('stagedCliPlugin');
-    expect(configContent.plugins![0].config.files).toHaveProperty('foo1');
-    expect(configContent.plugins![0].config.files.foo1).toMatch('bar1');
-    expect(configContent.plugins![0].config.files).toHaveProperty('foo2');
-    expect(configContent.plugins![0].config.files.foo2).toMatch('bar2');
+    expect(configContent.plugins[0].id).toMatch('stagedCliPlugin');
+    expect(configContent.plugins[0].config.files).toHaveProperty('foo1');
+    expect(configContent.plugins[0].config.files.foo1).toMatch('bar1');
+    expect(configContent.plugins[0].config.files).toHaveProperty('foo2');
+    expect(configContent.plugins[0].config.files.foo2).toMatch('bar2');
 
     mockedGetContent.mockRestore();
     mockedGet.mockRestore();
@@ -246,6 +225,7 @@ describe('getParameter()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config('');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     config['config'] = { endpoint: 'test' };
     expect(config.getParameter('endpoint')).toMatch('test');
@@ -261,6 +241,7 @@ describe('getParameter()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config('');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     config['config'] = { endpoint: 'test' };
     expect(config.getParameter('invalid')).toBeUndefined();

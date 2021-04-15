@@ -1,6 +1,5 @@
 import { ChildProcess } from 'child_process';
 import open from 'open';
-import _get from 'lodash.get';
 import {
   CLOUD,
   execAsync,
@@ -19,7 +18,7 @@ import * as JovoWebhookConnector from './JovoWebhookConnector';
  * Compile TypeScript code of Jovo project to JavaScript.
  * @param sourceFolder - Source folder.
  */
-export async function compileTypeScriptProject(sourceFolder: string) {
+export async function compileTypeScriptProject(sourceFolder: string): Promise<void> {
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
@@ -75,7 +74,7 @@ export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
 export function instantiateJovoWebhook(
   options: JovoWebhookConnector.PostOptions,
   childProcess?: ChildProcess,
-) {
+): void {
   const jovo: JovoCli = JovoCli.getInstance();
 
   const webhookId: string = jovo.$userConfig.getWebhookUuid();
@@ -93,7 +92,7 @@ export function instantiateJovoWebhook(
   // Open socket redirect from server to localhost.
   JovoWebhookConnector.open(webhookId, JOVO_WEBHOOK_URL, options);
 
-  const debuggerUrl: string = `${JOVO_WEBHOOK_URL}/${webhookId}`;
+  const debuggerUrl = `${JOVO_WEBHOOK_URL}/${webhookId}`;
 
   // Check if the current output is being piped to somewhere.
   if (process.stdout.isTTY) {
@@ -111,7 +110,7 @@ export function instantiateJovoWebhook(
       process.stdin.setEncoding('utf-8');
 
       // Collect input text from input stream.
-      let inputText: string = '';
+      let inputText = '';
       process.stdin.on('data', async (keyRaw: Buffer) => {
         const key: string = keyRaw.toString();
         // When dot gets pressed, try to open the debugger in browser.

@@ -1,12 +1,11 @@
 import indentString from 'indent-string';
 import ora from 'ora';
 import chalk from 'chalk';
-import _cloneDeep from 'lodash.clonedeep';
 import { JovoCliError } from './JovoCliError';
 
 export class Task {
-  private enabled: boolean = true;
-  private indentation: number = 2;
+  private enabled = true;
+  private indentation = 2;
 
   constructor(
     private title: string,
@@ -15,7 +14,7 @@ export class Task {
       | (() => string[] | string | void | Promise<string[] | string | void>) = [],
   ) {}
 
-  add(...actions: Task[]) {
+  add(...actions: Task[]): void {
     if (!Array.isArray(this.action)) {
       throw new JovoCliError(
         "Can't push Task instance if the current Task is a function.",
@@ -26,19 +25,19 @@ export class Task {
     this.action.push(...actions);
   }
 
-  indent(indentation: number) {
+  indent(indentation: number): void {
     this.indentation = indentation;
   }
 
-  enable() {
+  enable(): void {
     this.enabled = true;
   }
 
-  disable() {
+  disable(): void {
     this.enabled = false;
   }
 
-  async run() {
+  async run(): Promise<void> {
     if (!this.enabled) {
       return;
     }
@@ -57,6 +56,7 @@ export class Task {
 
       // This moves the cursor to the position specified with indentation. Without this setting enabled,
       // Ora will render one frame without indentation.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       spinner.linesToClear = 1;
 

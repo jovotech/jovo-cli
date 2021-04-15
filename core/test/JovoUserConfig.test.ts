@@ -82,6 +82,7 @@ describe('get()', () => {
         },
       });
     const mockedCreate: jest.SpyInstance = jest
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .spyOn(JovoUserConfig.prototype, 'create')
       .mockReturnThis();

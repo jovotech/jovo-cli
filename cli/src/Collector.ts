@@ -1,5 +1,4 @@
-import { Command, Plugin } from '@oclif/config';
-import _merge from 'lodash.merge';
+import { Command, Plugin, Topic } from '@oclif/config';
 import {
   DefaultEvents,
   Emitter,
@@ -11,13 +10,13 @@ import {
 } from '@jovotech/cli-core';
 
 export class Collector extends Plugin {
-  get topics() {
+  get topics(): Topic[] {
     return [];
   }
   hooks = {};
   commands: Command.Plugin[] = [];
 
-  async install(commandId: string) {
+  async install(commandId: string): Promise<void> {
     const emitter = new Emitter<DefaultEvents>();
 
     await this.loadPlugins(commandId, emitter);
@@ -29,7 +28,7 @@ export class Collector extends Plugin {
    * @param project - The instantiated project.
    * @param emitter - The Event Emitter.
    */
-  async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>) {
+  async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>): Promise<void> {
     try {
       const jovo: JovoCli = JovoCli.getInstance();
       const plugins: JovoCliPlugin[] = jovo.loadPlugins();
@@ -63,6 +62,7 @@ export class Collector extends Plugin {
         if (hooks) {
           for (const [eventKey, events] of Object.entries(hooks)) {
             for (const event of events) {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               emitter.on(eventKey, event);
             }

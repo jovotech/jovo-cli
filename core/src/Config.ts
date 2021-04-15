@@ -1,4 +1,3 @@
-import _cloneDeep from 'lodash.clonedeep';
 import _get from 'lodash.get';
 import _merge from 'lodash.merge';
 import _mergeWith from 'lodash.mergewith';
@@ -89,6 +88,10 @@ export class Config {
     }
   }
 
+  /**
+   * Gets the value for a provided path from the configuration.
+   * @param path
+   */
   getParameter(path: string): object | string[] | string | undefined {
     return _get(this.config, path);
   }

@@ -14,8 +14,8 @@ const jovo: JovoCli = JovoCli.getInstance();
 export type DeployEvents = 'before.deploy' | 'deploy' | 'after.deploy';
 
 export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | DeployCodeEvents> {
-  static id: string = 'deploy';
-  static description: string = 'Deploys the project to the voice platform.';
+  static id = 'deploy';
+  static description = 'Deploys the project to the voice platform.';
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
@@ -23,7 +23,7 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
   static flags = {};
   static args = [];
 
-  install() {
+  install(): void {
     this.actionSet = {
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
@@ -31,22 +31,22 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
     };
   }
 
-  async beforeDeploy() {
+  async beforeDeploy(): Promise<void> {
     await this.$emitter.run('before.deploy:platform');
     await this.$emitter.run('before.deploy:code');
   }
 
-  async deploy() {
+  async deploy(): Promise<void> {
     await this.$emitter.run('deploy:platform');
     await this.$emitter.run('deploy:code');
   }
 
-  async afterDeploy() {
+  async afterDeploy(): Promise<void> {
     await this.$emitter.run('after.deploy:platform');
     await this.$emitter.run('after.deploy:code');
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
 
     const { args, flags } = this.parse(Deploy);
@@ -60,7 +60,7 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
       command: Deploy.id,
       platforms: jovo.getPlatforms(),
       locales: jovo.$project!.getLocales(),
-      flags: flags as CliFlags<any>,
+      flags: flags as CliFlags<typeof Deploy>,
       args,
     };
     jovo.setPluginContext(context);

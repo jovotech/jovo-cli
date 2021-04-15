@@ -1,4 +1,4 @@
-import { JovoCliPlugin, PluginType } from '@jovotech/cli-core';
+import { JovoCliPlugin, PluginCommand, PluginType } from '@jovotech/cli-core';
 import { New } from './commands/new';
 import { NewStage } from './commands/new.stage';
 
@@ -6,10 +6,10 @@ export * from './commands/new';
 export * from './commands/new.stage';
 
 export class NewCommand extends JovoCliPlugin {
-  id: string = 'new';
+  id = 'new';
   type: PluginType = 'command';
 
-  getCommands() {
+  getCommands(): typeof PluginCommand[] {
     return [New, NewStage];
   }
 }

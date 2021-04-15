@@ -265,6 +265,7 @@ describe('validateModel()', () => {
   test('should throw a ModelValidationError if model is not valid', () => {
     const mocked: jest.SpyInstance = jest.spyOn(Project.prototype, 'getModel').mockReturnThis();
     tv4.validate = jest.fn().mockReturnValueOnce(false);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     tv4.error = { message: 'Validation failed.' };
 
@@ -423,6 +424,7 @@ describe('getLocales()', () => {
     const mockedExistsSync: jest.SpyInstance = jest.spyOn(fs, 'existsSync').mockReturnValue(true);
     const mockedReaddirSync: jest.SpyInstance = jest
       .spyOn(fs, 'readdirSync')
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .mockReturnValue(['en.json', 'de.js', 'invalid_locale.json']);
 

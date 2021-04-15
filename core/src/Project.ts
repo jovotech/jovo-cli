@@ -1,9 +1,6 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
-import _cloneDeep from 'lodash.clonedeep';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import _get from 'lodash.get';
-import _merge from 'lodash.merge';
 import { JovoModelData, ModelValidationError } from 'jovo-model';
 
 import { JovoCliError } from './JovoCliError';
@@ -74,7 +71,7 @@ export class Project {
    * Returns directory name for models folder.
    * @param stage - Optional config stage.
    */
-  getModelsDirectory() {
+  getModelsDirectory(): string {
     return (this.$config.getParameter('modelsDirectory') as string) || 'models';
   }
 
@@ -135,7 +132,7 @@ export class Project {
     return true;
   }
 
-  validateModel(locale: string, validator: tv4.JsonSchema) {
+  validateModel(locale: string, validator: tv4.JsonSchema): void {
     const model: JovoModelData = this.getModel(locale);
 
     if (!tv4.validate(model, validator)) {
@@ -147,7 +144,7 @@ export class Project {
    * Backs up model file.
    * @param locale - Locale of the model file.
    */
-  backupModel(locale: string) {
+  backupModel(locale: string): void {
     if (!this.hasModelFiles([locale])) {
       throw new JovoCliError(
         `Model file for locale ${locale} to backup could not be found.`,
@@ -162,12 +159,12 @@ export class Project {
     // Try to copy model file for either .json or .js.
     const fileExtensions: string[] = ['json', 'js'];
     for (const ext of fileExtensions) {
-      const targetPath: string = `${modelPath}.${ext}`;
+      const targetPath = `${modelPath}.${ext}`;
       if (!existsSync(targetPath)) {
         continue;
       }
 
-      const destinationFile: string = `${modelPath}.${todayString}.${ext}`;
+      const destinationFile = `${modelPath}.${todayString}.${ext}`;
       copyFileSync(targetPath, destinationFile);
     }
   }
@@ -177,7 +174,7 @@ export class Project {
    * @param model - Model to save.
    * @param locale - Locale to save the model under.
    */
-  saveModel(model: JovoModelData, locale: string) {
+  saveModel(model: JovoModelData, locale: string): void {
     const modelsPath: string = this.getModelsPath();
     if (!existsSync(modelsPath)) {
       mkdirSync(modelsPath);
@@ -204,7 +201,7 @@ export class Project {
     }
 
     // RegExp to match all locale files in format of en.json or en-US.json.
-    const localeRegex: RegExp = /^([a-z]{2}(?:-?(?:[A-Z]{2})?)).(?:json|js)$/m;
+    const localeRegex = /^([a-z]{2}(?:-?(?:[A-Z]{2})?)).(?:json|js)$/m;
     return files.reduce((locales: string[], file: string) => {
       const match = localeRegex.exec(file);
 
@@ -253,8 +250,10 @@ export class Project {
 
     for (const plugin of projectPlugins) {
       if (!(plugin instanceof JovoCliPlugin)) {
-        // @ts-ignore
-        throw new JovoCliError(`${plugin.constructor.name} is not a JovoCliPlugin.`, 'JovoCliCore');
+        const pluginName: string =
+          typeof plugin === 'object' ? (plugin as object).constructor.name : plugin;
+
+        throw new JovoCliError(`${pluginName} is not a JovoCliPlugin.`, 'JovoCliCore');
       }
 
       plugins.push(plugin);

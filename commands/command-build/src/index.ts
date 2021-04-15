@@ -1,13 +1,13 @@
-import { JovoCliPlugin, PluginType } from '@jovotech/cli-core';
+import { JovoCliPlugin, PluginCommand, PluginType } from '@jovotech/cli-core';
 import { Build } from './commands/build';
 
 export * from './commands/build';
 
 export class BuildCommand extends JovoCliPlugin {
   type: PluginType = 'command';
-  id: string = 'build';
+  id = 'build';
 
-  getCommands() {
+  getCommands(): typeof PluginCommand[] {
     return [Build];
   }
 }

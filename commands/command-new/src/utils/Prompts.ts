@@ -7,7 +7,10 @@ import {
   ProjectProperties,
   prompt,
   validateLocale,
+  CliArgs,
+  CliFlags,
 } from '@jovotech/cli-core';
+import { New } from '../commands/new';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -22,7 +25,7 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
         ...jovo.$userConfig.getPresets().map((preset: Preset) => {
           const language: string = chalk.blueBright(preset.language);
           const projectName: string = chalk.underline.blueBright(preset.projectName);
-          const output: string = `(${projectName}/, ${language})`;
+          const output = `(${projectName}/, ${language})`;
           return {
             title: preset.name,
             description: output,
@@ -44,8 +47,8 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
 }
 
 export async function promptProjectProperties(
-  args: any,
-  flags: any,
+  args: CliArgs<typeof New>,
+  flags: CliFlags<typeof New>,
   platforms: prompt.Choice[],
 ): Promise<ProjectProperties> {
   const props: ProjectProperties = await prompt(

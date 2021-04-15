@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "esModuleInterop": true,
+    "preserveConstEnums": true,
+    "strict": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "newLine": "LF",
+    "types": ["node", "jest"]
+  },
+  "include": ["**/*.d.ts", "src/**/*"],
+  "exclude": ["dist/**/*", "node_modules/**/*", "**/*.spec.ts"]
+}

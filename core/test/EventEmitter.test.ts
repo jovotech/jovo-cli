@@ -1,4 +1,4 @@
-import { Emitter, Events } from '../src';
+import { Emitter } from '../src';
 
 describe('new Emitter<T>()', () => {
   // * This test tests type safety, thus does not need to be run.
@@ -33,7 +33,7 @@ describe('on()', () => {
     const emitter: Emitter = new Emitter();
     expect(emitter.listeners('event')).toHaveLength(0);
 
-    const fn: (v: any) => void = () => {};
+    const fn: (v: unknown) => void = () => {};
     emitter.on('event', fn);
 
     expect(emitter.listeners('event')).toHaveLength(1);

@@ -1,5 +1,6 @@
 import * as Config from '@oclif/config';
 // This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {
@@ -45,8 +46,8 @@ export type DeployPlatformEvents =
   | 'after.deploy:platform';
 
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
-  static id: string = 'deploy:platform';
-  static description: string = 'Deploys platform configuration.';
+  static id = 'deploy:platform';
+  static description = 'Deploys platform configuration.';
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
@@ -91,13 +92,13 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     return super.install(plugin, emitter, config);
   }
 
-  install() {
+  install(): void {
     this.actionSet = {
       'before.deploy:platform': [this.checkForPlatformsFolder.bind(this)],
     };
   }
 
-  checkForPlatformsFolder() {
+  checkForPlatformsFolder(): void {
     if (!existsSync(jovo.$project!.getBuildPath())) {
       throw new JovoCliError(
         "Couldn't find a platform folder.",
@@ -107,7 +108,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     }
   }
 
-  async run() {
+  async run(): Promise<void> {
     checkForProjectDirectory();
 
     const { args, flags }: Pick<ParseContextDeployPlatform, 'args' | 'flags'> = this.parse(
@@ -123,7 +124,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       command: DeployPlatform.id,
       platforms: args.platform ? [args.platform] : jovo.getPlatforms(),
       locales: flags.locale || jovo.$project!.getLocales(),
-      target: flags.target,
+      // ToDo: Configure deploy depending on target.
+      target: flags.target as typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL,
       src: flags.src || jovo.$project!.getBuildDirectory(),
       flags,
       args,

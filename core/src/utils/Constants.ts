@@ -2,15 +2,15 @@ import * as os from 'os';
 import { get } from 'node-emoji';
 import chalk from 'chalk';
 
-export const DEFAULT_LOCALE: string = 'en';
-export const JOVO_WEBHOOK_URL: string = 'https://webhook.jovo.cloud';
+export const DEFAULT_LOCALE = 'en';
+export const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 export const ENDPOINTS: string[] = ['jovo-webhook', 'ngrok', 'none'];
-export const REPO_URL: string = 'https://www.jovo.tech/repo/sample-apps';
+export const REPO_URL = 'https://www.jovo.tech/repo/sample-apps';
 
 // ####### PROMPT ANSWERS #######
-export const ANSWER_OVERWRITE: string = 'overwrite';
-export const ANSWER_CANCEL: string = 'cancel';
-export const ANSWER_BACKUP: string = 'backup';
+export const ANSWER_OVERWRITE = 'overwrite';
+export const ANSWER_CANCEL = 'cancel';
+export const ANSWER_BACKUP = 'backup';
 
 // ####### EMOJIS #######
 // Check if current shell supports emoji. On Windows, this is only the case for Windows Terminal.
@@ -30,7 +30,7 @@ export const SPARKLES: string = SUPPORTS_EMOJI ? get('sparkles') : '';
 export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with_hook:') : '';
 
 // ####### TARGETS #######
-export const TARGET_ALL: string = 'all';
-export const TARGET_ZIP: string = 'zip';
-export const TARGET_INFO: string = 'info';
-export const TARGET_MODEL: string = 'model';
+export const TARGET_ALL = 'all';
+export const TARGET_ZIP = 'zip';
+export const TARGET_INFO = 'info';
+export const TARGET_MODEL = 'model';
