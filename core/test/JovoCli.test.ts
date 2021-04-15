@@ -249,11 +249,11 @@ describe('getPluginsWithType()', () => {
     const jovo: JovoCli = new JovoCli();
 
     jovo['cliPlugins'].push(plugin);
-    const plugins: JovoCliPlugin[] = jovo.getPluginsWithType('platform');
+    const plugins: JovoCliPlugin[] = jovo.getPluginsWithType('command');
 
     expect(Array.isArray(plugins)).toBeTruthy();
     expect(plugins).toHaveLength(1);
-    expect(plugins[0].id).toMatch('test');
+    expect(plugins[0].id).toMatch('commandPlugin');
   });
 });
 

@@ -6,10 +6,10 @@
   },
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist",
-    "tsc": "lerna run tsc",
+    "tsc": "lerna exec npm run tsc",
     "link": "lerna run link",
     "eslint": "lerna exec npm run eslint",
-    "test": "lerna run test",
+    "test": "lerna exec npm run test -- -- --passWithNoTests",
     "setup:dev": "npm run bootstrap && npm run link && npm run tsc"
   }
 }

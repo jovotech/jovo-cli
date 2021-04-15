@@ -8,6 +8,7 @@
   "scripts": {
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
+    "test": "jest",
     "link": "node bin/link"
   },
   "bugs": "https://github.com/rubenaeg/cli/issues",
