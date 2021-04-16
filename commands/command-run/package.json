@@ -49,6 +49,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "global-modules": "^2.0.0",
     "jest": "^26.6.3",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "symlink-dir": "^4.1.0",
     "ts-jest": "^26.4.4",
