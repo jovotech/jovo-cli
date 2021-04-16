@@ -524,7 +524,7 @@ describe('collectPlugins()', () => {
     expect(plugins[0]).toHaveProperty('config');
     expect(plugins[0].config).toHaveProperty('files');
     expect(plugins[0].config.files).toHaveProperty('foo');
-    expect(plugins[0].config.files.foo).toMatch('bar');
+    expect(plugins[0].config.files!.foo).toMatch('bar');
     expect(plugins[0].id).toMatch('commandPlugin');
 
     mocked.mockRestore();
