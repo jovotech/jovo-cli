@@ -173,11 +173,11 @@ describe('get()', () => {
     expect(configContent.stages).toBeUndefined();
     expect(configContent).toHaveProperty('plugins');
     expect(configContent.plugins).toHaveLength(1);
-    expect(configContent.plugins[0].id).toMatch('stagedCliPlugin');
-    expect(configContent.plugins[0].config.files).toHaveProperty('foo1');
-    expect(configContent.plugins[0].config.files.foo1).toMatch('bar1');
-    expect(configContent.plugins[0].config.files).toHaveProperty('foo2');
-    expect(configContent.plugins[0].config.files.foo2).toMatch('bar2');
+    expect(configContent.plugins![0].id).toMatch('stagedCliPlugin');
+    expect(configContent.plugins![0].config.files).toHaveProperty('foo1');
+    expect(configContent.plugins![0].config.files!.foo1).toMatch('bar1');
+    expect(configContent.plugins![0].config.files).toHaveProperty('foo2');
+    expect(configContent.plugins![0].config.files!.foo2).toMatch('bar2');
 
     mockedGetContent.mockRestore();
     mockedGet.mockRestore();
