@@ -36,7 +36,7 @@ describe('new JovoUserConfig()', () => {
 
 describe('JovoUserConfig.getPath()', () => {
   test('should return .jovo/config', () => {
-    expect(JovoUserConfig.getPath()).toMatch('.jovo/config');
+    expect(JovoUserConfig.getPath()).toMatch(joinPaths('.jovo', 'config'));
   });
 });
 

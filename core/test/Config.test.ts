@@ -259,7 +259,7 @@ describe('getPath()', () => {
     const mockedGet: jest.SpyInstance = jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config('test');
-    expect(config.getPath()).toMatch('test/jovo.project.js');
+    expect(config.getPath()).toMatch(joinPaths('test', 'jovo.project.js'));
 
     mockedGetContent.mockRestore();
     mockedGet.mockRestore();
