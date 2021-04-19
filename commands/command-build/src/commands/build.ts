@@ -16,7 +16,6 @@ import {
   Emitter,
   PluginConfig,
   flags,
-  REVERSE_ARROWS,
   CliFlags,
   ParseContext,
 } from '@jovotech/cli-core';
@@ -136,7 +135,8 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
 
     await this.$emitter.run('parse', { command: Build.id, flags, args });
 
-    console.log(`\n jovo build: ${Build.description}`);
+    console.log();
+    console.log(`jovo build: ${Build.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
@@ -159,7 +159,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
       await this.$emitter.run('reverse.build');
 
       console.log();
-      console.log(`  ${REVERSE_ARROWS} Reverse build completed.`);
+      console.log(`${TADA} Reverse build completed. ${TADA}`);
       console.log();
       return;
     }
@@ -176,7 +176,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     }
 
     console.log();
-    console.log('  Build completed.');
+    console.log(`${TADA} Build completed. ${TADA}`);
     console.log();
   }
 }

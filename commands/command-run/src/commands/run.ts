@@ -109,7 +109,8 @@ export class Run extends PluginCommand<RunEvents> {
 
     await this.$emitter.run('parse', { command: Run.id, flags, args });
 
-    console.log(`\n jovo run: ${Run.description}`);
+    console.log();
+    console.log(`jovo run: ${Run.description}`);
     console.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();

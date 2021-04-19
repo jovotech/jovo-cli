@@ -20,6 +20,7 @@ import {
   createTypedArguments,
   CliArgs,
   ParseContext,
+  TADA,
 } from '@jovotech/cli-core';
 import DeployCommand from '..';
 
@@ -117,7 +118,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
     await this.$emitter.run('parse', { command: DeployPlatform.id, flags, args });
 
-    console.log(`\n jovo deploy: ${DeployPlatform.description}`);
+    console.log();
+    console.log(`jovo deploy:platform: ${DeployPlatform.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
     const context: DeployPlatformContext = {
@@ -137,7 +139,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     await this.$emitter.run('after.deploy:platform');
 
     console.log();
-    console.log('  Platform deployment completed.');
+    console.log(`${TADA} Platform deployment completed. ${TADA}`);
     console.log();
   }
 }

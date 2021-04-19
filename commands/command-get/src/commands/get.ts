@@ -16,6 +16,7 @@ import {
   CliArgs,
   createTypedArguments,
   ParseContext,
+  TADA,
 } from '@jovotech/cli-core';
 import { BuildEvents } from '@jovotech/cli-command-build';
 import GetCommand from '..';
@@ -114,7 +115,8 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
 
     await this.$emitter.run('parse', { command: Get.id, flags, args });
 
-    console.log(`\n jovo get: ${Get.description}`);
+    console.log();
+    console.log(`jovo get: ${Get.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
 
     const context: GetContext = {
@@ -133,5 +135,9 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     if (flags.build) {
       await this.$emitter.run('reverse.build');
     }
+
+    console.log();
+    console.log(`${TADA} Successfully got your platform project! ${TADA}`);
+    console.log();
   }
 }

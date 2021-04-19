@@ -28,7 +28,7 @@ export function execAsync(
   return new Promise((resolve, reject) => {
     exec(cmd, options, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
-        reject({ stderr: error.message });
+        reject({ stderr: error.message, stdout });
       } else {
         // Reject only if stdout is empty.
         if (stderr && !stdout) {

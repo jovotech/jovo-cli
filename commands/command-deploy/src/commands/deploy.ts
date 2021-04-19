@@ -5,6 +5,7 @@ import {
   PluginCommand,
   PluginContext,
   printSubHeadline,
+  TADA,
 } from '@jovotech/cli-core';
 import { DeployPlatformEvents } from './deploy.platform';
 import { DeployCodeEvents } from './deploy.code';
@@ -53,7 +54,8 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
 
     await this.$emitter.run('parse', { command: Deploy.id, flags, args });
 
-    console.log(`\n jovo deploy: ${Deploy.description}`);
+    console.log();
+    console.log(`jovo deploy: ${Deploy.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
     const context: PluginContext = {
@@ -70,7 +72,7 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
     await this.$emitter.run('after.deploy');
 
     console.log();
-    console.log('  Deployment completed.');
+    console.log(`${TADA} Deployment completed. ${TADA}`);
     console.log();
   }
 }

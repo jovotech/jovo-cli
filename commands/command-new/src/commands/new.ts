@@ -25,6 +25,7 @@ import {
   CliFlags,
   CliArgs,
   createTypedArguments,
+  TADA,
 } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync } from 'fs';
@@ -102,7 +103,8 @@ export class New extends PluginCommand {
       New,
     );
 
-    console.log(`\n jovo new: ${New.description}`);
+    console.log();
+    console.log(`jovo new: ${New.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: Preset | undefined;
@@ -192,7 +194,7 @@ export class New extends PluginCommand {
     }
 
     console.log();
-    console.log(`  ${WRENCH} I'm setting everything up`);
+    console.log(`${WRENCH} I'm setting everything up`);
     console.log();
 
     const newTask: Task = new Task(
@@ -247,7 +249,7 @@ export class New extends PluginCommand {
     await linkPlugins(resolve(projectProperties.projectName));
 
     console.log();
-    console.log(`${STAR} Successfully created your project! ${STAR}`);
+    console.log(`${TADA} Successfully created your project! ${TADA}`);
     console.log();
   }
 }

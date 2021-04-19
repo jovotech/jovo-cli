@@ -1,4 +1,4 @@
-import { prompt } from 'prompts';
+import { prompt } from '@jovotech/cli-core';
 
 /**
  * Prompts for the platform to use.

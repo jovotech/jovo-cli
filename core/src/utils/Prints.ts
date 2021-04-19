@@ -28,7 +28,7 @@ export function printSubHeadline(hl: string): string {
 
 /**
  * Returns a string of an ASK profile in white bold font.
- * @param askProfile - ASK profile to print.
+ * @param askProfile - Optional ASK profile to print.
  */
 export function printAskProfile(askProfile?: string): string {
   return askProfile ? `[ASK profile: ${printHighlight(askProfile)}]` : '';
