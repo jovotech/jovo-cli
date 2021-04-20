@@ -2,12 +2,13 @@ import { exec, ExecException, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
+import _get from 'lodash.get';
 import stripAnsi from 'strip-ansi';
 
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
-import { CommandArgument, PackageVersions, PackageVersionsNpm, TypeFromArray } from './Interfaces';
+import { LocaleMap, PackageVersions, PackageVersionsNpm } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -243,9 +244,36 @@ export function getRawString(output: string): string {
 }
 
 /**
- * Strips ANSI escape codes from the provided string.
- * @param output - String potentially containing ANSI escape codes to be stripped.
+ * Returns platform-specific resolved locales. If no locale map is specified, returns [locale].
+ * @param locale - Locale for which to return resolved locales.
+ * @param supportedLocales - Array of supported locales, required to match glob patterns such as en-*.
+ * @param localeMap - Optional locale map from the plugin configuration.
  */
-export function getRawString(output: string): string {
-  return stripAnsi(output);
+export function getResolvedLocales(
+  locale: string,
+  supportedLocales: readonly string[],
+  pluginName: string,
+  localeMap?: LocaleMap,
+): string[] {
+  const resolvedLocales: string[] | undefined = _get(localeMap, locale);
+
+  if (resolvedLocales) {
+    if (!Array.isArray(resolvedLocales)) {
+      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, pluginName);
+    }
+
+    const globPattern: string | undefined = resolvedLocales.find((locale) =>
+      /[a-zA-Z]{2}-\*/.test(locale),
+    );
+
+    if (globPattern) {
+      const genericLocale: string = globPattern.replace('-*', '');
+
+      return supportedLocales.filter((locale) => locale.includes(genericLocale));
+    }
+
+    return resolvedLocales;
+  }
+
+  return [locale];
 }

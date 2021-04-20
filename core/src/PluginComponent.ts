@@ -1,4 +1,3 @@
-import _get from 'lodash.get';
 import { Emitter } from './EventEmitter';
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { ActionSet, PluginConfig, PluginContext } from './utils/Interfaces';
@@ -55,29 +54,5 @@ export class PluginComponent {
         this.$emitter.off(key, fn);
       }
     }
-  }
-
-  /**
-   * Returns platform-specific resolved locales.
-   * @param locale - Locale for which to return resolved locales.
-   */
-  protected getResolvedLocales(locale: string): string[] {
-    const resolvedLocales: string[] | undefined = _get(this.$config, `locales["${locale}"]`);
-
-    if (resolvedLocales) {
-      const globPattern: string | undefined = resolvedLocales.find((locale) =>
-        /[a-zA-Z]{2}-\*/.test(locale),
-      );
-
-      if (globPattern) {
-        const genericLocale: string = globPattern.replace('-*', '');
-
-        return this.$plugin.supportedLocales.filter((locale) => locale.includes(genericLocale));
-      }
-
-      return resolvedLocales;
-    }
-
-    return [locale];
   }
 }

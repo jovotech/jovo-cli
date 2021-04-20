@@ -8,7 +8,6 @@ export abstract class JovoCliPlugin {
   abstract readonly id: string;
 
   readonly config: PluginConfig;
-  readonly supportedLocales: string[] = [];
 
   constructor(config: PluginConfig = {}) {
     this.config = config;
