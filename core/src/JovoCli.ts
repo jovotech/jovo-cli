@@ -65,7 +65,7 @@ export class JovoCli {
     }
 
     const packageJson = require(packageJsonPath);
-    if (!_get(packageJson, 'dependencies["jovo-framework"]')) {
+    if (!_get(packageJson, 'dependencies["@jovotech/framework"]')) {
       return false;
     }
 

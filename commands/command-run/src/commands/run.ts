@@ -69,7 +69,7 @@ export class Run extends PluginCommand<RunEvents> {
       default: 5000,
     }),
   };
-  static args = [<const>{ name: 'webhookFile', default: 'index.js' }];
+  static args = [<const>{ name: 'webhookFile', default: 'app.dev.js' }];
 
   install(): void {
     this.actionSet = {
