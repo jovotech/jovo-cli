@@ -12,14 +12,11 @@ import {
   JovoCli,
   JovoCliError,
   Preset,
-  MarketplacePlugin,
   PluginCommand,
   printHighlight,
   printSubHeadline,
   ProjectProperties,
-  prompt,
   promptOverwrite,
-  STAR,
   Task,
   WRENCH,
   CliFlags,
@@ -36,7 +33,6 @@ import {
   promptProjectProperties,
   promptSavePreset,
   TemplateBuilder,
-  fetchMarketPlace,
   linkPlugins,
 } from '../utils';
 
@@ -116,14 +112,7 @@ export class New extends PluginCommand {
         const { selectedPreset } = await promptPreset();
         if (selectedPreset === 'manual') {
           // Manually select project properties.
-          const platformPlugins: MarketplacePlugin[] = fetchMarketPlace().filter((plugin) =>
-            plugin.tags.includes('platforms'),
-          );
-          const platforms: prompt.Choice[] = platformPlugins.map((plugin) => ({
-            title: plugin.name,
-            value: plugin,
-          }));
-          const options: ProjectProperties = await promptProjectProperties(args, flags, platforms);
+          const options: ProjectProperties = await promptProjectProperties(args, flags);
 
           preset = {
             name: '',

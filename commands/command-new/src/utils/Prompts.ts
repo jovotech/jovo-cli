@@ -11,6 +11,7 @@ import {
   CliFlags,
 } from '@jovotech/cli-core';
 import { New } from '../commands/new';
+import { fetchMarketPlace, printUserInput } from '.';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -27,13 +28,13 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
           const projectName: string = chalk.underline.blueBright(preset.projectName);
           const output = `(${projectName}/, ${language})`;
           return {
-            title: preset.name,
+            title: printUserInput(preset.name),
             description: output,
             value: preset.name,
           };
         }),
         {
-          title: 'Or manually select features...',
+          title: printUserInput('Or manually select features...'),
           value: 'manual',
         },
       ],
@@ -49,7 +50,6 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
 export async function promptProjectProperties(
   args: CliArgs<typeof New>,
   flags: CliFlags<typeof New>,
-  platforms: prompt.Choice[],
 ): Promise<ProjectProperties> {
   const props: ProjectProperties = await prompt(
     [
@@ -58,6 +58,11 @@ export async function promptProjectProperties(
         message: "Please enter your project's name:",
         type: !args.directory ? 'text' : false,
         initial: 'helloworld',
+        onState() {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.rendered = printUserInput(this.rendered);
+        },
       },
       // Prompt for Programming Language (js/ts).
       {
@@ -65,8 +70,8 @@ export async function promptProjectProperties(
         message: 'Select the programming language you want to use:',
         type: !flags.language && !flags.typescript ? 'select' : false,
         choices: [
-          { title: 'TypeScript', value: 'typescript' },
-          { title: 'JavaScript', value: 'javascript' },
+          { title: printUserInput('TypeScript'), value: 'typescript' },
+          { title: printUserInput('JavaScript'), value: 'javascript' },
         ],
       },
       // Prompt for Platforms (multiple).
@@ -74,7 +79,12 @@ export async function promptProjectProperties(
         name: 'platforms',
         message: 'Choose the platforms you want to use (select with space):',
         type: 'multiselect',
-        choices: platforms,
+        choices: fetchMarketPlace()
+          .filter((plugin) => plugin.tags.includes('platforms'))
+          .map((plugin) => ({
+            title: printUserInput(plugin.name),
+            value: plugin,
+          })),
       },
       {
         name: 'locales',
@@ -87,10 +97,15 @@ export async function promptProjectProperties(
               validateLocale(locale.trim());
             }
           } catch (error) {
-            return error.msg;
+            return error.message;
           }
 
           return true;
+        },
+        onState() {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.rendered = printUserInput(this.rendered);
         },
       },
       {
@@ -98,8 +113,8 @@ export async function promptProjectProperties(
         message: 'Do you want to use a Linter?',
         type: 'select',
         choices: [
-          { title: 'Yes, ESLint + Prettier', value: true },
-          { title: "No (or I'll add it later)", value: false },
+          { title: printUserInput('Yes, ESLint + Prettier'), value: true },
+          { title: printUserInput("No (or I'll add it later)"), value: false },
         ],
       },
       {
@@ -107,8 +122,8 @@ export async function promptProjectProperties(
         message: 'Do you want to use Unit Testing?',
         type: 'select',
         choices: [
-          { title: 'Yes, Jest', value: true },
-          { title: "No (or I'll add it later)", value: false },
+          { title: printUserInput('Yes, Jest'), value: true },
+          { title: printUserInput("No (or I'll add it later)"), value: false },
         ],
       },
     ],

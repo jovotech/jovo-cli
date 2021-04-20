@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 import { join as joinPaths, resolve } from 'path';
 import { execAsync, JovoCliError, MarketplacePlugin, REPO_URL } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
+import chalk from 'chalk';
 
 export * from './Prompts';
 export * as TemplateBuilder from './TemplateBuilder';
@@ -220,4 +221,8 @@ export async function linkPlugins(projectPath = ''): Promise<void> {
   } catch (error) {
     throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
   }
+}
+
+export function printUserInput(input: string): string {
+  return chalk.blueBright(input);
 }
