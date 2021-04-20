@@ -3,5 +3,13 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.22.1"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist",
+    "tsc": "lerna exec npm run tsc",
+    "link": "lerna run link",
+    "eslint": "lerna exec npm run eslint",
+    "test": "lerna exec npm run test -- -- --passWithNoTests",
+    "setup:dev": "npm run bootstrap && npm run link && npm run tsc"
   }
 }

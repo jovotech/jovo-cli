@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+const { join } = require('path');
+const symlinkDir = require('symlink-dir');
+const { platform } = require('os');
+const { copyFileSync } = require('fs');
+const { npm } = require('global-dirs');
+
+(async () => {
+  if (platform() === 'win32') {
+    await symlinkDir('.', join(npm.packages, 'jovodev'));
+    copyFileSync(join('bin', 'jovodev'), join(npm.prefix, 'jovodev'));
+    copyFileSync(join('bin' ,'jovodev.ps1'), join(npm.prefix, 'jovodev.ps1'));
+    copyFileSync(join('bin', 'jovodev.cmd'), join(npm.prefix, 'jovodev.cmd'));
+  } else {
+    await symlinkDir(join('bin', 'run'), join(npm.prefix, 'bin', 'jovodev'));
+  }
+})();

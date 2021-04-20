@@ -53,4 +53,5 @@ node_modules
 npm-debug.log
 out
 dist
+!**/__mocks__/**/*
 lerna-debug.log
