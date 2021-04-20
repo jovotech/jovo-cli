@@ -17,7 +17,6 @@ import {
   Task,
   flags,
   CliFlags,
-  createTypedArguments,
   CliArgs,
   ParseContext,
 } from '@jovotech/cli-core';
@@ -70,7 +69,7 @@ export class Run extends PluginCommand<RunEvents> {
       default: 5000,
     }),
   };
-  static args = createTypedArguments([{ name: 'webhookFile', default: 'index.js' }]);
+  static args = [<const>{ name: 'webhookFile', default: 'index.js' }];
 
   install(): void {
     this.actionSet = {

@@ -235,14 +235,11 @@ export function mergeArrayCustomizer(target: unknown[], source: unknown[]): unkn
 }
 
 /**
- * Function to create typed command arguments.
- * @param args
+ * Strips ANSI escape codes from the provided string.
+ * @param output - String potentially containing ANSI escape codes to be stripped.
  */
-export function createTypedArguments<
-  NAMES extends string[],
-  ARGS extends CommandArgument<TypeFromArray<NAMES>>[]
->(args: ARGS): TypeFromArray<ARGS>[] {
-  return args;
+export function getRawString(output: string): string {
+  return stripAnsi(output);
 }
 
 /**

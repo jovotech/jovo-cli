@@ -14,7 +14,6 @@ import {
   PluginConfig,
   CliFlags,
   CliArgs,
-  createTypedArguments,
   ParseContext,
   TADA,
 } from '@jovotech/cli-core';
@@ -75,8 +74,8 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
       description: 'Forces overwrite of existing project.',
     }),
   };
-  static args = createTypedArguments([
-    {
+  static args = ([
+    <const>{
       name: 'platform',
       description: 'Platform to get files from.',
       options: Get.availablePlatforms,

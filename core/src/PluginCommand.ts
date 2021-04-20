@@ -14,8 +14,6 @@ import { JovoCliPlugin } from './JovoCliPlugin';
  * * Workaround, since mixin() can't support abstract classes.
  */
 class OclifCommand extends Command {
-  static args: Parser.args.Input;
-
   run(): PromiseLike<unknown> {
     throw new Error('Method not implemented.');
   }
@@ -27,6 +25,8 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
 ) {
   protected actionSet!: ActionSet<T | DefaultEvents>;
   protected $emitter!: Emitter<T | DefaultEvents>;
+
+  static args: Parser.args.Input;
 
   /**
    * Loads command into CLI.

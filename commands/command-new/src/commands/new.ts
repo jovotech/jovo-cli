@@ -24,7 +24,6 @@ import {
   WRENCH,
   CliFlags,
   CliArgs,
-  createTypedArguments,
   TADA,
 } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
@@ -83,8 +82,8 @@ export class New extends PluginCommand {
     }),
   };
   // Defines arguments that can be passed to the command.
-  static args = createTypedArguments([
-    {
+  static args = [
+    <const>{
       name: 'directory',
       description: 'Project directory.',
       parse(directory?: string) {
@@ -96,7 +95,7 @@ export class New extends PluginCommand {
         return directory;
       },
     },
-  ]);
+  ];
 
   async run(): Promise<void> {
     const { args, flags }: { args: CliArgs<typeof New>; flags: CliFlags<typeof New> } = this.parse(

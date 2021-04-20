@@ -12,15 +12,14 @@ import {
   printSubHeadline,
   prompt,
   promptOverwrite,
-  SPARKLES,
   Task,
   wait,
   WRENCH,
   JovoCli,
   CliFlags,
-  createTypedArguments,
   CliArgs,
   ParseContext,
+  TADA,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -62,13 +61,13 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     }),
   };
   // Defines arguments that can be passed to the command.
-  static args = createTypedArguments([
-    {
+  static args = [
+    <const>{
       name: 'stage',
       description: 'Name of the stage.',
       required: true,
     },
-  ]);
+  ];
 
   $context!: NewStageContext;
 
@@ -190,7 +189,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     await this.$emitter.run('after.new:stage');
 
     console.log();
-    console.log(`${SPARKLES} Successfully created a new stage. ${SPARKLES}`);
+    console.log(`${TADA} Successfully created a new stage. ${TADA}`);
     console.log();
   }
 }

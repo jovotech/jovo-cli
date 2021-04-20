@@ -17,7 +17,6 @@ import {
   TARGET_INFO,
   TARGET_MODEL,
   CliFlags,
-  createTypedArguments,
   CliArgs,
   ParseContext,
   TADA,
@@ -74,14 +73,14 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       description: 'Location of model files.',
     }),
   };
-  static args = createTypedArguments([
-    {
+  static args = [
+    <const>{
       name: 'platform',
       required: true,
       description: 'Specifies a build platform.',
       options: DeployPlatform.availablePlatforms,
     },
-  ]);
+  ];
 
   static async install(
     plugin: DeployCommand,

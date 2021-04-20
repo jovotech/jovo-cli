@@ -4,14 +4,13 @@ import { JovoConfig } from 'jovo-config';
 import { JovoCliPlugin } from '../JovoCliPlugin';
 import { PluginCommand } from '../PluginCommand';
 
-export type TypeFromArray<T extends unknown[]> = T[number];
-
 // ####### EVENT EMITTER #######
 
 export type Events = string;
 
 export type ActionSet<T extends Events = DefaultEvents> = {
-  [K in T]?: Array<(...v: unknown[]) => void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [K in T]?: Array<(...v: any[]) => void>;
 };
 
 export interface InstallContext {
@@ -40,9 +39,13 @@ export interface Files {
   [key: string]: string | Files;
 }
 
+export interface LocaleMap {
+  [locale: string]: string[];
+}
+
 export interface PluginConfig {
   files?: Files;
-  locales?: { [locale: string]: string[] };
+  locales?: LocaleMap;
 }
 
 export interface ConfigHooks {
@@ -144,6 +147,6 @@ export interface CommandArgument<NAME extends string> {
 }
 
 export type CliArgs<COMMAND extends typeof PluginCommand> = Record<
-  TypeFromArray<COMMAND['args']>['name'],
+  COMMAND['args'][number]['name'],
   string
 >;
