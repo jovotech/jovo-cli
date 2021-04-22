@@ -1,13 +1,5 @@
 import { Command, Plugin, Topic } from '@oclif/config';
-import {
-  DefaultEvents,
-  Emitter,
-  JovoCli,
-  ConfigHooks,
-  JovoCliPlugin,
-  PluginCommand,
-  PluginHook,
-} from '@jovotech/cli-core';
+import { DefaultEvents, Emitter, JovoCli, ConfigHooks, JovoCliPlugin } from '@jovotech/cli-core';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {
@@ -34,26 +26,10 @@ export class Collector extends Plugin {
       const plugins: JovoCliPlugin[] = jovo.loadPlugins();
 
       for (const plugin of plugins) {
-        // Install plugin commands.
-        const pluginCommands: typeof PluginCommand[] = plugin.getCommands();
-
-        for (const pluginCommand of pluginCommands) {
-          const command = await pluginCommand.install(plugin, emitter, plugin.config);
-
-          // Move the command currently being executed to the beginning.
-          if (pluginCommand.id === commandId) {
-            this.commands.unshift(command);
-          } else {
-            this.commands.push(command);
-          }
-        }
-
-        // Install plugin hooks.
-        const pluginHooks: typeof PluginHook[] = plugin.getHooks();
-
-        for (const pluginHook of pluginHooks) {
-          pluginHook.install(plugin, emitter, plugin.config);
-        }
+        plugin.install(emitter);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.commands.push(...plugin.getCommands());
       }
 
       // Load hooks from project configuration.
@@ -75,12 +51,18 @@ export class Collector extends Plugin {
       }
 
       // Run install middleware for currently executed command.
-      const { id: command, flags, args } = this.commands[0];
-      await emitter.run('install', {
-        command,
-        flags,
-        args,
-      });
+      const currentCommand: Command.Plugin | undefined = this.commands.find(
+        (command) => command.id === commandId,
+      );
+
+      if (currentCommand) {
+        const { id: command, flags, args } = currentCommand;
+        await emitter.run('install', {
+          command,
+          flags,
+          args,
+        });
+      }
     } catch (error) {
       console.log(`There was a problem:\n${error}`);
       process.exit();

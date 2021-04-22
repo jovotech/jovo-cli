@@ -12,17 +12,9 @@ export class PluginComponent {
   protected $context!: PluginContext;
 
   static install(plugin: JovoCliPlugin, emitter: Emitter, config: PluginConfig): void {
-    if (!this.prototype.$plugin) {
-      this.prototype.$plugin = plugin;
-    }
-
-    if (!this.prototype.$emitter) {
-      this.prototype.$emitter = emitter;
-    }
-
-    if (!this.prototype.$config) {
-      this.prototype.$config = config;
-    }
+    this.prototype.$plugin = plugin;
+    this.prototype.$emitter = emitter;
+    this.prototype.$config = config;
 
     // Load action set.
     this.prototype.install();

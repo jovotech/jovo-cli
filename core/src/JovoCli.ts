@@ -117,8 +117,12 @@ export class JovoCli {
     }
   }
 
+  /**
+   * Returns an array of CLI plugin with the provided type.
+   * @param type - Type of CLI plugin.
+   */
   getPluginsWithType(type: PluginType): JovoCliPlugin[] {
-    return this.cliPlugins.filter((el) => el.type === type);
+    return this.cliPlugins.filter((plugin) => plugin.type === type);
   }
 
   getPlatforms(): string[] {
