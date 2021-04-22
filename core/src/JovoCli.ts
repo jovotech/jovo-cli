@@ -122,11 +122,11 @@ export class JovoCli {
    * @param type - Type of CLI plugin.
    */
   getPluginsWithType(type: PluginType): JovoCliPlugin[] {
-    return this.cliPlugins.filter((plugin) => plugin.type === type);
+    return this.cliPlugins.filter((plugin) => plugin.$type === type);
   }
 
   getPlatforms(): string[] {
-    return this.getPluginsWithType('platform').map((el: JovoCliPlugin) => el.id);
+    return this.getPluginsWithType('platform').map((el: JovoCliPlugin) => el.$id);
   }
 
   /**

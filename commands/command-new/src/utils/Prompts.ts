@@ -4,6 +4,7 @@ import {
   Preset,
   MarketplacePlugin,
   printHighlight,
+  printUserInput,
   ProjectProperties,
   prompt,
   validateLocale,
@@ -11,7 +12,7 @@ import {
   CliFlags,
 } from '@jovotech/cli-core';
 import { New } from '../commands/new';
-import { fetchMarketPlace, printUserInput } from '.';
+import { fetchMarketPlace } from '.';
 
 const jovo: JovoCli = JovoCli.getInstance();
 
@@ -144,8 +145,8 @@ export async function promptSavePreset(): Promise<{ savePreset: boolean }> {
       message: `Do you want to save this preset to ${printHighlight('.jovo/config')}?`,
       type: 'select',
       choices: [
-        { title: 'Yes', value: true },
-        { title: 'No', value: false },
+        { title: printUserInput('Yes'), value: true },
+        { title: printUserInput('No'), value: false },
       ],
     },
     {
@@ -172,6 +173,11 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
       },
       format(presetName: string) {
         return presetName.trim();
+      },
+      onState() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.rendered = printUserInput(this.rendered);
       },
     },
     {

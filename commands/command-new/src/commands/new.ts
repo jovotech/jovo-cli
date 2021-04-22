@@ -22,6 +22,9 @@ import {
   CliFlags,
   CliArgs,
   TADA,
+  JovoCliPlugin,
+  PluginContext,
+  MarketplacePlugin,
 } from '@jovotech/cli-core';
 import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync } from 'fs';
@@ -38,7 +41,20 @@ import {
 
 const jovo: JovoCli = JovoCli.getInstance();
 
-export class New extends PluginCommand {
+export type NewArgs = CliArgs<typeof New>;
+export type NewFlags = CliFlags<typeof New>;
+
+export interface NewContext
+  extends Omit<PluginContext, 'platforms'>,
+    Omit<ProjectProperties, 'name' | 'key'> {
+  args: NewArgs;
+  flags: NewFlags;
+  platforms: (MarketplacePlugin & { cliPlugin: JovoCliPlugin })[];
+}
+
+export type NewEvents = 'new';
+
+export class New extends PluginCommand<NewEvents> {
   static id = 'new';
   // Prints out a description for this command.
   static description = 'Creates a new Jovo project.';
@@ -94,9 +110,7 @@ export class New extends PluginCommand {
   ];
 
   async run(): Promise<void> {
-    const { args, flags }: { args: CliArgs<typeof New>; flags: CliFlags<typeof New> } = this.parse(
-      New,
-    );
+    const { args, flags }: { args: NewArgs; flags: NewFlags } = this.parse(New);
 
     console.log();
     console.log(`jovo new: ${New.description}`);
@@ -105,7 +119,7 @@ export class New extends PluginCommand {
     let preset: Preset | undefined;
 
     if (!flags['no-wizard']) {
-      console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard. ${CRYSTAL_BALL}`);
+      console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard.`);
       console.log();
 
       try {
@@ -141,24 +155,27 @@ export class New extends PluginCommand {
       preset = jovo.$userConfig.getPreset(flags.preset);
     }
 
-    const projectProperties: ProjectProperties = {
+    const context: NewContext = {
+      command: New.id,
       projectName: args.directory,
       language: (flags.language as 'javascript' | 'typescript') || 'typescript',
       linter: false,
       unitTesting: false,
       locales: flags.locale || ['en'],
       platforms: [],
+      flags,
+      args,
     };
 
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(projectProperties));
+      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(context));
 
-      _merge(projectProperties, contextPreset);
+      _merge(context, contextPreset);
     }
 
     // Directory is mandatory, so throw an error if omitted.
-    if (!projectProperties.projectName) {
+    if (!context.projectName) {
       throw new JovoCliError(
         'Please provide a directory.',
         '@jovotech/cli-command-new',
@@ -167,18 +184,18 @@ export class New extends PluginCommand {
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
-    if (jovo.hasExistingProject(projectProperties.projectName)) {
+    if (jovo.hasExistingProject(context.projectName)) {
       if (!flags.overwrite) {
         const { overwrite } = await promptOverwrite(
           `The directory ${printHighlight(
-            projectProperties.projectName,
+            context.projectName,
           )} already exists. What would you like to do?`,
         );
         if (overwrite === ANSWER_CANCEL) {
           process.exit();
         }
       }
-      deleteFolderRecursive(joinPaths(process.cwd(), projectProperties.projectName));
+      deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
     }
 
     console.log();
@@ -186,12 +203,12 @@ export class New extends PluginCommand {
     console.log();
 
     const newTask: Task = new Task(
-      `Creating new directory ${printHighlight(projectProperties.projectName)}/`,
+      `Creating new directory ${printHighlight(context.projectName)}/`,
       () => {
-        if (!existsSync(projectProperties.projectName)) {
-          mkdirSync(projectProperties.projectName);
+        if (!existsSync(context.projectName)) {
+          mkdirSync(context.projectName);
         }
-        return joinPaths(jovo.$projectPath, projectProperties.projectName);
+        return joinPaths(jovo.$projectPath, context.projectName);
       },
     );
     await newTask.run();
@@ -215,29 +232,53 @@ export class New extends PluginCommand {
 
       copySync(
         joinPaths(jovo.$projectPath, templatePath),
-        joinPaths(jovo.$projectPath, projectProperties.projectName),
+        joinPaths(jovo.$projectPath, context.projectName),
       );
     });
     await downloadTask.run();
 
-    const prepareTask: Task = new Task('Preparing template', async () =>
-      TemplateBuilder.build(projectProperties),
-    );
-    await prepareTask.run();
+    // Modify package.json to include plugins and omit not needed packages, depending on configuration.
+    await TemplateBuilder.modifyDependencies(context);
+    TemplateBuilder.generateAppConfiguration(context);
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(jovo.$projectPath, projectProperties.projectName));
+        await runNpmInstall(joinPaths(jovo.$projectPath, context.projectName));
       });
       await installNpmTask.run();
     }
 
     // ! Rename dependencies to fit to the current MVP structure and link project dependencies for local setup.
-    await linkPlugins(resolve(projectProperties.projectName));
+    const linkTask: Task = new Task(
+      'Linking local dependencies',
+      async () => await linkPlugins(resolve(context.projectName)),
+    );
+    await linkTask.run();
+
+    // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
+    // This allows the plugin to do some configuration on creating a new project, such as generating a default config
+    // based on the current context.
+    for (const platform of context.platforms) {
+      // Load and instantiate the respective CLI plugin with the config set to null, which resolves to the default config (i.e. JovoCliPlugin.$config).
+      const plugin: JovoCliPlugin = new (require(resolve(
+        joinPaths(context.projectName, 'node_modules', platform.package),
+      ))[platform.cliModule!])(null);
+
+      plugin.install(this.$emitter);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      plugin.setPluginContext(context);
+      platform.cliPlugin = plugin;
+    }
+
+    await this.$emitter.run('new');
+
+    TemplateBuilder.generateProjectConfiguration(context);
 
     console.log();
-    console.log(`${TADA} Successfully created your project! ${TADA}`);
+    console.log(`${TADA} Successfully created your project!`);
     console.log();
   }
 }

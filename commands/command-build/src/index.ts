@@ -4,8 +4,8 @@ import { Build } from './commands/build';
 export * from './commands/build';
 
 export class BuildCommand extends JovoCliPlugin {
-  type: PluginType = 'command';
-  id = 'build';
+  $id: string = 'build';
+  $type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
     return [Build];

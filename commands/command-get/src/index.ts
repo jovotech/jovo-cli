@@ -4,8 +4,8 @@ import { Get } from './commands/get';
 export * from './commands/get';
 
 export class GetCommand extends JovoCliPlugin {
-  type: PluginType = 'command';
-  id = 'get';
+  $id: string = 'get';
+  $type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
     return [Get];

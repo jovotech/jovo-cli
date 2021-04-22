@@ -1,5 +1,6 @@
 import prompt from 'prompts';
 import { ANSWER_BACKUP, ANSWER_CANCEL, ANSWER_OVERWRITE } from './Constants';
+import { printUserInput } from './Prints';
 
 /**
  * Prompt if existing model files should be overwritten.
@@ -11,9 +12,9 @@ export async function promptOverwriteReverseBuild(): Promise<{ overwrite: string
       type: 'select',
       message: 'Found existing model files. How do you want to proceed?',
       choices: [
-        { title: 'Overwrite', value: ANSWER_OVERWRITE },
-        { title: 'Backup old files and proceed', value: ANSWER_BACKUP },
-        { title: 'Cancel', value: ANSWER_CANCEL },
+        { title: printUserInput('Overwrite'), value: ANSWER_OVERWRITE },
+        { title: printUserInput('Backup old files and proceed'), value: ANSWER_BACKUP },
+        { title: printUserInput('Cancel'), value: ANSWER_CANCEL },
       ],
     },
     {
@@ -58,11 +59,11 @@ export async function promptOverwrite(message: string): Promise<{ overwrite: str
       message,
       choices: [
         {
-          title: 'Overwrite',
+          title: printUserInput('Overwrite'),
           value: ANSWER_OVERWRITE,
         },
         {
-          title: 'Cancel',
+          title: printUserInput('Cancel'),
           value: ANSWER_CANCEL,
         },
       ],
