@@ -5,7 +5,7 @@ import { JovoCliError } from './JovoCliError';
 
 export class Task {
   private enabled = true;
-  private indentation = 2;
+  private indentation = 0;
 
   constructor(
     private title: string,

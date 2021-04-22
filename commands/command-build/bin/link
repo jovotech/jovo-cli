@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 const { join } = require('path');
 const symlinkDir = require('symlink-dir');
-const { execSync } = require('child_process');
-const { existsSync } = require('fs');
 const { npm } = require('global-dirs');
 
 (async () => {
-    await symlinkDir('.', join(npm.packages, '@jovotech/cli-command-build'));
+  await symlinkDir('.', join(npm.packages, '@jovotech/cli-command-build'));
 })();

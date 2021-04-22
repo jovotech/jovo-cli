@@ -49,3 +49,11 @@ export function printWarning(message: string): string {
 export function printCode(code: string): string {
   return chalk.green(code);
 }
+
+/**
+ * Prints user input in prompts in a bright blue.
+ * @param input - User input to color in.
+ */
+export function printUserInput(input: string): string {
+  return chalk.blueBright(input);
+}

@@ -6,8 +6,8 @@ export * from './commands/new';
 export * from './commands/new.stage';
 
 export class NewCommand extends JovoCliPlugin {
-  id = 'new';
-  type: PluginType = 'command';
+  $id: string = 'new';
+  $type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
     return [New, NewStage];

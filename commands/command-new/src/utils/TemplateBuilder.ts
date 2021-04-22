@@ -3,39 +3,22 @@ import { omit } from 'lomit';
 import _set from 'lodash.set';
 import { copyFileSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
-import {
-  Config as ProjectConfig,
-  JovoCli,
-  JovoCliError,
-  ProjectProperties,
-} from '@jovotech/cli-core';
+import { Config as ProjectConfig, JovoCliError } from '@jovotech/cli-core';
+
 import { insert } from '.';
+import { NewContext } from '../commands/new';
 
-export async function build(projectProperties: ProjectProperties): Promise<void> {
-  const jovo: JovoCli = JovoCli.getInstance();
-  const projectPath: string = joinPaths(jovo.$projectPath, projectProperties.projectName);
-  const projectConfigPath: string = joinPaths(projectPath, ProjectConfig.getFileName());
+/**
+ * Mofifies dependencies from the project's package.json. Installs configured CLI plugins and
+ * potentially removes dependencies and configurations for ESLint/Jest, if omitted.
+ * @param context - Current context, containing configured project properties.
+ */
+export async function modifyDependencies(context: NewContext): Promise<void> {
+  const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
+  let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-  // Read project configuration, enhance with platform plugins.
-  let projectConfig = readFileSync(projectConfigPath, 'utf-8');
-  const cliPluginsComment = '// Add Jovo CLI plugins here.';
-  for (const platform of projectProperties.platforms) {
-    projectConfig = insert(
-      `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
-      projectConfig,
-      0,
-    );
-
-    const index: number = projectConfig.indexOf(cliPluginsComment) + cliPluginsComment.length;
-    projectConfig = insert(`\n\t\tnew ${platform.cliModule}(),`, projectConfig, index);
-  }
-  writeFileSync(projectConfigPath, projectConfig);
-
-  // Mofify package.json.
-  const packageJsonPath: string = joinPaths(projectPath, 'package.json');
-  let packageJson = require(packageJsonPath);
-
-  for (const platform of projectProperties.platforms) {
+  // Add CLI plugins to project dependencies.
+  for (const platform of context.platforms) {
     try {
       const version: string = await latestVersion(platform.npmPackage);
       _set(packageJson, `dependencies["${platform.npmPackage}"]`, `^${version}`);
@@ -48,9 +31,9 @@ export async function build(projectProperties: ProjectProperties): Promise<void>
   }
 
   const omittedPackages: string[] = [];
-  // Check if ESLint is set, if not, delete package.json entries and config.
-  if (!projectProperties.linter) {
-    rmSync(joinPaths(projectPath, '.eslintrc.js'));
+  // Check if ESLint is enabled, if not, delete package.json entries and config.
+  if (!context.linter) {
+    rmSync(joinPaths(context.projectName, '.eslintrc.js'));
     omittedPackages.push(
       'devDependencies.eslint',
       'devDependencies.@typescript-eslint/eslint-plugin',
@@ -61,9 +44,10 @@ export async function build(projectProperties: ProjectProperties): Promise<void>
     );
   }
 
-  if (!projectProperties.unitTesting) {
-    rmSync(joinPaths(projectPath, 'jest.config.js'));
-    rmdirSync(joinPaths(projectPath, 'test'), { recursive: true });
+  // Check if Jest is enabled, if not, delete package.json entries and config.
+  if (!context.unitTesting) {
+    rmSync(joinPaths(context.projectName, 'jest.config.js'));
+    rmdirSync(joinPaths(context.projectName, 'test'), { recursive: true });
     omittedPackages.push(
       'devDependencies.jest',
       'devDependencies.ts-jest',
@@ -74,36 +58,76 @@ export async function build(projectProperties: ProjectProperties): Promise<void>
 
   packageJson = omit(packageJson, omittedPackages);
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
 
+/**
+ * Modifies the project configuration, adding configured CLI plugins with their respective configurations.
+ * @param context - Current context, containing configured project properties.
+ */
+export function generateProjectConfiguration(context: NewContext): void {
+  const projectConfigPath: string = joinPaths(context.projectName, ProjectConfig.getFileName());
+
+  // Read project configuration, enhance with platform plugins.
+  let projectConfig = readFileSync(projectConfigPath, 'utf-8');
+  const cliPluginsComment = '// Add Jovo CLI plugins here.';
+  for (const platform of context.platforms) {
+    projectConfig = insert(
+      `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
+      projectConfig,
+      0,
+    );
+
+    const defaultConfig: string = Object.keys(platform.cliPlugin.$config).length
+      ? require('util').inspect(platform.cliPlugin.$config, { depth: null })
+      : '';
+    projectConfig = insert(
+      `\n\t\tnew ${platform.cliModule}(${defaultConfig}),`,
+      projectConfig,
+      projectConfig.indexOf(cliPluginsComment) + cliPluginsComment.length,
+    );
+  }
+  writeFileSync(projectConfigPath, projectConfig);
+}
+
+/**
+ * Mofifies the app configuration, adding configured Framework plugins.
+ * @param context - Current context, containing configured project properties.
+ */
+export function generateAppConfiguration(context: NewContext): void {
+  const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
   // Read Jovo configuration, modify and enhance with platform plugins.
   const isTypeScriptProject: boolean =
     packageJson.hasOwnProperty('devDependencies') &&
     packageJson.devDependencies.hasOwnProperty('typescript');
   const appConfigPath: string = joinPaths(
-    projectPath,
+    context.projectName,
     'src',
     isTypeScriptProject ? 'app.ts' : 'app.js',
   );
   let appConfig = readFileSync(appConfigPath, 'utf-8');
   const pluginsComment = '// Add Jovo plugins here.';
-  for (const platform of projectProperties.platforms) {
+  for (const platform of context.platforms) {
     appConfig = insert(
       `import { ${platform.module} } from \'${platform.package}\';\n`,
       appConfig,
       0,
     );
 
-    const index: number = appConfig.indexOf(pluginsComment) + pluginsComment.length;
-    appConfig = insert(`\n\t\tnew ${platform.module}(),`, appConfig, index);
+    appConfig = insert(
+      `\n\t\tnew ${platform.module}(),`,
+      appConfig,
+      appConfig.indexOf(pluginsComment) + pluginsComment.length,
+    );
   }
   writeFileSync(appConfigPath, appConfig);
 
   // Provide language models for each locale.
   const modelsDirectory = 'models';
-  for (const locale of projectProperties.locales) {
+  for (const locale of context.locales) {
     copyFileSync(
-      joinPaths(projectPath, modelsDirectory, 'en.json'),
-      joinPaths(projectPath, modelsDirectory, `${locale}.json`),
+      joinPaths(context.projectName, modelsDirectory, 'en.json'),
+      joinPaths(context.projectName, modelsDirectory, `${locale}.json`),
     );
   }
 }

@@ -1,4 +1,3 @@
-import * as Config from '@oclif/config';
 // This import is necessary for inferred type annotation for PluginCommand.flags.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
@@ -82,14 +81,14 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     },
   ];
 
-  static async install(
+  static install(
     plugin: DeployCommand,
     emitter: Emitter<DeployPlatformEvents>,
     config: PluginConfig,
-  ): Promise<Config.Command.Plugin> {
+  ): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...jovo.getPlatforms());
-    return super.install(plugin, emitter, config);
+    this.install(plugin, emitter, config);
   }
 
   install(): void {

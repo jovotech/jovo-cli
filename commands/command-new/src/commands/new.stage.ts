@@ -20,6 +20,7 @@ import {
   CliArgs,
   ParseContext,
   TADA,
+  printUserInput,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -95,14 +96,15 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   }
 
   async createNewStage(): Promise<void> {
+    // ToDo: Get from Marketplace API.
     const servers: prompt.Choice[] = [
       {
-        title: 'Express',
+        title: printUserInput('Express'),
         value: 'express',
         description: 'ExpressJS webhook',
       },
       {
-        title: 'AWS Lambda',
+        title: printUserInput('AWS Lambda'),
         value: 'lambda',
         description: 'Serverless hosting solution by Amazon Web Services',
       },
@@ -120,7 +122,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       .filter((plugin) => plugin.tags.includes('databases') || plugin.tags.includes('analytics'))
       .map((plugin) => {
         return {
-          title: plugin.name,
+          title: printUserInput(plugin.name),
           description: plugin.description,
           value: plugin,
         };

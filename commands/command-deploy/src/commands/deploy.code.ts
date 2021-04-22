@@ -1,4 +1,3 @@
-import * as Config from '@oclif/config';
 import {
   checkForProjectDirectory,
   CliArgs,
@@ -73,14 +72,14 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     },
   ];
 
-  static async install(
+  static install(
     plugin: DeployCommand,
     emitter: Emitter<DeployCodeEvents>,
     config: PluginConfig,
-  ): Promise<Config.Command.Plugin> {
-    // Override PluginCommand.install() to fill options for --platform.
-    this.availableTargets.push(...jovo.getPluginsWithType('target').map((plugin) => plugin.id));
-    return super.install(plugin, emitter, config);
+  ): void {
+    // Override PluginComponent.install() to fill options for --platform.
+    this.availableTargets.push(...jovo.getPluginsWithType('target').map((plugin) => plugin.$id));
+    super.install(plugin, emitter, config);
   }
 
   async run(): Promise<void> {

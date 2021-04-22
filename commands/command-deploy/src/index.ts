@@ -8,8 +8,8 @@ export * from './commands/deploy.code';
 export * from './commands/deploy.platform';
 
 export class DeployCommand extends JovoCliPlugin {
-  id = 'deploy';
-  type: PluginType = 'command';
+  $id: string = 'deploy';
+  $type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
     return [Deploy, DeployCode, DeployPlatform];

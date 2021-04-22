@@ -222,7 +222,7 @@ describe('getPlatforms()', () => {
       .spyOn(JovoCli.prototype, 'getPluginsWithType')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .mockReturnValue([{ id: 'testPlatform' }]);
+      .mockReturnValue([{ $id: 'testPlatform' }]);
 
     const jovo: JovoCli = new JovoCli();
     const platforms: string[] = jovo.getPlatforms();
@@ -253,7 +253,7 @@ describe('getPluginsWithType()', () => {
 
     expect(Array.isArray(plugins)).toBeTruthy();
     expect(plugins).toHaveLength(1);
-    expect(plugins[0].id).toMatch('commandPlugin');
+    expect(plugins[0].$id).toMatch('commandPlugin');
   });
 });
 
@@ -299,7 +299,7 @@ describe('collectCommandPlugins()', () => {
 
     expect(Array.isArray(commandPlugins)).toBeTruthy();
     expect(commandPlugins).toHaveLength(1);
-    expect(commandPlugins[0].id).toMatch('commandPlugin');
+    expect(commandPlugins[0].$id).toMatch('commandPlugin');
 
     mocked.mockRestore();
   });
@@ -311,8 +311,8 @@ describe('setPluginContext()', () => {
   test('should pass a copy without reference to each plugin', () => {
     const jovo: JovoCli = new JovoCli();
     class Plugin extends JovoCliPlugin {
-      type: PluginType = 'command';
-      id = 'test';
+      $id: string = 'test';
+      $type: PluginType = 'command';
       context!: PluginContext;
 
       setPluginContext: jest.Mock = jest.fn().mockImplementation((context: PluginContext) => {
