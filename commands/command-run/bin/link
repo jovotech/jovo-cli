@@ -4,5 +4,5 @@ const symlinkDir = require('symlink-dir');
 const { npm } = require('global-dirs');
 
 (async () => {
-    await symlinkDir('.', join(npm.packages, '@jovotech', 'cli-command-run'));
+  await symlinkDir('.', join(npm.packages, '@jovotech', 'cli-command-run'));
 })();
