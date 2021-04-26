@@ -22,7 +22,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
-    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run');
+    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run', error.stdout);
   }
 }
 

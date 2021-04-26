@@ -238,8 +238,11 @@ export class New extends PluginCommand<NewEvents> {
     await downloadTask.run();
 
     // Modify package.json to include plugins and omit not needed packages, depending on configuration.
-    await TemplateBuilder.modifyDependencies(context);
-    TemplateBuilder.generateAppConfiguration(context);
+    const generatePackageJsonTask: Task = new Task('Generating package.json', async () => {
+      await TemplateBuilder.modifyDependencies(context);
+      TemplateBuilder.generateAppConfiguration(context);
+    });
+    await generatePackageJsonTask.run();
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
@@ -260,10 +263,10 @@ export class New extends PluginCommand<NewEvents> {
     // This allows the plugin to do some configuration on creating a new project, such as generating a default config
     // based on the current context.
     for (const platform of context.platforms) {
-      // Load and instantiate the respective CLI plugin with the config set to null, which resolves to the default config (i.e. JovoCliPlugin.$config).
+      // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
         joinPaths(context.projectName, 'node_modules', platform.package),
-      ))[platform.cliModule!])(null);
+      ))[platform.cliModule!])();
 
       plugin.install(this.$emitter);
 

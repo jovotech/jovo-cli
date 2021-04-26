@@ -1,6 +1,6 @@
 import { join as joinPaths, resolve } from 'path';
 import { Config, ProjectConfigFile } from '../src';
-import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
+import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -117,11 +117,11 @@ describe('get()', () => {
   });
 
   test('should merge and return the config with merged plugins for the provided stage', () => {
-    const stagedPlugin: CommandPlugin = new CommandPlugin({ files: { foo2: 'bar2' } });
+    const stagedPlugin: Plugin = new Plugin({ files: { foo2: 'bar2' } });
     stagedPlugin.$id = 'stagedCliPlugin';
 
     jest.spyOn(Config.prototype, 'getContent').mockReturnValue({
-      plugins: [new CommandPlugin({ files: { foo1: 'bar1' } })],
+      plugins: [new Plugin({ files: { foo1: 'bar1' } })],
       stages: {
         dev: {
           plugins: [stagedPlugin],

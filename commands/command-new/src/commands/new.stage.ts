@@ -21,9 +21,11 @@ import {
   ParseContext,
   TADA,
   printUserInput,
+  MarketplacePlugin,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
+import { Choice } from 'prompts';
 
 import {
   promptPlugins,
@@ -96,38 +98,28 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   }
 
   async createNewStage(): Promise<void> {
-    // ToDo: Get from Marketplace API.
-    const servers: prompt.Choice[] = [
-      {
-        title: printUserInput('Express'),
-        value: 'express',
-        description: 'ExpressJS webhook',
-      },
-      {
-        title: printUserInput('AWS Lambda'),
-        value: 'lambda',
-        description: 'Serverless hosting solution by Amazon Web Services',
-      },
-    ];
+    const marketPlacePlugins: MarketplacePlugin[] = fetchMarketPlace();
+
+    // Let the user choose between available server integrations.
+    const servers: Choice[] = marketPlacePlugins
+      .filter((plugin) => plugin.tags.includes('server'))
+      .map((plugin) => ({
+        title: printUserInput(plugin.name),
+        value: plugin,
+        description: plugin.description,
+      }));
     const { server } = await promptServer(servers);
 
-    const serverFileName = `server.${server}`;
-    copyFileSync(
-      joinPaths('__mocks__', `${serverFileName}.ts`),
-      joinPaths('src', `${serverFileName}.ts`),
-    );
-
     // Offer the user a range of plugins consisting of database and analytics plugins.
-    const availablePlugins: prompt.Choice[] = fetchMarketPlace()
+    const availablePlugins: prompt.Choice[] = marketPlacePlugins
       .filter((plugin) => plugin.tags.includes('databases') || plugin.tags.includes('analytics'))
       .map((plugin) => {
         return {
           title: printUserInput(plugin.name),
-          description: plugin.description,
           value: plugin,
+          description: plugin.description,
         };
       });
-
     const { plugins } = await promptPlugins(availablePlugins);
 
     console.log();
@@ -135,7 +127,11 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
     const addPluginsTask: Task = new Task('Generating staged files', async () => {
       // Create app.{stage}.ts.
-      let stagedApp: string = readFileSync(joinPaths('__mocks__', 'app.stage.ts'), 'utf-8');
+      let stagedApp: string = readFileSync(
+        joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
+        'utf-8',
+      );
+      console.log(stagedApp);
       const pluginsComment = '// Add Jovo plugins here.';
 
       for (const plugin of plugins) {
@@ -155,13 +151,25 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
     const installTask: Task = new Task('Installing plugins', async () => {
       const packageJson = require(resolve('package.json'));
+
+      // Add plugins to package.json.
       for (const plugin of plugins) {
         packageJson.dependencies[plugin.npmPackage] = await latestVersion(plugin.npmPackage);
       }
+      // Add selected server dependency to package.json.
+      packageJson.dependencies[server.npmPackage] = await latestVersion(server.npmPackage);
+
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
       await linkPlugins();
     });
+
+    const serverFileName = `server.${server.module}`;
+    copyFileSync(
+      joinPaths('node_modules', server.package, 'boilerplate', `${serverFileName}.ts`),
+      joinPaths('src', `${serverFileName}.ts`),
+    );
+
     stageTask.add(addPluginsTask, installTask);
 
     await stageTask.run();

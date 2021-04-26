@@ -3,7 +3,7 @@ import tv4 from 'tv4';
 import { JovoModelData } from 'jovo-model';
 import { join as joinPaths, resolve } from 'path';
 import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
-import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
+import { Plugin } from './__mocks__/plugins/Plugin';
 
 jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
 
@@ -407,7 +407,7 @@ describe('collectPlugins()', () => {
 
   test('should merge and return plugins', () => {
     // Load mocked plugins.
-    const plugin: CommandPlugin = new CommandPlugin({ files: { foo: 'bar' } });
+    const plugin: Plugin = new Plugin({ files: { foo: 'bar' } });
 
     jest.spyOn(Config.prototype, 'getParameter').mockReturnValue([plugin]);
 

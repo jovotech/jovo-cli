@@ -1,6 +1,6 @@
 import { JovoCliPlugin, PluginType } from '../../../../src';
 
-export class CommandPlugin extends JovoCliPlugin {
+export class Plugin extends JovoCliPlugin {
   $id: string = 'commandPlugin';
   $type: PluginType = 'command';
 }

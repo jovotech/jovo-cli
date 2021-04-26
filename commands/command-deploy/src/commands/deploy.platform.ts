@@ -88,7 +88,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   ): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...jovo.getPlatforms());
-    this.install(plugin, emitter, config);
+    super.install(plugin, emitter, config);
   }
 
   install(): void {

@@ -162,6 +162,22 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       description: 'Jovo Debugger',
       tags: '',
     },
+    {
+      name: 'ExpressJs',
+      module: 'express',
+      package: '@jovotech/server-express',
+      npmPackage: 'express',
+      description: 'ExpressJs Server',
+      tags: 'server',
+    },
+    {
+      name: 'AWS Lambda',
+      module: 'Lambda',
+      package: '@jovotech/server-lambda',
+      npmPackage: 'express',
+      description: 'Serverless hosting solution by AWS',
+      tags: 'server',
+    },
   ];
 
   // Convert tags into arrays.
@@ -187,7 +203,11 @@ export async function linkPlugins(projectPath = ''): Promise<void> {
     ...Object.keys(packageJson.dependencies),
     ...Object.keys(packageJson.devDependencies),
   ];
-  const linkedPackages: string[] = ['@jovotech/cli-core'];
+  const linkedPackages: string[] = [
+    '@jovotech/cli-core',
+    '@jovotech/framework',
+    '@jovotech/db-filedb',
+  ];
 
   for (const pkg of dependencies) {
     if (/^jovo-[a-zA-Z\-]*$/.test(pkg)) {

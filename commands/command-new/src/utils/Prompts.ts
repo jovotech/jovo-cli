@@ -80,6 +80,7 @@ export async function promptProjectProperties(
         name: 'platforms',
         message: 'Choose the platforms you want to use (select with space):',
         type: 'multiselect',
+        instructions: false,
         choices: fetchMarketPlace()
           .filter((plugin) => plugin.tags.includes('platforms'))
           .map((plugin) => ({
@@ -188,7 +189,9 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
   );
 }
 
-export async function promptServer(servers: prompt.Choice[]): Promise<{ server: string }> {
+export async function promptServer(
+  servers: prompt.Choice[],
+): Promise<{ server: MarketplacePlugin }> {
   return await prompt(
     {
       name: 'server',

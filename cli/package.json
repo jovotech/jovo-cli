@@ -68,9 +68,7 @@
   "oclif": {
     "bin": "jovodev",
     "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins",
-      "@oclif/plugin-autocomplete"
+      "@oclif/plugin-help"
     ],
     "hooks": {
       "init": [

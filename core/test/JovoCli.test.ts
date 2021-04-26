@@ -10,7 +10,7 @@ import {
   PluginType,
   Project,
 } from '../src';
-import { CommandPlugin } from './__mocks__/plugins/CommandPlugin';
+import { Plugin } from './__mocks__/plugins/Plugin';
 
 jest.mock('global-dirs', () => ({
   npm: {
@@ -245,7 +245,7 @@ describe('getPluginsWithType()', () => {
   });
 
   test('should return an array containing plugins of the provided type', () => {
-    const plugin: CommandPlugin = new CommandPlugin();
+    const plugin: Plugin = new Plugin();
     const jovo: JovoCli = new JovoCli();
 
     jovo['cliPlugins'].push(plugin);
@@ -292,7 +292,7 @@ describe('collectCommandPlugins()', () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
       .spyOn(JovoUserConfig.prototype, 'getParameter')
-      .mockReturnValue(['CommandPlugin']);
+      .mockReturnValue(['Plugin']);
 
     const jovo: JovoCli = new JovoCli();
     const commandPlugins: JovoCliPlugin[] = jovo.collectCommandPlugins();
