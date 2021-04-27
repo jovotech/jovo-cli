@@ -27,14 +27,7 @@ import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import { Choice } from 'prompts';
 
-import {
-  promptPlugins,
-  insert,
-  fetchMarketPlace,
-  promptServer,
-  runNpmInstall,
-  linkPlugins,
-} from '../utils';
+import { promptPlugins, insert, fetchMarketPlace, promptServer, runNpmInstall } from '../utils';
 
 export type NewStageArgs = CliArgs<typeof NewStage>;
 export type NewStageFlags = CliFlags<typeof NewStage>;
@@ -131,7 +124,6 @@ export class NewStage extends PluginCommand<NewStageEvents> {
         joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
         'utf-8',
       );
-      console.log(stagedApp);
       const pluginsComment = '// Add Jovo plugins here.';
 
       for (const plugin of plugins) {
@@ -154,17 +146,16 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
       // Add plugins to package.json.
       for (const plugin of plugins) {
-        packageJson.dependencies[plugin.npmPackage] = await latestVersion(plugin.npmPackage);
+        packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
       // Add selected server dependency to package.json.
-      packageJson.dependencies[server.npmPackage] = await latestVersion(server.npmPackage);
+      packageJson.dependencies[server.package] = await latestVersion(server.package);
 
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
-      await linkPlugins();
     });
 
-    const serverFileName = `server.${server.module}`;
+    const serverFileName = `server.${server.module.toLowerCase()}`;
     copyFileSync(
       joinPaths('node_modules', server.package, 'boilerplate', `${serverFileName}.ts`),
       joinPaths('src', `${serverFileName}.ts`),
@@ -181,7 +172,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
     await this.$emitter.run('parse', { command: NewStage.id, flags, args });
 
-    console.log(`\n jovo new:stage: ${NewStage.description}`);
+    console.log(`\njovo new:stage: ${NewStage.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();

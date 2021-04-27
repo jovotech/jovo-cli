@@ -174,7 +174,7 @@ describe('getJovoWebhookUrl()', () => {
 
     const jovo: JovoCli = new JovoCli();
 
-    expect(jovo.getJovoWebhookUrl()).toMatch('https://webhook.jovo.cloud/1234');
+    expect(jovo.getJovoWebhookUrl()).toMatch('https://webhookv4.jovo.cloud/1234');
 
     mockedGet.mockRestore();
     mockedWebhook.mockRestore();

@@ -21,11 +21,11 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   // Add CLI plugins to project dependencies.
   for (const platform of context.platforms) {
     try {
-      const version: string = await latestVersion(platform.npmPackage);
-      _set(packageJson, `dependencies["${platform.npmPackage}"]`, `^${version}`);
+      const version: string = await latestVersion(platform.package);
+      _set(packageJson, `dependencies["${platform.package}"]`, `^${version}`);
     } catch (error) {
       throw new JovoCliError(
-        `Could not retrieve latest version for ${platform.npmPackage}`,
+        `Could not retrieve latest version for ${platform.package}`,
         'NewCommand',
       );
     }

@@ -1,4 +1,4 @@
-import { Emitter, JovoCliPlugin, PluginType } from '../src';
+import { Emitter } from '../src';
 import { PluginComponent } from '../src/PluginComponent';
 import { Plugin } from './__mocks__/plugins/Plugin';
 

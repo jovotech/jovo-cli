@@ -2,7 +2,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
-import chalk from 'chalk';
 import { accessSync } from 'fs';
 import resolveBin from 'resolve-bin';
 import { join as joinPaths } from 'path';

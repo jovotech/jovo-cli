@@ -93,7 +93,6 @@ export interface MarketplacePlugin {
   module: string;
   cliModule?: string;
   package: string;
-  npmPackage: string;
   description: string;
   tags: string | string[];
 }

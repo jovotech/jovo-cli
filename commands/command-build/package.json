@@ -1,49 +1,34 @@
 {
   "name": "@jovotech/cli-command-build",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./dist/index.js",
+  "description": "Jovo CLI Plugin for building platform files",
+  "version": "4.0.0-alpha.0",
+  "author": "jovotech",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "Apache-2.0",
   "scripts": {
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
     "link": "node bin/link"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@jovotech/cli-command-deploy": "^1.0.0",
-    "@jovotech/cli-core": "^1.0.0",
-    "@oclif/command": "^1.8.0",
-    "@oclif/test": "^1.2.8",
-    "chalk": "^4.1.0",
-    "enquirer": "^2.3.6",
-    "global-dirs": "^3.0.0",
-    "listr": "^0.14.3",
-    "node-emoji": "^1.10.0",
-    "parse-json": "^5.1.0",
-    "prompts": "^2.4.0",
-    "rxjs": "^6.6.3"
+    "@jovotech/cli-core": "~4.0.0-alpha.0",
+    "@jovotech/cli-command-deploy": "~4.0.0-alpha.0",
+    "global-dirs": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.20",
-    "@types/node": "^14.14.22",
-    "@types/node-emoji": "^1.8.1",
-    "@types/parse-json": "^4.0.0",
-    "@types/prompts": "^2.0.9",
-    "@types/rimraf": "^3.0.0",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^14.14.27",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/parser": "^4.12.0",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "fancy-test": "^1.4.10",
-    "global-modules": "^2.0.0",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
-    "rimraf": "^3.0.2",
     "symlink-dir": "^4.1.0",
-    "ts-jest": "^26.4.4",
-    "typescript": "^4.1.3"
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4"
   }
 }

@@ -110,7 +110,7 @@ describe('get()', () => {
       });
 
     mkdirSync(configDirectory, { recursive: true });
-    writeFileSync(joinPaths(configDirectory, 'config'), '{');
+    writeFileSync(joinPaths(configDirectory, 'configv4'), '{');
 
     const config: JovoUserConfig = new JovoUserConfig();
     expect(config.get.bind(config)).toThrow('Error while trying to parse .jovo/config.');

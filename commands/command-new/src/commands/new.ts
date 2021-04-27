@@ -36,7 +36,7 @@ import {
   promptProjectProperties,
   promptSavePreset,
   TemplateBuilder,
-  linkPlugins,
+  downloadTemplate,
 } from '../utils';
 
 const jovo: JovoCli = JovoCli.getInstance();
@@ -214,26 +214,12 @@ export class New extends PluginCommand<NewEvents> {
     await newTask.run();
 
     const downloadTask: Task = new Task('Downloading and extracting template', async () => {
-      // await downloadAndExtract(
-      //   context.projectName,
-      //   context.template,
-      //   context.locales[0],
-      //   context.language,
-      // );
-      let templatePath: string;
-
-      if (existsSync(joinPaths('./', 'template'))) {
-        templatePath = 'template';
-      } else if (existsSync(joinPaths('./', 'jovo-template-dev'))) {
-        templatePath = 'jovo-template-dev';
-      } else {
-        throw new JovoCliError('Template could not be found.', 'NewCommand');
+      try {
+        await downloadTemplate(context.projectName);
+      } catch (error) {
+        console.log(error);
+        throw new JovoCliError('Could not download template.', '@jovotech/cli-command-new');
       }
-
-      copySync(
-        joinPaths(jovo.$projectPath, templatePath),
-        joinPaths(jovo.$projectPath, context.projectName),
-      );
     });
     await downloadTask.run();
 
@@ -251,13 +237,6 @@ export class New extends PluginCommand<NewEvents> {
       });
       await installNpmTask.run();
     }
-
-    // ! Rename dependencies to fit to the current MVP structure and link project dependencies for local setup.
-    const linkTask: Task = new Task(
-      'Linking local dependencies',
-      async () => await linkPlugins(resolve(context.projectName)),
-    );
-    await linkTask.run();
 
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating a default config
