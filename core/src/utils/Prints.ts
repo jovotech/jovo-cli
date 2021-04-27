@@ -19,6 +19,14 @@ export function printHighlight(text: string): string {
 }
 
 /**
+ * Returns a string of a grey comment.
+ * @param comment - Comment to print.
+ */
+export function printComment(comment: string): string {
+  return chalk.grey(comment);
+}
+
+/**
  * Returns a string of a grey sub headline.
  * @param hl - Subheadline to print.
  */

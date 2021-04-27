@@ -113,19 +113,28 @@ export interface Preset extends ProjectProperties {
 
 // ####### PACKAGE MANAGEMENT #######
 
-export interface PackageVersions {
-  [key: string]: {
-    dev: boolean;
-    inPackageJson: boolean;
-    version: string;
+export interface DependencyFile {
+  devDependencies?: {
+    [dependency: string]: string;
+  };
+  dependencies?: {
+    [dependency: string]: string | { version: string; dev?: boolean };
   };
 }
 
-export interface PackageVersionsNpm {
+export interface Packages {
+  [key: string]: {
+    version: string;
+    dev: boolean;
+    inPackageJson: boolean;
+  };
+}
+
+export interface PackageVersions {
   [key: string]: {
     local: string;
-    dev: boolean;
     npm: string;
+    dev: boolean;
     inPackageJson: boolean;
   };
 }
