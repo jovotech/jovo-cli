@@ -60,14 +60,6 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       tags: 'platforms',
     },
     {
-      name: 'Google Assistant (Conversational)',
-      module: 'GoogleAssistant',
-      cliModule: 'GoogleAssistantCli',
-      package: '@jovotech/platform-googleassistant',
-      description: "Build Conversational Actions for Google's Assistant platform",
-      tags: 'platforms',
-    },
-    {
       name: 'ExpressJs',
       module: 'express',
       package: '@jovotech/server-express',
