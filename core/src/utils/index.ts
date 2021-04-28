@@ -8,7 +8,7 @@ import stripAnsi from 'strip-ansi';
 import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
-import { LocaleMap, PackageVersions, PackageVersionsNpm } from './Interfaces';
+import { DependencyFile, LocaleMap, Packages, PackageVersions } from './Interfaces';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -75,15 +75,15 @@ export function deleteFolderRecursive(path: string): void {
 }
 
 /**
- * Returns the packages with their versions from the package-lock file
- * ToDo: Refactor!
+ * Returns packages with their respective versions from the project dependency file, either
+ * package-lock.json or package.json.
+ * @param packageRegex - RegExp to filter for packages.
  */
-export async function getPackages(packageRegex?: RegExp): Promise<PackageVersions> {
+export async function getPackages(packageRegex: RegExp): Promise<Packages> {
   const jovo: JovoCli = JovoCli.getInstance();
-  let packageFileName = '';
+  let packageFileName: string = '';
 
-  // ToDo: Sufficient to just look in the package.json?
-  // Get file name depending on what file exists.
+  // Get file name depending on what file exists, preferrably package-lock.json.
   if (existsSync(joinPaths(jovo.$projectPath, 'package-lock.json'))) {
     packageFileName = 'package-lock.json';
   } else if (existsSync(joinPaths(jovo.$projectPath, 'package.json'))) {
@@ -95,37 +95,39 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
     );
   }
 
-  const packagePath = joinPaths(jovo.$projectPath, packageFileName);
-  let content;
+  const packagePath: string = joinPaths(jovo.$projectPath, packageFileName);
+  let content: string;
   try {
-    content = readFileSync(packagePath).toString();
-  } catch (e) {
+    content = readFileSync(packagePath, 'utf-8');
+  } catch (error) {
     throw new JovoCliError(
       `Something went wrong while reading your ${packageFileName} file.`,
       '@jovotech/cli-core',
     );
   }
 
-  const packageFile = JSON.parse(content);
-  const packages: PackageVersions = {};
-  const versionNumberRegex = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
+  const packageFile: DependencyFile = JSON.parse(content);
+  const packages: Packages = {};
+  const versionNumberRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
 
+  // Look through devDependencies of package.json.
   for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
-    if (packageRegex && !dependencyKey.match(packageRegex)) {
+    if (!dependencyKey.match(packageRegex)) {
       continue;
     }
 
-    if ((dependency as string).match(versionNumberRegex)) {
+    if (dependency.match(versionNumberRegex)) {
       packages[dependencyKey] = {
         dev: true,
-        inPackageJson: false,
+        inPackageJson: true,
         version: (dependency as string).replace('^', ''),
       };
     }
   }
 
-  for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies)) {
-    if (packageRegex && !dependencyKey.match(packageRegex)) {
+  // Look through dependencies of package.json/package-lock.json.
+  for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies || {})) {
+    if (!dependencyKey.match(packageRegex)) {
       continue;
     }
 
@@ -133,75 +135,51 @@ export async function getPackages(packageRegex?: RegExp): Promise<PackageVersion
       if (dependency.match(versionNumberRegex)) {
         packages[dependencyKey] = {
           dev: false,
-          inPackageJson: false,
+          inPackageJson: true,
           version: dependency.replace('^', ''),
         };
       }
-    }
-
-    if (typeof dependency === 'object') {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+    } else {
       if (dependency.version.match(versionNumberRegex)) {
         packages[dependencyKey] = {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           dev: !!dependency.dev,
           inPackageJson: false,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           version: dependency.version.replace('^', ''),
         };
       }
     }
   }
 
-  if (existsSync(joinPaths(jovo.$projectPath, 'package.json'))) {
-    try {
-      content = readFileSync(joinPaths(jovo.$projectPath, 'package.json')).toString();
-      const packageJsonFileContent = JSON.parse(content);
-
-      Object.keys(packageJsonFileContent.dependencies || {}).forEach((key: string) => {
-        if (packages[key]) {
-          packages[key].inPackageJson = true;
-        }
-      });
-
-      Object.keys(packageJsonFileContent.devDependencies || {}).forEach((key: string) => {
-        if (packages[key]) {
-          packages[key].inPackageJson = true;
-        }
-      });
-    } catch (e) {
-      throw new JovoCliError(
-        `Something went wrong while reading your ${packageFileName} file.`,
-        '@jovotech/cli-core',
-      );
-    }
-  }
   return packages;
 }
 
-// ToDo: Refactor!
-export async function getPackageVersionsNpm(packageRegex: RegExp): Promise<PackageVersionsNpm> {
-  const packages = await getPackages(packageRegex);
-  // Start directly with querying the data in parallel
-  const queryPromises: {
-    [key: string]: Promise<string>;
-  } = {};
+/**
+ * Gets all packages from the project dependency file, matching packageRegex, with their
+ * respective @latest version.
+ * @param packageRegex - RegExp to filter for packages.
+ */
+export async function getPackageVersions(packageRegex: RegExp): Promise<PackageVersions> {
+  const packages: Packages = await getPackages(packageRegex);
+  const versionPromises: Promise<PackageVersions>[] = [];
   for (const packageName of Object.keys(packages)) {
-    queryPromises[packageName] = latestVersion(packageName);
+    versionPromises.push(
+      (async () => ({
+        [packageName]: {
+          npm: await latestVersion(packageName),
+          local: packages[packageName].version,
+          dev: packages[packageName].dev,
+          inPackageJson: packages[packageName].inPackageJson,
+        },
+      }))(),
+    );
   }
 
-  // Wait till data is available and combine data
-  const returnPackages: PackageVersionsNpm = {};
-  for (const packageName of Object.keys(packages)) {
-    returnPackages[packageName] = {
-      dev: packages[packageName].dev,
-      inPackageJson: packages[packageName].inPackageJson,
-      local: packages[packageName].version,
-      npm: await queryPromises[packageName],
-    };
+  const packageVersions: PackageVersions[] = await Promise.all(versionPromises);
+
+  const returnPackages: PackageVersions = {};
+  for (const pkg of packageVersions) {
+    const packageName: string = Object.keys(pkg)[0];
+    returnPackages[packageName] = pkg[packageName];
   }
 
   return returnPackages;

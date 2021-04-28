@@ -2,7 +2,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
-import chalk from 'chalk';
 import { accessSync } from 'fs';
 import resolveBin from 'resolve-bin';
 import { join as joinPaths } from 'path';
@@ -12,13 +11,15 @@ import {
   checkForProjectDirectory,
   printCode,
   PluginContext,
-  PackageVersionsNpm,
+  PackageVersions,
   PluginCommand,
   Task,
   flags,
   CliFlags,
   CliArgs,
   ParseContext,
+  printSubHeadline,
+  printComment,
 } from '@jovotech/cli-core';
 import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
 import { ChildProcess, spawn } from 'child_process';
@@ -79,12 +80,12 @@ export class Run extends PluginCommand<RunEvents> {
 
   async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
-    const outOfDatePackages: PackageVersionsNpm = await shouldUpdatePackages();
+    const outOfDatePackages: PackageVersions = await shouldUpdatePackages();
     if (Object.keys(outOfDatePackages).length) {
       const outputText: string[] = [];
       outputText.push('Updates available for the following Jovo packages:');
       for (const [key, pkg] of Object.entries(outOfDatePackages)) {
-        const text = `  - ${key}: ${pkg.local} ${chalk.grey(`-> ${pkg.npm}`)}`;
+        const text = `  - ${key}: ${pkg.local} ${printComment(`-> ${pkg.npm}`)}`;
         outputText.push(text);
       }
 
@@ -110,7 +111,7 @@ export class Run extends PluginCommand<RunEvents> {
 
     console.log();
     console.log(`jovo run: ${Run.description}`);
-    console.log(chalk.grey('   >> Learn more: https://jovo.tech/docs/cli/run\n'));
+    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
 
     const jovo: JovoCli = JovoCli.getInstance();
 

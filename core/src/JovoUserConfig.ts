@@ -21,7 +21,7 @@ export class JovoUserConfig {
    * Returns the path of the Jovo user config.
    */
   static getPath(): string {
-    return joinPaths('.jovo', 'config');
+    return joinPaths('.jovo', 'configv4');
   }
 
   /**
@@ -39,7 +39,7 @@ export class JovoUserConfig {
 
       // Else propagate error.
       throw new JovoCliError(
-        'Error while trying to parse .jovo/config.',
+        'Error while trying to parse .jovo/configv4.',
         '@jovotech/cli-core',
         error.message,
       );
@@ -55,7 +55,7 @@ export class JovoUserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), '.jovo', 'config'), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), JSON.stringify(config, null, 2));
     this.config = config;
   }
 
@@ -87,7 +87,6 @@ export class JovoUserConfig {
                 module: 'Alexa',
                 cliModule: 'AlexaCli',
                 package: '@jovotech/platform-alexa',
-                npmPackage: 'jovo-platform-alexa',
                 description: "Build apps for Amazon's Alexa assistant platform",
                 tags: 'platforms',
               },
@@ -95,8 +94,7 @@ export class JovoUserConfig {
                 name: 'Google Assistant (Conversational)',
                 module: 'GoogleAssistant',
                 cliModule: 'GoogleAssistantCli',
-                package: '@jovotech/platform-googleassistantconv',
-                npmPackage: 'jovo-platform-googleassistantconv',
+                package: '@jovotech/platform-googleassistant',
                 description: "Build Conversational Actions for Google's Assistant platform",
                 tags: 'platforms',
               },
@@ -115,7 +113,6 @@ export class JovoUserConfig {
                 module: 'Alexa',
                 cliModule: 'AlexaCli',
                 package: '@jovotech/platform-alexa',
-                npmPackage: 'jovo-platform-alexa',
                 description: "Build apps for Amazon's Alexa assistant platform",
                 tags: 'platforms',
               },
@@ -123,8 +120,7 @@ export class JovoUserConfig {
                 name: 'Google Assistant (Conversational)',
                 module: 'GoogleAssistant',
                 cliModule: 'GoogleAssistantCli',
-                package: '@jovotech/platform-googleassistantconv',
-                npmPackage: 'jovo-platform-googleassistantconv',
+                package: '@jovotech/platform-googleassistant',
                 description: "Build Conversational Actions for Google's Assistant platform",
                 tags: 'platforms',
               },

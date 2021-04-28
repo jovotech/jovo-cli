@@ -1,25 +1,22 @@
 {
   "name": "@jovotech/cli-command-new",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./dist/index.js",
+  "description": "Jovo CLI Plugin for creating a new Jovo project",
+  "version": "4.0.0-alpha.0",
+  "author": "jovotech",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "Apache-2.0",
   "scripts": {
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
     "link": "node bin/link"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@jovotech/cli-command-build": "^1.0.0",
-    "@jovotech/cli-command-deploy": "^1.0.0",
-    "@jovotech/cli-core": "^1.0.0",
-    "@oclif/command": "^1.8.0",
-    "@oclif/parser": "^3.8.5",
+    "@jovotech/cli-core": "~4.0.0-alpha.0",
     "adm-zip": "^0.5.2",
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "download-git-repo": "^3.0.2",
     "fs-extra": "^9.1.0",
     "global-dirs": "^3.0.0",
     "latest-version": "^5.1.0",
@@ -34,7 +31,7 @@
   "devDependencies": {
     "@types/adm-zip": "^0.4.33",
     "@types/fs-extra": "^9.0.8",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.23",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.mergewith": "^4.6.6",
     "@types/lodash.pick": "^4.4.6",
@@ -51,7 +48,10 @@
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "symlink-dir": "^4.1.0",
-    "ts-jest": "^26.5.1",
-    "typescript": "^4.1.5"
-  }
+    "ts-jest": "^26.5.5",
+    "typescript": "^4.2.4"
+  },
+  "files": [
+    "dist"
+  ]
 }

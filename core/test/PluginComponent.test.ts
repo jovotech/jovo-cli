@@ -1,5 +1,6 @@
-import { Emitter, JovoCliPlugin, PluginType } from '../src';
+import { Emitter } from '../src';
 import { PluginComponent } from '../src/PluginComponent';
+import { Plugin } from './__mocks__/plugins/Plugin';
 
 beforeEach(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -16,16 +17,12 @@ describe('EventHandler.install()', () => {
       .spyOn(PluginComponent.prototype, 'loadActionSet')
       .mockReturnThis();
 
-    class CliPlugin extends JovoCliPlugin {
-      type: PluginType = 'command';
-      id = 'test';
-    }
     const eventHandler: PluginComponent = new PluginComponent();
     expect(eventHandler).not.toHaveProperty('$plugin');
     expect(eventHandler).not.toHaveProperty('$emitter');
     expect(eventHandler).not.toHaveProperty('$config');
 
-    PluginComponent.install(new CliPlugin(), new Emitter(), {});
+    PluginComponent.install(new Plugin(), new Emitter(), {});
 
     expect(eventHandler).toHaveProperty('$plugin');
     expect(eventHandler).toHaveProperty('$emitter');

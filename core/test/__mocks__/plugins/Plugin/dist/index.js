@@ -1,6 +1,6 @@
 const { JovoCliPlugin } = require('../../../../../dist');
 
-class CommandPlugin extends JovoCliPlugin {
+class Plugin extends JovoCliPlugin {
   constructor(config) {
     super(config);
     this.$id = 'commandPlugin';
@@ -8,4 +8,4 @@ class CommandPlugin extends JovoCliPlugin {
   }
 }
 
-module.exports = { CommandPlugin, default: CommandPlugin };
+module.exports = { Plugin, default: Plugin };

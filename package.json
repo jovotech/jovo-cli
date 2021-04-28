@@ -5,11 +5,12 @@
     "lerna": "^3.22.1"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist",
+    "bootstrap": "lerna bootstrap --hoist --ignore-scripts",
     "tsc": "lerna exec npm run tsc",
     "link": "lerna run link",
     "eslint": "lerna exec npm run eslint",
     "test": "lerna exec npm run test -- -- --passWithNoTests",
-    "setup:dev": "npm run bootstrap && npm run link && npm run tsc"
+    "setup:dev": "npm run bootstrap && npm run link && npm run tsc",
+    "setup:prod": "npm install && npm run bootstrap && npm run tsc && npm run test && npm run eslint"
   }
 }

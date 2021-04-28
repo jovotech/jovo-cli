@@ -1,3 +1,4 @@
+import util from 'util';
 import { join as joinPaths } from 'path';
 import { omit } from 'lomit';
 import _set from 'lodash.set';
@@ -20,11 +21,11 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   // Add CLI plugins to project dependencies.
   for (const platform of context.platforms) {
     try {
-      const version: string = await latestVersion(platform.npmPackage);
-      _set(packageJson, `dependencies["${platform.npmPackage}"]`, `^${version}`);
+      const version: string = await latestVersion(platform.package);
+      _set(packageJson, `dependencies["${platform.package}"]`, `^${version}`);
     } catch (error) {
       throw new JovoCliError(
-        `Could not retrieve latest version for ${platform.npmPackage}`,
+        `Could not retrieve latest version for ${platform.package}`,
         'NewCommand',
       );
     }
@@ -77,9 +78,26 @@ export function generateProjectConfiguration(context: NewContext): void {
       0,
     );
 
-    const defaultConfig: string = Object.keys(platform.cliPlugin.$config).length
-      ? require('util').inspect(platform.cliPlugin.$config, { depth: null })
-      : '';
+    // Build default config for CLI plugin (default = '').
+    let defaultConfig: string = '';
+
+    if (Object.keys(platform.cliPlugin.$config).length) {
+      // Serialize the plugin's default config for further processing.
+      const unformattedConfig: string = util.inspect(platform.cliPlugin.$config, {
+        depth: null,
+        colors: false,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // Format default config with correct indentation.
+      platform.cliPlugin.$config[util.inspect.custom] = () =>
+        unformattedConfig.replace(/\n/g, '\n\t\t');
+
+      // Overwrite default config with formatted config.
+      defaultConfig = util.inspect(platform.cliPlugin.$config, { depth: null, colors: false });
+    }
+
     projectConfig = insert(
       `\n\t\tnew ${platform.cliModule}(${defaultConfig}),`,
       projectConfig,

@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { printComment } from './utils';
 import { ERROR } from './utils/Constants';
 
 export class JovoCliError extends Error {
@@ -26,7 +27,7 @@ export class JovoCliError extends Error {
     }
 
     this.error.push(
-      chalk.grey(
+      printComment(
         '\nIf you think this is not on you, you can submit an issue here: https://github.com/jovotech/jovo-cli/issues.',
       ),
     );

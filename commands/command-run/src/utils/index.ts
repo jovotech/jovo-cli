@@ -3,12 +3,12 @@ import open from 'open';
 import {
   CLOUD,
   execAsync,
-  getPackageVersionsNpm,
+  getPackageVersions,
   JovoCli,
   JovoCliError,
   JovoUserConfigFile,
   JOVO_WEBHOOK_URL,
-  PackageVersionsNpm,
+  PackageVersions,
   printWarning,
 } from '@jovotech/cli-core';
 
@@ -22,7 +22,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
-    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run');
+    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run', error.stdout);
   }
 }
 
@@ -30,7 +30,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
  * Checks whether to display an update message for out-of-date packages or not.
  * Returns an array of out-of-date packages.
  */
-export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
+export async function shouldUpdatePackages(): Promise<PackageVersions> {
   const jovo: JovoCli = JovoCli.getInstance();
   const jovoUserConfig: JovoUserConfigFile = jovo.$userConfig.get();
   // Calculate update interval (24 hours) into ms.
@@ -48,8 +48,8 @@ export async function shouldUpdatePackages(): Promise<PackageVersionsNpm> {
   }
 
   // Check if packages are out of date.
-  const packageVersions: PackageVersionsNpm = await getPackageVersionsNpm(/^jovo\-/);
-  const outOfDatePackages: PackageVersionsNpm = {};
+  const packageVersions: PackageVersions = await getPackageVersions(/^jovo\-/);
+  const outOfDatePackages: PackageVersions = {};
 
   for (const [key, pkg] of Object.entries(packageVersions)) {
     if (pkg.local !== pkg.npm) {

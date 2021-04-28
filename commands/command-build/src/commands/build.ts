@@ -17,6 +17,9 @@ import {
   flags,
   CliFlags,
   ParseContext,
+  TARGET_ALL,
+  TARGET_INFO,
+  TARGET_MODEL,
 } from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
 import BuildCommand from '..';
@@ -76,7 +79,8 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     target: flags.string({
       char: 't',
       description: 'Target of build.',
-      // options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL, TARGET_ZIP, ...deployTargets.getAllPluginTargets()],
+      options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL],
+      default: TARGET_ALL,
     }),
   };
   static args = [];

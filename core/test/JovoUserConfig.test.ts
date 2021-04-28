@@ -12,9 +12,13 @@ jest.mock('os', () => ({
   },
 }));
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('new JovoUserConfig()', () => {
   test('should create a new config', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -29,30 +33,26 @@ describe('new JovoUserConfig()', () => {
     expect(config['config']).toHaveProperty('webhook');
     expect(config['config'].webhook).toHaveProperty('uuid');
     expect(config['config'].webhook.uuid).toMatch('test');
-
-    mocked.mockRestore();
   });
 });
 
 describe('JovoUserConfig.getPath()', () => {
   test('should return .jovo/config', () => {
-    expect(JovoUserConfig.getPath()).toMatch(joinPaths('.jovo', 'config'));
+    expect(JovoUserConfig.getPath()).toMatch(joinPaths('.jovo', 'configv4'));
   });
 });
 
 describe('get()', () => {
   test('should return config', () => {
-    const mocked: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'get')
-      .mockReturnValueOnce({
-        webhook: {
-          uuid: 'test',
-        },
-        cli: {
-          plugins: [],
-          presets: [],
-        },
-      });
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValueOnce({
+      webhook: {
+        uuid: 'test',
+      },
+      cli: {
+        plugins: [],
+        presets: [],
+      },
+    });
 
     mkdirSync(configDirectory, { recursive: true });
     writeFileSync(joinPaths(configDirectory, 'config'), JSON.stringify({ webhook: 'test' }));
@@ -66,21 +66,18 @@ describe('get()', () => {
     expect(config['config'].webhook.uuid).toMatch('test');
 
     deleteFolderRecursive(testPath);
-    mocked.mockRestore();
   });
 
   test('should create a new config, if it cannot be found', () => {
-    const mockedGet: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'get')
-      .mockReturnValueOnce({
-        webhook: {
-          uuid: 'test',
-        },
-        cli: {
-          plugins: [],
-          presets: [],
-        },
-      });
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValueOnce({
+      webhook: {
+        uuid: 'test',
+      },
+      cli: {
+        plugins: [],
+        presets: [],
+      },
+    });
     const mockedCreate: jest.SpyInstance = jest
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -91,32 +88,26 @@ describe('get()', () => {
     config.get();
 
     expect(mockedCreate).toHaveBeenCalled();
-
-    mockedGet.mockRestore();
-    mockedCreate.mockRestore();
   });
 
   test('should throw an error if something went wrong while parsing the config', () => {
-    const mocked: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'get')
-      .mockReturnValueOnce({
-        webhook: {
-          uuid: '',
-        },
-        cli: {
-          plugins: [],
-          presets: [],
-        },
-      });
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValueOnce({
+      webhook: {
+        uuid: '',
+      },
+      cli: {
+        plugins: [],
+        presets: [],
+      },
+    });
 
     mkdirSync(configDirectory, { recursive: true });
-    writeFileSync(joinPaths(configDirectory, 'config'), '{');
+    writeFileSync(joinPaths(configDirectory, 'configv4'), '{');
 
     const config: JovoUserConfig = new JovoUserConfig();
-    expect(config.get.bind(config)).toThrow('Error while trying to parse .jovo/config.');
+    expect(config.get.bind(config)).toThrow('Error while trying to parse .jovo/configv4.');
 
     deleteFolderRecursive(testPath);
-    mocked.mockRestore();
   });
 });
 
@@ -132,7 +123,7 @@ describe('save()', () => {
   test('should create .jovo/ folder if it does not exist', () => {
     expect(existsSync(joinPaths(configDirectory))).toBeFalsy();
 
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnThis();
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnThis();
 
     const config: JovoUserConfig = new JovoUserConfig();
     config.save({
@@ -146,12 +137,10 @@ describe('save()', () => {
     });
 
     expect(existsSync(joinPaths(configDirectory))).toBeTruthy();
-
-    mocked.mockRestore();
   });
 
   test('should save the new config', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnThis();
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnThis();
 
     const config: JovoUserConfig = new JovoUserConfig();
     const configFile: JovoUserConfigFile = {
@@ -165,23 +154,21 @@ describe('save()', () => {
     };
     config.save(configFile);
 
-    expect(existsSync(joinPaths(configDirectory, 'config'))).toBeTruthy();
+    expect(existsSync(joinPaths(configDirectory, 'configv4'))).toBeTruthy();
     expect(config['config']).toHaveProperty('webhook');
     expect(config['config'].webhook).toHaveProperty('uuid');
     expect(config['config'].webhook.uuid).toMatch('saved');
 
     const savedConfigFile: JovoUserConfigFile = JSON.parse(
-      readFileSync(joinPaths(configDirectory, 'config'), 'utf-8'),
+      readFileSync(joinPaths(configDirectory, 'configv4'), 'utf-8'),
     );
     expect(savedConfigFile).toStrictEqual(config['config']);
-
-    mocked.mockRestore();
   });
 });
 
 describe('getParameter()', () => {
   test('should return webhook uuid', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -198,12 +185,10 @@ describe('getParameter()', () => {
     //   /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/,
     // );
     expect(config.getParameter('webhook.uuid')).toMatch('test');
-
-    mocked.mockRestore();
   });
 
   test('should return undefined for a nonexisting property', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -215,14 +200,12 @@ describe('getParameter()', () => {
 
     const config: JovoUserConfig = new JovoUserConfig();
     expect(config.getParameter('invalid')).toBeUndefined();
-
-    mocked.mockRestore();
   });
 });
 
 describe('getPresets()', () => {
   test('should return presets', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -248,14 +231,12 @@ describe('getPresets()', () => {
     expect(presets).toHaveLength(1);
     expect(presets[0]).toHaveProperty('name');
     expect(presets[0].name).toMatch('presetName');
-
-    mocked.mockRestore();
   });
 });
 
 describe('getWebhookUuid()', () => {
   test('should return webhook uuid', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -269,14 +250,12 @@ describe('getWebhookUuid()', () => {
     const webhookUuid: string = config.getWebhookUuid();
     expect(webhookUuid).toBeDefined();
     expect(webhookUuid).toMatch('test');
-
-    mocked.mockRestore();
   });
 });
 
 describe('getPreset()', () => {
   test('should return correct preset', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -300,12 +279,10 @@ describe('getPreset()', () => {
     const preset: Preset = config.getPreset('presetName');
 
     expect(preset).toBeDefined();
-
-    mocked.mockRestore();
   });
 
   test('should fail if preset does not exist', () => {
-    const mocked: jest.SpyInstance = jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {
         uuid: 'test',
       },
@@ -317,28 +294,22 @@ describe('getPreset()', () => {
 
     const config: JovoUserConfig = new JovoUserConfig();
     expect(config.getPreset.bind(config, 'test')).toThrow('Could not find preset test.');
-
-    mocked.mockRestore();
   });
 });
 
 describe('savePreset()', () => {
   // ToDo: Mock promptForOVerwrite and test for overwriting presets.
   test('should save preset', () => {
-    const mockedGet: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'get')
-      .mockReturnValue({
-        webhook: {
-          uuid: 'test',
-        },
-        cli: {
-          plugins: [],
-          presets: [],
-        },
-      });
-    const mockedSave: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'save')
-      .mockReturnThis();
+    jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
+      webhook: {
+        uuid: 'test',
+      },
+      cli: {
+        plugins: [],
+        presets: [],
+      },
+    });
+    jest.spyOn(JovoUserConfig.prototype, 'save').mockReturnThis();
 
     const config: JovoUserConfig = new JovoUserConfig();
     const preset: Preset = {
@@ -353,8 +324,5 @@ describe('savePreset()', () => {
     config.savePreset(preset);
     expect(config['config'].cli.presets).toHaveLength(1);
     expect(config['config'].cli.presets[0].name).toMatch('test');
-
-    mockedGet.mockRestore();
-    mockedSave.mockRestore();
   });
 });

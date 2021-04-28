@@ -1,3 +1,5 @@
+import _merge from 'lodash.merge';
+
 import { Emitter } from './EventEmitter';
 import { PluginCommand } from './PluginCommand';
 import { PluginComponent } from './PluginComponent';
@@ -10,8 +12,8 @@ export abstract class JovoCliPlugin {
 
   $config: PluginConfig;
 
-  constructor(config: PluginConfig = {}) {
-    this.$config = config;
+  constructor(config?: PluginConfig) {
+    this.$config = _merge(this.getDefaultConfig(), config);
   }
 
   getCommands(): typeof PluginCommand[] {
@@ -32,5 +34,9 @@ export abstract class JovoCliPlugin {
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
       ((plugin as unknown) as typeof PluginComponent).prototype['$context'] = context;
     }
+  }
+
+  getDefaultConfig(): PluginConfig {
+    return {};
   }
 }

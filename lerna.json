@@ -1,8 +1,4 @@
 {
-  "packages": [
-    "cli",
-    "core",
-    "commands/*"
-  ],
+  "packages": ["cli", "core", "commands/*"],
   "version": "0.0.0"
 }
