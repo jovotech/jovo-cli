@@ -17,7 +17,8 @@
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
-    "link": "node bin/link"
+    "link": "node bin/link",
+    "postinstall": "npm i -g @jovotech/cli-command-build @jovotech/cli-command-deploy @jovotech/cli-command-get @jovotech/cli-command-new @jovotech/cli-command-run"
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
@@ -49,10 +50,8 @@
     "node": ">=8.0.0"
   },
   "files": [
-    "/bin",
-    "/dist",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "bin",
+    "dist"
   ],
   "homepage": "https://jovo.tech",
   "keywords": [
