@@ -13,8 +13,9 @@
     "link": "node bin/link"
   },
   "dependencies": {
-    "@jovotech/cli-core": "~4.0.0-alpha.0",
     "@jovotech/cli-command-deploy": "~4.0.0-alpha.0",
+    "@jovotech/cli-core": "~4.0.0-alpha.0",
+    "@oclif/parser": "^3.8.5",
     "global-dirs": "^3.0.0"
   },
   "devDependencies": {

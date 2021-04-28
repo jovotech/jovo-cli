@@ -13,11 +13,12 @@
     "link": "node bin/link"
   },
   "dependencies": {
+    "@oclif/command": "^1.8.0",
     "chalk": "^4.1.0",
     "global-dirs": "^3.0.0",
     "indent-string": "^4.0.0",
-    "jovo-model": "^3.0.0",
     "jovo-config": "^0.1.0",
+    "jovo-model": "^3.0.0",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2",
     "lodash.merge": "^4.6.2",

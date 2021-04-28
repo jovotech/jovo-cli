@@ -55,7 +55,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       name: 'Amazon Alexa',
       module: 'Alexa',
       cliModule: 'AlexaCli',
-      package: '@jovotech/platform-alexa',
+      package: '@jovotech/platform-alexa-tmp',
       description: "Build apps for Amazon's Alexa assistant platform",
       tags: 'platforms',
     },
