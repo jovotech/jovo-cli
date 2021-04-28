@@ -9,7 +9,7 @@ export * as TemplateBuilder from './TemplateBuilder';
  */
 export async function downloadTemplate(projectPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    downloadGH('jovotech/jovo-template', projectPath, (error: Error) => {
+    downloadGH('jovotech/jovo-v4-template', projectPath, (error: Error) => {
       if (error) {
         return reject(error);
       }
