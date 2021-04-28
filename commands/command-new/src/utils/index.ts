@@ -9,7 +9,7 @@ export * as TemplateBuilder from './TemplateBuilder';
  */
 export async function downloadTemplate(projectPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    downloadGH('jovotech/jovo-template', projectPath, (error: Error) => {
+    downloadGH('jovotech/jovo-v4-template', projectPath, (error: Error) => {
       if (error) {
         return reject(error);
       }
@@ -57,14 +57,6 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
       cliModule: 'AlexaCli',
       package: '@jovotech/platform-alexa-tmp',
       description: "Build apps for Amazon's Alexa assistant platform",
-      tags: 'platforms',
-    },
-    {
-      name: 'Google Assistant (Conversational)',
-      module: 'GoogleAssistant',
-      cliModule: 'GoogleAssistantCli',
-      package: '@jovotech/platform-googleassistant',
-      description: "Build Conversational Actions for Google's Assistant platform",
       tags: 'platforms',
     },
     {
