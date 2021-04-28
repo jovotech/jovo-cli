@@ -216,7 +216,6 @@ export class New extends PluginCommand<NewEvents> {
       try {
         await downloadTemplate(context.projectName);
       } catch (error) {
-        console.log(error);
         throw new JovoCliError('Could not download template.', '@jovotech/cli-command-new');
       }
     });
