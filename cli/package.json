@@ -1,6 +1,6 @@
 {
   "name": "@jovotech/cli",
-  "description": "Jovo Command Line Interface (Alpha)",
+  "description": "Jovo Command Line Interface (Alpha) ",
   "version": "4.0.0-alpha.1",
   "author": "jovotech",
   "main": "dist/index.js",
