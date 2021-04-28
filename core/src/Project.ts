@@ -249,12 +249,12 @@ export class Project {
       (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
-      if (!(plugin instanceof JovoCliPlugin)) {
-        const pluginName: string =
-          typeof plugin === 'object' ? (plugin as object).constructor.name : plugin;
+      // if (!(plugin instanceof JovoCliPlugin)) {
+      //   const pluginName: string =
+      //     typeof plugin === 'object' ? (plugin as object).constructor.name : plugin;
 
-        throw new JovoCliError(`${pluginName} is not a JovoCliPlugin.`, 'JovoCliCore');
-      }
+      //   throw new JovoCliError(`${pluginName} is not a JovoCliPlugin.`, 'JovoCliCore');
+      // }
 
       plugins.push(plugin);
     }

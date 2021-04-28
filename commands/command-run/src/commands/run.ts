@@ -3,7 +3,6 @@
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
 import { accessSync } from 'fs';
-import resolveBin from 'resolve-bin';
 import { join as joinPaths } from 'path';
 import {
   JovoCli,
@@ -231,9 +230,7 @@ export class Run extends PluginCommand<RunEvents> {
       }
     }
 
-    const command: string = resolveBin.sync('nodemon');
-
-    const nodeProcess: ChildProcess = spawn(command, parameters, {
+    const nodeProcess: ChildProcess = spawn('npm', ['run', 'start:dev'], {
       windowsVerbatimArguments: true,
       cwd: projectFolder,
     });
