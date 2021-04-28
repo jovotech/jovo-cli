@@ -26,7 +26,6 @@ import {
   PluginContext,
   MarketplacePlugin,
 } from '@jovotech/cli-core';
-import { copySync } from 'fs-extra';
 import { existsSync, mkdirSync } from 'fs';
 
 import {
