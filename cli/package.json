@@ -65,8 +65,8 @@
     ],
     "hooks": {
       "init": [
-        "./src/init.hook",
-        "./src/version.hook"
+        "./dist/init.hook.js",
+        "./dist/version.hook.js"
       ]
     }
   }
