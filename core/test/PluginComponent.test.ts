@@ -14,7 +14,7 @@ beforeEach(() => {
 describe('EventHandler.install()', () => {
   test('should set $plugin, $emitter and $config if not set already', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(PluginComponent.prototype, 'loadActionSet')
+      .spyOn(PluginComponent.prototype, 'loadMiddlewareCollection')
       .mockReturnThis();
 
     const eventHandler: PluginComponent = new PluginComponent();
@@ -22,7 +22,9 @@ describe('EventHandler.install()', () => {
     expect(eventHandler).not.toHaveProperty('$emitter');
     expect(eventHandler).not.toHaveProperty('$config');
 
-    PluginComponent.install(new Plugin(), new Emitter(), {});
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    PluginComponent.install(null, new Plugin(), new Emitter());
 
     expect(eventHandler).toHaveProperty('$plugin');
     expect(eventHandler).toHaveProperty('$emitter');
@@ -32,11 +34,11 @@ describe('EventHandler.install()', () => {
   });
 });
 
-describe('loadActionSet()', () => {
+describe('loadMiddlewareCollection()', () => {
   test('should register an event', () => {
     const emitter: Emitter = new Emitter();
     class TestEventHandler extends PluginComponent {
-      actionSet = {
+      middlewareCollection = {
         testEvent: [jest.fn()],
       };
       $emitter = emitter;
@@ -45,7 +47,7 @@ describe('loadActionSet()', () => {
     expect(emitter.listeners('testEvent')).toHaveLength(0);
 
     const eventHandler: TestEventHandler = new TestEventHandler();
-    eventHandler.loadActionSet();
+    eventHandler.loadMiddlewareCollection();
 
     expect(emitter.listeners('testEvent')).toHaveLength(1);
   });
@@ -56,7 +58,7 @@ describe('uninstall()', () => {
     const emitter: Emitter = new Emitter();
     const fn: jest.Mock = jest.fn();
     class TestEventHandler extends PluginComponent {
-      actionSet = {
+      middlewareCollection = {
         testEvent: [fn],
       };
       $emitter = emitter;

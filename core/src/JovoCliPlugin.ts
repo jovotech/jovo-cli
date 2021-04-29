@@ -1,4 +1,5 @@
 import _merge from 'lodash.merge';
+import { JovoCli } from '.';
 
 import { Emitter } from './EventEmitter';
 import { PluginCommand } from './PluginCommand';
@@ -11,6 +12,7 @@ export abstract class JovoCliPlugin {
   abstract readonly $id: string;
 
   $config: PluginConfig;
+  $cli!: JovoCli;
 
   constructor(config?: PluginConfig) {
     this.$config = _merge(this.getDefaultConfig(), config);
@@ -24,9 +26,10 @@ export abstract class JovoCliPlugin {
     return [];
   }
 
-  install(emitter: Emitter): void {
+  install(cli: JovoCli, emitter: Emitter): void {
+    this.$cli = cli;
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
-      plugin.install(this, emitter, this.$config);
+      plugin.install(cli, this, emitter);
     }
   }
 

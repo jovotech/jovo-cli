@@ -1,6 +1,7 @@
 import { Hook } from '@oclif/config';
 import { getPackageVersions, JovoCli, PackageVersions, printCode } from '@jovotech/cli-core';
 import latestVersion from 'latest-version';
+import { Cli } from './JovoCli';
 
 const hook: Hook<'init'> = async function () {
   if (!['-v', '-V', '--version', 'version'].includes(process.argv[2])) {
@@ -17,9 +18,9 @@ const hook: Hook<'init'> = async function () {
     }`,
   );
 
-  const jovo: JovoCli = JovoCli.getInstance();
-  if (jovo.isInProjectDirectory()) {
-    const versions: PackageVersions = await getPackageVersions(/^@jovotech/);
+  const cli: JovoCli = Cli.getInstance();
+  if (cli.isInProjectDirectory()) {
+    const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.$projectPath);
     if (Object.keys(versions).length) {
       const output: string[] = [];
       let updatesAvailable: boolean = false;

@@ -14,7 +14,6 @@ export * from './JovoCliPlugin';
 export * from './JovoCliError';
 export * from './JovoUserConfig';
 export * from './Config';
-export * from './JovoCli';
 
 export class ProjectConfig {
   constructor(config: ProjectConfigFile) {

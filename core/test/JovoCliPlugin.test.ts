@@ -35,7 +35,9 @@ describe('install()', () => {
   test('should do nothing if no commands/hooks are provided', () => {
     const spiedInstall: jest.SpyInstance = jest.spyOn(Plugin.prototype, 'install');
     const plugin: Plugin = new Plugin();
-    plugin.install(new Emitter());
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    plugin.install(null, new Emitter());
     expect(spiedInstall).toReturn();
   });
 
@@ -52,10 +54,12 @@ describe('install()', () => {
       return [Command];
     };
     const emitter: Emitter = new Emitter();
-    plugin.install(emitter);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    plugin.install(null, emitter);
 
     expect(Command.install).toBeCalledTimes(1);
-    expect(Command.install).toBeCalledWith(plugin, emitter, plugin.$config);
+    expect(Command.install).toBeCalledWith(null, plugin, emitter);
   });
 });
 

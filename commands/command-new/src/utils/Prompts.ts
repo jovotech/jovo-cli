@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import {
-  JovoCli,
   Preset,
   MarketplacePlugin,
   printHighlight,
@@ -14,9 +13,7 @@ import {
 import { New } from '../commands/new';
 import { fetchMarketPlace } from '.';
 
-const jovo: JovoCli = JovoCli.getInstance();
-
-export async function promptPreset(): Promise<{ selectedPreset: string }> {
+export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset: string }> {
   return await prompt(
     {
       type: 'select',
@@ -24,7 +21,7 @@ export async function promptPreset(): Promise<{ selectedPreset: string }> {
       name: 'selectedPreset',
       choices: [
         // List all presets already defined in Jovo user config.
-        ...jovo.$userConfig.getPresets().map((preset: Preset) => {
+        ...presets.map((preset: Preset) => {
           const language: string = chalk.blueBright(preset.language);
           const projectName: string = chalk.underline.blueBright(preset.projectName);
           const output = `(${projectName}/, ${language})`;

@@ -3,17 +3,20 @@ import { join as joinPaths } from 'path';
 import _get from 'lodash.get';
 import { URL } from 'url';
 import { npm } from 'global-dirs';
+import {
+  JovoCliPlugin,
+  JovoUserConfig,
+  Project,
+  JovoCliError,
+  PluginContext,
+  PluginType,
+  JOVO_WEBHOOK_URL,
+  Config,
+  JovoCli,
+} from '@jovotech/cli-core';
 
-import { JovoCliPlugin } from './JovoCliPlugin';
-import { Project } from './Project';
-import { JovoCliError } from './JovoCliError';
-import { JovoUserConfig } from './JovoUserConfig';
-import { Config } from './Config';
-import { PluginContext, PluginType } from './utils/Interfaces';
-import { JOVO_WEBHOOK_URL } from './utils/Constants';
-
-export class JovoCli {
-  private static instance?: JovoCli;
+export class Cli implements JovoCli {
+  private static instance?: Cli;
   private cliPlugins: JovoCliPlugin[] = [];
 
   readonly $userConfig: JovoUserConfig;
@@ -30,9 +33,9 @@ export class JovoCli {
     }
   }
 
-  static getInstance(): JovoCli {
+  static getInstance(): Cli {
     if (!this.instance) {
-      this.instance = new JovoCli();
+      this.instance = new Cli();
     }
 
     return this.instance;
@@ -109,7 +112,7 @@ export class JovoCli {
 
   /**
    * Passes a deep copy without reference of the provided context to each CLI plugin.
-   * @param context
+   * @param context - Plugin context.
    */
   setPluginContext(context: PluginContext): void {
     for (const plugin of this.cliPlugins) {

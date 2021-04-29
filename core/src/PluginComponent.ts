@@ -1,31 +1,34 @@
+import { JovoCli } from '.';
 import { Emitter } from './EventEmitter';
 import { JovoCliPlugin } from './JovoCliPlugin';
-import { ActionSet, PluginConfig, PluginContext } from './utils/Interfaces';
+import { MiddlewareCollection, PluginConfig, PluginContext } from './utils/Interfaces';
 
 export class PluginComponent {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected actionSet!: ActionSet<any>;
+  protected middlewareCollection!: MiddlewareCollection<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected $emitter!: Emitter<any>;
   protected $plugin!: JovoCliPlugin;
   protected $config!: PluginConfig;
   protected $context!: PluginContext;
+  protected $cli!: JovoCli;
 
-  static install(plugin: JovoCliPlugin, emitter: Emitter, config: PluginConfig): void {
+  static install(cli: JovoCli, plugin: JovoCliPlugin, emitter: Emitter): void {
+    this.prototype.$cli = cli;
     this.prototype.$plugin = plugin;
+    this.prototype.$config = plugin.$config;
     this.prototype.$emitter = emitter;
-    this.prototype.$config = config;
 
     // Load action set.
     this.prototype.install();
     // Register events to emitter.
-    this.prototype.loadActionSet();
+    this.prototype.loadMiddlewareCollection();
   }
 
   install(): void {}
 
-  loadActionSet(): void {
-    for (const [key, value] of Object.entries(this.actionSet || {})) {
+  loadMiddlewareCollection(): void {
+    for (const [key, value] of Object.entries(this.middlewareCollection || {})) {
       if (!value) {
         continue;
       }
@@ -37,7 +40,7 @@ export class PluginComponent {
   }
 
   uninstall(): void {
-    for (const [key, value] of Object.entries(this.actionSet || {})) {
+    for (const [key, value] of Object.entries(this.middlewareCollection || {})) {
       if (!value) {
         continue;
       }

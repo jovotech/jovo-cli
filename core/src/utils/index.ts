@@ -5,7 +5,6 @@ import latestVersion from 'latest-version';
 import _get from 'lodash.get';
 import stripAnsi from 'strip-ansi';
 
-import { JovoCli } from '../JovoCli';
 import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
 import { DependencyFile, LocaleMap, Packages, PackageVersions } from './Interfaces';
@@ -79,14 +78,13 @@ export function deleteFolderRecursive(path: string): void {
  * package-lock.json or package.json.
  * @param packageRegex - RegExp to filter for packages.
  */
-export async function getPackages(packageRegex: RegExp): Promise<Packages> {
-  const jovo: JovoCli = JovoCli.getInstance();
+export async function getPackages(packageRegex: RegExp, projectPath: string): Promise<Packages> {
   let packageFileName: string = '';
 
   // Get file name depending on what file exists, preferrably package-lock.json.
-  if (existsSync(joinPaths(jovo.$projectPath, 'package-lock.json'))) {
+  if (existsSync(joinPaths(projectPath, 'package-lock.json'))) {
     packageFileName = 'package-lock.json';
-  } else if (existsSync(joinPaths(jovo.$projectPath, 'package.json'))) {
+  } else if (existsSync(joinPaths(projectPath, 'package.json'))) {
     packageFileName = 'package.json';
   } else {
     throw new JovoCliError(
@@ -95,7 +93,7 @@ export async function getPackages(packageRegex: RegExp): Promise<Packages> {
     );
   }
 
-  const packagePath: string = joinPaths(jovo.$projectPath, packageFileName);
+  const packagePath: string = joinPaths(projectPath, packageFileName);
   let content: string;
   try {
     content = readFileSync(packagePath, 'utf-8');
@@ -158,8 +156,11 @@ export async function getPackages(packageRegex: RegExp): Promise<Packages> {
  * respective @latest version.
  * @param packageRegex - RegExp to filter for packages.
  */
-export async function getPackageVersions(packageRegex: RegExp): Promise<PackageVersions> {
-  const packages: Packages = await getPackages(packageRegex);
+export async function getPackageVersions(
+  packageRegex: RegExp,
+  projectPath: string,
+): Promise<PackageVersions> {
+  const packages: Packages = await getPackages(packageRegex, projectPath);
   const versionPromises: Promise<PackageVersions>[] = [];
   for (const packageName of Object.keys(packages)) {
     versionPromises.push(
@@ -188,10 +189,8 @@ export async function getPackageVersions(packageRegex: RegExp): Promise<PackageV
 /**
  * Checks if the current working directory is a Jovo Project.
  */
-export function checkForProjectDirectory(): void {
-  const jovo: JovoCli = JovoCli.getInstance();
-
-  if (!jovo.isInProjectDirectory()) {
+export function checkForProjectDirectory(isInProjectDirectory: boolean): void {
+  if (!isInProjectDirectory) {
     console.log();
     console.log(
       printWarning('To use this command, please go into the directory of a valid Jovo project.'),

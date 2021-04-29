@@ -1,5 +1,6 @@
 import { Command, Plugin, Topic } from '@oclif/config';
-import { DefaultEvents, Emitter, JovoCli, ConfigHooks, JovoCliPlugin } from '@jovotech/cli-core';
+import { DefaultEvents, Emitter, ConfigHooks, JovoCliPlugin, JovoCli } from '@jovotech/cli-core';
+import { Cli } from './JovoCli';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {
@@ -22,19 +23,19 @@ export class Collector extends Plugin {
    */
   async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>): Promise<void> {
     try {
-      const jovo: JovoCli = JovoCli.getInstance();
-      const plugins: JovoCliPlugin[] = jovo.loadPlugins();
+      const cli: JovoCli = Cli.getInstance();
+      const plugins: JovoCliPlugin[] = cli.loadPlugins();
 
       for (const plugin of plugins) {
-        plugin.install(emitter);
+        plugin.install(cli, emitter);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.commands.push(...plugin.getCommands());
       }
 
       // Load hooks from project configuration.
-      if (jovo.isInProjectDirectory()) {
-        const hooks: ConfigHooks = jovo.$project!.$config.getParameter('hooks') as ConfigHooks;
+      if (cli.isInProjectDirectory()) {
+        const hooks: ConfigHooks = cli.$project!.$config.getParameter('hooks') as ConfigHooks;
         if (hooks) {
           for (const [eventKey, events] of Object.entries(hooks)) {
             for (const event of events) {

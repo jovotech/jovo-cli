@@ -15,7 +15,6 @@ import {
   Task,
   wait,
   WRENCH,
-  JovoCli,
   CliFlags,
   CliArgs,
   ParseContext,
@@ -68,7 +67,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   $context!: NewStageContext;
 
   install(): void {
-    this.actionSet = {
+    this.middlewareCollection = {
       'before.new:stage': [this.checkForExistingStage.bind(this)],
       'new:stage': [this.createNewStage.bind(this)],
     };
@@ -167,7 +166,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
     const { args, flags }: Pick<ParseContextNewStage, 'args' | 'flags'> = this.parse(NewStage);
 
     await this.$emitter.run('parse', { command: NewStage.id, flags, args });
@@ -175,15 +174,14 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     console.log(`\njovo new:stage: ${NewStage.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage\n'));
 
-    const jovo: JovoCli = JovoCli.getInstance();
     const context: NewStageContext = {
       command: NewStage.id,
-      platforms: jovo.getPlatforms(),
-      locales: jovo.$project!.getLocales(),
+      platforms: this.$cli.getPlatforms(),
+      locales: this.$cli.$project!.getLocales(),
       flags,
       args,
     };
-    jovo.setPluginContext(context);
+    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.new:stage');
     await this.$emitter.run('new:stage');
