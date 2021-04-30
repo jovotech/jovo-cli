@@ -5,7 +5,7 @@ import { Mixin } from 'ts-mixer';
 import { PluginComponent } from './PluginComponent';
 import { Emitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
-import { ActionSet, DefaultEvents, Events } from './utils/Interfaces';
+import { MiddlewareCollection, DefaultEvents, Events } from './utils/Interfaces';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -21,7 +21,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   PluginComponent,
   OclifCommand,
 ) {
-  protected actionSet!: ActionSet<T | DefaultEvents>;
+  protected middlewareCollection!: MiddlewareCollection<T | DefaultEvents>;
   protected $emitter!: Emitter<T | DefaultEvents>;
 
   static args: Parser.args.Input;

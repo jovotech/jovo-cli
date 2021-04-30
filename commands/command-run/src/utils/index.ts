@@ -6,6 +6,7 @@ import {
   getPackageVersions,
   JovoCli,
   JovoCliError,
+  JovoUserConfig,
   JovoUserConfigFile,
   JOVO_WEBHOOK_URL,
   PackageVersions,
@@ -30,9 +31,11 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
  * Checks whether to display an update message for out-of-date packages or not.
  * Returns an array of out-of-date packages.
  */
-export async function shouldUpdatePackages(): Promise<PackageVersions> {
-  const jovo: JovoCli = JovoCli.getInstance();
-  const jovoUserConfig: JovoUserConfigFile = jovo.$userConfig.get();
+export async function shouldUpdatePackages(
+  projectPath: string,
+  userConfig: JovoUserConfig,
+): Promise<PackageVersions> {
+  const jovoUserConfig: JovoUserConfigFile = userConfig.get();
   // Calculate update interval (24 hours) into ms.
   const updateInterval: number = 24 * 60 * 60 * 1000;
 
@@ -48,7 +51,7 @@ export async function shouldUpdatePackages(): Promise<PackageVersions> {
   }
 
   // Check if packages are out of date.
-  const packageVersions: PackageVersions = await getPackageVersions(/^jovo\-/);
+  const packageVersions: PackageVersions = await getPackageVersions(/^jovo\-/, projectPath);
   const outOfDatePackages: PackageVersions = {};
 
   for (const [key, pkg] of Object.entries(packageVersions)) {
@@ -60,7 +63,7 @@ export async function shouldUpdatePackages(): Promise<PackageVersions> {
   if (Object.keys(outOfDatePackages).length) {
     // If there is at least one out-of-date package, update timeLastUpdateMessage and return true.
     jovoUserConfig.timeLastUpdateMessage = new Date().toISOString();
-    jovo.$userConfig.save(jovoUserConfig);
+    userConfig.save(jovoUserConfig);
   }
 
   return outOfDatePackages;
@@ -72,16 +75,15 @@ export async function shouldUpdatePackages(): Promise<PackageVersions> {
  * @param childProcess - Optional child process to write data into.
  */
 export function instantiateJovoWebhook(
+  cli: JovoCli,
   options: JovoWebhookConnector.PostOptions,
   childProcess?: ChildProcess,
 ): void {
-  const jovo: JovoCli = JovoCli.getInstance();
-
-  const webhookId: string = jovo.$userConfig.getWebhookUuid();
+  const webhookId: string = cli.$userConfig.getWebhookUuid();
   // Get endpoint directly from config to skip eval() from $configReader.
-  const endpointRaw: string = jovo.$project!.$config.getParameter('endpoint') as string;
+  const endpointRaw: string = cli.$project!.$config.getParameter('endpoint') as string;
   // Resolve endpoint. Transforms `JOVO_WEBHOOK_URL` to actual webhook url.
-  const endpoint: string = jovo.resolveEndpoint(endpointRaw);
+  const endpoint: string = cli.resolveEndpoint(endpointRaw);
 
   if (endpoint && endpoint.startsWith('arn')) {
     printWarning(

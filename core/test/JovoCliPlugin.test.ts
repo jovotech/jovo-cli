@@ -1,4 +1,4 @@
-import { Emitter, PluginCommand, PluginContext } from '../src';
+import { Emitter, JovoCli, PluginCommand, PluginContext } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
@@ -35,7 +35,9 @@ describe('install()', () => {
   test('should do nothing if no commands/hooks are provided', () => {
     const spiedInstall: jest.SpyInstance = jest.spyOn(Plugin.prototype, 'install');
     const plugin: Plugin = new Plugin();
-    plugin.install(new Emitter());
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    plugin.install(new JovoCli(), new Emitter());
     expect(spiedInstall).toReturn();
   });
 
@@ -52,10 +54,13 @@ describe('install()', () => {
       return [Command];
     };
     const emitter: Emitter = new Emitter();
-    plugin.install(emitter);
+    const cli: JovoCli = new JovoCli();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    plugin.install(cli, emitter);
 
     expect(Command.install).toBeCalledTimes(1);
-    expect(Command.install).toBeCalledWith(plugin, emitter, plugin.$config);
+    expect(Command.install).toBeCalledWith(cli, plugin, emitter);
   });
 });
 

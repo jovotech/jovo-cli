@@ -17,9 +17,9 @@ const hook: Hook<'init'> = async function () {
     }`,
   );
 
-  const jovo: JovoCli = JovoCli.getInstance();
-  if (jovo.isInProjectDirectory()) {
-    const versions: PackageVersions = await getPackageVersions(/^@jovotech/);
+  const cli: JovoCli = JovoCli.getInstance();
+  if (cli.isInProjectDirectory()) {
+    const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.$projectPath);
     if (Object.keys(versions).length) {
       const output: string[] = [];
       let updatesAvailable: boolean = false;

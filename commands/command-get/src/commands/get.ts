@@ -10,7 +10,6 @@ import {
   printSubHeadline,
   flags,
   Emitter,
-  PluginConfig,
   CliFlags,
   CliArgs,
   ParseContext,
@@ -18,8 +17,6 @@ import {
 } from '@jovotech/cli-core';
 import { BuildEvents } from '@jovotech/cli-command-build';
 import GetCommand from '..';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export type GetArgs = CliArgs<typeof Get>;
 export type GetFlags = CliFlags<typeof Get>;
@@ -82,28 +79,28 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     },
   ];
 
-  static install(plugin: GetCommand, emitter: Emitter<GetEvents>, config: PluginConfig): void {
+  static install(cli: JovoCli, plugin: GetCommand, emitter: Emitter<GetEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
-    this.availablePlatforms.push(...jovo.getPlatforms());
-    super.install(plugin, emitter, config);
+    this.availablePlatforms.push(...cli.getPlatforms());
+    super.install(cli, plugin, emitter);
   }
 
   install(): void {
-    this.actionSet = {
+    this.middlewareCollection = {
       'before.get': [this.beforeGet.bind(this)],
     };
   }
 
   beforeGet(): void {
     // Create build/ folder depending on user config.
-    const buildPath: string = jovo.$project!.getBuildPath();
+    const buildPath: string = this.$cli.$project!.getBuildPath();
     if (!existsSync(buildPath)) {
       mkdirSync(buildPath);
     }
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     const { args, flags }: Pick<ParseContextGet, 'flags' | 'args'> = this.parse(Get);
 
@@ -116,11 +113,11 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     const context: GetContext = {
       command: Get.id,
       platforms: [args.platform],
-      locales: flags.locale || jovo.$project!.getLocales(),
+      locales: flags.locale || this.$cli.$project!.getLocales(),
       flags,
       args,
     };
-    jovo.setPluginContext(context);
+    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.get');
     await this.$emitter.run('get');

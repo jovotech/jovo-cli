@@ -10,7 +10,6 @@ import {
   PluginType,
   Project,
 } from '../src';
-import { Plugin } from './__mocks__/plugins/Plugin';
 
 jest.mock('global-dirs', () => ({
   npm: {
@@ -26,11 +25,11 @@ describe('JovoCli.getInstance()', () => {
 
   test('should return instance of JovoCli', () => {
     expect(JovoCli['instance']).toBeUndefined();
-    const jovo: JovoCli = JovoCli.getInstance();
+    const cli: JovoCli = JovoCli.getInstance();
 
-    expect(jovo).toBeDefined();
-    expect(jovo.$projectPath).toMatch(process.cwd());
-    expect(jovo.$project).toBeUndefined();
+    expect(cli).toBeDefined();
+    expect(cli.$projectPath).toMatch(process.cwd());
+    expect(cli.$project).toBeUndefined();
   });
 
   test('should return instance of JovoCli with $project defined', () => {
@@ -50,11 +49,11 @@ describe('JovoCli.getInstance()', () => {
 
   test('should not create a new instance if one already exists', () => {
     expect(JovoCli['instance']).toBeUndefined();
-    const jovo1: JovoCli = JovoCli.getInstance();
+    const cli1: JovoCli = JovoCli.getInstance();
     expect(JovoCli['instance']).toBeDefined();
     // Get existing instance.
-    const jovo2 = JovoCli.getInstance();
-    expect(jovo2 === jovo1).toBeTruthy();
+    const cli2: JovoCli = JovoCli.getInstance();
+    expect(cli2 === cli1).toBeTruthy();
   });
 });
 
@@ -245,6 +244,11 @@ describe('getPluginsWithType()', () => {
   });
 
   test('should return an array containing plugins of the provided type', () => {
+    class Plugin extends JovoCliPlugin {
+      $id: string = 'commandPlugin';
+      $type: PluginType = 'command';
+    }
+
     const plugin: Plugin = new Plugin();
     const jovo: JovoCli = new JovoCli();
 
@@ -288,7 +292,7 @@ describe('collectCommandPlugins()', () => {
     mocked.mockRestore();
   });
 
-  test('should return an array containing an instantiated JovoCliPlugin', () => {
+  test.skip('should return an array containing an instantiated JovoCliPlugin', () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
       .spyOn(JovoUserConfig.prototype, 'getParameter')
