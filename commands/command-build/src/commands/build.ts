@@ -13,7 +13,6 @@ import {
   JovoCli,
   PluginCommand,
   Emitter,
-  PluginConfig,
   flags,
   CliFlags,
   ParseContext,
@@ -23,8 +22,6 @@ import {
 } from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
 import BuildCommand from '..';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export type BuildFlags = CliFlags<typeof Build>;
 
@@ -85,14 +82,14 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
   };
   static args = [];
 
-  static install(plugin: BuildCommand, emitter: Emitter<BuildEvents>, config: PluginConfig): void {
+  static install(cli: JovoCli, plugin: BuildCommand, emitter: Emitter<BuildEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
-    this.availablePlatforms.push(...jovo.getPlatforms());
-    super.install(plugin, emitter, config);
+    this.availablePlatforms.push(...cli.getPlatforms());
+    super.install(cli, plugin, emitter);
   }
 
   install(): void {
-    this.actionSet = {
+    this.middlewareCollection = {
       build: [this.build.bind(this)],
     };
   }
@@ -109,7 +106,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
       },
     );
     const collectModelsTask: Task = new Task(
-      `Collecting Jovo language model files from ./${jovo.$project!.getModelsDirectory()} folder.`,
+      `Collecting Jovo language model files from ./${this.$cli.$project!.getModelsDirectory()} folder.`,
       async () => {
         await wait(500);
         return `Locales: ${this.$context.locales.join(',')}`;
@@ -121,14 +118,14 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     await initTask.run();
 
     // Create build/ folder depending on user config.
-    const buildPath: string = jovo.$project!.getBuildPath();
+    const buildPath: string = this.$cli.$project!.getBuildPath();
     if (!existsSync(buildPath)) {
       mkdirSync(buildPath);
     }
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     const { args, flags } = this.parse(Build);
 
@@ -141,17 +138,18 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     // Build plugin context, containing information about the current command environemnt.
     const context: BuildContext = {
       command: Build.id,
-      locales: flags.locale || jovo.$project!.getLocales(),
-      platforms: flags.platform || jovo.getPlatforms(),
+      locales: flags.locale || this.$cli.$project!.getLocales(),
+      platforms: flags.platform || this.$cli.getPlatforms(),
       flags,
       args,
     };
-    jovo.setPluginContext(context);
+
+    this.$cli.setPluginContext(context);
 
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
     if (flags.reverse) {
       if (context.platforms.length !== 1) {
-        const { platform } = await promptForPlatform(jovo.getPlatforms());
+        const { platform } = await promptForPlatform(this.$cli.getPlatforms());
         context.platforms = [platform];
       }
 

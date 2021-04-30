@@ -3,12 +3,8 @@
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
 import { accessSync } from 'fs';
-import { join as joinPaths } from 'path';
 import {
-  JovoCli,
-  JovoCliError,
   checkForProjectDirectory,
-  printCode,
   PluginContext,
   PackageVersions,
   PluginCommand,
@@ -72,14 +68,17 @@ export class Run extends PluginCommand<RunEvents> {
   static args = [<const>{ name: 'webhookFile', default: 'app.dev.js' }];
 
   install(): void {
-    this.actionSet = {
+    this.middlewareCollection = {
       'before.run': [this.checkForOutdatedPackages.bind(this)],
     };
   }
 
   async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
-    const outOfDatePackages: PackageVersions = await shouldUpdatePackages();
+    const outOfDatePackages: PackageVersions = await shouldUpdatePackages(
+      this.$cli.$projectPath,
+      this.$cli.$userConfig,
+    );
     if (Object.keys(outOfDatePackages).length) {
       const outputText: string[] = [];
       outputText.push('Updates available for the following Jovo packages:');
@@ -102,7 +101,7 @@ export class Run extends PluginCommand<RunEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     const { args, flags }: Pick<ParseContextRun, 'args' | 'flags'> = this.parse(Run);
 
@@ -112,36 +111,26 @@ export class Run extends PluginCommand<RunEvents> {
     console.log(`jovo run: ${Run.description}`);
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
 
-    const jovo: JovoCli = JovoCli.getInstance();
-
     const context: RunContext = {
       command: Run.id,
-      platforms: jovo.getPlatforms(),
-      locales: jovo.$project!.getLocales(),
+      platforms: this.$cli.getPlatforms(),
+      locales: this.$cli.$project!.getLocales(),
       flags,
       args,
     };
-    jovo.setPluginContext(context);
+    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.run');
 
     if (flags['webhook-only']) {
-      instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout });
+      instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout });
       await this.$emitter.run('run');
       return;
     }
 
-    const srcDir: string = jovo.$project!.$config.getParameter('src') as string;
+    const srcDir: string = this.$cli.$project!.$config.getParameter('src') as string;
 
-    // Construct array of directories where to check for the webhook file.
-    // Always check in the root directory.
-    const checkFolders: string[] = ['./'];
-
-    if (srcDir) {
-      checkFolders.push(srcDir);
-    }
-
-    if (jovo.$project!.isTypeScriptProject()) {
+    if (this.$cli.$project!.isTypeScriptProject()) {
       if (flags.tsc) {
         const task: Task = new Task('Compiling TypeScript', async () => {
           await compileTypeScriptProject(srcDir);
@@ -150,9 +139,6 @@ export class Run extends PluginCommand<RunEvents> {
         await task.run();
         console.log();
       }
-
-      // If project is written in typescript, look in ./dist/ for webhook file.
-      checkFolders.push('./dist/', './dist/src/');
 
       try {
         accessSync('./dist/');
@@ -167,47 +153,16 @@ export class Run extends PluginCommand<RunEvents> {
         await task.run();
         console.log();
       }
-    } else {
-      // In regular JavaScript project, look into src/.
-      checkFolders.push('./src/');
     }
 
-    let projectFolder: string | undefined;
-    for (const folderPath of checkFolders) {
-      try {
-        accessSync(joinPaths(folderPath, args.webhookFile));
-        projectFolder = folderPath;
-      } catch (error) {
-        // Folder does not exist.
-      }
-    }
-
-    if (!projectFolder) {
-      throw new JovoCliError(
-        'Could not find a project to run.',
-        this.$plugin.constructor.name,
-        `Please check for your ${printCode(
-          args.webhookFile,
-        )} or provide your webhook file as a command argument.`,
-      );
-    }
-
-    const parameters: string[] = [
-      args.webhookFile,
-      '--ignore',
-      'db/*',
-      '--ignore',
-      'test/*',
-      '--webhook',
-      '--jovo-webhook',
-    ];
+    const parameters: string[] = [];
 
     if (flags.inspect) {
-      parameters.unshift(`--inspect=${flags.inspect}`);
+      parameters.push(`--inspect=${flags.inspect}`);
     }
 
-    if (jovo.$project!.$stage) {
-      parameters.push('--stage', jovo.$project!.$stage);
+    if (this.$cli.$project!.$stage) {
+      parameters.push('--stage', this.$cli.$project!.$stage);
     }
 
     if (flags['disable-jovo-debugger']) {
@@ -231,11 +186,11 @@ export class Run extends PluginCommand<RunEvents> {
     }
 
     const nodeProcess: ChildProcess = spawn('npm', ['run', 'start:dev'], {
+      shell: true,
       windowsVerbatimArguments: true,
-      cwd: projectFolder,
     });
 
-    instantiateJovoWebhook({ port: flags.port, timeout: flags.timeout }, nodeProcess);
+    instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout }, nodeProcess);
 
     await this.$emitter.run('run');
 

@@ -1,7 +1,6 @@
 import {
   checkForProjectDirectory,
   CliFlags,
-  JovoCli,
   PluginCommand,
   PluginContext,
   printSubHeadline,
@@ -9,8 +8,6 @@ import {
 } from '@jovotech/cli-core';
 import { DeployPlatformEvents } from './deploy.platform';
 import { DeployCodeEvents } from './deploy.code';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export type DeployEvents = 'before.deploy' | 'deploy' | 'after.deploy';
 
@@ -25,7 +22,7 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
   static args = [];
 
   install(): void {
-    this.actionSet = {
+    this.middlewareCollection = {
       'before.deploy': [this.beforeDeploy.bind(this)],
       'deploy': [this.deploy.bind(this)],
       'after.deploy': [this.afterDeploy.bind(this)],
@@ -48,7 +45,7 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     const { args, flags } = this.parse(Deploy);
 
@@ -60,12 +57,12 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
 
     const context: PluginContext = {
       command: Deploy.id,
-      platforms: jovo.getPlatforms(),
-      locales: jovo.$project!.getLocales(),
+      platforms: this.$cli.getPlatforms(),
+      locales: this.$cli.$project!.getLocales(),
       flags: flags as CliFlags<typeof Deploy>,
       args,
     };
-    jovo.setPluginContext(context);
+    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.deploy');
     await this.$emitter.run('deploy');

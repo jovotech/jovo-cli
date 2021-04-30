@@ -1,6 +1,6 @@
 import * as Parser from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-import { JovoConfig } from 'jovo-config';
+
 import { JovoCliPlugin } from '../JovoCliPlugin';
 import { PluginCommand } from '../PluginCommand';
 
@@ -8,7 +8,7 @@ import { PluginCommand } from '../PluginCommand';
 
 export type Events = string;
 
-export type ActionSet<T extends Events = DefaultEvents> = {
+export type MiddlewareCollection<T extends Events = DefaultEvents> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in T]?: Array<(...v: any[]) => void>;
 };
@@ -68,7 +68,7 @@ export interface DeployConfiguration {
   target?: string[];
 }
 
-export interface ProjectConfigFile extends JovoConfig {
+export interface ProjectConfigFile {
   deploy?: DeployConfiguration;
   endpoint?: string;
   plugins?: JovoCliPlugin[];
@@ -139,6 +139,7 @@ export interface PackageVersions {
 }
 
 // ####### CLI COMMAND #######
+
 export type CliFlags<COMMAND extends typeof PluginCommand> = COMMAND extends Parser.Input<infer T>
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Parser.Output<T, any>['flags']

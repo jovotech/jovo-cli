@@ -7,15 +7,12 @@ import {
   JovoCli,
   ParseContext,
   PluginCommand,
-  PluginConfig,
   PluginContext,
   printSubHeadline,
   TADA,
 } from '@jovotech/cli-core';
 
 import DeployCommand from '..';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export type DeployCodeFlags = CliFlags<typeof DeployCode>;
 export type DeployCodeArgs = CliArgs<typeof DeployCode>;
@@ -48,19 +45,12 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
       description: 'Locale of the language model.\n<en|de|etc>',
       multiple: true,
     }),
-    platform: flags.string({
-      char: 'p',
-      description: 'Specifies a build platform.',
-      options: (() => {
-        return jovo.getPlatforms();
-      })(),
-    }),
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
     }),
     src: flags.string({
       char: 's',
-      description: `Path to source files.\n Default: ${jovo.$projectPath}`,
+      description: `Path to source files.`,
     }),
   };
 
@@ -72,18 +62,14 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     },
   ];
 
-  static install(
-    plugin: DeployCommand,
-    emitter: Emitter<DeployCodeEvents>,
-    config: PluginConfig,
-  ): void {
+  static install(cli: JovoCli, plugin: DeployCommand, emitter: Emitter<DeployCodeEvents>): void {
     // Override PluginComponent.install() to fill options for --platform.
-    this.availableTargets.push(...jovo.getPluginsWithType('target').map((plugin) => plugin.$id));
-    super.install(plugin, emitter, config);
+    this.availableTargets.push(...cli.getPluginsWithType('target').map((plugin) => plugin.$id));
+    super.install(cli, plugin, emitter);
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory();
+    checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     const { args, flags }: Pick<ParseContextDeployCode, 'args' | 'flags'> = this.parse(DeployCode);
 
@@ -95,15 +81,15 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
 
     const context: DeployCodeContext = {
       command: DeployCode.id,
-      platforms: jovo.getPlatforms(),
-      locales: flags.locale || jovo.$project!.getLocales(),
+      platforms: this.$cli.getPlatforms(),
+      locales: flags.locale || this.$cli.$project!.getLocales(),
       // ToDo: Configure deploy depending on target.
       target: args.target,
       // src: flags.src || jovo.$project!.getBuildDirectory(),
       flags,
       args,
     };
-    jovo.setPluginContext(context);
+    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.deploy:code');
     await this.$emitter.run('deploy:code');

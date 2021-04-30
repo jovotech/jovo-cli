@@ -9,7 +9,6 @@ import {
   CRYSTAL_BALL,
   deleteFolderRecursive,
   flags,
-  JovoCli,
   JovoCliError,
   Preset,
   PluginCommand,
@@ -37,8 +36,6 @@ import {
   TemplateBuilder,
   downloadTemplate,
 } from '../utils';
-
-const jovo: JovoCli = JovoCli.getInstance();
 
 export type NewArgs = CliArgs<typeof New>;
 export type NewFlags = CliFlags<typeof New>;
@@ -80,7 +77,8 @@ export class New extends PluginCommand<NewEvents> {
       description:
         'Selects a preconfigured preset from the wizard without going through the selection process.',
       dependsOn: ['no-wizard'],
-      options: jovo.$userConfig.getPresets().map((preset) => preset.name),
+      // ToDo: Implement!
+      // options: jovo.$userConfig.getPresets().map((preset) => preset.name),
     }),
     'skip-npminstall': flags.boolean({
       description: 'Skips "npm install".',
@@ -122,7 +120,7 @@ export class New extends PluginCommand<NewEvents> {
       console.log();
 
       try {
-        const { selectedPreset } = await promptPreset();
+        const { selectedPreset } = await promptPreset(this.$cli.$userConfig.getPresets());
         if (selectedPreset === 'manual') {
           // Manually select project properties.
           const options: ProjectProperties = await promptProjectProperties(args, flags);
@@ -138,10 +136,10 @@ export class New extends PluginCommand<NewEvents> {
 
             preset.name = presetName;
 
-            await jovo.$userConfig.savePreset(preset);
+            await this.$cli.$userConfig.savePreset(preset);
           }
         } else {
-          preset = jovo.$userConfig.getPreset(selectedPreset);
+          preset = this.$cli.$userConfig.getPreset(selectedPreset);
         }
       } catch (error) {
         if (error instanceof JovoCliError) {
@@ -151,7 +149,7 @@ export class New extends PluginCommand<NewEvents> {
         throw new JovoCliError(error.message, '@jovotech/cli-command-new');
       }
     } else if (flags.preset) {
-      preset = jovo.$userConfig.getPreset(flags.preset);
+      preset = this.$cli.$userConfig.getPreset(flags.preset);
     }
 
     const context: NewContext = {
@@ -183,7 +181,7 @@ export class New extends PluginCommand<NewEvents> {
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
-    if (jovo.hasExistingProject(context.projectName)) {
+    if (this.$cli.hasExistingProject(context.projectName)) {
       if (!flags.overwrite) {
         const { overwrite } = await promptOverwrite(
           `The directory ${printHighlight(
@@ -207,7 +205,7 @@ export class New extends PluginCommand<NewEvents> {
         if (!existsSync(context.projectName)) {
           mkdirSync(context.projectName);
         }
-        return joinPaths(jovo.$projectPath, context.projectName);
+        return joinPaths(this.$cli.$projectPath, context.projectName);
       },
     );
     await newTask.run();
@@ -231,7 +229,7 @@ export class New extends PluginCommand<NewEvents> {
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(jovo.$projectPath, context.projectName));
+        await runNpmInstall(joinPaths(this.$cli.$projectPath, context.projectName));
       });
       await installNpmTask.run();
     }
@@ -245,7 +243,7 @@ export class New extends PluginCommand<NewEvents> {
         joinPaths(context.projectName, 'node_modules', platform.package),
       ))[platform.cliModule!])();
 
-      plugin.install(this.$emitter);
+      plugin.install(this.$cli, this.$emitter);
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

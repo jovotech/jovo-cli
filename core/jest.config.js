@@ -6,7 +6,7 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   collectCoverageFrom: ['**/*.{ts,tsx}'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '\.d\.ts'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/', '.d.ts'],
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   globals: {
