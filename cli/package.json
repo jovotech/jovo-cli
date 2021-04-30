@@ -27,7 +27,7 @@
     "@oclif/plugin-help": "^3.2.2",
     "@oclif/plugin-not-found": "^1.2.4",
     "global-dirs": "^3.0.0",
-    "latest-version": "^5.1.0"
+    "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2"
   },
   "devDependencies": {
