@@ -1,4 +1,4 @@
-import { Emitter } from '../src';
+import { Emitter, JovoCli } from '../src';
 import { PluginComponent } from '../src/PluginComponent';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
@@ -24,7 +24,7 @@ describe('EventHandler.install()', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    PluginComponent.install(null, new Plugin(), new Emitter());
+    PluginComponent.install(new JovoCli(), new Plugin(), new Emitter());
 
     expect(eventHandler).toHaveProperty('$plugin');
     expect(eventHandler).toHaveProperty('$emitter');

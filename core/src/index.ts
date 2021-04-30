@@ -4,6 +4,7 @@ import { ProjectConfigFile } from './utils/Interfaces';
 export { flags } from '@oclif/command';
 export { prompt };
 
+export * from './JovoCli';
 export * from './EventEmitter';
 export * from './PluginHook';
 export * from './utils';

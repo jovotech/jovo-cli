@@ -7,7 +7,6 @@ import {
   JovoCli,
   ParseContext,
   PluginCommand,
-  PluginConfig,
   PluginContext,
   printSubHeadline,
   TADA,

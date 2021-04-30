@@ -1,17 +1,15 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join as joinPaths, resolve } from 'path';
 import {
-  Project,
-  deleteFolderRecursive,
-  JovoUserConfig,
-  JovoCliPlugin,
-  PluginType,
-  PluginContext,
-  JovoCli,
   Config,
-} from '@jovotech/cli-core';
-
-import { Cli } from '../src/JovoCli';
+  deleteFolderRecursive,
+  JovoCli,
+  JovoCliPlugin,
+  JovoUserConfig,
+  PluginContext,
+  PluginType,
+  Project,
+} from '../src';
 
 jest.mock('global-dirs', () => ({
   npm: {
@@ -20,14 +18,14 @@ jest.mock('global-dirs', () => ({
 }));
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
-describe('Cli.getInstance()', () => {
+describe('JovoCli.getInstance()', () => {
   beforeEach(() => {
-    delete Cli['instance'];
+    delete JovoCli['instance'];
   });
 
   test('should return instance of JovoCli', () => {
-    expect(Cli['instance']).toBeUndefined();
-    const cli: Cli = Cli.getInstance();
+    expect(JovoCli['instance']).toBeUndefined();
+    const cli: JovoCli = JovoCli.getInstance();
 
     expect(cli).toBeDefined();
     expect(cli.$projectPath).toMatch(process.cwd());
@@ -36,10 +34,10 @@ describe('Cli.getInstance()', () => {
 
   test('should return instance of JovoCli with $project defined', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'isInProjectDirectory')
+      .spyOn(JovoCli.prototype, 'isInProjectDirectory')
       .mockReturnValue(true);
 
-    const jovo: Cli = Cli.getInstance();
+    const jovo: JovoCli = JovoCli.getInstance();
 
     expect(jovo).toBeDefined();
     expect(jovo.isInProjectDirectory()).toBeTruthy();
@@ -50,11 +48,11 @@ describe('Cli.getInstance()', () => {
   });
 
   test('should not create a new instance if one already exists', () => {
-    expect(Cli['instance']).toBeUndefined();
-    const cli1: Cli = Cli.getInstance();
-    expect(Cli['instance']).toBeDefined();
+    expect(JovoCli['instance']).toBeUndefined();
+    const cli1: JovoCli = JovoCli.getInstance();
+    expect(JovoCli['instance']).toBeDefined();
     // Get existing instance.
-    const cli2: Cli = Cli.getInstance();
+    const cli2: JovoCli = JovoCli.getInstance();
     expect(cli2 === cli1).toBeTruthy();
   });
 });
@@ -62,10 +60,10 @@ describe('Cli.getInstance()', () => {
 describe('initializeProject()', () => {
   test('should throw an error, if the current directory is not a project directory', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'isInProjectDirectory')
+      .spyOn(JovoCli.prototype, 'isInProjectDirectory')
       .mockReturnValue(false);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
 
     expect(jovo.initializeProject.bind(jovo, './')).toThrow('Project could not be instantiated');
 
@@ -74,10 +72,10 @@ describe('initializeProject()', () => {
 
   test('should instantiate a new project', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'isInProjectDirectory')
+      .spyOn(JovoCli.prototype, 'isInProjectDirectory')
       .mockReturnValue(true);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     jovo.initializeProject('./');
 
     expect(jovo.$project).toBeDefined();
@@ -100,18 +98,18 @@ describe('isInProjectDirectory()', () => {
   });
 
   test('should return false if no package.json exists', () => {
-    jest.spyOn(Cli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
+    jest.spyOn(JovoCli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     jovo.$projectPath = testPath;
 
     expect(jovo.isInProjectDirectory()).toBeFalsy();
   });
 
   test('should return false if the jovo-framework dependency is missing', () => {
-    jest.spyOn(Cli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
+    jest.spyOn(JovoCli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     jovo.$projectPath = testPath;
 
     const packageJsonFile = { dependencies: {} };
@@ -121,9 +119,9 @@ describe('isInProjectDirectory()', () => {
   });
 
   test("should return false if config doesn't exist", () => {
-    jest.spyOn(Cli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
+    jest.spyOn(JovoCli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     jovo.$projectPath = testPath;
 
     const packageJsonFile = { dependencies: { 'jovo-framework': '1.0.0' } };
@@ -133,9 +131,9 @@ describe('isInProjectDirectory()', () => {
   });
 
   test.skip('should return true if config exists', () => {
-    jest.spyOn(Cli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
+    jest.spyOn(JovoCli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     jovo.$projectPath = testPath;
 
     const packageJsonFile = { dependencies: { 'jovo-framework': '1.0.0' } };
@@ -150,12 +148,12 @@ describe('hasExistingProject()', () => {
   const testFolder: string = joinPaths('test', 'tmpTestFolderJovoCli');
 
   test('should return false if project path does not exist already', () => {
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     expect(jovo.hasExistingProject(testFolder)).toBeFalsy();
   });
 
   test('should return true if project path exists already', () => {
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const testPath: string = resolve(testFolder);
     mkdirSync(testPath);
     expect(jovo.hasExistingProject(testFolder)).toBeTruthy();
@@ -173,7 +171,7 @@ describe('getJovoWebhookUrl()', () => {
       .spyOn(JovoUserConfig.prototype, 'getWebhookUuid')
       .mockReturnValue('1234');
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
 
     expect(jovo.getJovoWebhookUrl()).toMatch('https://webhookv4.jovo.cloud/1234');
 
@@ -186,10 +184,10 @@ describe('resolveEndpoint()', () => {
   test('should resolve generic webhook url', () => {
     const url = 'http://test.com';
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'getJovoWebhookUrl')
+      .spyOn(JovoCli.prototype, 'getJovoWebhookUrl')
       .mockReturnValue(url);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
 
     expect(jovo.resolveEndpoint('${JOVO_WEBHOOK_URL}')).toMatch(url);
 
@@ -198,7 +196,7 @@ describe('resolveEndpoint()', () => {
 
   test('should return url as is', () => {
     const url = 'http://test.com?foo=bar';
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     expect(jovo.resolveEndpoint(url)).toMatch(url);
   });
 });
@@ -206,10 +204,10 @@ describe('resolveEndpoint()', () => {
 describe('getPlatforms()', () => {
   test('should return an empty array, if no platforms can be found', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'getPluginsWithType')
+      .spyOn(JovoCli.prototype, 'getPluginsWithType')
       .mockReturnValue([]);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const platforms: string[] = jovo.getPlatforms();
 
     expect(Array.isArray(platforms)).toBeTruthy();
@@ -220,12 +218,12 @@ describe('getPlatforms()', () => {
 
   test('should return an array of platform ids', () => {
     const mocked: jest.SpyInstance = jest
-      .spyOn(Cli.prototype, 'getPluginsWithType')
+      .spyOn(JovoCli.prototype, 'getPluginsWithType')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       .mockReturnValue([{ $id: 'testPlatform' }]);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const platforms: string[] = jovo.getPlatforms();
 
     expect(Array.isArray(platforms)).toBeTruthy();
@@ -238,7 +236,7 @@ describe('getPlatforms()', () => {
 
 describe('getPluginsWithType()', () => {
   test('should return an empty array, if no plugins of the provided type can be found', () => {
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const plugins: JovoCliPlugin[] = jovo.getPluginsWithType('platform');
 
     expect(Array.isArray(plugins)).toBeTruthy();
@@ -252,7 +250,7 @@ describe('getPluginsWithType()', () => {
     }
 
     const plugin: Plugin = new Plugin();
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
 
     jovo['cliPlugins'].push(plugin);
     const plugins: JovoCliPlugin[] = jovo.getPluginsWithType('command');
@@ -270,7 +268,7 @@ describe('collectCommandPlugins()', () => {
       .spyOn(JovoUserConfig.prototype, 'getParameter')
       .mockReturnValue([]);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const commandPlugins: JovoCliPlugin[] = jovo.collectCommandPlugins();
 
     expect(Array.isArray(commandPlugins)).toBeTruthy();
@@ -285,7 +283,7 @@ describe('collectCommandPlugins()', () => {
       .spyOn(JovoUserConfig.prototype, 'getParameter')
       .mockReturnValue(['test']);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const commandPlugins: JovoCliPlugin[] = jovo.collectCommandPlugins();
 
     expect(Array.isArray(commandPlugins)).toBeTruthy();
@@ -300,7 +298,7 @@ describe('collectCommandPlugins()', () => {
       .spyOn(JovoUserConfig.prototype, 'getParameter')
       .mockReturnValue(['Plugin']);
 
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     const commandPlugins: JovoCliPlugin[] = jovo.collectCommandPlugins();
 
     expect(Array.isArray(commandPlugins)).toBeTruthy();
@@ -315,7 +313,7 @@ describe('loadPlugins()', () => {});
 
 describe('setPluginContext()', () => {
   test('should pass a copy without reference to each plugin', () => {
-    const jovo: Cli = new Cli();
+    const jovo: JovoCli = new JovoCli();
     class Plugin extends JovoCliPlugin {
       $id: string = 'test';
       $type: PluginType = 'command';

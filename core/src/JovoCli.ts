@@ -8,15 +8,14 @@ import {
   JovoUserConfig,
   Project,
   JovoCliError,
+  Config,
   PluginContext,
   PluginType,
   JOVO_WEBHOOK_URL,
-  Config,
-  JovoCli,
-} from '@jovotech/cli-core';
+} from '.';
 
-export class Cli implements JovoCli {
-  private static instance?: Cli;
+export class JovoCli {
+  private static instance?: JovoCli;
   private cliPlugins: JovoCliPlugin[] = [];
 
   readonly $userConfig: JovoUserConfig;
@@ -33,9 +32,9 @@ export class Cli implements JovoCli {
     }
   }
 
-  static getInstance(): Cli {
+  static getInstance(): JovoCli {
     if (!this.instance) {
-      this.instance = new Cli();
+      this.instance = new JovoCli();
     }
 
     return this.instance;

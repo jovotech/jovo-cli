@@ -1,4 +1,4 @@
-import { Emitter, PluginCommand, PluginContext } from '../src';
+import { Emitter, JovoCli, PluginCommand, PluginContext } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
@@ -37,7 +37,7 @@ describe('install()', () => {
     const plugin: Plugin = new Plugin();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    plugin.install(null, new Emitter());
+    plugin.install(new JovoCli(), new Emitter());
     expect(spiedInstall).toReturn();
   });
 
@@ -54,12 +54,13 @@ describe('install()', () => {
       return [Command];
     };
     const emitter: Emitter = new Emitter();
+    const cli: JovoCli = new JovoCli();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    plugin.install(null, emitter);
+    plugin.install(cli, emitter);
 
     expect(Command.install).toBeCalledTimes(1);
-    expect(Command.install).toBeCalledWith(null, plugin, emitter);
+    expect(Command.install).toBeCalledWith(cli, plugin, emitter);
   });
 });
 

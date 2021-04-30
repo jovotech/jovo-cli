@@ -3,8 +3,6 @@ import { Input } from '@oclif/command/lib/flags';
 
 import { JovoCliPlugin } from '../JovoCliPlugin';
 import { PluginCommand } from '../PluginCommand';
-import { Project } from '../Project';
-import { JovoUserConfig } from '../JovoUserConfig';
 
 // ####### EVENT EMITTER #######
 
@@ -161,46 +159,3 @@ export type CliArgs<COMMAND extends typeof PluginCommand> = Record<
   COMMAND['args'][number]['name'],
   string
 >;
-
-export interface JovoCli {
-  $userConfig: JovoUserConfig;
-  $projectPath: string;
-  $project?: Project;
-  /**
-   * Initializes a new project at the provided path.
-   * @param path - Project path.
-   */
-  initializeProject(path: string): void;
-  /**
-   * Checks whether current working directory is a Jovo project.
-   */
-  isInProjectDirectory(): boolean;
-  collectCommandPlugins(): JovoCliPlugin[];
-  loadPlugins(): JovoCliPlugin[];
-  /**
-   * Passes a deep copy without reference of the provided context to each CLI plugin.
-   * @param context - Plugin context.
-   */
-  setPluginContext(context: PluginContext): void;
-  /**
-   * Returns an array of CLI plugin with the provided type.
-   * @param type - Type of CLI plugin.
-   */
-  getPluginsWithType(type: PluginType): JovoCliPlugin[];
-  getPlatforms(): string[];
-  /**
-   * Resolves a given endpoint. If the endpoint is ${JOVO_WEBHOOK_URL},
-   * it will get resolved to the actual user webhook url.
-   * @param endpoint - The endpoint to resolve.
-   */
-  resolveEndpoint(endpoint: string): string;
-  /**
-   * Returns the default Jovo Webhook URL.
-   */
-  getJovoWebhookUrl(): string;
-  /**
-   * Checks, if given directory already exists.
-   * @param directory - Directory name.
-   */
-  hasExistingProject(directory: string): boolean;
-}

@@ -1,6 +1,5 @@
 import { Command, Plugin, Topic } from '@oclif/config';
 import { DefaultEvents, Emitter, ConfigHooks, JovoCliPlugin, JovoCli } from '@jovotech/cli-core';
-import { Cli } from './JovoCli';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {
@@ -23,7 +22,7 @@ export class Collector extends Plugin {
    */
   async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>): Promise<void> {
     try {
-      const cli: JovoCli = Cli.getInstance();
+      const cli: JovoCli = JovoCli.getInstance();
       const plugins: JovoCliPlugin[] = cli.loadPlugins();
 
       for (const plugin of plugins) {
