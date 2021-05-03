@@ -1,5 +1,5 @@
 import { ParsedUrlQueryInput, stringify } from 'querystring';
-import * as io from 'socket.io-client';
+import { Socket, io } from 'socket.io-client';
 import _merge from 'lodash.merge';
 import { ClientRequest, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from 'http';
 
@@ -21,12 +21,8 @@ export interface PostOptions {
  * @param {ConnectionOptions} options Additional opions for connection
  * @returns {SocketIOClient.Socket}
  */
-export function open(
-  id: string,
-  webhookBaseUrl: string,
-  options: PostOptions,
-): SocketIOClient.Socket {
-  const socket: SocketIOClient.Socket = io.connect(webhookBaseUrl, {
+export function open(id: string, webhookBaseUrl: string, options: PostOptions): Socket {
+  const socket: Socket = io(webhookBaseUrl, {
     secure: true,
     query: { id },
   });
