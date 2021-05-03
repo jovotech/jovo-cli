@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-new",
   "description": "Jovo CLI Plugin for creating a new Jovo project",
-  "version": "4.0.0-alpha.5",
+  "version": "4.0.0-alpha.4",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
