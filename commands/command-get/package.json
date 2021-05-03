@@ -13,8 +13,8 @@
     "link": "node bin/link"
   },
   "dependencies": {
-    "@jovotech/cli-command-build": "^4.0.0-alpha.5",
-    "@jovotech/cli-core": "^4.0.0-alpha.5",
+    "@jovotech/cli-command-build": "^4.0.0-alpha.6",
+    "@jovotech/cli-core": "^4.0.0-alpha.6",
     "@oclif/parser": "^3.8.5",
     "global-dirs": "^3.0.0"
   },
