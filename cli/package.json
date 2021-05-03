@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli",
   "description": "Jovo Command Line Interface (Alpha) ",
-  "version": "4.0.0-alpha.7",
+  "version": "4.0.0-alpha.8",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,7 +45,7 @@
     "@jovotech/cli-command-build": "^4.0.0-alpha.5",
     "@jovotech/cli-command-deploy": "^4.0.0-alpha.5",
     "@jovotech/cli-command-get": "^4.0.0-alpha.5",
-    "@jovotech/cli-command-new": "^4.0.0-alpha.5",
+    "@jovotech/cli-command-new": "^4.0.0-alpha.6",
     "@jovotech/cli-command-run": "^4.0.0-alpha.5"
   },
   "engines": {
