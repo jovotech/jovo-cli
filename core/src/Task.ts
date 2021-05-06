@@ -1,11 +1,11 @@
-import indentString from 'indent-string';
-import ora from 'ora';
 import chalk from 'chalk';
+import Spinnies from 'spinnies';
 import { JovoCliError } from './JovoCliError';
 
 export class Task {
-  private enabled = true;
-  private indentation = 0;
+  private static spinnies: Spinnies = new Spinnies();
+  private enabled: boolean = true;
+  private indentation: number = 0;
 
   constructor(
     private title: string,
@@ -42,39 +42,43 @@ export class Task {
       return;
     }
 
+    const spinnerId: number = Math.random();
+    Task.spinnies.add(`spinner-${spinnerId}`, {
+      text: this.title,
+      indent: this.indentation,
+    });
     if (Array.isArray(this.action)) {
-      console.log(indentString(this.title.trim(), this.indentation));
       for (const action of this.action) {
         action.indent(this.indentation + 2);
-        await action.run();
+        try {
+          await action.run();
+        } catch (error) {
+          Task.spinnies.fail(`spinner-${spinnerId}`);
+          if (error instanceof JovoCliError) {
+            throw error;
+          }
+
+          throw new JovoCliError(error.message, 'JovoCliCore');
+        }
       }
+      Task.spinnies.succeed(`spinner-${spinnerId}`, { succeedColor: 'white' });
     } else {
-      const spinner = ora({
-        text: this.title.trim(),
-        indent: this.indentation,
-      });
-
-      // This moves the cursor to the position specified with indentation. Without this setting enabled,
-      // Ora will render one frame without indentation.
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      spinner.linesToClear = 1;
-
-      spinner.start();
-
       try {
         let output: string[] | string | void = await this.action();
-        spinner.succeed();
+        Task.spinnies.succeed(`spinner-${spinnerId}`, { succeedColor: 'white' });
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];
           }
           for (const str of output) {
-            console.log(chalk.white.dim(indentString(`${str}`, this.indentation + 2)));
+            Task.spinnies.add(chalk.white.dim(str), {
+              indent: this.indentation + 2,
+              status: 'non-spinnable',
+            });
           }
         }
       } catch (error) {
-        spinner.fail();
+        Task.spinnies.fail(`spinner-${spinnerId}`);
         if (error instanceof JovoCliError) {
           throw error;
         }

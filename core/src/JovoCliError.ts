@@ -19,6 +19,7 @@ export class JovoCliError extends Error {
   }
 
   toString(): string {
+    console.log();
     this.logError();
     this.logProperty('Module', this.module);
 
