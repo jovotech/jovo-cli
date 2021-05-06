@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+const { execAsync, wait } = require('@jovotech/cli-core');
+const cliProgress = require('cli-progress');
+
+(async () => {
+  const commands = ['build', 'deploy', 'get', 'new', 'run'];
+  const bar = new cliProgress.MultiBar({
+    format: '[{bar}] {package} | {percentage}%',
+    hideCursor: true,
+    barCompleteChar: '#',
+    barIncompleteChar: '.',
+    stream: process.stdout,
+    barsize: 20,
+  });
+
+  console.log('Installing CLI Commands');
+
+  const npmInstalls = [];
+  for (const command of commands) {
+    const subBar = bar.create(100, 0, {
+      package: `@jovotech/cli-command-${command}`,
+    });
+    npmInstalls.push(
+      (async () => {
+        let done = false;
+        execAsync(`npm i @jovotech/cli-command-${command} -g`)
+          .then(async () => {
+            done = true;
+          })
+          .catch((error) => {
+            bar.stop();
+            console.log(error.stderr);
+            process.exit();
+          });
+
+        while (!done) {
+          await wait(100);
+
+          // If the package installation has not finished yet and
+          // the progress bar almost reached full capacity, halt incrementing.
+          if (subBar.value <= 99) {
+            subBar.increment(Math.random());
+          }
+        }
+
+        subBar.update(100);
+      })(),
+    );
+  }
+
+  try {
+    await Promise.all(npmInstalls);
+    bar.stop();
+  } catch (error) {
+    bar.stop();
+    console.error(error);
+    process.exit();
+  }
+
+  console.log();
+})();
