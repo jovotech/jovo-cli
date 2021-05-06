@@ -1,9 +1,18 @@
+import indentString from 'indent-string';
 import chalk from 'chalk';
 import Spinnies from 'spinnies';
 import { JovoCliError } from './JovoCliError';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// Override the behaviour of spinnies that forces the user to pick a colour for spinner text.
+// This way, the default color of the Command Line can be used.
+chalk['default'] = (text: string) => text;
+
 export class Task {
-  private static spinnies: Spinnies = new Spinnies();
+  private static spinners: Spinnies = new Spinnies({
+    failPrefix: chalk.red('x'),
+  });
   private enabled: boolean = true;
   private indentation: number = 0;
 
@@ -42,43 +51,40 @@ export class Task {
       return;
     }
 
-    const spinnerId: number = Math.random();
-    Task.spinnies.add(`spinner-${spinnerId}`, {
-      text: this.title,
-      indent: this.indentation,
-    });
+    const spinnerId: string = `spinner-${Math.random()}`;
+
     if (Array.isArray(this.action)) {
+      console.log(indentString(this.title.trim(), this.indentation));
       for (const action of this.action) {
         action.indent(this.indentation + 2);
-        try {
-          await action.run();
-        } catch (error) {
-          Task.spinnies.fail(`spinner-${spinnerId}`);
-          if (error instanceof JovoCliError) {
-            throw error;
-          }
-
-          throw new JovoCliError(error.message, 'JovoCliCore');
-        }
+        await action.run();
       }
-      Task.spinnies.succeed(`spinner-${spinnerId}`, { succeedColor: 'white' });
     } else {
+      Task.spinners.add(spinnerId, {
+        text: this.title,
+        indent: this.indentation,
+      });
+
+      // Let Command Line decide what color to display on succeed.
+      // This has to be overridden after adding the spinner to avoid filtering invalid colours.
+      Task.spinners.pick(spinnerId).succeedColor = 'default';
       try {
         let output: string[] | string | void = await this.action();
-        Task.spinnies.succeed(`spinner-${spinnerId}`, { succeedColor: 'white' });
+        Task.spinners.succeed(spinnerId, { succeedColor: 'default' });
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];
           }
           for (const str of output) {
-            Task.spinnies.add(chalk.white.dim(str), {
+            // Spinnies does not support console.log(), so provide output by adding a non-spinnable spinner.
+            Task.spinners.add(chalk.white.dim(str), {
               indent: this.indentation + 2,
               status: 'non-spinnable',
             });
           }
         }
       } catch (error) {
-        Task.spinnies.fail(`spinner-${spinnerId}`);
+        Task.spinners.fail(spinnerId);
         if (error instanceof JovoCliError) {
           throw error;
         }
