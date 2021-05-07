@@ -1,4 +1,4 @@
 {
-  "packages": ["cli", "core", "commands/*"],
+  "packages": ["cli", "core", "commands/*", "integrations/*"],
   "version": "independent"
 }
