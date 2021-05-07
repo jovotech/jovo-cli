@@ -12,8 +12,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-command-deploy": "^4.0.0-alpha.6",
-    "@jovotech/cli-core": "^4.0.0-alpha.6",
+    "@jovotech/cli-command-deploy": "^4.0.0-alpha.7",
+    "@jovotech/cli-core": "^4.0.0-alpha.7",
     "@oclif/parser": "^3.8.5",
     "yaml": "^1.10.2"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli",
   "description": "Jovo Command Line Interface (Alpha) ",
-  "version": "4.0.0-alpha.10",
+  "version": "4.0.0-alpha.11",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
-    "@jovotech/cli-core": "^4.0.0-alpha.6",
+    "@jovotech/cli-core": "^4.0.0-alpha.7",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
