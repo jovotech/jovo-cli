@@ -40,7 +40,7 @@ export class JovoUserConfig {
       // Else propagate error.
       throw new JovoCliError(
         'Error while trying to parse .jovo/configv4.',
-        '@jovotech/cli-core',
+        'JovoCliCore',
         error.message,
       );
     }
@@ -155,7 +155,7 @@ export class JovoUserConfig {
     if (!preset) {
       throw new JovoCliError(
         `Could not find preset ${presetKey}.`,
-        '@jovotech/cli-core',
+        'JovoCliCore',
         'Please check for spelling or check your .jovo/config.',
       );
     }
@@ -176,7 +176,7 @@ export class JovoUserConfig {
       if (overwrite === ANSWER_CANCEL) {
         throw new JovoCliError(
           `Preset ${chalk.bold(preset.name)} already exists.`,
-          '@jovotech/cli-core',
+          'JovoCliCore',
         );
       } else {
         // Remove existing preset.

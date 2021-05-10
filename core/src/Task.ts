@@ -27,7 +27,7 @@ export class Task {
     if (!Array.isArray(this.action)) {
       throw new JovoCliError(
         "Can't push Task instance if the current Task is a function.",
-        '@jovotech/cli-core',
+        'JovoCliCore',
         'Consider converting the provided function to a Task instance.',
       );
     }
@@ -70,7 +70,7 @@ export class Task {
       Task.spinners.pick(spinnerId).succeedColor = 'default';
       try {
         let output: string[] | string | void = await this.action();
-        Task.spinners.succeed(spinnerId, { succeedColor: 'default' });
+        Task.spinners.succeed(spinnerId);
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];

@@ -82,7 +82,7 @@ export class Config {
     } catch (error) {
       throw new JovoCliError(
         'Could not load project configuration.',
-        '@jovotech/cli-core',
+        'JovoCliCore',
         error.message,
       );
     }

@@ -102,13 +102,10 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(
-          `Could not find model file for locale: ${locale}`,
-          '@jovotech/cli-core',
-        );
+        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'JovoCliCore');
       }
 
-      throw new JovoCliError(error.message, '@jovotech/cli-core');
+      throw new JovoCliError(error.message, 'JovoCliCore');
     }
   }
 
@@ -148,7 +145,7 @@ export class Project {
     if (!this.hasModelFiles([locale])) {
       throw new JovoCliError(
         `Model file for locale ${locale} to backup could not be found.`,
-        '@jovotech/cli-core',
+        'JovoCliCore',
       );
     }
 
