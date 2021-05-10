@@ -229,14 +229,13 @@ export function getRawString(output: string): string {
 export function getResolvedLocales(
   locale: string,
   supportedLocales: readonly string[],
-  pluginName: string,
   localeMap?: LocaleMap,
 ): string[] {
   const resolvedLocales: string[] | undefined = _get(localeMap, locale);
 
   if (resolvedLocales) {
     if (!Array.isArray(resolvedLocales)) {
-      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, pluginName);
+      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, 'JovoCliCore');
     }
 
     const globPattern: string | undefined = resolvedLocales.find((locale) =>

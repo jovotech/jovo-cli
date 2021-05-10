@@ -7,6 +7,7 @@ export declare interface Emitter<T extends Events = Events> {
 }
 
 export class Emitter<T extends Events = Events> extends EventEmitter {
+  static defaultMaxListeners: number = 0;
   /**
    * Calls each listener registered for event, in order of registration.
    * @param event - The event.
