@@ -14,7 +14,7 @@ import {
   Task,
   wait,
 } from '@jovotech/cli-core';
-import { unlinkSync, writeFileSync } from 'fs';
+import { existsSync, unlinkSync, writeFileSync } from 'fs';
 import yaml from 'yaml';
 import { DeployCodeEvents } from '@jovotech/cli-command-deploy';
 
@@ -58,24 +58,26 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
     // ToDo: Link to correct docs.
     console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
-    if (!flags.clean) {
-      const { overwrite } = await promptOverwrite(
-        'Serverless configuration already exists? Do you want to overwrite it?',
-      );
+    if (existsSync('serverless.yaml')) {
+      if (!flags.clean) {
+        const { overwrite } = await promptOverwrite(
+          'Serverless configuration already exists? Do you want to overwrite it?',
+        );
 
-      if (overwrite === ANSWER_CANCEL) {
-        process.exit();
+        if (overwrite === ANSWER_CANCEL) {
+          process.exit();
+        }
       }
-    }
 
-    deleteFolderRecursive('.serverless');
-    unlinkSync('serverless.yaml');
+      deleteFolderRecursive('.serverless');
+      unlinkSync('serverless.yaml');
+    }
 
     /**
      * Builds the serverless.yaml file.
      */
     const buildTask: Task = new Task('Generating serverless.yaml', async () => {
-      writeFileSync('serverless.yaml', yaml.stringify(this.$config));
+      writeFileSync('serverless.yaml', yaml.stringify(this.$plugin.$config));
       await wait(500);
       return '>> ./serverless.yaml';
     });
@@ -97,7 +99,7 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
     }
 
     console.log();
-    console.log(`${TADA} Successfully built serverless configuration. ${TADA}`);
+    console.log(`${TADA} Successfully built serverless configuration.`);
     console.log();
   }
 }
