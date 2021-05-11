@@ -1,7 +1,7 @@
 import { JovoCli } from '.';
 import { Emitter } from './EventEmitter';
 import { JovoCliPlugin } from './JovoCliPlugin';
-import { MiddlewareCollection, PluginConfig, PluginContext } from './utils/Interfaces';
+import { MiddlewareCollection, PluginContext } from './utils/Interfaces';
 
 export class PluginComponent {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

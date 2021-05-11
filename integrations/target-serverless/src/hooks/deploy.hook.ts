@@ -7,14 +7,14 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   $config!: ServerlessConfig;
   $context!: DeployCodeContext;
 
-  install() {
+  install(): void {
     this.middlewareCollection = {
       'before.deploy:code': [this.checkForTarget.bind(this), this.checkForServerlessCli.bind(this)],
       'deploy:code': [this.deployServerless.bind(this)],
     };
   }
 
-  checkForTarget() {
+  checkForTarget(): void {
     if (this.$context.target !== this.$plugin.$id) {
       this.uninstall();
     }
@@ -23,7 +23,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   /**
    * Checks if the serverless CLI is installed.
    */
-  async checkForServerlessCli() {
+  async checkForServerlessCli(): Promise<void> {
     try {
       await execAsync('serverless -v');
     } catch (error) {
@@ -38,7 +38,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   /**
    * Deploys the project using the previously generated serverless.yaml.
    */
-  async deployServerless() {
+  async deployServerless(): Promise<void> {
     const deployTask: Task = new Task(`${ROCKET} Deploying to Serverless`, async () => {
       try {
         await execAsync('serverless deploy', { cwd: this.$cli.$projectPath });

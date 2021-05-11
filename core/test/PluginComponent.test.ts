@@ -20,7 +20,6 @@ describe('EventHandler.install()', () => {
     const eventHandler: PluginComponent = new PluginComponent();
     expect(eventHandler).not.toHaveProperty('$plugin');
     expect(eventHandler).not.toHaveProperty('$emitter');
-    expect(eventHandler).not.toHaveProperty('$config');
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -28,7 +27,6 @@ describe('EventHandler.install()', () => {
 
     expect(eventHandler).toHaveProperty('$plugin');
     expect(eventHandler).toHaveProperty('$emitter');
-    expect(eventHandler).toHaveProperty('$config');
 
     mocked.mockRestore();
   });

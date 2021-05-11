@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import {
   ANSWER_CANCEL,

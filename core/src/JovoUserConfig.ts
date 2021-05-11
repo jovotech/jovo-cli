@@ -174,10 +174,7 @@ export class JovoUserConfig {
         `Preset ${preset.name} already exists. Do you want to overwrite it?`,
       );
       if (overwrite === ANSWER_CANCEL) {
-        throw new JovoCliError(
-          `Preset ${chalk.bold(preset.name)} already exists.`,
-          'JovoCliCore',
-        );
+        throw new JovoCliError(`Preset ${chalk.bold(preset.name)} already exists.`, 'JovoCliCore');
       } else {
         // Remove existing preset.
         this.config.cli.presets = this.config.cli.presets.filter((p) => p.name !== preset.name);
