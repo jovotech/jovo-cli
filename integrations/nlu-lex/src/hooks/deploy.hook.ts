@@ -1,12 +1,5 @@
 import { join as joinPaths } from 'path';
-import {
-  getResolvedLocales,
-  JovoCliError,
-  PluginHook,
-  printHighlight,
-  ROCKET,
-  Task,
-} from '@jovotech/cli-core';
+import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
 import type {
   DeployPlatformEvents,
   ParseContextDeployPlatform,
@@ -22,11 +15,11 @@ import {
   PutIntentCommand,
   PutIntentCommandOutput,
 } from '@aws-sdk/client-lex-model-building-service';
-import { existsSync, readdirSync, writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import type { LexModelFile } from 'jovo-model-lex';
 
 import { LexCli } from '..';
-import { LexIntent, SupportedLocales, SupportedLocalesType } from '../utils';
+import { getLexLocale, LexIntent } from '../utils';
 
 export class DeployHook extends PluginHook<DeployPlatformEvents> {
   $plugin!: LexCli;
@@ -91,7 +84,11 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
   async deploy(): Promise<void> {
     try {
-      const locale: string = this.getLexLocale();
+      const locale: string = getLexLocale(
+        this.$plugin.getPlatformPath(),
+        this.$context.locales,
+        this.$plugin.$config.locales,
+      );
       const deployTask: Task = new Task(
         `${ROCKET} Deploying your Lex model for locale ${printHighlight(locale)}`,
       );
@@ -178,48 +175,6 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       }
       throw new JovoCliError(error.message, this.$plugin.constructor.name);
     }
-  }
-
-  getLexLocale(): string {
-    const files: string[] = readdirSync(this.$plugin.getPlatformPath());
-    const lexLocales: string[] = files.map((file) => file.replace('.json', ''));
-    const resolvedLocales: SupportedLocalesType[] = this.$context.locales.reduce(
-      (locales: string[], locale: string) => {
-        locales.push(...getResolvedLocales(locale, SupportedLocales, this.$plugin.$config.locales));
-        return locales;
-      },
-      [],
-    ) as SupportedLocalesType[];
-
-    if (lexLocales.length > 1) {
-      if (resolvedLocales.length > 1) {
-        throw new JovoCliError(
-          `Amazon Lex does not support multiple language models (${resolvedLocales.join(',')}).`,
-          this.$plugin.constructor.name,
-          'Please provide a locale by using the flag "--locale" or in your project configuration.',
-        );
-      }
-
-      if (!resolvedLocales.length) {
-        throw new JovoCliError(
-          'There are multiple Lex models available, however, Lex only supports one model at a time.',
-          this.$plugin.constructor.name,
-          'Try building your model for only one locale or specify which model you want to use by using the flag "--locale" or in your project configuration.',
-        );
-      }
-
-      const locale: string = resolvedLocales.pop()!;
-      if (lexLocales.includes(locale)) {
-        return locale;
-      } else {
-        throw new JovoCliError(
-          `Couldn't find Lex model for locale ${locale}.`,
-          this.$plugin.constructor.name,
-        );
-      }
-    }
-
-    return lexLocales.pop()!;
   }
 
   writeLexModel(model: LexModelFile, locale: string): void {
