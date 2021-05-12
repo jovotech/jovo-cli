@@ -49,12 +49,19 @@ export async function promptProjectProperties(
   args: CliArgs<typeof New>,
   flags: CliFlags<typeof New>,
 ): Promise<ProjectProperties> {
+  // Override, thus preanswer certain prompts, depending on process arguments.
+  prompt.override({
+    projectName: args.directory,
+    language: flags.language || (flags.typescript ? 'typescript' : undefined),
+    locales: flags.locale,
+  });
+
   const props: ProjectProperties = await prompt(
     [
       {
         name: 'projectName',
         message: "Please enter your project's name:",
-        type: !args.directory ? 'text' : false,
+        type: 'text',
         initial: 'helloworld',
         onState() {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -66,7 +73,7 @@ export async function promptProjectProperties(
       {
         name: 'language',
         message: 'Select the programming language you want to use:',
-        type: !flags.language && !flags.typescript ? 'select' : false,
+        type: 'select',
         choices: [
           { title: printUserInput('TypeScript'), value: 'typescript' },
           { title: printUserInput('JavaScript'), value: 'javascript' },
@@ -88,7 +95,7 @@ export async function promptProjectProperties(
       {
         name: 'locales',
         message: 'Type the locales you want to use (comma-separated):',
-        type: !flags.locale ? 'list' : false,
+        type: 'list',
         initial: 'en',
         validate(locales: string) {
           try {
