@@ -80,11 +80,7 @@ export class Config {
       const config: ProjectConfigFile = require(this.getPath());
       return config;
     } catch (error) {
-      throw new JovoCliError(
-        'Could not load project configuration.',
-        '@jovotech/cli-core',
-        error.message,
-      );
+      throw new JovoCliError('Could not load project configuration.', 'JovoCliCore', error.message);
     }
   }
 

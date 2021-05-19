@@ -89,7 +89,7 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   } else {
     throw new JovoCliError(
       "Could not find an NPM dependency file, such as your project's package.json.",
-      '@jovotech/cli-core',
+      'JovoCliCore',
     );
   }
 
@@ -100,7 +100,7 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   } catch (error) {
     throw new JovoCliError(
       `Something went wrong while reading your ${packageFileName} file.`,
-      '@jovotech/cli-core',
+      'JovoCliCore',
     );
   }
 
@@ -229,14 +229,13 @@ export function getRawString(output: string): string {
 export function getResolvedLocales(
   locale: string,
   supportedLocales: readonly string[],
-  pluginName: string,
   localeMap?: LocaleMap,
 ): string[] {
   const resolvedLocales: string[] | undefined = _get(localeMap, locale);
 
   if (resolvedLocales) {
     if (!Array.isArray(resolvedLocales)) {
-      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, pluginName);
+      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, 'JovoCliCore');
     }
 
     const globPattern: string | undefined = resolvedLocales.find((locale) =>

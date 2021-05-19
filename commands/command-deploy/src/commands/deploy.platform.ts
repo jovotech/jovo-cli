@@ -107,9 +107,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags }: Pick<ParseContextDeployPlatform, 'args' | 'flags'> = this.parse(
-      DeployPlatform,
-    );
+    const { args, flags }: Pick<ParseContextDeployPlatform, 'args' | 'flags'> =
+      this.parse(DeployPlatform);
 
     await this.$emitter.run('parse', { command: DeployPlatform.id, flags, args });
 

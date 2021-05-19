@@ -35,7 +35,7 @@ export abstract class JovoCliPlugin {
 
   setPluginContext(context: PluginContext): void {
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
-      ((plugin as unknown) as typeof PluginComponent).prototype['$context'] = context;
+      (plugin as unknown as typeof PluginComponent).prototype['$context'] = context;
     }
   }
 

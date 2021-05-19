@@ -2,9 +2,9 @@ import util from 'util';
 import { join as joinPaths } from 'path';
 import { omit } from 'lomit';
 import _set from 'lodash.set';
-import { copyFileSync, readFileSync, rmdirSync, rmSync, writeFileSync } from 'fs';
+import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
-import { Config as ProjectConfig, JovoCliError } from '@jovotech/cli-core';
+import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
 
 import { insert } from '.';
 import { NewContext } from '../commands/new';
@@ -34,7 +34,7 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   const omittedPackages: string[] = [];
   // Check if ESLint is enabled, if not, delete package.json entries and config.
   if (!context.linter) {
-    rmSync(joinPaths(context.projectName, '.eslintrc.js'));
+    unlinkSync(joinPaths(context.projectName, '.eslintrc.js'));
     omittedPackages.push(
       'devDependencies.eslint',
       'devDependencies.@typescript-eslint/eslint-plugin',
@@ -47,8 +47,8 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
 
   // Check if Jest is enabled, if not, delete package.json entries and config.
   if (!context.unitTesting) {
-    rmSync(joinPaths(context.projectName, 'jest.config.js'));
-    rmdirSync(joinPaths(context.projectName, 'test'), { recursive: true });
+    unlinkSync(joinPaths(context.projectName, 'jest.config.js'));
+    deleteFolderRecursive(joinPaths(context.projectName, 'test'));
     omittedPackages.push(
       'devDependencies.jest',
       'devDependencies.ts-jest',
@@ -143,6 +143,10 @@ export function generateAppConfiguration(context: NewContext): void {
   // Provide language models for each locale.
   const modelsDirectory = 'models';
   for (const locale of context.locales) {
+    if (locale === 'en') {
+      continue;
+    }
+
     copyFileSync(
       joinPaths(context.projectName, modelsDirectory, 'en.json'),
       joinPaths(context.projectName, modelsDirectory, `${locale}.json`),

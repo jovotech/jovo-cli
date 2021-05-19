@@ -30,7 +30,7 @@ export async function promptOverwriteReverseBuild(): Promise<{ overwrite: string
  * @param choices - Array of choices (projects) to choose from.
  */
 export async function promptListForProjectId(
-  choices: { title: string; value: string }[],
+  choices: prompt.Choice[],
 ): Promise<{ projectId: string }> {
   return await prompt(
     {

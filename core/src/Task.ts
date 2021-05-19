@@ -1,11 +1,20 @@
 import indentString from 'indent-string';
-import ora from 'ora';
 import chalk from 'chalk';
+import Spinnies from 'spinnies';
 import { JovoCliError } from './JovoCliError';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// Override the behaviour of spinnies that forces the user to pick a colour for spinner text.
+// This way, the default color of the Command Line can be used.
+chalk['default'] = (text: string) => text;
+
 export class Task {
-  private enabled = true;
-  private indentation = 0;
+  private static spinners: Spinnies = new Spinnies({
+    failPrefix: chalk.red('x'),
+  });
+  private enabled: boolean = true;
+  private indentation: number = 0;
 
   constructor(
     private title: string,
@@ -18,7 +27,7 @@ export class Task {
     if (!Array.isArray(this.action)) {
       throw new JovoCliError(
         "Can't push Task instance if the current Task is a function.",
-        '@jovotech/cli-core',
+        'JovoCliCore',
         'Consider converting the provided function to a Task instance.',
       );
     }
@@ -42,6 +51,8 @@ export class Task {
       return;
     }
 
+    const spinnerId: string = `spinner-${Math.random()}`;
+
     if (Array.isArray(this.action)) {
       console.log(indentString(this.title.trim(), this.indentation));
       for (const action of this.action) {
@@ -49,32 +60,31 @@ export class Task {
         await action.run();
       }
     } else {
-      const spinner = ora({
-        text: this.title.trim(),
+      Task.spinners.add(spinnerId, {
+        text: this.title,
         indent: this.indentation,
       });
 
-      // This moves the cursor to the position specified with indentation. Without this setting enabled,
-      // Ora will render one frame without indentation.
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      spinner.linesToClear = 1;
-
-      spinner.start();
-
+      // Let Command Line decide what color to display on succeed.
+      // This has to be overridden after adding the spinner to avoid filtering invalid colours.
+      Task.spinners.pick(spinnerId).succeedColor = 'default';
       try {
         let output: string[] | string | void = await this.action();
-        spinner.succeed();
+        Task.spinners.succeed(spinnerId);
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];
           }
           for (const str of output) {
-            console.log(chalk.white.dim(indentString(`${str}`, this.indentation + 2)));
+            // Spinnies does not support console.log(), so provide output by adding a non-spinnable spinner.
+            Task.spinners.add(chalk.white.dim(str), {
+              indent: this.indentation + 2,
+              status: 'non-spinnable',
+            });
           }
         }
       } catch (error) {
-        spinner.fail();
+        Task.spinners.fail(spinnerId);
         if (error instanceof JovoCliError) {
           throw error;
         }

@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-new",
   "description": "Jovo CLI Plugin for creating a new Jovo project",
-  "version": "4.0.0-alpha.7",
+  "version": "4.0.0-alpha.8",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "link": "node bin/link"
   },
   "dependencies": {
-    "@jovotech/cli-core": "^4.0.0-alpha.6",
+    "@jovotech/cli-core": "^4.0.0-alpha.7",
     "@oclif/parser": "^3.8.5",
     "adm-zip": "^0.5.2",
     "axios": "^0.21.1",
@@ -49,5 +49,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "gitHead": "eb5aa904911439ce37f9bb1715cd837d75c8fed7"
 }
