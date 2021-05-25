@@ -6,6 +6,7 @@ export class JovoCliError extends Error {
   constructor(
     readonly message: string,
     readonly module: string = 'JovoCliCore',
+    readonly details?: string,
     readonly hint?: string,
     readonly learnMore?: string,
   ) {
@@ -27,6 +28,10 @@ export class JovoCliError extends Error {
     Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
     this.addProperty('Message', error.message);
     this.addProperty('Module', error.module);
+
+    if (error.details) {
+      this.addProperty('Details', error.details);
+    }
 
     if (error.hint) {
       this.addProperty('Hint', error.hint);

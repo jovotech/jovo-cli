@@ -2,17 +2,16 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
-import { accessSync } from 'fs';
 import { resolve } from 'path';
+import { ChildProcess, spawn } from 'child_process';
+import resolveBin from 'resolve-bin';
 import {
   checkForProjectDirectory,
   PluginContext,
   PackageVersions,
   PluginCommand,
-  Task,
   flags,
   CliFlags,
-  CliArgs,
   ParseContext,
   printSubHeadline,
   printComment,
@@ -20,19 +19,15 @@ import {
   JovoCliError,
   printHighlight,
 } from '@jovotech/cli-core';
-import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
-import { ChildProcess, spawn } from 'child_process';
+import { shouldUpdatePackages, instantiateJovoWebhook } from '../utils';
 
-export type RunArgs = CliArgs<typeof Run>;
 export type RunFlags = CliFlags<typeof Run>;
 
 export interface RunContext extends PluginContext {
-  args: RunArgs;
   flags: RunFlags;
 }
 
 export interface ParseContextRun extends ParseContext {
-  args: RunArgs;
   flags: RunFlags;
 }
 
@@ -62,8 +57,8 @@ export class Run extends PluginCommand<RunEvents> {
       description: 'Sets timeout in milliseconds.',
       default: 5000,
     }),
+    ...PluginCommand.flags,
   };
-  static args = [<const>{ name: 'webhookFile', default: 'app.dev.js' }];
 
   install(): void {
     this.middlewareCollection = {
@@ -156,7 +151,32 @@ export class Run extends PluginCommand<RunEvents> {
       }
     }
 
-    const nodeProcess: ChildProcess = spawn('npm', ['run', 'start:dev'], {
+    const npmCommand: string = require(resolve('package.json')).scripts[
+      `start:${this.$cli.$project!.$stage || 'dev'}`
+    ];
+
+    if (!npmCommand) {
+      throw new JovoCliError(
+        `Couldn't find npm script for stage ${printHighlight(
+          this.$cli.$project!.$stage || 'dev',
+        )}.`,
+        this.$plugin.constructor.name,
+        `"jovo run" executes your npm script to start your Jovo app, e.g. "npm run start:dev", \nbut couldn't find a script for stage ${printHighlight(
+          this.$cli.$project!.$stage || 'dev',
+        )}.`,
+        'Please provide an npm script for your stage or create a new stage with "jovo new:stage {stage}".',
+      );
+    }
+
+    let command: string = npmCommand;
+    const commandMatch: RegExpMatchArray | null = npmCommand.match(/node.*?app.*?\.js/);
+    if (commandMatch) {
+      const nodeCommand: string = commandMatch[0];
+      if (nodeCommand) {
+        command = command.replace(nodeCommand, `${nodeCommand} ${parameters.join(' ')}`);
+      }
+    }
+    const nodeProcess: ChildProcess = spawn('npx', command.split(' '), {
       shell: true,
       windowsVerbatimArguments: true,
     });
