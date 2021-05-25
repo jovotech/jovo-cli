@@ -2,6 +2,7 @@ import { ParsedUrlQueryInput, stringify } from 'querystring';
 import * as io from 'socket.io-client';
 import _merge from 'lodash.merge';
 import { ClientRequest, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from 'http';
+import { Log } from '@jovotech/cli-core';
 
 /**
  * Options for post request.
@@ -32,7 +33,7 @@ export function open(
   });
 
   socket.on('connect', () => {
-    console.log(`This is your webhook url: ${webhookBaseUrl}/${id}`);
+    Log.info(`This is your webhook url: ${webhookBaseUrl}/${id}`);
   });
 
   socket.on('connect_error', (error: NodeJS.ErrnoException) => {

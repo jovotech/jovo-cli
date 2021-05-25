@@ -43,14 +43,6 @@ export function printAskProfile(askProfile?: string): string {
 }
 
 /**
- * Prints a yellow warning output.
- * @param message - Warning message to print.
- */
-export function printWarning(message: string): string {
-  return chalk.yellow.bold(`${WARNING} ${message}`);
-}
-
-/**
  * Prints green code snippets.
  * @param code - Code to print.
  */

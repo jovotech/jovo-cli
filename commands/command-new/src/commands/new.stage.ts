@@ -21,6 +21,7 @@ import {
   TADA,
   printUserInput,
   MarketplacePlugin,
+  Log,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -73,6 +74,9 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     };
   }
 
+  /**
+   * Checks if a stage exists already.
+   */
   async checkForExistingStage(): Promise<void> {
     const appFileName = `app.${this.$context.args.stage}.ts`;
 
@@ -89,6 +93,9 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     }
   }
 
+  /**
+   * Creates a new stage. Installs selected plugins and writes corresponding files.
+   */
   async createNewStage(): Promise<void> {
     const marketPlacePlugins: MarketplacePlugin[] = fetchMarketPlace();
 
@@ -101,6 +108,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
         description: plugin.description,
       }));
     const { server } = await promptServer(servers);
+    const serverFileName = `server.${server.module.toLowerCase()}`;
 
     // Offer the user a range of plugins consisting of database and analytics plugins.
     const availablePlugins: prompt.Choice[] = marketPlacePlugins
@@ -114,7 +122,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       });
     const { plugins } = await promptPlugins(availablePlugins);
 
-    console.log();
+    Log.spacer();
     const stageTask: Task = new Task(`${WRENCH} Creating new stage...`);
 
     const addPluginsTask: Task = new Task('Generating staged files', async () => {
@@ -143,22 +151,42 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     const installTask: Task = new Task('Installing plugins', async () => {
       const packageJson = require(resolve('package.json'));
 
-      // Add plugins to package.json.
+      // Add plugins to package.json
       for (const plugin of plugins) {
         packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
-      // Add selected server dependency to package.json.
+      // Add selected server dependency to package.json
       packageJson.dependencies[server.package] = await latestVersion(server.package);
+
+      // Create new npm scripts
+      const appStartPath: string[] = [`app.${this.$context.args.stage}.js`];
+      if (this.$cli.$project!.isTypeScriptProject()) {
+        appStartPath.unshift('dist');
+      } else {
+        appStartPath.unshift('src');
+      }
+      const appBundlePath: string = joinPaths(
+        'src',
+        `app.${this.$context.args.stage}.${
+          this.$cli.$project!.isTypeScriptProject() ? 'ts' : 'js'
+        }`,
+      );
+
+      packageJson.scripts[
+        `start:${this.$context.args.stage}`
+      ] = `tsc-watch --onSuccess \"node ${joinPaths(...appStartPath)} --jovo-webhook\"`;
+      packageJson.scripts[
+        `bundle:${this.$context.args.stage}`
+      ] = `ncc build ${appBundlePath} -ms -o bundle/ --target es2020 && bestzip bundle.zip bundle/*`;
 
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
-    });
 
-    const serverFileName = `server.${server.module.toLowerCase()}`;
-    copyFileSync(
-      joinPaths('node_modules', server.package, 'boilerplate', `${serverFileName}.ts`),
-      joinPaths('src', `${serverFileName}.ts`),
-    );
+      copyFileSync(
+        joinPaths('node_modules', server.package, 'boilerplate', `${serverFileName}.ts`),
+        joinPaths('src', `${serverFileName}.ts`),
+      );
+    });
 
     stageTask.add(addPluginsTask, installTask);
 
@@ -171,8 +199,10 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
     await this.$emitter.run('parse', { command: NewStage.id, flags, args });
 
-    console.log(`\njovo new:stage: ${NewStage.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage\n'));
+    Log.spacer();
+    Log.info(`jovo new:stage: ${NewStage.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage'));
+    Log.spacer();
 
     const context: NewStageContext = {
       command: NewStage.id,
@@ -187,8 +217,8 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     await this.$emitter.run('new:stage');
     await this.$emitter.run('after.new:stage');
 
-    console.log();
-    console.log(`${TADA} Successfully created a new stage. ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Successfully created a new stage.`);
+    Log.spacer();
   }
 }

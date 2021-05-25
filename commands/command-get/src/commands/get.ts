@@ -14,6 +14,7 @@ import {
   CliArgs,
   ParseContext,
   TADA,
+  Log,
 } from '@jovotech/cli-core';
 import { BuildEvents } from '@jovotech/cli-command-build';
 import GetCommand from '..';
@@ -53,9 +54,6 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
       description: 'Target of build.',
       // ToDo: options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL, TARGET_ZIP, ...deployTargets.getAllPluginTargets()],
     }),
-    stage: flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
     build: flags.boolean({
       description: 'Runs build after get.',
       char: 'b',
@@ -69,6 +67,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     overwrite: flags.boolean({
       description: 'Forces overwrite of existing project.',
     }),
+    ...PluginCommand.flags,
   };
   static args = [
     <const>{
@@ -106,9 +105,9 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
 
     await this.$emitter.run('parse', { command: Get.id, flags, args });
 
-    console.log();
-    console.log(`jovo get: ${Get.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
+    Log.spacer();
+    Log.info(`jovo get: ${Get.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
 
     const context: GetContext = {
       command: Get.id,
@@ -127,8 +126,8 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
       await this.$emitter.run('reverse.build');
     }
 
-    console.log();
-    console.log(`${TADA} Successfully got your platform project! ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Successfully got your platform project!`);
+    Log.spacer();
   }
 }

@@ -1,38 +1,53 @@
 import chalk from 'chalk';
-import { printComment } from './utils';
-import { ERROR } from './utils/Constants';
+import { ERROR_PREFIX, printComment } from './utils';
+import { Log, LogLevel } from './Logger';
 
 export class JovoCliError extends Error {
-  private error: string[] = [];
-
-  constructor(readonly message: string, readonly module: string, readonly hint?: string) {
-    super();
+  constructor(
+    readonly message: string,
+    readonly module: string = 'JovoCliCore',
+    readonly hint?: string,
+    readonly learnMore?: string,
+  ) {
+    super(message);
   }
 
-  logError(): void {
-    this.error.push(`${ERROR} ${chalk.bgRed.bold(`${this.message}\n`)}`);
+  private static addProperty(key: string, value: string, logLevel = LogLevel.Error): void {
+    Log.info(`${chalk.bold(key)}:`, { prefix: ERROR_PREFIX, logLevel });
+    Log.info(value, {
+      indent: 1,
+      prefix: ERROR_PREFIX,
+      logLevel,
+    });
   }
 
-  logProperty(key: string, value: string): void {
-    key = `${key}:`.padEnd(10);
-    this.error.push(`${chalk.bold(key)}${value}`);
-  }
+  static print(error: JovoCliError): void {
+    Log.spacer();
+    Log.error(`Error: ${'-'.repeat(80)}`);
+    Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
+    this.addProperty('Message', error.message);
+    this.addProperty('Module', error.module);
 
-  toString(): string {
-    console.log();
-    this.logError();
-    this.logProperty('Module', this.module);
-
-    if (this.hint) {
-      this.logProperty('Hint', this.hint);
+    if (error.hint) {
+      this.addProperty('Hint', error.hint);
     }
 
-    this.error.push(
-      printComment(
-        '\nIf you think this is not on you, you can submit an issue here: https://github.com/jovotech/jovo-cli/issues.',
-      ),
-    );
+    if (error.learnMore) {
+      this.addProperty('Learn more', error.learnMore);
+    }
 
-    return `\n${this.error.join('\n')}\n`;
+    if (error.stack) {
+      Log.info(`${ERROR_PREFIX}`, { logLevel: LogLevel.Debug });
+      this.addProperty('Stack', error.stack, LogLevel.Debug);
+    }
+
+    Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
+    Log.info(
+      printComment(
+        'If you think this is not on you, you can submit an issue here: https://github.com/jovotech/jovo-cli/issues.',
+      ),
+      { prefix: ERROR_PREFIX, logLevel: LogLevel.Error },
+    );
+    Log.spacer();
   }
 }

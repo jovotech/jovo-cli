@@ -5,6 +5,7 @@ import { join as joinPaths } from 'path';
 
 import { JovoCliError } from './JovoCliError';
 import { JovoCliPlugin } from './JovoCliPlugin';
+import { Log } from './Logger';
 import { mergeArrayCustomizer } from './utils';
 import { ProjectConfigFile } from './utils/Interfaces';
 
@@ -19,6 +20,7 @@ export class Config {
     }
 
     this.config = this.get();
+    Log.verbose('Loaded project configuration');
   }
 
   /**

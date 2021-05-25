@@ -7,10 +7,8 @@ import {
   ProjectProperties,
   prompt,
   validateLocale,
-  CliArgs,
-  CliFlags,
 } from '@jovotech/cli-core';
-import { New } from '../commands/new';
+import { NewArgs, NewFlags } from '../commands/new';
 import { fetchMarketPlace } from '.';
 
 export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset: string }> {
@@ -46,8 +44,8 @@ export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset:
 }
 
 export async function promptProjectProperties(
-  args: CliArgs<typeof New>,
-  flags: CliFlags<typeof New>,
+  args: NewArgs,
+  flags: NewFlags,
 ): Promise<ProjectProperties> {
   // Override, thus preanswer certain prompts, depending on process arguments.
   prompt.override({

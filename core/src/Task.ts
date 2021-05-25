@@ -1,7 +1,7 @@
-import indentString from 'indent-string';
 import chalk from 'chalk';
 import Spinnies from 'spinnies';
 import { JovoCliError } from './JovoCliError';
+import { Log } from '.';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -54,42 +54,56 @@ export class Task {
     const spinnerId: string = `spinner-${Math.random()}`;
 
     if (Array.isArray(this.action)) {
-      console.log(indentString(this.title.trim(), this.indentation));
+      Log.info(this.title.trim(), { indent: this.indentation });
       for (const action of this.action) {
         action.indent(this.indentation + 2);
         await action.run();
       }
     } else {
-      Task.spinners.add(spinnerId, {
-        text: this.title,
-        indent: this.indentation,
-      });
+      if (Log.isRaw()) {
+        Log.info(this.title.trim(), { indent: this.indentation });
+      } else {
+        Task.spinners.add(spinnerId, {
+          text: this.title,
+          indent: this.indentation,
+        });
 
-      // Let Command Line decide what color to display on succeed.
-      // This has to be overridden after adding the spinner to avoid filtering invalid colours.
-      Task.spinners.pick(spinnerId).succeedColor = 'default';
+        // Let Command Line decide what color to display on succeed.
+        // This has to be overridden after adding the spinner to avoid filtering invalid colours.
+        Task.spinners.pick(spinnerId).succeedColor = 'default';
+      }
+
       try {
         let output: string[] | string | void = await this.action();
-        Task.spinners.succeed(spinnerId);
+        if (!Log.isRaw()) {
+          Task.spinners.succeed(spinnerId);
+        }
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];
           }
           for (const str of output) {
-            // Spinnies does not support console.log(), so provide output by adding a non-spinnable spinner.
-            Task.spinners.add(chalk.white.dim(str), {
-              indent: this.indentation + 2,
-              status: 'non-spinnable',
-            });
+            if (Log.isRaw()) {
+              Log.info(chalk.white.dim(str), { indent: 2 });
+            } else {
+              // Spinnies does not support output with stdout directly, so provide output by adding a non-spinnable spinner.
+              Task.spinners.add(chalk.white.dim(str), {
+                indent: this.indentation + 2,
+                status: 'non-spinnable',
+              });
+            }
           }
         }
       } catch (error) {
-        Task.spinners.fail(spinnerId);
+        if (!Log.isRaw()) {
+          Task.spinners.fail(spinnerId);
+        }
+
         if (error instanceof JovoCliError) {
           throw error;
         }
 
-        throw new JovoCliError(error.message, 'JovoCliCore');
+        throw new JovoCliError(error.message);
       }
     }
   }

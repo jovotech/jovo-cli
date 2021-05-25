@@ -5,9 +5,9 @@ import latestVersion from 'latest-version';
 import _get from 'lodash.get';
 import stripAnsi from 'strip-ansi';
 
-import { printWarning } from './Prints';
 import { JovoCliError } from '../JovoCliError';
 import { DependencyFile, LocaleMap, Packages, PackageVersions } from './Interfaces';
+import { Log } from '..';
 
 export * from './Interfaces';
 export * from './Validators';
@@ -89,7 +89,6 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   } else {
     throw new JovoCliError(
       "Could not find an NPM dependency file, such as your project's package.json.",
-      'JovoCliCore',
     );
   }
 
@@ -98,10 +97,7 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   try {
     content = readFileSync(packagePath, 'utf-8');
   } catch (error) {
-    throw new JovoCliError(
-      `Something went wrong while reading your ${packageFileName} file.`,
-      'JovoCliCore',
-    );
+    throw new JovoCliError(`Something went wrong while reading your ${packageFileName} file.`);
   }
 
   const packageFile: DependencyFile = JSON.parse(content);
@@ -191,12 +187,10 @@ export async function getPackageVersions(
  */
 export function checkForProjectDirectory(isInProjectDirectory: boolean): void {
   if (!isInProjectDirectory) {
-    console.log();
-    console.log(
-      printWarning('To use this command, please go into the directory of a valid Jovo project.'),
-    );
-    console.log();
-    process.exit();
+    Log.spacer();
+    Log.warning('To use this command, please go into the directory of a valid Jovo project.');
+    Log.spacer();
+    process.exit(126);
   }
 }
 
@@ -235,7 +229,7 @@ export function getResolvedLocales(
 
   if (resolvedLocales) {
     if (!Array.isArray(resolvedLocales)) {
-      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`, 'JovoCliCore');
+      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`);
     }
 
     const globPattern: string | undefined = resolvedLocales.find((locale) =>

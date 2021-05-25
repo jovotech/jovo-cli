@@ -7,6 +7,7 @@ import {
   CliFlags,
   deleteFolderRecursive,
   flags,
+  Log,
   PluginCommand,
   PluginContext,
   printSubHeadline,
@@ -41,9 +42,7 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
       description: 'Runs deploy after build.',
       exclusive: ['reverse'],
     }),
-    stage: flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
+    ...PluginCommand.flags,
   };
   static args = [];
 
@@ -54,10 +53,10 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
 
     await this.$emitter.run('parse', { command: BuildServerless.id, flags, args });
 
-    console.log();
-    console.log(`jovo build:serverless: ${BuildServerless.description}`);
+    Log.spacer();
+    Log.info(`jovo build:serverless: ${BuildServerless.description}`);
     // ToDo: Link to correct docs.
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     if (existsSync('serverless.yaml')) {
       if (!flags.clean) {
@@ -99,8 +98,8 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
       await this.$emitter.run('after.deploy:code');
     }
 
-    console.log();
-    console.log(`${TADA} Successfully built serverless configuration.`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Successfully built serverless configuration.`);
+    Log.spacer();
   }
 }

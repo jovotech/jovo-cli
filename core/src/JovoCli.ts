@@ -12,6 +12,7 @@ import {
   PluginContext,
   PluginType,
   JOVO_WEBHOOK_URL,
+  Log,
 } from '.';
 
 export class JovoCli {
@@ -28,6 +29,7 @@ export class JovoCli {
     this.$userConfig = new JovoUserConfig();
 
     if (this.isInProjectDirectory()) {
+      Log.verbose(`Found Jovo project in ${this.$projectPath}`);
       this.$project = Project.getInstance(this.$projectPath);
     }
   }

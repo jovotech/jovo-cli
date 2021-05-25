@@ -9,8 +9,9 @@ import {
   JovoUserConfig,
   JovoUserConfigFile,
   JOVO_WEBHOOK_URL,
+  Log,
   PackageVersions,
-  printWarning,
+  printUserInput,
 } from '@jovotech/cli-core';
 
 import * as JovoWebhookConnector from './JovoWebhookConnector';
@@ -23,7 +24,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
-    throw new JovoCliError(error.stderr, '@jovotech/cli-command-run', error.stdout);
+    throw new JovoCliError(error.stderr, 'RunCommand', error.stdout);
   }
 }
 
@@ -86,7 +87,7 @@ export function instantiateJovoWebhook(
   const endpoint: string = cli.resolveEndpoint(endpointRaw);
 
   if (endpoint && endpoint.startsWith('arn')) {
-    printWarning(
+    Log.warning(
       "Your configured endpoint is a lambda endpoint. Lambda isn't supported with jovo run.",
     );
   }
@@ -101,7 +102,9 @@ export function instantiateJovoWebhook(
     // Check if we can enable raw mode for input stream to capture raw keystrokes.
     if (process.stdin.setRawMode) {
       setTimeout(() => {
-        console.log(`\n${CLOUD} To open Jovo Debugger in your browser, enter .\n`);
+        Log.info(
+          `\n${CLOUD} To open Jovo Debugger in your browser, enter ${printUserInput('.')}\n`,
+        );
       }, 2500);
 
       // Capture unprocessed key input.
@@ -120,10 +123,10 @@ export function instantiateJovoWebhook(
           try {
             await open(debuggerUrl);
           } catch (error) {
-            console.log(
+            Log.info(
               '\nCould not open browser. Please open debugger manually by visiting this url:',
             );
-            console.log(debuggerUrl);
+            Log.info(debuggerUrl);
           }
           inputText = '';
         } else {
@@ -147,7 +150,7 @@ export function instantiateJovoWebhook(
       });
     } else {
       setTimeout(() => {
-        console.log(
+        Log.info(
           `\n${CLOUD} To open Jovo Debugger open this url in your browser:\n${debuggerUrl}\n`,
         );
       }, 2500);

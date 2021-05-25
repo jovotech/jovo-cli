@@ -1,6 +1,7 @@
 import { JovoCli } from '.';
 import { Emitter } from './EventEmitter';
 import { JovoCliPlugin } from './JovoCliPlugin';
+import { Log } from './Logger';
 import { MiddlewareCollection, PluginContext } from './utils/Interfaces';
 
 export class PluginComponent {
@@ -21,6 +22,8 @@ export class PluginComponent {
     this.prototype.install();
     // Register events to emitter.
     this.prototype.loadMiddlewareCollection();
+
+    Log.verbose(`Installed ${this.prototype.constructor.name}`, { indent: 2 });
   }
 
   install(): void {}

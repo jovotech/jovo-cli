@@ -1,3 +1,6 @@
+// This import is necessary for inferred type annotation for PluginCommand.flags.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as Parser from '@oclif/parser';
 import {
   checkForProjectDirectory,
   CliArgs,
@@ -5,6 +8,7 @@ import {
   Emitter,
   flags,
   JovoCli,
+  Log,
   ParseContext,
   PluginCommand,
   PluginContext,
@@ -20,7 +24,7 @@ export type DeployCodeArgs = CliArgs<typeof DeployCode>;
 export interface DeployCodeContext extends PluginContext {
   args: DeployCodeArgs;
   flags: DeployCodeFlags;
-  target: string;
+  target: string[];
 }
 
 export interface ParseContextDeployCode extends ParseContext {
@@ -31,8 +35,8 @@ export interface ParseContextDeployCode extends ParseContext {
 export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.deploy:code';
 
 export class DeployCode extends PluginCommand<DeployCodeEvents> {
-  static id = 'deploy:code';
-  static description = 'Deploys project code.';
+  static id: string = 'deploy:code';
+  static description: string = 'Deploys project code.';
   static examples: string[] = [
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
@@ -45,13 +49,11 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
       description: 'Locale of the language model.\n<en|de|etc>',
       multiple: true,
     }),
-    stage: flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
     src: flags.string({
       char: 's',
       description: `Path to source files.`,
     }),
+    ...PluginCommand.flags,
   };
 
   static args = [
@@ -75,17 +77,16 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
 
     await this.$emitter.run('parse', { command: DeployCode.id, flags, args });
 
-    console.log();
-    console.log(`jovo deploy:code: ${DeployCode.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code\n'));
+    Log.spacer();
+    Log.info(`jovo deploy:code: ${DeployCode.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code\n'));
 
     const context: DeployCodeContext = {
       command: DeployCode.id,
       platforms: this.$cli.getPlatforms(),
       locales: flags.locale || this.$cli.$project!.getLocales(),
       // ToDo: Configure deploy depending on target.
-      target: args.target,
-      // src: flags.src || jovo.$project!.getBuildDirectory(),
+      target: args.target ? [args.target] : DeployCode.availableTargets,
       flags,
       args,
     };
@@ -95,8 +96,8 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     await this.$emitter.run('deploy:code');
     await this.$emitter.run('after.deploy:code');
 
-    console.log();
-    console.log(`${TADA} Code deployment completed. ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Code deployment completed.`);
+    Log.spacer();
   }
 }

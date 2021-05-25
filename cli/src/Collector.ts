@@ -1,5 +1,13 @@
 import { Command, Plugin, Topic } from '@oclif/config';
-import { DefaultEvents, Emitter, ConfigHooks, JovoCliPlugin, JovoCli } from '@jovotech/cli-core';
+import {
+  DefaultEvents,
+  Emitter,
+  ConfigHooks,
+  JovoCliPlugin,
+  JovoCli,
+  JovoCliError,
+  Log,
+} from '@jovotech/cli-core';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {
@@ -22,9 +30,11 @@ export class Collector extends Plugin {
    */
   async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>): Promise<void> {
     try {
+      Log.verbose('Initiating Jovo CLI');
       const cli: JovoCli = JovoCli.getInstance();
       const plugins: JovoCliPlugin[] = cli.loadPlugins();
 
+      Log.verbose('Loading CLI plugins');
       for (const plugin of plugins) {
         plugin.install(cli, emitter);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -64,8 +74,8 @@ export class Collector extends Plugin {
         });
       }
     } catch (error) {
-      console.log(`There was a problem:\n${error}`);
-      process.exit();
+      JovoCliError.print(error);
+      process.exit(1);
     }
   }
 }

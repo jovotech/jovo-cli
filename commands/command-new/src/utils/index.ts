@@ -24,7 +24,7 @@ export async function runNpmInstall(projectPath: string): Promise<void> {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
     // Suppress NPM warnings.
-    throw new JovoCliError(error.stderr, '@jovotech/cli-command-new');
+    throw new JovoCliError(error.stderr, 'NewCommand');
   }
 }
 
@@ -68,7 +68,7 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
     },
     {
       name: 'AWS Lambda',
-      module: 'Lambda',
+      module: 'lambda',
       package: '@jovotech/server-lambda',
       description: 'Serverless hosting solution by AWS',
       tags: 'server',
