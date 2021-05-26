@@ -1,5 +1,5 @@
 import { Hook } from '@oclif/config';
-import { getPackageVersions, JovoCli, PackageVersions, printCode } from '@jovotech/cli-core';
+import { getPackageVersions, JovoCli, PackageVersions, printCode, Log } from '@jovotech/cli-core';
 import latestVersion from 'latest-version';
 
 const hook: Hook<'init'> = async function () {
@@ -11,7 +11,7 @@ const hook: Hook<'init'> = async function () {
   const current: string = packageJson.version;
   const latest: string = await latestVersion(packageJson.name);
 
-  console.log(
+  Log.info(
     `${packageJson.name}: ${current} ${
       current !== latest ? `(update to ${printCode(latest)} available)` : ''
     }`,
@@ -20,6 +20,7 @@ const hook: Hook<'init'> = async function () {
   const cli: JovoCli = JovoCli.getInstance();
   if (cli.isInProjectDirectory()) {
     const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.$projectPath);
+    Log.info(versions);
     if (Object.keys(versions).length) {
       const output: string[] = [];
       let updatesAvailable: boolean = false;
@@ -39,11 +40,11 @@ const hook: Hook<'init'> = async function () {
         output.push('\nUse "jovo update" to get the newest versions.');
       }
 
-      console.log(output.join('\n'));
+      Log.info(output.join('\n'));
     }
   }
 
-  console.log();
+  Log.spacer();
   process.exit();
 };
 
