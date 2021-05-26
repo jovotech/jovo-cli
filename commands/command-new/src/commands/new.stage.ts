@@ -22,6 +22,9 @@ import {
   printUserInput,
   MarketplacePlugin,
   Log,
+  ProjectConfigFile,
+  JovoCliError,
+  Config,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -55,6 +58,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     overwrite: flags.boolean({
       description: 'Forces overwriting an existing project.',
     }),
+    ...PluginCommand.flags,
   };
   // Defines arguments that can be passed to the command.
   static args = [
@@ -111,7 +115,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     const serverFileName = `server.${server.module.toLowerCase()}`;
 
     // Offer the user a range of plugins consisting of database and analytics plugins.
-    const availablePlugins: prompt.Choice[] = marketPlacePlugins
+    const availableAppPlugins: prompt.Choice[] = marketPlacePlugins
       .filter((plugin) => plugin.tags.includes('databases') || plugin.tags.includes('analytics'))
       .map((plugin) => {
         return {
@@ -120,39 +124,50 @@ export class NewStage extends PluginCommand<NewStageEvents> {
           description: plugin.description,
         };
       });
-    const { plugins } = await promptPlugins(availablePlugins);
+    const { plugins: appPlugins } = await promptPlugins(
+      'Which framework plugins do you want to use?',
+      availableAppPlugins,
+    );
 
     Log.spacer();
-    const stageTask: Task = new Task(`${WRENCH} Creating new stage...`);
+    const stageTask: Task = new Task(`${WRENCH} Creating new stage`);
 
     const addPluginsTask: Task = new Task('Generating staged files', async () => {
       // Create app.{stage}.ts.
-      let stagedApp: string = readFileSync(
-        joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
-        'utf-8',
-      );
-      const pluginsComment = '// Add Jovo plugins here.';
-
-      for (const plugin of plugins) {
-        stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
-        stagedApp = insert(
-          `\n\t\tnew ${plugin.module}(),`,
-          stagedApp,
-          stagedApp.indexOf(pluginsComment) + pluginsComment.length,
+      const appTask: Task = new Task(`app.${this.$context.args.stage}.ts`, async () => {
+        let stagedApp: string = readFileSync(
+          joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
+          'utf-8',
         );
-      }
+        const pluginsComment = '// Add Jovo plugins here.';
 
-      stagedApp = insert(`\nexport * from './${serverFileName}';\n`, stagedApp, stagedApp.length);
+        for (const plugin of appPlugins) {
+          stagedApp = insert(
+            `import { ${plugin.module} } from '${plugin.package}'\n`,
+            stagedApp,
+            0,
+          );
+          stagedApp = insert(
+            `\n\t\tnew ${plugin.module}(),`,
+            stagedApp,
+            stagedApp.indexOf(pluginsComment) + pluginsComment.length,
+          );
+        }
 
-      writeFileSync(joinPaths('src', `app.${this.$context.args.stage}.ts`), stagedApp);
-      await wait(500);
+        stagedApp = insert(`\nexport * from './${serverFileName}';\n`, stagedApp, stagedApp.length);
+
+        writeFileSync(joinPaths('src', `app.${this.$context.args.stage}.ts`), stagedApp);
+        await wait(500);
+      });
+      appTask.indent(4);
+      await appTask.run();
     });
 
     const installTask: Task = new Task('Installing plugins', async () => {
       const packageJson = require(resolve('package.json'));
 
       // Add plugins to package.json
-      for (const plugin of plugins) {
+      for (const plugin of [...appPlugins]) {
         packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
       // Add selected server dependency to package.json

@@ -210,12 +210,13 @@ export async function promptServer(
 }
 
 export async function promptPlugins(
+  message: string,
   plugins: prompt.Choice[],
 ): Promise<{ plugins: MarketplacePlugin[] }> {
   return await prompt(
     {
       name: 'plugins',
-      message: 'Which plugins do you want to use?',
+      message,
       type: 'multiselect',
       choices: plugins,
     },
