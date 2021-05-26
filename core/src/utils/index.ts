@@ -102,7 +102,7 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
 
   const packageFile: DependencyFile = JSON.parse(content);
   const packages: Packages = {};
-  const versionNumberRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}$/;
+  const versionNumberRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}(-alpha.\d{1,2})?$/;
 
   // Look through devDependencies of package.json.
   for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
