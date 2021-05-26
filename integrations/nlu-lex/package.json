@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/nlu-lex",
   "description": "Jovo CLI Plugin for building and deploying to Amazon Lex",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@aws-sdk/client-lex-model-building-service": "^3.14.0",
-    "@jovotech/cli-command-build": "^4.0.0-alpha.7",
-    "@jovotech/cli-command-deploy": "^4.0.0-alpha.7",
-    "@jovotech/cli-command-get": "^4.0.0-alpha.7",
-    "@jovotech/cli-core": "^4.0.0-alpha.7",
+    "@jovotech/cli-command-build": "^4.0.0-alpha.8",
+    "@jovotech/cli-command-deploy": "^4.0.0-alpha.8",
+    "@jovotech/cli-command-get": "^4.0.0-alpha.8",
+    "@jovotech/cli-core": "^4.0.0-alpha.8",
     "@oclif/parser": "^3.8.5",
     "jovo-model": "^3.0.1",
     "jovo-model-lex": "^3.0.1",
