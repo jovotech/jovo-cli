@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/target-serverless",
   "description": "Jovo CLI Plugin for building and deploying to Serverless",
-  "version": "0.0.1",
+  "version": "4.0.0-alpha.1",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
