@@ -28,7 +28,14 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
     stage: flags.string({
       description: 'Takes configuration from specified stage.',
     }),
-    debug: flags.boolean(),
+    debug: flags.boolean({
+      description: 'Shows debugging information, such as the error trace stack.',
+      parse(debug: boolean) {
+        if (debug) {
+          process.env.JOVO_CLI_LOG_LEVEL = 'DEBUG';
+        }
+      },
+    }),
   };
 
   /**

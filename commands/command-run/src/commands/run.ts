@@ -4,7 +4,6 @@ import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
 import { resolve } from 'path';
 import { ChildProcess, spawn } from 'child_process';
-import resolveBin from 'resolve-bin';
 import {
   checkForProjectDirectory,
   PluginContext,
