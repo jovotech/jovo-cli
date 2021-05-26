@@ -17,6 +17,7 @@
     "@types/prompts": "^2.0.9",
     "@types/tv4": "^1.2.29",
     "chalk": "^4.1.0",
+    "dotenv": "^10.0.0",
     "global-dirs": "^3.0.0",
     "indent-string": "^4.0.0",
     "jovo-model": "^3.0.0",
