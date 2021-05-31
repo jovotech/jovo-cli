@@ -140,7 +140,13 @@ export function instantiateJovoWebhook(
             inputText = '';
           } else if (key.charCodeAt(0) === 3) {
             // Ctrl+C has been pressed, kill process.
-            process.exit();
+            if (process.platform === 'win32') {
+              Log.info('Press Ctrl + C again to exit.');
+              process.stdin.pause();
+              process.stdin.setRawMode(false);
+            } else {
+              process.exit();
+            }
           } else {
             // Record input text and write it into terminal.
             inputText += key;

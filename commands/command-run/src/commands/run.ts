@@ -150,32 +150,7 @@ export class Run extends PluginCommand<RunEvents> {
       }
     }
 
-    const npmCommand: string = require(resolve('package.json')).scripts[
-      `start:${this.$cli.$project!.$stage || 'dev'}`
-    ];
-
-    if (!npmCommand) {
-      throw new JovoCliError(
-        `Couldn't find npm script for stage ${printHighlight(
-          this.$cli.$project!.$stage || 'dev',
-        )}.`,
-        this.$plugin.constructor.name,
-        `"jovo run" executes your npm script to start your Jovo app, e.g. "npm run start:dev", \nbut couldn't find a script for stage ${printHighlight(
-          this.$cli.$project!.$stage || 'dev',
-        )}.`,
-        'Please provide an npm script for your stage or create a new stage with "jovo new:stage {stage}".',
-      );
-    }
-
-    let command: string = npmCommand;
-    const commandMatch: RegExpMatchArray | null = npmCommand.match(/node.*?app.*?\.js/);
-    if (commandMatch) {
-      const nodeCommand: string = commandMatch[0];
-      if (nodeCommand) {
-        command = command.replace(nodeCommand, `${nodeCommand} ${parameters.join(' ')}`);
-      }
-    }
-    const nodeProcess: ChildProcess = spawn('npx', command.split(' '), {
+    const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
       windowsVerbatimArguments: true,
     });
