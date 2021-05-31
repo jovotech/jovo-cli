@@ -1,9 +1,14 @@
 import prompt from 'prompts';
+import { config } from 'dotenv';
 import { ProjectConfigFile } from './utils/Interfaces';
+
+// Load .env variables into process.env
+config();
 
 export { flags } from '@oclif/command';
 export { prompt };
 
+export * from './Logger';
 export * from './JovoCli';
 export * from './EventEmitter';
 export * from './PluginHook';

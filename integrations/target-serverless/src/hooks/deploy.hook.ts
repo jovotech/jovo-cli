@@ -1,4 +1,4 @@
-import { execAsync, JovoCliError, PluginHook, ROCKET, Task } from '@jovotech/cli-core';
+import { execAsync, JovoCliError, PACKAGE, PluginHook, ROCKET, Task } from '@jovotech/cli-core';
 import { DeployCodeEvents, DeployCodeContext } from '@jovotech/cli-command-deploy';
 
 import { getServerlessError, ServerlessConfig } from '../utils';
@@ -10,12 +10,12 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   install(): void {
     this.middlewareCollection = {
       'before.deploy:code': [this.checkForTarget.bind(this), this.checkForServerlessCli.bind(this)],
-      'deploy:code': [this.deployServerless.bind(this)],
+      'deploy:code': [this.bundle.bind(this), this.deployServerless.bind(this)],
     };
   }
 
   checkForTarget(): void {
-    if (this.$context.target !== this.$plugin.$id) {
+    if (!this.$context.target.includes(this.$plugin.$id)) {
       this.uninstall();
     }
   }
@@ -33,6 +33,23 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
         'Please install the Serverless CLI using the command "npm install -g serverless".',
       );
     }
+  }
+
+  async bundle(): Promise<void> {
+    const bundleTask: Task = new Task(`${PACKAGE} Bundling your code`, async () => {
+      try {
+        await execAsync(`npm run bundle:${this.$cli.$project!.$stage}`, {
+          cwd: this.$cli.$projectPath,
+        });
+      } catch (error) {
+        throw new JovoCliError(
+          'Something failed while bundling your project files.',
+          this.$plugin.constructor.name,
+          error.stderr,
+        );
+      }
+    });
+    await bundleTask.run();
   }
 
   /**

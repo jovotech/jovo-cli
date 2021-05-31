@@ -1,6 +1,7 @@
 import {
   checkForProjectDirectory,
   CliFlags,
+  Log,
   PluginCommand,
   PluginContext,
   printSubHeadline,
@@ -18,8 +19,6 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
     'jovo deploy --locale en-US --platform alexaSkill --stage dev',
     'jovo deploy --target zip',
   ];
-  static flags = {};
-  static args = [];
 
   install(): void {
     this.middlewareCollection = {
@@ -51,9 +50,9 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
 
     await this.$emitter.run('parse', { command: Deploy.id, flags, args });
 
-    console.log();
-    console.log(`jovo deploy: ${Deploy.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
+    Log.spacer();
+    Log.info(`jovo deploy: ${Deploy.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
 
     const context: PluginContext = {
       command: Deploy.id,
@@ -68,8 +67,8 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
     await this.$emitter.run('deploy');
     await this.$emitter.run('after.deploy');
 
-    console.log();
-    console.log(`${TADA} Deployment completed. ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Deployment completed.`);
+    Log.spacer();
   }
 }

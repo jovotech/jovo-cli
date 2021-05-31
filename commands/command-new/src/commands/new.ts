@@ -24,6 +24,7 @@ import {
   JovoCliPlugin,
   PluginContext,
   MarketplacePlugin,
+  Log,
 } from '@jovotech/cli-core';
 import { existsSync, mkdirSync } from 'fs';
 
@@ -89,6 +90,7 @@ export class New extends PluginCommand<NewEvents> {
     'overwrite': flags.boolean({
       description: 'Forces overwriting an existing project.',
     }),
+    ...PluginCommand.flags,
   };
   // Defines arguments that can be passed to the command.
   static args = [
@@ -97,7 +99,7 @@ export class New extends PluginCommand<NewEvents> {
       description: 'Project directory.',
       parse(directory?: string) {
         if (directory && !/^[0-9a-zA-Z-_]+$/.test(directory)) {
-          console.log('Please use a valid directory name.');
+          Log.info('Please use a valid directory name.');
           process.exit();
         }
 
@@ -109,15 +111,15 @@ export class New extends PluginCommand<NewEvents> {
   async run(): Promise<void> {
     const { args, flags }: { args: NewArgs; flags: NewFlags } = this.parse(New);
 
-    console.log();
-    console.log(`jovo new: ${New.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
+    Log.spacer(' ');
+    Log.info(`jovo new: ${New.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
 
     let preset: Preset | undefined;
 
     if (!flags['no-wizard']) {
-      console.log(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard.`);
-      console.log();
+      Log.info(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard.`);
+      Log.spacer();
 
       try {
         const { selectedPreset } = await promptPreset(this.$cli.$userConfig.getPresets());
@@ -175,7 +177,7 @@ export class New extends PluginCommand<NewEvents> {
     if (!context.projectName) {
       throw new JovoCliError(
         'Please provide a directory.',
-        '@jovotech/cli-command-new',
+        this.$plugin.constructor.name,
         'For more information, run "jovo new --help".',
       );
     }
@@ -195,9 +197,9 @@ export class New extends PluginCommand<NewEvents> {
       deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
     }
 
-    console.log();
-    console.log(`${WRENCH} I'm setting everything up`);
-    console.log();
+    Log.spacer();
+    Log.info(`${WRENCH} I'm setting everything up`);
+    Log.spacer();
 
     const newTask: Task = new Task(
       `Creating new directory ${printHighlight(context.projectName)}/`,
@@ -214,7 +216,7 @@ export class New extends PluginCommand<NewEvents> {
       try {
         await downloadTemplate(context.projectName);
       } catch (error) {
-        throw new JovoCliError('Could not download template.', '@jovotech/cli-command-new');
+        throw new JovoCliError('Could not download template.', this.$plugin.constructor.name);
       }
     });
     await downloadTask.run();
@@ -240,7 +242,7 @@ export class New extends PluginCommand<NewEvents> {
     for (const platform of context.platforms) {
       // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
-        joinPaths(context.projectName, 'node_modules', platform.package),
+        joinPaths(context.projectName, 'node_modules', platform.package, 'dist', 'cli'),
       ))[platform.cliModule!])();
 
       plugin.install(this.$cli, this.$emitter);
@@ -255,8 +257,8 @@ export class New extends PluginCommand<NewEvents> {
 
     TemplateBuilder.generateProjectConfiguration(context);
 
-    console.log();
-    console.log(`${TADA} Successfully created your project!`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Successfully created your project!`);
+    Log.spacer();
   }
 }

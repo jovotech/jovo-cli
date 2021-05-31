@@ -1,11 +1,10 @@
-import Command from '@oclif/command';
+import Command, { flags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 import { Mixin } from 'ts-mixer';
-
-import { PluginComponent } from './PluginComponent';
 import { Emitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
-import { MiddlewareCollection, DefaultEvents, Events } from './utils/Interfaces';
+import { PluginComponent } from './PluginComponent';
+import { DefaultEvents, Events, MiddlewareCollection } from './utils';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -25,6 +24,19 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   protected $emitter!: Emitter<T | DefaultEvents>;
 
   static args: Parser.args.Input;
+  static flags = {
+    stage: flags.string({
+      description: 'Takes configuration from specified stage.',
+    }),
+    debug: flags.boolean({
+      description: 'Shows debugging information, such as the error trace stack.',
+      parse(debug: boolean) {
+        if (debug) {
+          process.env.JOVO_CLI_LOG_LEVEL = 'DEBUG';
+        }
+      },
+    }),
+  };
 
   /**
    * Loads command into CLI.
@@ -43,7 +55,11 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    * Catch possible errors and print them.
    * @param error - JovoCliError.
    */
-  async catch(error: JovoCliError): Promise<void> {
-    this.error(`There was a problem:\n${error}`);
+  async catch(error: JovoCliError | Error): Promise<void> {
+    if (!(error instanceof JovoCliError)) {
+      error = new JovoCliError(error.message);
+    }
+    JovoCliError.print(error as JovoCliError);
+    process.exit(1);
   }
 }

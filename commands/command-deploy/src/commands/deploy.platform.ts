@@ -18,6 +18,7 @@ import {
   CliArgs,
   ParseContext,
   TADA,
+  Log,
 } from '@jovotech/cli-core';
 import DeployCommand from '..';
 
@@ -55,9 +56,6 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       description: 'Locale of the language model.\n<en|de|etc>',
       multiple: true,
     }),
-    stage: flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
     target: flags.string({
       char: 't',
       description: 'Deploy target.',
@@ -68,6 +66,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       char: 's',
       description: 'Location of model files.',
     }),
+    ...PluginCommand.flags,
   };
   static args = [
     <const>{
@@ -112,9 +111,9 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
     await this.$emitter.run('parse', { command: DeployPlatform.id, flags, args });
 
-    console.log();
-    console.log(`jovo deploy:platform: ${DeployPlatform.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
+    Log.spacer();
+    Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
     const context: DeployPlatformContext = {
       command: DeployPlatform.id,
@@ -132,8 +131,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     await this.$emitter.run('deploy:platform');
     await this.$emitter.run('after.deploy:platform');
 
-    console.log();
-    console.log(`${TADA} Platform deployment completed. ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Platform deployment completed.`);
+    Log.spacer();
   }
 }

@@ -102,10 +102,10 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(`Could not find model file for locale: ${locale}`, 'JovoCliCore');
+        throw new JovoCliError(`Could not find model file for locale: ${locale}`);
       }
 
-      throw new JovoCliError(error.message, 'JovoCliCore');
+      throw new JovoCliError(error.message);
     }
   }
 
@@ -143,10 +143,7 @@ export class Project {
    */
   backupModel(locale: string): void {
     if (!this.hasModelFiles([locale])) {
-      throw new JovoCliError(
-        `Model file for locale ${locale} to backup could not be found.`,
-        'JovoCliCore',
-      );
+      throw new JovoCliError(`Model file for locale ${locale} to backup could not be found.`);
     }
 
     const todayDate: Date = new Date();
@@ -246,15 +243,9 @@ export class Project {
       (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
-      // if (!(plugin instanceof JovoCliPlugin)) {
-      //   const pluginName: string =
-      //     typeof plugin === 'object' ? (plugin as object).constructor.name : plugin;
-
-      //   throw new JovoCliError(`${pluginName} is not a JovoCliPlugin.`, 'JovoCliCore');
-      // }
-
       plugins.push(plugin);
     }
+
     return plugins;
   }
 }

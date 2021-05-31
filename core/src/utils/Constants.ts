@@ -24,10 +24,12 @@ export const CLOUD: string = SUPPORTS_EMOJI ? get('cloud') : '';
 export const CRYSTAL_BALL: string = SUPPORTS_EMOJI ? get('crystal_ball') : '';
 export const WRENCH: string = SUPPORTS_EMOJI ? get('wrench') : '';
 export const ROCKET: string = SUPPORTS_EMOJI ? get('rocket') : '';
-export const WARNING: string = SUPPORTS_EMOJI ? get('warning') : chalk.yellow('[WARN]');
-export const ERROR: string = SUPPORTS_EMOJI ? get('x') : chalk.bgRed('[ERR]');
+export const WARNING: string = chalk.yellow('!');
+export const ERROR: string = chalk.red('x');
+export const ERROR_PREFIX: string = chalk.red('›');
 export const SPARKLES: string = SUPPORTS_EMOJI ? get('sparkles') : '';
 export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with_hook:') : '';
+export const PACKAGE: string = SUPPORTS_EMOJI ? get('package') : '';
 
 // ####### TARGETS #######
 export const TARGET_ALL = 'all';

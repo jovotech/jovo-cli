@@ -2,33 +2,31 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
-import { accessSync } from 'fs';
+import { resolve } from 'path';
+import { ChildProcess, spawn } from 'child_process';
 import {
   checkForProjectDirectory,
   PluginContext,
   PackageVersions,
   PluginCommand,
-  Task,
   flags,
   CliFlags,
-  CliArgs,
   ParseContext,
   printSubHeadline,
   printComment,
+  Log,
+  JovoCliError,
+  printHighlight,
 } from '@jovotech/cli-core';
-import { shouldUpdatePackages, instantiateJovoWebhook, compileTypeScriptProject } from '../utils';
-import { ChildProcess, spawn } from 'child_process';
+import { shouldUpdatePackages, instantiateJovoWebhook } from '../utils';
 
-export type RunArgs = CliArgs<typeof Run>;
 export type RunFlags = CliFlags<typeof Run>;
 
 export interface RunContext extends PluginContext {
-  args: RunArgs;
   flags: RunFlags;
 }
 
 export interface ParseContextRun extends ParseContext {
-  args: RunArgs;
   flags: RunFlags;
 }
 
@@ -48,14 +46,8 @@ export class Run extends PluginCommand<RunEvents> {
       char: 'i',
       description: 'Debugging port.',
     }),
-    'stage': flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
     'webhook-only': flags.boolean({
       description: 'Starts the Jovo Webhook proxy without executing the code.',
-    }),
-    'tsc': flags.boolean({
-      description: 'Compile TypeScript first before execution.',
     }),
     'disable-jovo-debugger': flags.boolean({
       description: 'Disables Jovo Debugger (web version).',
@@ -64,8 +56,8 @@ export class Run extends PluginCommand<RunEvents> {
       description: 'Sets timeout in milliseconds.',
       default: 5000,
     }),
+    ...PluginCommand.flags,
   };
-  static args = [<const>{ name: 'webhookFile', default: 'app.dev.js' }];
 
   install(): void {
     this.middlewareCollection = {
@@ -89,7 +81,7 @@ export class Run extends PluginCommand<RunEvents> {
 
       outputText.push('\nUse "jovo update" to get the newest versions.');
 
-      console.log(
+      Log.info(
         boxen(outputText.join('\n'), {
           padding: 1,
           margin: 1,
@@ -107,9 +99,9 @@ export class Run extends PluginCommand<RunEvents> {
 
     await this.$emitter.run('parse', { command: Run.id, flags, args });
 
-    console.log();
-    console.log(`jovo run: ${Run.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
+    Log.spacer();
+    Log.info(`jovo run: ${Run.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
 
     const context: RunContext = {
       command: Run.id,
@@ -126,33 +118,6 @@ export class Run extends PluginCommand<RunEvents> {
       instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout });
       await this.$emitter.run('run');
       return;
-    }
-
-    const srcDir: string = this.$cli.$project!.$config.getParameter('src') as string;
-
-    if (this.$cli.$project!.isTypeScriptProject()) {
-      if (flags.tsc) {
-        const task: Task = new Task('Compiling TypeScript', async () => {
-          await compileTypeScriptProject(srcDir);
-        });
-
-        await task.run();
-        console.log();
-      }
-
-      try {
-        accessSync('./dist/');
-      } catch (error) {
-        const task: Task = new Task(
-          'Cannot find dist/ folder. Start compiling TypeScript',
-          async () => {
-            await compileTypeScriptProject(srcDir);
-          },
-        );
-
-        await task.run();
-        console.log();
-      }
     }
 
     const parameters: string[] = [];
@@ -185,7 +150,7 @@ export class Run extends PluginCommand<RunEvents> {
       }
     }
 
-    const nodeProcess: ChildProcess = spawn('npm', ['run', 'start:dev'], {
+    const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
       windowsVerbatimArguments: true,
     });

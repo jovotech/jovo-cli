@@ -19,6 +19,7 @@ import {
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
+  Log,
 } from '@jovotech/cli-core';
 import { promptForPlatform } from '../utils';
 import BuildCommand from '..';
@@ -70,15 +71,13 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
       description: 'Builds Jovo language model from platform specific language model.',
       exclusive: ['deploy'],
     }),
-    stage: flags.string({
-      description: 'Takes configuration from specified stage.',
-    }),
     target: flags.string({
       char: 't',
       description: 'Target of build.',
       options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL],
       default: TARGET_ALL,
     }),
+    ...PluginCommand.flags,
   };
   static args = [];
 
@@ -90,11 +89,11 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
 
   install(): void {
     this.middlewareCollection = {
-      build: [this.build.bind(this)],
+      build: [this.prepareBuild.bind(this)],
     };
   }
 
-  async build(): Promise<void> {
+  async prepareBuild(): Promise<void> {
     // Create "fake" tasks for more verbose logs.
     const initTask: Task = new Task(`${TADA} Initializing build process`);
 
@@ -131,9 +130,9 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
 
     await this.$emitter.run('parse', { command: Build.id, flags, args });
 
-    console.log();
-    console.log(`jovo build: ${Build.description}`);
-    console.log(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    Log.spacer();
+    Log.info(`jovo build: ${Build.description}`);
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
     // Build plugin context, containing information about the current command environemnt.
     const context: BuildContext = {
@@ -155,9 +154,9 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
 
       await this.$emitter.run('reverse.build');
 
-      console.log();
-      console.log(`${TADA} Reverse build completed. ${TADA}`);
-      console.log();
+      Log.spacer();
+      Log.info(`${TADA} Reverse build completed.`);
+      Log.spacer();
       return;
     }
 
@@ -166,14 +165,14 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     await this.$emitter.run('after.build');
 
     if (flags.deploy) {
-      console.log();
+      Log.spacer();
       await this.$emitter.run('before.deploy');
       await this.$emitter.run('deploy');
       await this.$emitter.run('after.deploy');
     }
 
-    console.log();
-    console.log(`${TADA} Build completed. ${TADA}`);
-    console.log();
+    Log.spacer();
+    Log.info(`${TADA} Build completed.`);
+    Log.spacer();
   }
 }
