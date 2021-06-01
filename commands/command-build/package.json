@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-build",
   "description": "Jovo CLI Plugin for building platform files",
-  "version": "4.0.0-alpha.8",
+  "version": "4.0.0-alpha.9",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,8 +13,8 @@
     "link": "node bin/link"
   },
   "dependencies": {
-    "@jovotech/cli-command-deploy": "^4.0.0-alpha.8",
-    "@jovotech/cli-core": "^4.0.0-alpha.8",
+    "@jovotech/cli-command-deploy": "^4.0.0-alpha.9",
+    "@jovotech/cli-core": "^4.0.0-alpha.9",
     "@oclif/parser": "^3.8.5",
     "global-dirs": "^3.0.0"
   },
