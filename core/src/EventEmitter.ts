@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Events } from './utils/Interfaces';
+import { Events } from './interfaces';
 
 export declare interface Emitter<T extends Events = Events> {
   on<K extends T>(event: K, listener: (...v: unknown[]) => void): this;

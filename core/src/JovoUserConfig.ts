@@ -6,9 +6,9 @@ import { join as joinPaths } from 'path';
 
 import { JovoCliError } from './JovoCliError';
 import chalk from 'chalk';
-import { Preset, JovoUserConfigFile } from './utils/Interfaces';
-import { promptOverwrite } from './utils/Prompts';
-import { ANSWER_CANCEL } from './utils/Constants';
+import { Preset, JovoUserConfigFile } from './interfaces';
+import { promptOverwrite } from './prompts';
+import { ANSWER_CANCEL } from './constants';
 
 export class JovoUserConfig {
   private config: JovoUserConfigFile;

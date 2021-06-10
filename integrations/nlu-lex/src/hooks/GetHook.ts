@@ -12,7 +12,7 @@ import {
   Task,
   wait,
 } from '@jovotech/cli-core';
-import type { GetContext, GetEvents, ParseContextGet } from '@jovotech/cli-command-get';
+import type { GetContext, GetEvents } from '@jovotech/cli-command-get';
 import { LexCli } from '..';
 import { existsSync, writeFileSync } from 'fs';
 import {
@@ -24,20 +24,22 @@ import {
 } from '@aws-sdk/client-lex-model-building-service';
 import { LexModelFile } from 'jovo-model-lex';
 
-export interface GetContextLex extends GetContext {
+export interface LexGetContext extends GetContext {
   flags: GetContext['flags'] & { 'bot-name'?: string };
-  botName?: string;
+  lex: {
+    botName?: string;
+  };
 }
 
 export class GetHook extends PluginHook<GetEvents> {
   $plugin!: LexCli;
-  $context!: GetContextLex;
+  $context!: LexGetContext;
 
   install(): void {
     this.middlewareCollection = {
       'install': [this.addCliOptions.bind(this)],
-      'parse': [this.checkForPlatform.bind(this)],
       'before.get': [
+        this.checkForPlatform.bind(this),
         this.updatePluginContext.bind(this),
         this.checkForAwsCredentials.bind(this),
         this.checkForExistingPlatformFiles.bind(this),
@@ -64,9 +66,9 @@ export class GetHook extends PluginHook<GetEvents> {
    * Checks if the currently selected platform matches this CLI plugin.
    * @param context - Context containing information after flags and args have been parsed by the CLI.
    */
-  checkForPlatform(context: ParseContextGet): void {
+  checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (context.args.platform && context.args.platform !== this.$plugin.$id) {
+    if (this.$context.platform && this.$context.platform !== this.$plugin.$id) {
       this.uninstall();
     }
   }
@@ -75,7 +77,11 @@ export class GetHook extends PluginHook<GetEvents> {
    * Updates the current plugin context with platform-specific values.
    */
   updatePluginContext(): void {
-    this.$context.botName = this.$context.flags['bot-name'] || this.$plugin.$config.name;
+    if (!this.$context.lex) {
+      this.$context.lex = {};
+    }
+
+    this.$context.lex.botName = this.$context.flags['bot-name'] || this.$plugin.$config.name;
   }
 
   /**
@@ -120,7 +126,7 @@ export class GetHook extends PluginHook<GetEvents> {
         credentials: this.$plugin.$config.credentials,
       });
 
-      if (!this.$context.botName) {
+      if (!this.$context.lex.botName) {
         const bots: { name: string; description?: string }[] = [];
         const getBotsTask: Task = new Task('Getting a list of all your bots', async () => {
           const command: GetBotsCommand = new GetBotsCommand({ maxResults: 50 });
@@ -137,14 +143,14 @@ export class GetHook extends PluginHook<GetEvents> {
           value: bot.name,
         }));
         const { botName } = await this.promptForBot(choices);
-        this.$context.botName = botName;
+        this.$context.lex.botName = botName;
       }
 
       const getTask: Task = new Task(
-        `Getting configuration for Lex bot ${printHighlight(this.$context.botName)}`,
+        `Getting configuration for Lex bot ${printHighlight(this.$context.lex.botName)}`,
         async () => {
           const command: GetBotCommand = new GetBotCommand({
-            name: this.$context.botName,
+            name: this.$context.lex.botName,
             versionOrAlias: '$LATEST',
           });
 

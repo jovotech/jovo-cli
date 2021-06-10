@@ -5,7 +5,7 @@ import { JovoModelData, ModelValidationError } from 'jovo-model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
-import { DEFAULT_LOCALE } from './utils/Constants';
+import { DEFAULT_LOCALE } from './constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
 
 export class Project {

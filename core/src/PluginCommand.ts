@@ -4,7 +4,7 @@ import { Mixin } from 'ts-mixer';
 import { Emitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
-import { DefaultEvents, Events, MiddlewareCollection } from './utils';
+import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.

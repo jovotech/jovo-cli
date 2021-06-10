@@ -1,5 +1,5 @@
 import { join as joinPaths } from 'path';
-import type { BuildEvents, ParseContextBuild } from '@jovotech/cli-command-build';
+import type { BuildContext, BuildEvents } from '@jovotech/cli-command-build';
 import {
   deleteFolderRecursive,
   getResolvedLocales,
@@ -28,11 +28,12 @@ import { getLexLocale, SupportedLocales, SupportedLocalesType } from '../utils';
 
 export class BuildHook extends PluginHook<BuildEvents> {
   $plugin!: LexCli;
+  $context!: BuildContext;
 
   install(): void {
     this.middlewareCollection = {
-      'parse': [this.checkForPlatform.bind(this)],
       'before.build': [
+        this.checkForPlatform.bind(this),
         this.checkForCleanBuild.bind(this),
         this.validateLocales.bind(this),
         this.validateModels.bind(this),
@@ -46,9 +47,9 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * Checks if the currently selected platform matches this CLI plugin.
    * @param context - Context containing information after flags and args have been parsed by the CLI.
    */
-  checkForPlatform(context: ParseContextBuild): void {
+  checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (context.flags.platform && !context.flags.platform.includes(this.$plugin.$id)) {
+    if (this.$context.platforms && !this.$context.platforms.includes(this.$plugin.$id)) {
       this.uninstall();
     }
   }

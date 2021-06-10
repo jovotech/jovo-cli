@@ -9,7 +9,6 @@ import {
   flags,
   Log,
   PluginCommand,
-  PluginContext,
   printSubHeadline,
   promptOverwrite,
   TADA,
@@ -22,11 +21,6 @@ import { DeployCodeEvents } from '@jovotech/cli-command-deploy';
 
 export type BuildServerlessArgs = CliArgs<typeof BuildServerless>;
 export type BuildServerlessFlags = CliFlags<typeof BuildServerless>;
-
-export interface BuildServerlessContext extends PluginContext {
-  args: BuildServerlessArgs;
-  flags: BuildServerlessFlags;
-}
 
 export class BuildServerless extends PluginCommand<DeployCodeEvents> {
   static id = 'build:serverless';
@@ -44,19 +38,15 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
     }),
     ...PluginCommand.flags,
   };
-  static args = [];
 
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags } = this.parse(BuildServerless);
-
-    await this.$emitter.run('parse', { command: BuildServerless.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo build:serverless: ${BuildServerless.description}`);
-    // ToDo: Link to correct docs.
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+
+    const { flags } = this.parse(BuildServerless);
 
     if (existsSync('serverless.yaml')) {
       if (!flags.clean) {
@@ -84,15 +74,6 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
     await buildTask.run();
 
     if (flags.deploy) {
-      const context: any = {
-        command: BuildServerless.id,
-        platforms: this.$cli.getPlatforms(),
-        locales: this.$cli.$project!.getLocales(),
-        target: 'serverless',
-        flags,
-        args,
-      };
-      this.$cli.setPluginContext(context);
       await this.$emitter.run('before.deploy:code');
       await this.$emitter.run('deploy:code');
       await this.$emitter.run('after.deploy:code');

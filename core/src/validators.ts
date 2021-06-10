@@ -1,4 +1,4 @@
-import { JovoCliError } from '../JovoCliError';
+import { JovoCliError } from './JovoCliError';
 
 /**
  * Checks validity of a provided locale.

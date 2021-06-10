@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import { ERROR_PREFIX, printComment } from './utils';
+import { ERROR_PREFIX } from './constants';
+import { printComment } from './prints';
 import { Log, LogLevel } from './Logger';
 
 export class JovoCliError extends Error {

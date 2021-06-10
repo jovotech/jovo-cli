@@ -1,6 +1,6 @@
 import prompt from 'prompts';
-import { ANSWER_BACKUP, ANSWER_CANCEL, ANSWER_OVERWRITE } from './Constants';
-import { printUserInput } from './Prints';
+import { ANSWER_BACKUP, ANSWER_CANCEL, ANSWER_OVERWRITE } from './constants';
+import { printUserInput } from './prints';
 
 /**
  * Prompt if existing model files should be overwritten.

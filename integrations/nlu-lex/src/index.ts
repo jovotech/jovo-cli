@@ -1,11 +1,12 @@
 import { join as joinPaths } from 'path';
 import { JovoCliError, JovoCliPlugin, PluginHook, PluginType } from '@jovotech/cli-core';
-import { BuildHook } from './hooks/build.hook';
-import { LexCliConfig } from './utils';
-import { DeployHook } from './hooks/deploy.hook';
 import { LexModelFile } from 'jovo-model-lex';
 import { existsSync } from 'fs';
-import { GetHook } from './hooks/get.hook';
+
+import { LexCliConfig } from './utils';
+import { DeployHook } from './hooks/DeployHook';
+import { BuildHook } from './hooks/BuildHook';
+import { GetHook } from './hooks/GetHook';
 
 export class LexCli extends JovoCliPlugin {
   readonly $id: string = 'lex';

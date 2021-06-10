@@ -6,8 +6,8 @@ import { join as joinPaths } from 'path';
 import { JovoCliError } from './JovoCliError';
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { Log } from './Logger';
-import { mergeArrayCustomizer } from './utils';
-import { ProjectConfigFile } from './utils/Interfaces';
+import { mergeArrayCustomizer } from './utilities';
+import { ProjectConfigFile } from './interfaces';
 
 export class Config {
   private static instance?: Config;

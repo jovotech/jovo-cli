@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import indentString from 'indent-string';
-import { WARNING } from './Constants';
 
 /**
  * Returns a string of a stage in white bold font.

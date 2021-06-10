@@ -5,7 +5,7 @@ import { Emitter } from './EventEmitter';
 import { Log } from './Logger';
 import { PluginCommand } from './PluginCommand';
 import { PluginHook } from './PluginHook';
-import { PluginConfig, PluginContext, PluginType } from './utils';
+import { PluginConfig, PluginContext, PluginType } from './interfaces';
 
 export abstract class JovoCliPlugin {
   abstract readonly $type: PluginType;

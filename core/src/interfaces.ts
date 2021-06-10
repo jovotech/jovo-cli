@@ -1,8 +1,8 @@
 import * as Parser from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
 
-import { JovoCliPlugin } from '../JovoCliPlugin';
-import { PluginCommand } from '../PluginCommand';
+import { JovoCliPlugin } from './JovoCliPlugin';
+import { PluginCommand } from './PluginCommand';
 
 // ####### EVENT EMITTER #######
 
@@ -13,7 +13,7 @@ export type MiddlewareCollection<T extends Events = DefaultEvents> = {
   [K in T]?: Array<(...v: any[]) => void>;
 };
 
-export type DefaultEvents = 'install' | 'parse';
+export type DefaultEvents = 'install';
 
 // ####### PLUGIN #######
 

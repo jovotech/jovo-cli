@@ -1,9 +1,6 @@
 import { join as joinPaths } from 'path';
 import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
-import type {
-  DeployPlatformEvents,
-  ParseContextDeployPlatform,
-} from '@jovotech/cli-command-deploy';
+import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import {
   GetBotCommand,
   GetBotCommandOutput,
@@ -23,6 +20,7 @@ import { getLexLocale, LexIntent } from '../utils';
 
 export class DeployHook extends PluginHook<DeployPlatformEvents> {
   $plugin!: LexCli;
+  $context!: DeployPlatformContext;
 
   install(): void {
     this.middlewareCollection = {
@@ -39,9 +37,9 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    * Checks if the currently selected platform matches this CLI plugin.
    * @param context - Context containing information after flags and args have been parsed by the CLI.
    */
-  checkForPlatform(context: ParseContextDeployPlatform): void {
+  checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (context.args.platform && context.args.platform !== this.$plugin.$id) {
+    if (this.$context.args.platform && this.$context.args.platform !== this.$plugin.$id) {
       this.uninstall();
     }
   }
