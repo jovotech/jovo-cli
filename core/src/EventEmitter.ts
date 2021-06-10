@@ -39,13 +39,14 @@ export class Emitter<T extends Events = Events> extends EventEmitter {
    * @param args - Possible arguments that get passed to all listener functions.
    */
   async run<K extends T>(event: K, ...args: unknown[]): Promise<boolean> {
-    const fns: Function[] = this.listeners(event).reverse();
+    const fns: Function[] = this.listeners(event);
     if (!fns) {
       return false;
     }
 
-    for (let i = fns.length - 1; i >= 0; i--) {
-      await fns[i](...args);
+    while (fns.length) {
+      const fn: Function = fns.shift()!;
+      await fn(...args);
     }
 
     return true;
