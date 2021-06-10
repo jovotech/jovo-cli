@@ -24,8 +24,8 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
   install(): void {
     this.middlewareCollection = {
-      'parse': [this.checkForPlatform.bind(this)],
       'before.deploy:platform': [
+        this.checkForPlatform.bind(this),
         this.checkForPlatformsFolder.bind(this),
         this.checkForAwsCredentials.bind(this),
       ],

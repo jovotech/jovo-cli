@@ -35,9 +35,7 @@ describe('install()', () => {
   test('should do nothing if no commands/hooks are provided', () => {
     const spiedInstall: jest.SpyInstance = jest.spyOn(Plugin.prototype, 'install');
     const plugin: Plugin = new Plugin();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    plugin.install(new JovoCli(), new Emitter());
+    plugin.install(new JovoCli(), new Emitter(), { command: 'test' });
     expect(spiedInstall).toReturn();
   });
 
@@ -55,49 +53,31 @@ describe('install()', () => {
     };
     const emitter: Emitter = new Emitter();
     const cli: JovoCli = new JovoCli();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    plugin.install(cli, emitter);
+    plugin.install(cli, emitter, { command: 'test' });
 
     expect(Command.install).toBeCalledTimes(1);
     expect(Command.install).toBeCalledWith(cli, plugin, emitter);
   });
-});
 
-describe('setPluginContext()', () => {
-  const context: PluginContext = {
-    command: 'test',
-    platforms: [],
-    locales: [],
-    flags: {},
-    args: {},
-  };
-  test('should do nothing if no commands/hooks are provided', () => {
-    const spiedSetPluginContext: jest.SpyInstance = jest.spyOn(
-      Plugin.prototype,
-      'setPluginContext',
-    );
-    const plugin: Plugin = new Plugin();
-    plugin.setPluginContext(context);
-    expect(spiedSetPluginContext).toReturn();
-  });
-
-  test('should set $context on every command/hook provided', () => {
+  test('should pass context to every command/hook provided', () => {
     class Command extends PluginCommand {
       run(): Promise<unknown> {
         throw new Error('Method not implemented.');
       }
     }
-
-    expect(Command.prototype['$context']).toBeUndefined();
+    Command.install = jest.fn();
 
     const plugin: Plugin = new Plugin();
     plugin.getCommands = function () {
       return [Command];
     };
-    plugin.setPluginContext(context);
+    const emitter: Emitter = new Emitter();
+    const cli: JovoCli = new JovoCli();
+    const context: PluginContext = {
+      command: 'test',
+    };
+    plugin.install(cli, emitter, context);
 
-    expect(Command.prototype['$context']).toBeDefined();
     expect(Command.prototype['$context']).toStrictEqual(context);
   });
 });

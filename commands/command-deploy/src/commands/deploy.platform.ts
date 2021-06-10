@@ -103,9 +103,8 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
     Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
-    const { args, flags }: { args: DeployPlatformArgs; flags: DeployPlatformFlags } = this.parse(
-      DeployPlatform,
-    );
+    const { args, flags }: { args: DeployPlatformArgs; flags: DeployPlatformFlags } =
+      this.parse(DeployPlatform);
 
     _merge(this.$context, {
       args,

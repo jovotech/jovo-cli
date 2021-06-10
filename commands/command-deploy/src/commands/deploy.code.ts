@@ -74,9 +74,8 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     Log.info(`jovo deploy:code: ${DeployCode.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code\n'));
 
-    const { args, flags }: { args: DeployCodeArgs; flags: DeployCodeFlags } = this.parse(
-      DeployCode,
-    );
+    const { args, flags }: { args: DeployCodeArgs; flags: DeployCodeFlags } =
+      this.parse(DeployCode);
 
     _merge(this.$context, {
       args,

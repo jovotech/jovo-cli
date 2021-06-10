@@ -24,6 +24,7 @@ export * from './interfaces';
 export * from './validators';
 export * from './prompts';
 export * from './constants';
+export * from './prints';
 
 export class ProjectConfig {
   constructor(config: ProjectConfigFile) {

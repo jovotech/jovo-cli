@@ -6,7 +6,6 @@ import {
   JovoCli,
   JovoCliPlugin,
   JovoUserConfig,
-  PluginContext,
   PluginType,
   Project,
 } from '../src';
@@ -310,38 +309,3 @@ describe('collectCommandPlugins()', () => {
 });
 
 describe('loadPlugins()', () => {});
-
-describe('setPluginContext()', () => {
-  test('should pass a copy without reference to each plugin', () => {
-    const jovo: JovoCli = new JovoCli();
-    class Plugin extends JovoCliPlugin {
-      $id: string = 'test';
-      $type: PluginType = 'command';
-      context!: PluginContext;
-
-      setPluginContext: jest.Mock = jest.fn().mockImplementation((context: PluginContext) => {
-        this.context = context;
-      });
-    }
-
-    const plugin: Plugin = new Plugin();
-    jovo['cliPlugins'].push(plugin);
-
-    const context: PluginContext = {
-      command: 'test',
-      platforms: [],
-      locales: [],
-      flags: {},
-      args: {},
-    };
-    jovo.setPluginContext(context);
-
-    // Modify plugin context.
-    context.command = 'altered';
-
-    expect(plugin.setPluginContext).toBeCalledTimes(1);
-    expect(plugin.context).toHaveProperty('command');
-    // Check if plugin context was passed per reference.
-    expect(plugin.context.command).toMatch('test');
-  });
-});
