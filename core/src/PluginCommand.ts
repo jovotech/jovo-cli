@@ -23,7 +23,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   protected middlewareCollection!: MiddlewareCollection<T | DefaultEvents>;
   protected $emitter!: Emitter<T | DefaultEvents>;
 
-  static args: Parser.args.Input;
+  static args: Parser.args.Input = [];
   static flags = {
     stage: flags.string({
       description: 'Takes configuration from specified stage.',

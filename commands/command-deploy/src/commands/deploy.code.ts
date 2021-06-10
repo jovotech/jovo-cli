@@ -1,6 +1,7 @@
 // This import is necessary for inferred type annotation for PluginCommand.flags.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
+import _merge from 'lodash.merge';
 import {
   checkForProjectDirectory,
   CliArgs,
@@ -9,7 +10,6 @@ import {
   flags,
   JovoCli,
   Log,
-  ParseContext,
   PluginCommand,
   PluginContext,
   printSubHeadline,
@@ -25,11 +25,8 @@ export interface DeployCodeContext extends PluginContext {
   args: DeployCodeArgs;
   flags: DeployCodeFlags;
   target: string[];
-}
-
-export interface ParseContextDeployCode extends ParseContext {
-  args: DeployCodeArgs;
-  flags: DeployCodeFlags;
+  locales: string[];
+  src?: string;
 }
 
 export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.deploy:code';
@@ -51,11 +48,10 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     }),
     src: flags.string({
       char: 's',
-      description: `Path to source files.`,
+      description: 'Path to source files.',
     }),
     ...PluginCommand.flags,
   };
-
   static args = [
     <const>{
       name: 'target',
@@ -63,6 +59,7 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
       options: DeployCode.availableTargets,
     },
   ];
+  $context!: DeployCodeContext;
 
   static install(cli: JovoCli, plugin: DeployCommand, emitter: Emitter<DeployCodeEvents>): void {
     // Override PluginComponent.install() to fill options for --platform.
@@ -73,24 +70,21 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags }: Pick<ParseContextDeployCode, 'args' | 'flags'> = this.parse(DeployCode);
-
-    await this.$emitter.run('parse', { command: DeployCode.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo deploy:code: ${DeployCode.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code\n'));
 
-    const context: DeployCodeContext = {
-      command: DeployCode.id,
-      platforms: this.$cli.getPlatforms(),
-      locales: flags.locale || this.$cli.$project!.getLocales(),
-      // ToDo: Configure deploy depending on target.
-      target: args.target ? [args.target] : DeployCode.availableTargets,
-      flags,
+    const { args, flags }: { args: DeployCodeArgs; flags: DeployCodeFlags } = this.parse(
+      DeployCode,
+    );
+
+    _merge(this.$context, {
       args,
-    };
-    this.$cli.setPluginContext(context);
+      flags,
+      locales: flags.locale || this.$cli.$project!.getLocales(),
+      target: args.target ? [args.target] : DeployCode.availableTargets,
+      src: flags.src,
+    });
 
     await this.$emitter.run('before.deploy:code');
     await this.$emitter.run('deploy:code');

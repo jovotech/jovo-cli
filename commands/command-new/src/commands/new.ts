@@ -41,9 +41,7 @@ import {
 export type NewArgs = CliArgs<typeof New>;
 export type NewFlags = CliFlags<typeof New>;
 
-export interface NewContext
-  extends Omit<PluginContext, 'platforms'>,
-    Omit<ProjectProperties, 'name' | 'key'> {
+export interface NewContext extends PluginContext, Omit<ProjectProperties, 'name' | 'key'> {
   args: NewArgs;
   flags: NewFlags;
   platforms: (MarketplacePlugin & { cliPlugin: JovoCliPlugin })[];
@@ -78,7 +76,7 @@ export class New extends PluginCommand<NewEvents> {
       description:
         'Selects a preconfigured preset from the wizard without going through the selection process.',
       dependsOn: ['no-wizard'],
-      // ToDo: Implement!
+      // TODO: Implement!
       // options: jovo.$userConfig.getPresets().map((preset) => preset.name),
     }),
     'skip-npminstall': flags.boolean({
@@ -107,6 +105,7 @@ export class New extends PluginCommand<NewEvents> {
       },
     },
   ];
+  $context!: NewContext;
 
   async run(): Promise<void> {
     const { args, flags }: { args: NewArgs; flags: NewFlags } = this.parse(New);
@@ -154,27 +153,25 @@ export class New extends PluginCommand<NewEvents> {
       preset = this.$cli.$userConfig.getPreset(flags.preset);
     }
 
-    const context: NewContext = {
-      command: New.id,
+    _merge(this.$context, {
+      args,
+      flags,
       projectName: args.directory,
-      language: (flags.language as 'javascript' | 'typescript') || 'typescript',
+      language: flags.language || 'typescript',
       linter: false,
       unitTesting: false,
       locales: flags.locale || ['en'],
       platforms: [],
-      flags,
-      args,
-    };
-
+    });
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(context));
+      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(this.$context));
 
-      _merge(context, contextPreset);
+      _merge(this.$context, contextPreset);
     }
 
     // Directory is mandatory, so throw an error if omitted.
-    if (!context.projectName) {
+    if (!this.$context.projectName) {
       throw new JovoCliError(
         'Please provide a directory.',
         this.$plugin.constructor.name,
@@ -183,18 +180,18 @@ export class New extends PluginCommand<NewEvents> {
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
-    if (this.$cli.hasExistingProject(context.projectName)) {
+    if (this.$cli.hasExistingProject(this.$context.projectName)) {
       if (!flags.overwrite) {
         const { overwrite } = await promptOverwrite(
           `The directory ${printHighlight(
-            context.projectName,
+            this.$context.projectName,
           )} already exists. What would you like to do?`,
         );
         if (overwrite === ANSWER_CANCEL) {
           process.exit();
         }
       }
-      deleteFolderRecursive(joinPaths(process.cwd(), context.projectName));
+      deleteFolderRecursive(joinPaths(process.cwd(), this.$context.projectName));
     }
 
     Log.spacer();
@@ -202,19 +199,19 @@ export class New extends PluginCommand<NewEvents> {
     Log.spacer();
 
     const newTask: Task = new Task(
-      `Creating new directory ${printHighlight(context.projectName)}/`,
+      `Creating new directory ${printHighlight(this.$context.projectName)}/`,
       () => {
-        if (!existsSync(context.projectName)) {
-          mkdirSync(context.projectName);
+        if (!existsSync(this.$context.projectName)) {
+          mkdirSync(this.$context.projectName);
         }
-        return joinPaths(this.$cli.$projectPath, context.projectName);
+        return joinPaths(this.$cli.$projectPath, this.$context.projectName);
       },
     );
     await newTask.run();
 
     const downloadTask: Task = new Task('Downloading and extracting template', async () => {
       try {
-        await downloadTemplate(context.projectName);
+        await downloadTemplate(this.$context.projectName);
       } catch (error) {
         throw new JovoCliError('Could not download template.', this.$plugin.constructor.name);
       }
@@ -223,15 +220,15 @@ export class New extends PluginCommand<NewEvents> {
 
     // Modify package.json to include plugins and omit not needed packages, depending on configuration.
     const generatePackageJsonTask: Task = new Task('Generating package.json', async () => {
-      await TemplateBuilder.modifyDependencies(context);
-      TemplateBuilder.generateAppConfiguration(context);
+      await TemplateBuilder.modifyDependencies(this.$context);
+      TemplateBuilder.generateAppConfiguration(this.$context);
     });
     await generatePackageJsonTask.run();
 
     // Install npm dependencies.
     if (!flags['skip-npminstall']) {
       const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(this.$cli.$projectPath, context.projectName));
+        await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
       });
       await installNpmTask.run();
     }
@@ -239,23 +236,19 @@ export class New extends PluginCommand<NewEvents> {
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating a default config
     // based on the current context.
-    for (const platform of context.platforms) {
+    for (const platform of this.$context.platforms) {
       // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
-        joinPaths(context.projectName, 'node_modules', platform.package, 'dist', 'cli'),
+        joinPaths(this.$context.projectName, 'node_modules', platform.package, 'dist', 'cli'),
       ))[platform.cliModule!])();
 
-      plugin.install(this.$cli, this.$emitter);
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      plugin.setPluginContext(context);
+      plugin.install(this.$cli, this.$emitter, this.$context);
       platform.cliPlugin = plugin;
     }
 
     await this.$emitter.run('new');
 
-    TemplateBuilder.generateProjectConfiguration(context);
+    TemplateBuilder.generateProjectConfiguration(this.$context);
 
     Log.spacer();
     Log.info(`${TADA} Successfully created your project!`);

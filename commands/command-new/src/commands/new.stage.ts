@@ -2,6 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { join as joinPaths, resolve } from 'path';
+import _merge from 'lodash.merge';
 import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
@@ -17,14 +18,10 @@ import {
   WRENCH,
   CliFlags,
   CliArgs,
-  ParseContext,
   TADA,
   printUserInput,
   MarketplacePlugin,
   Log,
-  ProjectConfigFile,
-  JovoCliError,
-  Config,
 } from '@jovotech/cli-core';
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -36,11 +33,6 @@ export type NewStageArgs = CliArgs<typeof NewStage>;
 export type NewStageFlags = CliFlags<typeof NewStage>;
 
 export interface NewStageContext extends PluginContext {
-  args: NewStageArgs;
-  flags: NewStageFlags;
-}
-
-export interface ParseContextNewStage extends ParseContext {
   args: NewStageArgs;
   flags: NewStageFlags;
 }
@@ -68,7 +60,6 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       required: true,
     },
   ];
-
   $context!: NewStageContext;
 
   install(): void {
@@ -210,23 +201,15 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
-    const { args, flags }: Pick<ParseContextNewStage, 'args' | 'flags'> = this.parse(NewStage);
-
-    await this.$emitter.run('parse', { command: NewStage.id, flags, args });
 
     Log.spacer();
     Log.info(`jovo new:stage: ${NewStage.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage'));
     Log.spacer();
 
-    const context: NewStageContext = {
-      command: NewStage.id,
-      platforms: this.$cli.getPlatforms(),
-      locales: this.$cli.$project!.getLocales(),
-      flags,
-      args,
-    };
-    this.$cli.setPluginContext(context);
+    const { args, flags }: { args: NewStageArgs; flags: NewStageFlags } = this.parse(NewStage);
+
+    _merge(this.$context, { args, flags });
 
     await this.$emitter.run('before.new:stage');
     await this.$emitter.run('new:stage');

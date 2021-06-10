@@ -8,7 +8,6 @@ import {
   flags,
   JovoCli,
   JovoCliError,
-  PluginContext,
   PluginCommand,
   printSubHeadline,
   TARGET_ALL,
@@ -16,31 +15,28 @@ import {
   TARGET_MODEL,
   CliFlags,
   CliArgs,
-  ParseContext,
   TADA,
   Log,
+  PluginContext,
 } from '@jovotech/cli-core';
+import _merge from 'lodash.merge';
 import DeployCommand from '..';
 
 export type DeployPlatformFlags = CliFlags<typeof DeployPlatform>;
 export type DeployPlatformArgs = CliArgs<typeof DeployPlatform>;
-
-export interface DeployPlatformContext extends PluginContext {
-  args: DeployPlatformArgs;
-  flags: DeployPlatformFlags;
-  target: typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL;
-  src: string;
-}
-
-export interface ParseContextDeployPlatform extends ParseContext {
-  args: DeployPlatformArgs;
-  flags: DeployPlatformFlags;
-}
-
 export type DeployPlatformEvents =
   | 'before.deploy:platform'
   | 'deploy:platform'
   | 'after.deploy:platform';
+export type DeployTarget = typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL;
+
+export interface DeployPlatformContext extends PluginContext {
+  args: DeployPlatformArgs;
+  flags: DeployPlatformFlags;
+  target: DeployTarget;
+  platforms: string[];
+  locales: string[];
+}
 
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id = 'deploy:platform';
@@ -62,10 +58,6 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL],
       default: TARGET_ALL,
     }),
-    src: flags.string({
-      char: 's',
-      description: 'Location of model files.',
-    }),
     ...PluginCommand.flags,
   };
   static args = [
@@ -76,6 +68,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
       options: DeployPlatform.availablePlatforms,
     },
   ];
+  $context!: DeployPlatformContext;
 
   static install(
     cli: JovoCli,
@@ -106,26 +99,21 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags }: Pick<ParseContextDeployPlatform, 'args' | 'flags'> =
-      this.parse(DeployPlatform);
-
-    await this.$emitter.run('parse', { command: DeployPlatform.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
 
-    const context: DeployPlatformContext = {
-      command: DeployPlatform.id,
+    const { args, flags }: { args: DeployPlatformArgs; flags: DeployPlatformFlags } = this.parse(
+      DeployPlatform,
+    );
+
+    _merge(this.$context, {
+      args,
+      flags,
       platforms: args.platform ? [args.platform] : this.$cli.getPlatforms(),
       locales: flags.locale || this.$cli.$project!.getLocales(),
-      // ToDo: Configure deploy depending on target.
-      target: flags.target as typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL,
-      src: flags.src || this.$cli.$project!.getBuildDirectory(),
-      flags,
-      args,
-    };
-    this.$cli.setPluginContext(context);
+      target: flags.target,
+    });
 
     await this.$emitter.run('before.deploy:platform');
     await this.$emitter.run('deploy:platform');

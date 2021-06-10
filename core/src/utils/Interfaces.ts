@@ -13,22 +13,6 @@ export type MiddlewareCollection<T extends Events = DefaultEvents> = {
   [K in T]?: Array<(...v: any[]) => void>;
 };
 
-export interface InstallContext {
-  command: string;
-  // ToDo: Specific typing?
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  flags: Input<any>;
-  args: Parser.args.Input;
-}
-
-export interface ParseContext {
-  command: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  flags: CliFlags<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args: CliArgs<any>;
-}
-
 export type DefaultEvents = 'install' | 'parse';
 
 // ####### PLUGIN #######
@@ -52,15 +36,18 @@ export interface ConfigHooks {
   [key: string]: Function[];
 }
 
-export interface PluginContext {
+export interface Context {
   command: string;
-  platforms: string[];
-  locales: string[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  flags: CliFlags<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args: CliArgs<any>;
 }
+
+export interface InstallContext extends Context {
+  // TODO: Specific typing?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  flags: Input<any>;
+  args: Parser.args.Input;
+}
+
+export interface PluginContext extends Context {}
 
 // ####### CONFIG #######
 

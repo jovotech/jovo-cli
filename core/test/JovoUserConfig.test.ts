@@ -298,7 +298,7 @@ describe('getPreset()', () => {
 });
 
 describe('savePreset()', () => {
-  // ToDo: Mock promptForOVerwrite and test for overwriting presets.
+  // TODO: Mock promptForOVerwrite and test for overwriting presets.
   test('should save preset', () => {
     jest.spyOn(JovoUserConfig.prototype, 'get').mockReturnValue({
       webhook: {

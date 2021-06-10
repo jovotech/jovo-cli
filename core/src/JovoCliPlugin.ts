@@ -1,9 +1,9 @@
 import _merge from 'lodash.merge';
-import { JovoCli } from '.';
 
+import { JovoCli } from '.';
 import { Emitter } from './EventEmitter';
+import { Log } from './Logger';
 import { PluginCommand } from './PluginCommand';
-import { PluginComponent } from './PluginComponent';
 import { PluginHook } from './PluginHook';
 import { PluginConfig, PluginContext, PluginType } from './utils';
 
@@ -26,17 +26,13 @@ export abstract class JovoCliPlugin {
     return [];
   }
 
-  install(cli: JovoCli, emitter: Emitter): void {
+  install(cli: JovoCli, emitter: Emitter, context: PluginContext): void {
     this.$cli = cli;
     for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
       plugin.install(cli, this, emitter);
+      plugin.prototype['$context'] = context;
     }
-  }
-
-  setPluginContext(context: PluginContext): void {
-    for (const plugin of [...this.getCommands(), ...this.getHooks()]) {
-      (plugin as unknown as typeof PluginComponent).prototype['$context'] = context;
-    }
+    Log.verbose(`Installed ${this.constructor.name}`, { indent: 2 });
   }
 
   getDefaultConfig(): PluginConfig {

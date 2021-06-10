@@ -16,10 +16,12 @@
     "@jovotech/cli-command-build": "^4.0.0-alpha.9",
     "@jovotech/cli-core": "^4.0.0-alpha.9",
     "@oclif/parser": "^3.8.5",
-    "global-dirs": "^3.0.0"
+    "global-dirs": "^3.0.0",
+    "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
+    "@types/lodash.merge": "^4.6.6",
     "@types/node": "^15.0.1",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",

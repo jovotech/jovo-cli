@@ -9,7 +9,6 @@ import {
   Project,
   JovoCliError,
   Config,
-  PluginContext,
   PluginType,
   JOVO_WEBHOOK_URL,
   Log,
@@ -109,16 +108,6 @@ export class JovoCli {
     }
 
     return this.cliPlugins;
-  }
-
-  /**
-   * Passes a deep copy without reference of the provided context to each CLI plugin.
-   * @param context - Plugin context.
-   */
-  setPluginContext(context: PluginContext): void {
-    for (const plugin of this.cliPlugins) {
-      plugin.setPluginContext(Object.assign({}, context));
-    }
   }
 
   /**

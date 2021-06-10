@@ -2,6 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { existsSync, mkdirSync } from 'fs';
+import _merge from 'lodash.merge';
 import {
   JovoCli,
   checkForProjectDirectory,
@@ -12,7 +13,6 @@ import {
   Emitter,
   CliFlags,
   CliArgs,
-  ParseContext,
   TADA,
   Log,
 } from '@jovotech/cli-core';
@@ -21,18 +21,15 @@ import GetCommand from '..';
 
 export type GetArgs = CliArgs<typeof Get>;
 export type GetFlags = CliFlags<typeof Get>;
-
-export interface ParseContextGet extends ParseContext {
-  args: GetArgs;
-  flags: GetFlags;
-}
+export type GetEvents = 'before.get' | 'get' | 'after.get';
 
 export interface GetContext extends PluginContext {
   flags: CliFlags<typeof Get>;
   args: CliArgs<typeof Get>;
+  platform: string;
+  locales: string[];
+  overwrite: boolean;
 }
-
-export type GetEvents = 'before.get' | 'get' | 'after.get';
 
 export class Get extends PluginCommand<BuildEvents | GetEvents> {
   static id = 'get';
@@ -52,7 +49,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     target: flags.string({
       char: 't',
       description: 'Target of build.',
-      // ToDo: options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL, TARGET_ZIP, ...deployTargets.getAllPluginTargets()],
+      // TODO: options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL, TARGET_ZIP, ...deployTargets.getAllPluginTargets()],
     }),
     build: flags.boolean({
       description: 'Runs build after get.',
@@ -77,6 +74,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
       required: true,
     },
   ];
+  $context!: GetContext;
 
   static install(cli: JovoCli, plugin: GetCommand, emitter: Emitter<GetEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
@@ -101,22 +99,19 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags }: Pick<ParseContextGet, 'flags' | 'args'> = this.parse(Get);
-
-    await this.$emitter.run('parse', { command: Get.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo get: ${Get.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get\n'));
 
-    const context: GetContext = {
-      command: Get.id,
-      platforms: [args.platform],
-      locales: flags.locale || this.$cli.$project!.getLocales(),
-      flags,
+    const { args, flags }: { args: GetArgs; flags: GetFlags } = this.parse(Get);
+
+    _merge(this.$context, {
       args,
-    };
-    this.$cli.setPluginContext(context);
+      flags,
+      platform: args.platform,
+      locales: flags.locale || this.$cli.$project!.getLocales(),
+      overwrite: flags.overwrite,
+    });
 
     await this.$emitter.run('before.get');
     await this.$emitter.run('get');

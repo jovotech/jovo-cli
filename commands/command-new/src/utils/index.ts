@@ -42,7 +42,7 @@ export function insert(substr: string, str: string, index: number): string {
  * Gets plugins from Jovo Marketplace.
  */
 export function fetchMarketPlace(): MarketplacePlugin[] {
-  // ToDo: Fetch from API.
+  // TODO: Fetch from API.
   const plugins: MarketplacePlugin[] = [
     {
       name: 'FileDB',

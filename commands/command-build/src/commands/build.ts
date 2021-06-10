@@ -3,6 +3,7 @@
 import * as Parser from '@oclif/parser';
 import { DeployEvents } from '@jovotech/cli-command-deploy';
 import { existsSync, mkdirSync } from 'fs';
+import _merge from 'lodash.merge';
 import {
   PluginContext,
   checkForProjectDirectory,
@@ -15,7 +16,6 @@ import {
   Emitter,
   flags,
   CliFlags,
-  ParseContext,
   TARGET_ALL,
   TARGET_INFO,
   TARGET_MODEL,
@@ -28,10 +28,9 @@ export type BuildFlags = CliFlags<typeof Build>;
 
 export interface BuildContext extends PluginContext {
   flags: BuildFlags;
-}
-
-export interface ParseContextBuild extends ParseContext {
-  flags: BuildFlags;
+  platforms: string[];
+  locales: string[];
+  target: string;
 }
 
 export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
@@ -79,7 +78,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
     }),
     ...PluginCommand.flags,
   };
-  static args = [];
+  $context!: BuildContext;
 
   static install(cli: JovoCli, plugin: BuildCommand, emitter: Emitter<BuildEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
@@ -126,31 +125,29 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags } = this.parse(Build);
-
-    await this.$emitter.run('parse', { command: Build.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo build: ${Build.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
-    // Build plugin context, containing information about the current command environemnt.
-    const context: BuildContext = {
-      command: Build.id,
+    const { flags }: { flags: BuildFlags } = this.parse(Build);
+
+    // Build plugin context, containing information about the current command environment.
+    _merge(this.$context, {
+      flags,
       locales: flags.locale || this.$cli.$project!.getLocales(),
       platforms: flags.platform || this.$cli.getPlatforms(),
-      flags,
-      args,
-    };
-
-    this.$cli.setPluginContext(context);
+      target: flags.target,
+    });
 
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
     if (flags.reverse) {
-      if (context.platforms.length !== 1) {
+      if (this.$context.platforms.length !== 1) {
         const { platform } = await promptForPlatform(this.$cli.getPlatforms());
-        context.platforms = [platform];
+        this.$context.platforms = [platform];
       }
+
+      // On build --reverse, omit selecting default locales with $project.getLocales()
+      this.$context.locales = flags.locale || [];
 
       await this.$emitter.run('reverse.build');
 

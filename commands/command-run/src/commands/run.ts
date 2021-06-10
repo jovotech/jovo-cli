@@ -2,7 +2,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import boxen from 'boxen';
-import { resolve } from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import {
   checkForProjectDirectory,
@@ -11,22 +10,15 @@ import {
   PluginCommand,
   flags,
   CliFlags,
-  ParseContext,
   printSubHeadline,
   printComment,
   Log,
-  JovoCliError,
-  printHighlight,
 } from '@jovotech/cli-core';
 import { shouldUpdatePackages, instantiateJovoWebhook } from '../utils';
 
 export type RunFlags = CliFlags<typeof Run>;
 
 export interface RunContext extends PluginContext {
-  flags: RunFlags;
-}
-
-export interface ParseContextRun extends ParseContext {
   flags: RunFlags;
 }
 
@@ -58,6 +50,7 @@ export class Run extends PluginCommand<RunEvents> {
     }),
     ...PluginCommand.flags,
   };
+  $context!: RunContext;
 
   install(): void {
     this.middlewareCollection = {
@@ -95,22 +88,14 @@ export class Run extends PluginCommand<RunEvents> {
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags }: Pick<ParseContextRun, 'args' | 'flags'> = this.parse(Run);
-
-    await this.$emitter.run('parse', { command: Run.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo run: ${Run.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
 
-    const context: RunContext = {
-      command: Run.id,
-      platforms: this.$cli.getPlatforms(),
-      locales: this.$cli.$project!.getLocales(),
-      flags,
-      args,
-    };
-    this.$cli.setPluginContext(context);
+    const { flags }: { flags: RunFlags } = this.parse(Run);
+
+    // Set plugin context
+    this.$context.flags = flags;
 
     await this.$emitter.run('before.run');
 
@@ -120,35 +105,22 @@ export class Run extends PluginCommand<RunEvents> {
       return;
     }
 
-    const parameters: string[] = [];
-
-    if (flags.inspect) {
-      parameters.push(`--inspect=${flags.inspect}`);
-    }
-
-    if (this.$cli.$project!.$stage) {
-      parameters.push('--stage', this.$cli.$project!.$stage);
-    }
-
-    if (flags['disable-jovo-debugger']) {
-      parameters.push('--disable-jovo-debugger');
-    }
-
     if (flags.port) {
-      parameters.push('--port', flags.port);
+      process.env.JOVO_PORT = flags.port;
     }
 
-    // Pass all parameters through to project process that gets set after "--".
-    // Example: "jovo run -- --log-level 5".
-    // ToDo: Not possible, since --log-level 5 will be parsed as argument.
-    let addActive = false;
-    for (const parameter of process.argv) {
-      if (addActive) {
-        parameters.push(parameter);
-      } else if (parameter === '--') {
-        addActive = true;
-      }
-    }
+    // TODO: How to add additional flags?
+    // if (flags.inspect) {
+    //   parameters.push(`--inspect=${flags.inspect}`);
+    // }
+
+    // if (this.$cli.$project!.$stage) {
+    //   parameters.push('--stage', this.$cli.$project!.$stage);
+    // }
+
+    // if (flags['disable-jovo-debugger']) {
+    //   parameters.push('--disable-jovo-debugger');
+    // }
 
     const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,

@@ -7,6 +7,7 @@ import {
   JovoCli,
   JovoCliError,
   Log,
+  PluginContext,
 } from '@jovotech/cli-core';
 
 export class Collector extends Plugin {
@@ -34,9 +35,14 @@ export class Collector extends Plugin {
       const cli: JovoCli = JovoCli.getInstance();
       const plugins: JovoCliPlugin[] = cli.loadPlugins();
 
+      // Fill in default context values
+      const context: PluginContext = {
+        command: commandId,
+      };
+
       Log.verbose('Loading CLI plugins');
       for (const plugin of plugins) {
-        plugin.install(cli, emitter);
+        plugin.install(cli, emitter, context);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.commands.push(...plugin.getCommands());

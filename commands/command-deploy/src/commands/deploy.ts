@@ -1,9 +1,7 @@
 import {
   checkForProjectDirectory,
-  CliFlags,
   Log,
   PluginCommand,
-  PluginContext,
   printSubHeadline,
   TADA,
 } from '@jovotech/cli-core';
@@ -15,10 +13,7 @@ export type DeployEvents = 'before.deploy' | 'deploy' | 'after.deploy';
 export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | DeployCodeEvents> {
   static id = 'deploy';
   static description = 'Deploys the project to the voice platform.';
-  static examples: string[] = [
-    'jovo deploy --locale en-US --platform alexaSkill --stage dev',
-    'jovo deploy --target zip',
-  ];
+  static examples: string[] = ['jovo deploy'];
 
   install(): void {
     this.middlewareCollection = {
@@ -46,22 +41,9 @@ export class Deploy extends PluginCommand<DeployEvents | DeployPlatformEvents | 
   async run(): Promise<void> {
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
-    const { args, flags } = this.parse(Deploy);
-
-    await this.$emitter.run('parse', { command: Deploy.id, flags, args });
-
     Log.spacer();
     Log.info(`jovo deploy: ${Deploy.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy\n'));
-
-    const context: PluginContext = {
-      command: Deploy.id,
-      platforms: this.$cli.getPlatforms(),
-      locales: this.$cli.$project!.getLocales(),
-      flags: flags as CliFlags<typeof Deploy>,
-      args,
-    };
-    this.$cli.setPluginContext(context);
 
     await this.$emitter.run('before.deploy');
     await this.$emitter.run('deploy');

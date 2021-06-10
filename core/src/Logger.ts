@@ -80,7 +80,7 @@ export class Log {
 
   /**
    * Log a output to a provided stream output
-   * ToDo: Log to file.
+   * TODO: Log to file.
    */
   private static log(
     output: Output,
