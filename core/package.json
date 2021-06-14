@@ -24,6 +24,8 @@
     "jovo-model": "^3.0.0",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2",
+    "lodash.intersectionwith": "^4.4.0",
+    "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "lodash.mergewith": "^4.6.2",
     "node-emoji": "^1.10.0",
@@ -37,6 +39,8 @@
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/lodash.get": "^4.4.6",
+    "@types/lodash.intersectionwith": "^4.4.6",
+    "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.mergewith": "^4.6.6",
     "@types/node": "^15.0.1",
