@@ -33,7 +33,7 @@ export interface PluginConfig {
 }
 
 export interface ConfigHooks {
-  [key: string]: Function[];
+  [key: string]: ((context: PluginContext) => any)[];
 }
 
 export interface Context {
