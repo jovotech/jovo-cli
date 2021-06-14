@@ -30,6 +30,8 @@ export const ERROR_PREFIX: string = chalk.red('›');
 export const SPARKLES: string = SUPPORTS_EMOJI ? get('sparkles') : '';
 export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with_hook:') : '';
 export const PACKAGE: string = SUPPORTS_EMOJI ? get('package') : '';
+export const DOWNLOAD: string = SUPPORTS_EMOJI ? get('inbox_tray') : '';
+export const MAGNIFYING_GLASS: string = SUPPORTS_EMOJI ? get('mag') : '';
 
 // ####### TARGETS #######
 export const TARGET_ALL = 'all';
