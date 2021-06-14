@@ -1,4 +1,4 @@
-import { Emitter, JovoCli } from '../src';
+import { EventEmitter, JovoCli } from '../src';
 import { PluginComponent } from '../src/PluginComponent';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
@@ -23,7 +23,7 @@ describe('EventHandler.install()', () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    PluginComponent.install(new JovoCli(), new Plugin(), new Emitter());
+    PluginComponent.install(new JovoCli(), new Plugin(), new EventEmitter());
 
     expect(eventHandler).toHaveProperty('$plugin');
     expect(eventHandler).toHaveProperty('$emitter');
@@ -34,7 +34,7 @@ describe('EventHandler.install()', () => {
 
 describe('loadMiddlewareCollection()', () => {
   test('should register an event', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
     class TestEventHandler extends PluginComponent {
       middlewareCollection = {
         testEvent: [jest.fn()],
@@ -53,7 +53,7 @@ describe('loadMiddlewareCollection()', () => {
 
 describe('uninstall()', () => {
   test('should register an event', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
     const fn: jest.Mock = jest.fn();
     class TestEventHandler extends PluginComponent {
       middlewareCollection = {

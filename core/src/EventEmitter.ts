@@ -1,36 +1,40 @@
-import { EventEmitter } from 'events';
 import { Events } from './interfaces';
 
-export declare interface Emitter<T extends Events = Events> {
-  on<K extends T>(event: K, listener: (...v: unknown[]) => void): this;
-  off<K extends T>(event: K, listener: (...v: unknown[]) => void): this;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type EventListener = (...v: any[]) => void;
 
-export class Emitter<T extends Events = Events> extends EventEmitter {
-  static defaultMaxListeners: number = 0;
-  /**
-   * Calls each listener registered for event, in order of registration.
-   * @param event - The event.
-   * @param args - Possible arguments that get passed to all listener functions.
-   * @deprecated Please use the async function run() instead.
-   */
-  emit<K extends T>(event: K, ...args: unknown[]): boolean {
-    return super.emit(event, ...args);
-  }
+export class EventEmitter<T extends Events = Events> {
+  private events: { [key: string]: EventListener[] } = {};
 
   listeners<K extends T>(event: K): Function[] {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const events: Function[] | Function | undefined = this._events[event];
-    if (!events) {
-      return [];
-    }
+    return this.events[event] || [];
+  }
 
-    if (typeof events === 'function') {
-      return [events];
-    } else {
-      return events;
+  addListener<K extends T>(event: K, listener: EventListener): this {
+    if (!this.events[event]) {
+      this.events[event] = [];
     }
+    this.events[event].push(listener);
+    return this;
+  }
+
+  on<K extends T>(event: K, listener: EventListener): this {
+    return this.addListener(event, listener);
+  }
+
+  removeListener<K extends T>(event: K, listener: EventListener): this {
+    const listeners: EventListener[] = this.events[event];
+    for (let i = 0; i < listeners.length; i++) {
+      if (listeners[i] === listener) {
+        listeners.splice(i, 1);
+        break;
+      }
+    }
+    return this;
+  }
+
+  off<K extends T>(event: K, listener: EventListener): this {
+    return this.removeListener(event, listener);
   }
 
   /**
@@ -40,7 +44,7 @@ export class Emitter<T extends Events = Events> extends EventEmitter {
    */
   async run<K extends T>(event: K, ...args: unknown[]): Promise<boolean> {
     const fns: Function[] = this.listeners(event);
-    if (!fns) {
+    if (!fns.length) {
       return false;
     }
 

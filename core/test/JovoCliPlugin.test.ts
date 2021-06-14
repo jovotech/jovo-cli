@@ -1,4 +1,4 @@
-import { Emitter, JovoCli, PluginCommand, PluginContext } from '../src';
+import { EventEmitter, JovoCli, PluginCommand, PluginContext } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
@@ -35,7 +35,7 @@ describe('install()', () => {
   test('should do nothing if no commands/hooks are provided', () => {
     const spiedInstall: jest.SpyInstance = jest.spyOn(Plugin.prototype, 'install');
     const plugin: Plugin = new Plugin();
-    plugin.install(new JovoCli(), new Emitter(), { command: 'test' });
+    plugin.install(new JovoCli(), new EventEmitter(), { command: 'test' });
     expect(spiedInstall).toReturn();
   });
 
@@ -51,7 +51,7 @@ describe('install()', () => {
     plugin.getCommands = function () {
       return [Command];
     };
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
     const cli: JovoCli = new JovoCli();
     plugin.install(cli, emitter, { command: 'test' });
 
@@ -71,7 +71,7 @@ describe('install()', () => {
     plugin.getCommands = function () {
       return [Command];
     };
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
     const cli: JovoCli = new JovoCli();
     const context: PluginContext = {
       command: 'test',

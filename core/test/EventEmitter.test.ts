@@ -1,11 +1,11 @@
-import { Emitter } from '../src';
+import { EventEmitter } from '../src';
 
 describe('new Emitter<T>()', () => {
   // * This test tests type safety, thus does not need to be run.
   test.skip('should instantiate the emitter and give type safety', () => {
     type T = 'Foo1';
     type K = 'Foo2';
-    const emitter: Emitter<T | K> = new Emitter<T | K>();
+    const emitter: EventEmitter<T | K> = new EventEmitter<T | K>();
 
     emitter.on('Foo1', () => {});
     emitter.on('Foo2', () => {});
@@ -18,7 +18,7 @@ describe('new Emitter<T>()', () => {
 
 describe('off()', () => {
   test('should successfully remove an event', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
 
     const fn: jest.Mock = jest.fn();
     emitter.on('event', fn);
@@ -30,7 +30,7 @@ describe('off()', () => {
 
 describe('on()', () => {
   test('should successfully add an event', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
     expect(emitter.listeners('event')).toHaveLength(0);
 
     const fn: (v: unknown) => void = () => {};
@@ -43,7 +43,7 @@ describe('on()', () => {
 
 describe('run()', () => {
   test('should successfully run a synchronous event', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
 
     const fn: jest.Mock = jest.fn();
     emitter.on('event', fn);
@@ -53,7 +53,7 @@ describe('run()', () => {
   });
 
   test('should successfully pass parameters to functions', () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
 
     const fn: jest.Mock = jest.fn();
     emitter.on('event', fn);
@@ -64,7 +64,7 @@ describe('run()', () => {
   });
 
   test('should successfully run an asynchronous event', async () => {
-    const emitter: Emitter = new Emitter();
+    const emitter: EventEmitter = new EventEmitter();
 
     const promise: Promise<void> = new Promise((res) => {
       res();

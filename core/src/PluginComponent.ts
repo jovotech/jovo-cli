@@ -1,5 +1,5 @@
 import { JovoCli } from '.';
-import { Emitter } from './EventEmitter';
+import { EventEmitter } from './EventEmitter';
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { MiddlewareCollection, PluginContext } from './interfaces';
 
@@ -7,12 +7,12 @@ export class PluginComponent {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected middlewareCollection!: MiddlewareCollection<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected $emitter!: Emitter<any>;
+  protected $emitter!: EventEmitter<any>;
   protected $plugin!: JovoCliPlugin;
   protected $context!: PluginContext;
   protected $cli!: JovoCli;
 
-  static install(cli: JovoCli, plugin: JovoCliPlugin, emitter: Emitter): void {
+  static install(cli: JovoCli, plugin: JovoCliPlugin, emitter: EventEmitter): void {
     this.prototype.$cli = cli;
     this.prototype.$plugin = plugin;
     this.prototype.$emitter = emitter;

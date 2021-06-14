@@ -1,7 +1,7 @@
 import Command, { flags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 import { Mixin } from 'ts-mixer';
-import { Emitter } from './EventEmitter';
+import { EventEmitter } from './EventEmitter';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
 import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
@@ -21,7 +21,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   OclifCommand,
 ) {
   protected middlewareCollection!: MiddlewareCollection<T | DefaultEvents>;
-  protected $emitter!: Emitter<T | DefaultEvents>;
+  protected $emitter!: EventEmitter<T | DefaultEvents>;
 
   static args: Parser.args.Input = [];
   static flags = {

@@ -1,7 +1,7 @@
 import { Command, Plugin, Topic } from '@oclif/config';
 import {
   DefaultEvents,
-  Emitter,
+  EventEmitter,
   ConfigHooks,
   JovoCliPlugin,
   JovoCli,
@@ -18,7 +18,7 @@ export class Collector extends Plugin {
   commands: Command.Plugin[] = [];
 
   async install(commandId: string): Promise<void> {
-    const emitter = new Emitter<DefaultEvents>();
+    const emitter = new EventEmitter<DefaultEvents>();
 
     await this.loadPlugins(commandId, emitter);
   }
@@ -29,7 +29,7 @@ export class Collector extends Plugin {
    * @param project - The instantiated project.
    * @param emitter - The Event Emitter.
    */
-  async loadPlugins(commandId: string, emitter: Emitter<DefaultEvents>): Promise<void> {
+  async loadPlugins(commandId: string, emitter: EventEmitter<DefaultEvents>): Promise<void> {
     try {
       Log.verbose('Initiating Jovo CLI');
       const cli: JovoCli = JovoCli.getInstance();
@@ -56,7 +56,7 @@ export class Collector extends Plugin {
             for (const event of events) {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              emitter.on(eventKey, event);
+              emitter.on(eventKey, event.bind(null, context));
             }
           }
         }
