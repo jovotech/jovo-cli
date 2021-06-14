@@ -4,7 +4,7 @@ import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,
-  Emitter,
+  EventEmitter,
   flags,
   JovoCli,
   JovoCliError,
@@ -73,7 +73,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static install(
     cli: JovoCli,
     plugin: DeployCommand,
-    emitter: Emitter<DeployPlatformEvents>,
+    emitter: EventEmitter<DeployPlatformEvents>,
   ): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...cli.getPlatforms());

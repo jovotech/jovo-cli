@@ -10,7 +10,7 @@ import {
   PluginCommand,
   printSubHeadline,
   flags,
-  Emitter,
+  EventEmitter,
   CliFlags,
   CliArgs,
   TADA,
@@ -76,7 +76,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
   ];
   $context!: GetContext;
 
-  static install(cli: JovoCli, plugin: GetCommand, emitter: Emitter<GetEvents>): void {
+  static install(cli: JovoCli, plugin: GetCommand, emitter: EventEmitter<GetEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...cli.getPlatforms());
     super.install(cli, plugin, emitter);

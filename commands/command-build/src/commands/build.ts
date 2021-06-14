@@ -13,7 +13,7 @@ import {
   wait,
   JovoCli,
   PluginCommand,
-  Emitter,
+  EventEmitter,
   flags,
   CliFlags,
   TARGET_ALL,
@@ -80,7 +80,7 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
   };
   $context!: BuildContext;
 
-  static install(cli: JovoCli, plugin: BuildCommand, emitter: Emitter<BuildEvents>): void {
+  static install(cli: JovoCli, plugin: BuildCommand, emitter: EventEmitter<BuildEvents>): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...cli.getPlatforms());
     super.install(cli, plugin, emitter);

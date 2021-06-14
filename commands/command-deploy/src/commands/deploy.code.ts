@@ -6,7 +6,7 @@ import {
   checkForProjectDirectory,
   CliArgs,
   CliFlags,
-  Emitter,
+  EventEmitter,
   flags,
   JovoCli,
   Log,
@@ -61,7 +61,11 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
   ];
   $context!: DeployCodeContext;
 
-  static install(cli: JovoCli, plugin: DeployCommand, emitter: Emitter<DeployCodeEvents>): void {
+  static install(
+    cli: JovoCli,
+    plugin: DeployCommand,
+    emitter: EventEmitter<DeployCodeEvents>,
+  ): void {
     // Override PluginComponent.install() to fill options for --platform.
     this.availableTargets.push(...cli.getPluginsWithType('target').map((plugin) => plugin.$id));
     super.install(cli, plugin, emitter);

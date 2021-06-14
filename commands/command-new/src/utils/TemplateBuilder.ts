@@ -70,7 +70,7 @@ export function generateProjectConfiguration(context: NewContext): void {
 
   // Read project configuration, enhance with platform plugins.
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
-  const cliPluginsComment = '// Add Jovo CLI plugins here.';
+  const cliPluginsComment = '// Add Jovo CLI plugins here';
   for (const platform of context.platforms) {
     projectConfig = insert(
       `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
@@ -124,7 +124,7 @@ export function generateAppConfiguration(context: NewContext): void {
     isTypeScriptProject ? 'app.ts' : 'app.js',
   );
   let appConfig = readFileSync(appConfigPath, 'utf-8');
-  const pluginsComment = '// Add Jovo plugins here.';
+  const pluginsComment = '// Add Jovo plugins here';
   for (const platform of context.platforms) {
     appConfig = insert(
       `import { ${platform.module} } from \'${platform.package}\';\n`,

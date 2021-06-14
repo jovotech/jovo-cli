@@ -130,7 +130,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
           joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
           'utf-8',
         );
-        const pluginsComment = '// Add Jovo plugins here.';
+        const pluginsComment = '// Add Jovo plugins here';
 
         for (const plugin of appPlugins) {
           stagedApp = insert(
