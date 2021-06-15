@@ -239,7 +239,7 @@ export class New extends PluginCommand<NewEvents> {
     for (const platform of this.$context.platforms) {
       // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
-        joinPaths(this.$context.projectName, 'node_modules', platform.package, 'dist', 'cli'),
+        joinPaths(this.$context.projectName, 'node_modules', platform.package),
       ))[platform.cliModule!])();
 
       plugin.install(this.$cli, this.$emitter, this.$context);
