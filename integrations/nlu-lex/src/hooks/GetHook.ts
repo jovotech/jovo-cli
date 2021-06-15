@@ -177,7 +177,6 @@ export class GetHook extends PluginHook<GetEvents> {
       );
       await getTask.run();
     } catch (error) {
-      console.log(error);
       throw new JovoCliError(error.message, this.$plugin.constructor.name);
     }
   }

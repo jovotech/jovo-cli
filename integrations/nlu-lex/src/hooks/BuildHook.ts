@@ -15,6 +15,7 @@ import {
   ANSWER_CANCEL,
   REVERSE_ARROWS,
   ANSWER_OVERWRITE,
+  Log,
 } from '@jovotech/cli-core';
 import { JovoModelData, NativeFileInformation } from 'jovo-model';
 import _mergeWith from 'lodash.mergewith';
@@ -244,7 +245,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
         const backupTask: Task = new Task('Creating backups', async () => {
           const localeTask: Task = new Task(modelLocale, () => {
             this.$cli.$project!.backupModel(modelLocale);
-            console.log();
+            Log.spacer();
           });
           await localeTask.run();
         });
