@@ -1,26 +1,28 @@
 import { Hook } from '@oclif/config';
 import { getPackageVersions, JovoCli, PackageVersions, printCode, Log } from '@jovotech/cli-core';
 import latestVersion from 'latest-version';
+import envinfo from 'envinfo';
 
 const hook: Hook<'init'> = async function () {
   if (!['-v', '-V', '--version', 'version'].includes(process.argv[2])) {
     return;
   }
 
-  const packageJson = require('../package');
+  const packageJson = require('../../package');
   const current: string = packageJson.version;
   const latest: string = await latestVersion(packageJson.name);
 
+  Log.spacer();
   Log.info(
     `${packageJson.name}: ${current} ${
       current !== latest ? `(update to ${printCode(latest)} available)` : ''
     }`,
   );
 
+  // Check for versions of Jovo modules within a project
   const cli: JovoCli = JovoCli.getInstance();
   if (cli.isInProjectDirectory()) {
     const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.$projectPath);
-    Log.info(versions);
     if (Object.keys(versions).length) {
       const output: string[] = [];
       let updatesAvailable: boolean = false;
@@ -44,7 +46,16 @@ const hook: Hook<'init'> = async function () {
     }
   }
 
+  // Log environment info, such as operating system
+  const env = await envinfo.run({
+    System: ['OS'],
+    Binaries: ['Node', 'npm', 'jovov4'],
+  });
+
   Log.spacer();
+  Log.info('Environment:');
+  Log.info(env.replace('\n', ''));
+
   process.exit();
 };
 

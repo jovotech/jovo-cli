@@ -27,8 +27,7 @@
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
     "@oclif/plugin-not-found": "^1.2.4",
-    "cli-progress": "^3.9.0",
-    "global-dirs": "^3.0.0",
+    "envinfo": "^7.8.1",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2"
   },
@@ -36,7 +35,10 @@
     "@types/jest": "^26.0.23",
     "@types/lodash.get": "^4.4.6",
     "@types/node": "^15.0.1",
+    "@types/envinfo": "^7.8.0",
     "jest": "^26.6.3",
+    "global-dirs": "^3.0.0",
+    "cli-progress": "^3.9.0",
     "prettier": "^2.2.1",
     "symlink-dir": "^5.0.0",
     "ts-jest": "^26.5.5",
@@ -55,15 +57,15 @@
     "jovo"
   ],
   "oclif": {
-    "bin": "jovodev",
+    "bin": "jovov4",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-not-found"
     ],
     "hooks": {
       "init": [
-        "./dist/version.hook.js",
-        "./dist/init.hook.js"
+        "./dist/hooks/VersionHook.js",
+        "./dist/hooks/InitHook.js"
       ]
     }
   }
