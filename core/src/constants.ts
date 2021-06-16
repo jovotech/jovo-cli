@@ -32,6 +32,7 @@ export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with
 export const PACKAGE: string = SUPPORTS_EMOJI ? get('package') : '';
 export const DOWNLOAD: string = SUPPORTS_EMOJI ? get('inbox_tray') : '';
 export const MAGNIFYING_GLASS: string = SUPPORTS_EMOJI ? get('mag') : '';
+export const DISK: string = SUPPORTS_EMOJI ? get('floppy_disk') : '';
 
 // ####### TARGETS #######
 export const TARGET_ALL = 'all';
