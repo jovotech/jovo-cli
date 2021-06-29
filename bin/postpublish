@@ -1,52 +1,74 @@
 #!/usr/bin/node
 
 const { join: joinPaths } = require('path');
-const { execSync } = require('child_process');
+const { exec } = require('child_process');
 const { Project } = require('@lerna/project');
 const { writeFileSync } = require('fs');
+const ora = require('ora');
 
 const project = new Project();
 (async () => {
-  const exec = (cmd) => {
-    return execSync(cmd, { encoding: 'utf-8', stdio: 'pipe' }).replace('\n', '');
+  const execAsync = async (cmd) => {
+    return new Promise((resolve, reject) => {
+      exec(cmd, { encoding: 'utf-8', stdio: 'pipe' }, (error, stdout, stderr) => {
+        if (error) {
+          reject({ stderr: error.message, stdout });
+        } else {
+          resolve({ stdout: stdout.replace('\n', '') });
+        }
+      });
+    });
   };
 
+  const rootSpinner = ora('Generating CHANGELOG.md for root').start();
   // Generate root changelog
-  exec('npx auto-changelog --tag-pattern "."');
-  exec('git add CHANGELOG.md');
+  try {
+    await execAsync('npx auto-changelog --tag-pattern "."');
+  } catch (error) {
+    console.log(error);
+    rootSpinner.fail();
+  }
+  await execAsync('git add CHANGELOG.md');
+  rootSpinner.succeed();
 
   const packages = await project.getPackages();
 
-  const origin = exec('git config --get remote.origin.url');
-  const upstream = exec('git config --get remote.upstream.url');
+  const { stdout: origin } = await execAsync('git config --get remote.origin.url');
+  const { stdout: upstream } = await execAsync('git config --get remote.upstream.url');
 
   for (const pkg of packages) {
+    const pkgSpinner = ora(`Generating CHANGELOG.md for ${pkg.name}`).start();
     // Generate changelog for each package
-    const changelog = exec(`npx auto-changelog --tag-prefix ${pkg.name}@ --stdout`);
+    const { stdout: changelog } = await execAsync(
+      `npx auto-changelog --tag-prefix ${pkg.name}@ --stdout`,
+    );
     writeFileSync(joinPaths(pkg.location, 'CHANGELOG.md'), changelog);
-    exec(`git add ${joinPaths(pkg.location, 'CHANGELOG.md')}`);
+    await execAsync(`git add ${joinPaths(pkg.location, 'CHANGELOG.md')}`);
 
     // Push latest tag to origin and upstream, if it exists
-    const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
+    const { stdout: latestTag } = await execAsync(
+      `git describe --abbrev=0 --match "${pkg.name}@*"`,
+    );
 
-    exec(`git push ${origin} ${latestTag}`);
+    await execAsync(`git push ${origin} ${latestTag}`);
     if (upstream) {
-      exec(`git push ${upstream} ${latestTag}`);
+      await execAsync(`git push ${upstream} ${latestTag}`);
     }
+    pkgSpinner.succeed();
   }
 
   // Push changes to origin and upstream
-  exec('git commit -m ":memo: Add CHANGELOG"');
-  exec(`git push ${origin}`);
+  await execAsync('git commit -m ":memo: Add CHANGELOG"');
+  await execAsync(`git push ${origin}`);
   if (upstream) {
-    // exec(`git push ${upstream}`);
+    // execAsync(`git push ${upstream}`);
   }
 })()
   .then(() => {
-    console.log('✅ Pushed tags to remote');
+    console.log('✅ Generated changelogs and pushed tags to remote');
   })
   .catch((error) => {
-    console.error('❌ Error while pushing tags');
+    console.error('❌ Error in postpublish');
     console.error(error);
     process.exit(1);
   });
