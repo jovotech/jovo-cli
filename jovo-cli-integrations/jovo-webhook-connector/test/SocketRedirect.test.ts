@@ -125,7 +125,7 @@ describe('webhook tests', () => {
       },
     ];
 
-    let port = 8080;
+    let port = 8000;
     webhookTests.forEach((webhookTest) => {
       test(webhookTest.description, (done) => {
         // Create the local http server which will receive the data
