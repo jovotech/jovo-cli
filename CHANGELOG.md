@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.4...HEAD)
+
+> 29 June 2021
+
+### Commits 
+- :hankey: Add falsy CHANGELOG [#9f71046](https://github.com/rubenaeg/jovo-cli/commit/9f71046cd3d66f61949e9a0e25b651654fdacd1b)
 
 ## [@jovotech/target-serverless@4.0.0-alpha.4](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.3...@jovotech/target-serverless@4.0.0-alpha.4)
 
