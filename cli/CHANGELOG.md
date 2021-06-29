@@ -1,6 +1,6 @@
 # Changelog
 
-## [@jovotech/target-serverless@4.0.0-alpha.4](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.3...@jovotech/target-serverless@4.0.0-alpha.4)
+## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli@4.0.0-alpha.13...HEAD)
 
 > 29 June 2021
 
@@ -11,30 +11,6 @@
 - :arrow_up: Bump dependencies [#70d7fa0](https://github.com/rubenaeg/jovo-cli/commit/70d7fa0d9de0b22bea51da3bf632f8dfa75be9fa)
 - :arrow_up: Bump dependencies [#33bd4b4](https://github.com/rubenaeg/jovo-cli/commit/33bd4b4628dd8c3d694dd2957126aee73c4ea415)
 - :bug: Fetch CLI module directly from package [#5174e5f](https://github.com/rubenaeg/jovo-cli/commit/5174e5fa80857a9be3f8313f0cb0659d14433252)
-
-## [@jovotech/target-serverless@4.0.0-alpha.3](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.2...@jovotech/target-serverless@4.0.0-alpha.3)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
-
-## [@jovotech/nlu-lex@4.0.0-alpha.3](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-alpha.2...@jovotech/nlu-lex@4.0.0-alpha.3)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
 
 ## [@jovotech/cli@4.0.0-alpha.13](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli@4.0.0-alpha.12...@jovotech/cli@4.0.0-alpha.13)
 
@@ -60,127 +36,7 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
-## [@jovotech/cli-core@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.7...@jovotech/cli-core@4.0.0-alpha.8)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-run@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-alpha.8...@jovotech/cli-command-run@4.0.0-alpha.9)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-run@4.0.0-alpha.10](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-alpha.9...@jovotech/cli-command-run@4.0.0-alpha.10)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
-
-## [@jovotech/cli-command-new@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-alpha.8...@jovotech/cli-command-new@4.0.0-alpha.9)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-get@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-alpha.8...@jovotech/cli-command-get@4.0.0-alpha.9)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
-
-## [@jovotech/cli-command-get@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-alpha.7...@jovotech/cli-command-get@4.0.0-alpha.8)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-deploy@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-alpha.8...@jovotech/cli-command-deploy@4.0.0-alpha.9)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
-
-## [@jovotech/cli-command-deploy@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-alpha.7...@jovotech/cli-command-deploy@4.0.0-alpha.8)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-build@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-alpha.8...@jovotech/cli-command-build@4.0.0-alpha.9)
-
-> 1 June 2021
-
-### Merged
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
-
-### Commits 
-- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
-- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
-- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
-
-## [@jovotech/cli-command-build@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-alpha.7...@jovotech/cli-command-build@4.0.0-alpha.8)
-
-> 26 May 2021
-
-### Merged
-- ✨ Add Serverless Integration [#201](https://github.com/rubenaeg/jovo-cli/pull/201)
-
-### Commits 
-- :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/rubenaeg/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
-- :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
-- :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
-
-## [@jovotech/cli-command-build@4.0.0-alpha.7]()
+## [@jovotech/cli@4.0.0-alpha.11]()
 
 > 7 May 2021
 
