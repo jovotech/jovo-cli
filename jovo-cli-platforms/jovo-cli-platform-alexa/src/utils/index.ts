@@ -1,5 +1,6 @@
 import { ExecOptions, exec } from 'child_process';
 import { JovoCliError } from 'jovo-cli-core';
+import _get from 'lodash.get';
 
 export * from './Interfaces';
 
@@ -18,30 +19,29 @@ export function execAsync(cmd: string, options: ExecOptions = {}): Promise<strin
   });
 }
 
-export function getAskErrorV2(method: string, stderr: string) {
-  const module = 'jovo-cli-platform-alexa';
-  const splitter = '[Error]: ';
+export function getAskErrorV2(method: string, stderr: string): JovoCliError {
+  const module: string = 'jovo-cli-platform-alexa';
+  const splitter: string = '[Error]: ';
 
-  const i = stderr.indexOf(splitter);
-  if (i > -1) {
-    try {
-      const json = stderr.substring(i + splitter.length);
-      const parsedError = JSON.parse(json);
+  const errorIndex: number = stderr.indexOf(splitter);
+  if (errorIndex > -1) {
+    const errorString: string = stderr.substring(errorIndex + splitter.length);
+    const parsedError = JSON.parse(errorString);
+    const payload = _get(parsedError, 'detail.response', parsedError);
+    const message: string = payload.message;
+    let violations: string = '';
 
-      const payload = parsedError.response ? parsedError.response : parsedError;
-
-      const message = payload.message;
-      let violations = '';
-
-      if (payload.violations) {
-        for (const violation of payload.violations) {
-          violations += violation.message;
-        }
+    if (payload.violations) {
+      for (const violation of payload.violations) {
+        violations += violation.message;
       }
-      return new JovoCliError(`${method}:${message}`, module, violations);
-    } catch (err) {
-      return new JovoCliError(`${method}:${stderr}`, module);
     }
+
+    if (payload.detail) {
+      violations = payload.detail.response.message;
+    }
+
+    return new JovoCliError(`${method}: ${message}`, module, violations);
   } else {
     // Try parsing for alternative error message.
     let i: number, pathRegex: RegExp;
@@ -58,7 +58,7 @@ export function getAskErrorV2(method: string, stderr: string) {
     }
 
     // Check for different error messages, if a file cannot be found.
-    const parsedError = stderr.substring(i);
+    const parsedError: string = stderr.substring(i);
     const match = pathRegex.exec(parsedError);
 
     // File-specific error messages
@@ -66,14 +66,14 @@ export function getAskErrorV2(method: string, stderr: string) {
       if (match[2] === 'cli_config') {
         return new JovoCliError(
           `ASK CLI is unable to find your configuration file at ${match[1]}.`,
-          'jovo-cli-platform-alexa',
+          module,
           "Please configure at least one ask profile using the command 'ask configure'.",
         );
       }
 
       return new JovoCliError(
         `ASK CLI is unable to find your ${match[2]} at ${match[1]}.`,
-        'jovo-cli-platform-alexa',
+        module,
         "If this error persists, try rebuilding your platform folder with 'jovo build'.",
       );
     }
