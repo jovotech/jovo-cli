@@ -1,74 +1,33 @@
 #!/usr/bin/node
 
-const { join: joinPaths } = require('path');
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 const { Project } = require('@lerna/project');
-const { writeFileSync } = require('fs');
-const ora = require('ora');
 
-const spinner = ora('Generating changelogs, pushing tags to remote').start();
 const project = new Project();
-
 (async () => {
-  const execAsync = async (cmd) => {
-    return new Promise((resolve, reject) => {
-      exec(cmd, { encoding: 'utf-8', stdio: 'pipe' }, (error, stdout) => {
-        if (error) {
-          reject(error);
-          console.log(error);
-        } else {
-          resolve(stdout.replace('\n', ''));
-        }
-      });
-    });
-  };
-
-  // Generate root changelog
-  await execAsync('npx auto-changelog --tag-pattern "."');
-  await execAsync('git add CHANGELOG.md');
-
   const packages = await project.getPackages();
-  const origin = await execAsync('git config --get remote.origin.url');
-  const upstream = await execAsync('git config --get remote.upstream.url');
+  function exec(cmd) {
+    return execSync(cmd, { encoding: 'utf-8', stdio: 'pipe' }).replace('\n', '');
+  }
 
-  const changelogPromises = [];
+  const origin = exec('git config --get remote.origin.url');
+  const upstream = exec('git config --get remote.upstream.url');
+
   for (const pkg of packages) {
-    const changelogPromise = (async () => {
-      // Generate changelog for each package
-      const changelog = await execAsync(`npx auto-changelog --tag-prefix ${pkg.name}@ --stdout`);
-      writeFileSync(joinPaths(pkg.location, 'CHANGELOG.md'), changelog);
-      await execAsync(`git add ${joinPaths(pkg.location, 'CHANGELOG.md')}`);
+    // Push latest tag to origin and upstream, if it exists
+    const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
 
-      // Push latest tag to origin and upstream, if it exists
-      const latestTag = await execAsync(`git describe --abbrev=0 --match "${pkg.name}@*"`);
-
-      await execAsync(`git push ${origin} ${latestTag}`);
-      if (upstream) {
-        await execAsync(`git push ${upstream} ${latestTag}`);
-      }
-    })();
-    changelogPromises.push(changelogPromise);
+    exec(`git push ${origin} ${latestTag}`);
+    if (upstream) {
+      exec(`git push ${upstream} ${latestTag}`);
+    }
   }
-  // Generate changelogs in parallel
-  await Promise.all(changelogPromises);
-
-  // Check if changes need to be committed
-  const stdout = await execAsync('git diff --cached');
-  if (stdout) {
-    // Push changes to origin and upstream
-    await execAsync('git commit -m ":memo: Add CHANGELOG"');
-  }
-  await execAsync(`git push ${origin}`);
-  if (upstream) {
-    // execAsync(`git push ${upstream}`);
-  }
-  await execAsync('git fetch');
 })()
   .then(() => {
-    spinner.succeed();
+    console.log('✅ Pushed tags to remote');
   })
   .catch((error) => {
-    spinner.fail();
+    console.error('❌ Error while pushing tags');
     console.error(error);
     process.exit(1);
   });
