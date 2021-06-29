@@ -1,7 +1,6 @@
 # Changelog
 
-
-## [@jovotech/target-serverless@4.0.0-alpha.4](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.3...@jovotech/target-serverless@4.0.0-alpha.4)
+## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.3...HEAD)
 
 > 29 June 2021
 

@@ -80,10 +80,10 @@ async function wait(ms) {
   }
 })()
   .then(() => {
-    console.log(`${tag} Success ✅`);
+    console.log(`${tag} ${chalk.green('Success')}`);
   })
   .catch((error) => {
-    console.error(`${tag} Error ❌`);
+    console.error(`${tag} ${chalk.red('An error occurred:')}`);
     console.error(`${tag} ${error}`);
     process.exit(1);
   });
