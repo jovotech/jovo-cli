@@ -1,4 +1,5 @@
 # Changelog
+
 ## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-alpha.9...HEAD)
 
 > 29 June 2021
