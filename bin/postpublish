@@ -5,12 +5,14 @@ const { exec } = require('child_process');
 const { Project } = require('@lerna/project');
 const { writeFileSync } = require('fs');
 const ora = require('ora');
+
 const spinner = ora('Generating changelogs, pushing tags to remote').start();
 const project = new Project();
+
 (async () => {
   const execAsync = async (cmd) => {
     return new Promise((resolve, reject) => {
-      exec(cmd, { encoding: 'utf-8', stdio: 'pipe' }, (error, stdout, stderr) => {
+      exec(cmd, { encoding: 'utf-8', stdio: 'pipe' }, (error, stdout) => {
         if (error) {
           reject(error);
           console.log(error);
@@ -26,7 +28,6 @@ const project = new Project();
   await execAsync('git add CHANGELOG.md');
 
   const packages = await project.getPackages();
-
   const origin = await execAsync('git config --get remote.origin.url');
   const upstream = await execAsync('git config --get remote.upstream.url');
 
@@ -48,10 +49,11 @@ const project = new Project();
     })();
     changelogPromises.push(changelogPromise);
   }
+  // Generate changelogs in parallel
   await Promise.all(changelogPromises);
 
   // Check if changes need to be committed
-  const stdout = await execAsync('git diff --cached --exit-code');
+  const stdout = await execAsync('git diff --cached');
   if (stdout) {
     // Push changes to origin and upstream
     await execAsync('git commit -m ":memo: Add CHANGELOG"');
@@ -60,6 +62,7 @@ const project = new Project();
   if (upstream) {
     // execAsync(`git push ${upstream}`);
   }
+  await execAsync('git fetch');
 })()
   .then(() => {
     spinner.succeed();
