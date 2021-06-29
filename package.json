@@ -17,9 +17,9 @@
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "lerna": "^4.0.0"
-  },
-  "dependencies": {
-    "auto-changelog": "^2.3.0"
+    "lerna": "^4.0.0",
+    "auto-changelog": "^2.3.0",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1"
   }
 }
