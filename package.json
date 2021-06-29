@@ -9,7 +9,7 @@
     "test": "lerna exec npm run test -- -- --passWithNoTests",
     "setup:dev": "npm run bootstrap && npm run link && npm run tsc",
     "setup:prod": "npm install && npm run bootstrap && npm run tsc && npm run test && npm run eslint",
-    "publish": "lerna publish --no-push"
+    "publish": "lerna publish --no-push && node bin/postpublish"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.12.0",
