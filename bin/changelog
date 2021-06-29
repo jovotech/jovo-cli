@@ -7,13 +7,13 @@ const { Project } = require('@lerna/project');
 const project = new Project();
 
 (async () => {
-	const autoChangelog = `npx auto-changelog --stdout --template	./changelog-template.hbs --unreleased --hide-empty-releases --hide-credit	--ignore-commit-pattern ':memo:'`;
-  const rootChangelog = execSync(`${autoChangelog} --tag-pattern '.'`);
-  writeFileSync('CHANGELOG.md', rootChangelog);
+	// Generate root changelog
+  execSync(`npx auto-changelog --tag-pattern '.'`);
+
   const packages = await project.getPackages();
   for (const pkg of packages) {
     const stdout = execSync(
-      `${autoChangelog} --tag-prefix ${pkg.name}/`,
+      `npx auto-changelog --tag-prefix ${pkg.name}@ --stdout`,
       { encoding: 'utf-8' }
     );
     writeFileSync(joinPaths(pkg.location, 'CHANGELOG.md'), stdout);
