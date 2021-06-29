@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.4...HEAD)
+
+> 29 June 2021
+
+### Commits 
+- :fire: Remove changelog workflow [#f9f2ec0](https://github.com/rubenaeg/jovo-cli/commit/f9f2ec0ad6b4bb1ca8eb7148864170ba7c6069d1)
+- :sparkles: Add changelog generation to postpublish [#4ae7e83](https://github.com/rubenaeg/jovo-cli/commit/4ae7e833b91ac81c4892939eff651605926ca521)
+
 ## [@jovotech/target-serverless@4.0.0-alpha.4](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.3...@jovotech/target-serverless@4.0.0-alpha.4)
 
 > 29 June 2021
