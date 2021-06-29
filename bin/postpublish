@@ -4,7 +4,6 @@ const { execSync } = require('child_process');
 const { Project } = require('@lerna/project');
 const { default: axios } = require('axios');
 const chalk = require('chalk');
-
 const tag = chalk.blue('[POSTPUBLISH]');
 
 function exec(cmd) {
@@ -20,26 +19,20 @@ async function wait(ms) {
 (async () => {
   const project = new Project();
   const packages = await project.getPackages();
-  const origin = exec('git config --get remote.origin.url');
   const upstream = exec('git config --get remote.upstream.url');
-
   for (const pkg of packages) {
-    // Push latest tag to origin and upstream, if it exists
+    // Push latest tag to upstream, if it exists
     const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
     console.log(`${tag} Pushing ${latestTag} to remote`);
-
-    exec(`git push ${origin} ${latestTag}`);
     if (upstream) {
       exec(`git push ${upstream} ${latestTag}`);
     }
-  }
-  // Check status of GitHub action
-  const match = origin.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
+  } // Check status of GitHub action
+  const match = upstream.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
   if (!match || !match[1]) {
-    throw new Error(`Could not parse repository from ${origin}`);
+    throw new Error(`Could not parse repository from ${upstream}`);
   }
   const repository = match[1];
-
   const getActiveWorkflow = async () => {
     try {
       const res = await axios({
@@ -53,10 +46,8 @@ async function wait(ms) {
       );
     }
   };
-
   console.log();
   console.log(`${tag} Checking status of remote workflow for changelog generation`);
-
   let completed = false;
   while (!completed) {
     const workflow = await getActiveWorkflow();
@@ -64,8 +55,15 @@ async function wait(ms) {
       completed = true;
       if (workflow.conclusion === 'success') {
         try {
-          console.log(`${tag} Workflow for changelog generation ran successfully, pulling changes`);
-          exec('git pull');
+          console.log(
+            `${tag} Workflow for changelog generation ran successfully, fetching changes`,
+          );
+          const branch = exec('git branch --show-current');
+          exec('git fetch upstream');
+          exec(`git merge upstream ${branch}`);
+          exec('git add .');
+          exec(`git commit --no-edit -m ":twisted_rightwards_arrows: Merge upstream/${branch}"`);
+          exec('git push');
         } catch (error) {
           throw new Error('"git pull" failed and requires your attention.');
         }
