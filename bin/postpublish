@@ -1,19 +1,31 @@
 #!/usr/bin/node
 
+const { join: joinPaths } = require('path');
 const { execSync } = require('child_process');
 const { Project } = require('@lerna/project');
+const { writeFileSync } = require('fs');
 
 const project = new Project();
 (async () => {
-  const packages = await project.getPackages();
-  function exec(cmd) {
+  const exec = (cmd) => {
     return execSync(cmd, { encoding: 'utf-8', stdio: 'pipe' }).replace('\n', '');
-  }
+  };
+
+  // Generate root changelog
+  exec('npx auto-changelog --tag-pattern "."');
+  exec('git add CHANGELOG.md');
+
+  const packages = await project.getPackages();
 
   const origin = exec('git config --get remote.origin.url');
   const upstream = exec('git config --get remote.upstream.url');
 
   for (const pkg of packages) {
+    // Generate changelog for each package
+    const changelog = exec(`npx auto-changelog --tag-prefix ${pkg.name}@ --stdout`);
+    writeFileSync(joinPaths(pkg.location, 'CHANGELOG.md'), changelog);
+    exec(`git add ${joinPaths(pkg.location, 'CHANGELOG.md')}`);
+
     // Push latest tag to origin and upstream, if it exists
     const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
 
@@ -21,6 +33,13 @@ const project = new Project();
     if (upstream) {
       exec(`git push ${upstream} ${latestTag}`);
     }
+  }
+
+  // Push changes to origin and upstream
+  exec('git commit -m ":memo: Add CHANGELOG"');
+  exec(`git push ${origin}`);
+  if (upstream) {
+    // exec(`git push ${upstream}`);
   }
 })()
   .then(() => {
