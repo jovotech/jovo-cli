@@ -60,6 +60,18 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/rubenaeg/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/rubenaeg/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
+## [@jovotech/cli-core@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.8...@jovotech/cli-core@4.0.0-alpha.9)
+
+> 1 June 2021
+
+### Merged
+- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
+
+### Commits 
+- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
+- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
+- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
+
 ## [@jovotech/cli-core@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.7...@jovotech/cli-core@4.0.0-alpha.8)
 
 > 26 May 2021

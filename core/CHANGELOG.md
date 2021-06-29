@@ -1,17 +1,27 @@
 # Changelog
-
-## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.8...HEAD)
+## [Unreleased](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.9...HEAD)
 
 > 29 June 2021
 
 ### Merged
 - Publish [#222](https://github.com/rubenaeg/jovo-cli/pull/222)
-- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
 
 ### Commits 
 - :arrow_up: Bump dependencies [#70d7fa0](https://github.com/rubenaeg/jovo-cli/commit/70d7fa0d9de0b22bea51da3bf632f8dfa75be9fa)
 - :arrow_up: Bump dependencies [#33bd4b4](https://github.com/rubenaeg/jovo-cli/commit/33bd4b4628dd8c3d694dd2957126aee73c4ea415)
 - :bug: Fetch CLI module directly from package [#5174e5f](https://github.com/rubenaeg/jovo-cli/commit/5174e5fa80857a9be3f8313f0cb0659d14433252)
+
+## [@jovotech/cli-core@4.0.0-alpha.9](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.8...@jovotech/cli-core@4.0.0-alpha.9)
+
+> 1 June 2021
+
+### Merged
+- ✨ Add Custom Logger, Fix new:stage [#217](https://github.com/rubenaeg/jovo-cli/pull/217)
+
+### Commits 
+- Publish [#131ea22](https://github.com/rubenaeg/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
+- :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/rubenaeg/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
+- :recycle: Use Logger in version hook [#a407f85](https://github.com/rubenaeg/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
 
 ## [@jovotech/cli-core@4.0.0-alpha.8](https://github.com/rubenaeg/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.7...@jovotech/cli-core@4.0.0-alpha.8)
 
