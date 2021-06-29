@@ -1,0 +1,89 @@
+#!/usr/bin/node
+
+const { execSync } = require('child_process');
+const { Project } = require('@lerna/project');
+const { default: axios } = require('axios');
+const chalk = require('chalk');
+
+const tag = chalk.blue('[POSTPUBLISH]');
+
+function exec(cmd) {
+  return execSync(cmd, { encoding: 'utf-8', stdio: 'pipe' }).replace('\n', '');
+}
+
+async function wait(ms) {
+  return new Promise((res) => {
+    setTimeout(() => res(), ms);
+  });
+}
+
+(async () => {
+  const project = new Project();
+  const packages = await project.getPackages();
+  const origin = exec('git config --get remote.origin.url');
+  const upstream = exec('git config --get remote.upstream.url');
+
+  for (const pkg of packages) {
+    // Push latest tag to origin and upstream, if it exists
+    const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
+    console.log(`${tag} Pushing ${latestTag} to remote`);
+
+    exec(`git push ${origin} ${latestTag}`);
+    if (upstream) {
+      exec(`git push ${upstream} ${latestTag}`);
+    }
+  }
+  // Check status of GitHub action
+  const match = origin.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
+  if (!match || !match[1]) {
+    throw new Error(`Could not parse repository from ${origin}`);
+  }
+  const repository = match[1];
+
+  const getActiveWorkflow = async () => {
+    try {
+      const res = await axios({
+        url: `https://api.github.com/repos/${repository}/actions/workflows/changelog.yml/runs`,
+        method: 'GET',
+      });
+      return res.data['workflow_runs'][0];
+    } catch (error) {
+      throw new Error(
+        `Something went wrong while checking workflow status.\n${error.response.data.message}`,
+      );
+    }
+  };
+
+  console.log();
+  console.log(`${tag} Checking status of remote workflow for changelog generation`);
+
+  let completed = false;
+  while (!completed) {
+    const workflow = await getActiveWorkflow();
+    if (workflow.status === 'completed') {
+      completed = true;
+      if (workflow.conclusion === 'success') {
+        try {
+          console.log(`${tag} Workflow for changelog generation ran successfully, pulling changes`);
+          exec('git pull');
+        } catch (error) {
+          throw new Error('"git pull" failed and requires your attention.');
+        }
+        exec('git pull');
+      } else {
+        throw new Error(`Workflow requires your attention. Status: ${workflow.conclusion}`);
+      }
+    } else {
+      // If workflow did not complete yet, wait for a second and try again
+      await wait(1000);
+    }
+  }
+})()
+  .then(() => {
+    console.log(`${tag} ${chalk.green('Success')}`);
+  })
+  .catch((error) => {
+    console.error(`${tag} ${chalk.red('An error occurred:')}`);
+    console.error(`${tag} ${error}`);
+    process.exit(1);
+  });
