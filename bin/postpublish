@@ -19,7 +19,18 @@ async function wait(ms) {
 (async () => {
   const project = new Project();
   const packages = await project.getPackages();
-  const upstream = exec('git config --get remote.upstream.url');
+
+  let upstream;
+  try {
+    upstream = exec('git config --get remote.upstream.url');
+  } finally {
+    if (!upstream) {
+      throw new Error(
+        'Remote upstream url not set. Configure it with "git remote add upstream {upstream}".',
+      );
+    }
+  }
+
   for (const pkg of packages) {
     // Push latest tag to upstream, if it exists
     const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
@@ -60,14 +71,13 @@ async function wait(ms) {
           );
           const branch = exec('git branch --show-current');
           exec('git fetch upstream');
-          exec(`git merge upstream ${branch}`);
+          exec(`git merge upstream/${branch}`);
           exec('git add .');
           exec(`git commit --no-edit -m ":twisted_rightwards_arrows: Merge upstream/${branch}"`);
           exec('git push');
         } catch (error) {
-          throw new Error('"git pull" failed and requires your attention.');
+          throw new Error(`Fetching changes failed and requires your attention.\n${error}`);
         }
-        exec('git pull');
       } else {
         throw new Error(`Workflow requires your attention. Status: ${workflow.conclusion}`);
       }
