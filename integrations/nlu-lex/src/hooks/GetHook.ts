@@ -1,4 +1,11 @@
-import { join as joinPaths } from 'path';
+import {
+  GetBotCommand,
+  GetBotCommandOutput,
+  GetBotsCommand,
+  GetBotsCommandOutput,
+  LexModelBuildingServiceClient,
+} from '@aws-sdk/client-lex-model-building-service';
+import type { GetContext, GetEvents } from '@jovotech/cli-command-get';
 import {
   ANSWER_CANCEL,
   flags,
@@ -12,17 +19,10 @@ import {
   Task,
   wait,
 } from '@jovotech/cli-core';
-import type { GetContext, GetEvents } from '@jovotech/cli-command-get';
-import { LexCli } from '..';
 import { existsSync, writeFileSync } from 'fs';
-import {
-  GetBotCommand,
-  GetBotCommandOutput,
-  GetBotsCommand,
-  GetBotsCommandOutput,
-  LexModelBuildingServiceClient,
-} from '@aws-sdk/client-lex-model-building-service';
 import { LexModelFile } from 'jovo-model-lex';
+import { join as joinPaths } from 'path';
+import { LexCli } from '..';
 
 export interface LexGetContext extends GetContext {
   flags: GetContext['flags'] & { 'bot-name'?: string };
@@ -89,21 +89,24 @@ export class GetHook extends PluginHook<GetEvents> {
    */
   checkForAwsCredentials(): void {
     if (!this.$plugin.$config.credentials) {
-      throw new JovoCliError('Could not find your AWS credentials.', this.$plugin.constructor.name);
+      throw new JovoCliError({
+        message: 'Could not find your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
 
     if (!this.$plugin.$config.credentials.accessKeyId) {
-      throw new JovoCliError(
-        'Could not find accessKeyId for your AWS credentials.',
-        this.$plugin.constructor.name,
-      );
+      throw new JovoCliError({
+        message: 'Could not find accessKeyId for your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
 
     if (!this.$plugin.$config.credentials.secretAccessKey) {
-      throw new JovoCliError(
-        'Could not find secretAccessKey for your AWS credentials.',
-        this.$plugin.constructor.name,
-      );
+      throw new JovoCliError({
+        message: 'Could not find secretAccessKey for your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
   }
 
@@ -177,7 +180,7 @@ export class GetHook extends PluginHook<GetEvents> {
       );
       await getTask.run();
     } catch (error) {
-      throw new JovoCliError(error.message, this.$plugin.constructor.name);
+      throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
     }
   }
 

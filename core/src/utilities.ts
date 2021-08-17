@@ -81,9 +81,9 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   } else if (existsSync(joinPaths(projectPath, 'package.json'))) {
     packageFileName = 'package.json';
   } else {
-    throw new JovoCliError(
-      "Could not find an NPM dependency file, such as your project's package.json.",
-    );
+    throw new JovoCliError({
+      message: "Could not find an NPM dependency file, such as your project's package.json.",
+    });
   }
 
   const packagePath: string = joinPaths(projectPath, packageFileName);
@@ -91,7 +91,9 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
   try {
     content = readFileSync(packagePath, 'utf-8');
   } catch (error) {
-    throw new JovoCliError(`Something went wrong while reading your ${packageFileName} file.`);
+    throw new JovoCliError({
+      message: `Something went wrong while reading your ${packageFileName} file.`,
+    });
   }
 
   const packageFile: DependencyFile = JSON.parse(content);
@@ -223,7 +225,7 @@ export function getResolvedLocales(
 
   if (resolvedLocales) {
     if (!Array.isArray(resolvedLocales)) {
-      throw new JovoCliError(`Locale ${locale} does not resolve to an array.`);
+      throw new JovoCliError({ message: `Locale ${locale} does not resolve to an array.` });
     }
 
     const globPattern: string | undefined = resolvedLocales.find((locale) =>

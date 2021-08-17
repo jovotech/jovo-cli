@@ -25,7 +25,7 @@ import { JovoModelLex, JovoModelLexData, LexModelFile, LexModelFileResource } fr
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 import { LexCli } from '..';
-import { getLexLocale, SupportedLocales, SupportedLocalesType } from '../utils';
+import { getLexLocale, SupportedLocales, SupportedLocalesType } from '../utilities';
 
 export class BuildHook extends PluginHook<BuildEvents> {
   $plugin!: LexCli;
@@ -78,21 +78,22 @@ export class BuildHook extends PluginHook<BuildEvents> {
     ) as SupportedLocalesType[];
 
     if (locales.length > 1) {
-      throw new JovoCliError(
-        `Amazon Lex does not support multiple language models (${locales.join(',')}).`,
-        this.$plugin.constructor.name,
-        'Please provide a locale by using the flag "--locale" or in your project configuration.',
-      );
+      throw new JovoCliError({
+        message: `Amazon Lex does not support multiple language models (${locales.join(',')}).`,
+        module: this.$plugin.constructor.name,
+        hint: 'Please provide a locale by using the flag "--locale" or in your project configuration.',
+      });
     }
 
     const locale: SupportedLocalesType = locales.pop()!;
 
     if (!SupportedLocales.includes(locale)) {
-      throw new JovoCliError(
-        `Locale ${printHighlight(locale)} is not supported by Lex.`,
-        this.$plugin.constructor.name,
-        'For more information on multiple language support: https://docs.aws.amazon.com/lex/latest/dg/how-it-works-language.html',
-      );
+      throw new JovoCliError({
+        message: `Locale ${printHighlight(locale)} is not supported by Lex.`,
+        module: this.$plugin.constructor.name,
+        learnMore:
+          'For more information on multiple language support: https://docs.aws.amazon.com/lex/latest/dg/how-it-works-language.html',
+      });
     }
   }
 
@@ -144,10 +145,10 @@ export class BuildHook extends PluginHook<BuildEvents> {
             jovoModel.exportNative() as NativeFileInformation[];
 
           if (!lexModelFiles || !lexModelFiles.length) {
-            throw new JovoCliError(
-              `Could not build Lex files for locale "${resolvedLocale}"!`,
-              this.$plugin.constructor.name,
-            );
+            throw new JovoCliError({
+              message: `Could not build Lex files for locale "${resolvedLocale}"!`,
+              module: this.$plugin.constructor.name,
+            });
           }
 
           for (const file of lexModelFiles) {
@@ -207,13 +208,13 @@ export class BuildHook extends PluginHook<BuildEvents> {
       this.$plugin.$config.locales,
     );
     if (this.$context.flags.locale && this.$context.flags.locale[0] !== platformLocale) {
-      throw new JovoCliError(
-        `Could not find platform models for locale: ${printHighlight(
+      throw new JovoCliError({
+        message: `Could not find platform models for locale: ${printHighlight(
           this.$context.flags.locale[0],
         )}`,
-        this.$plugin.constructor.name,
-        `Available locales include: ${platformLocale}`,
-      );
+        module: this.$plugin.constructor.name,
+        hint: `Available locales include: ${platformLocale}`,
+      });
     }
 
     // Try to resolve the locale according to the locale map provided in this.$plugin.$config.locales.
@@ -265,10 +266,10 @@ export class BuildHook extends PluginHook<BuildEvents> {
       const nativeData: JovoModelData | undefined = jovoModel.exportJovoModel();
 
       if (!nativeData) {
-        throw new JovoCliError(
-          'Something went wrong while exporting your Jovo model.',
-          this.$plugin.constructor.name,
-        );
+        throw new JovoCliError({
+          message: 'Something went wrong while exporting your Jovo model.',
+          module: this.$plugin.constructor.name,
+        });
       }
       this.$cli.$project!.saveModel(nativeData, modelLocale);
       await wait(500);

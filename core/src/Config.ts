@@ -52,11 +52,11 @@ export class Config {
 
         for (const plugin of plugins) {
           if (!(plugin instanceof JovoCliPlugin)) {
-            throw new JovoCliError(
-              `Plugin ${plugin} is not an instance of JovoCliPlugin.`,
-              'JovoCliCore',
-              'Make sure your plugin inherits JovoCliPlugin provided by @jovotech/cli-core.',
-            );
+            throw new JovoCliError({
+              message: `Plugin ${plugin} is not an instance of JovoCliPlugin.`,
+              details:
+                'Make sure your plugin inherits JovoCliPlugin provided by @jovotech/cli-core',
+            });
           }
 
           const constructor: string = plugin.constructor.name;
@@ -82,7 +82,10 @@ export class Config {
       const config: ProjectConfigFile = require(this.getPath());
       return config;
     } catch (error) {
-      throw new JovoCliError('Could not load project configuration.', 'JovoCliCore', error.message);
+      throw new JovoCliError({
+        message: 'Could not load project configuration.',
+        details: error.message,
+      });
     }
   }
 

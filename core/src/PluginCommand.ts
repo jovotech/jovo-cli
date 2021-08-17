@@ -57,7 +57,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    */
   async catch(error: JovoCliError | Error): Promise<void> {
     if (!(error instanceof JovoCliError)) {
-      error = new JovoCliError(error.message);
+      error = new JovoCliError({ message: error.message });
     }
     JovoCliError.print(error as JovoCliError);
     process.exit(1);

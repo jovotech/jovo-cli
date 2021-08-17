@@ -51,10 +51,9 @@ export class JovoCli {
     if (this.isInProjectDirectory()) {
       this.$project = Project.getInstance(this.$projectPath);
     } else {
-      throw new JovoCliError(
-        `Project could not be instantiated for ${this.$projectPath}`,
-        'JovoCliCore',
-      );
+      throw new JovoCliError({
+        message: `Project could not be instantiated for ${this.$projectPath}`,
+      });
     }
   }
 

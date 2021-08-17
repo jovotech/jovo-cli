@@ -1,6 +1,3 @@
-import { join as joinPaths } from 'path';
-import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
-import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import {
   GetBotCommand,
   GetBotCommandOutput,
@@ -12,11 +9,13 @@ import {
   PutIntentCommand,
   PutIntentCommandOutput,
 } from '@aws-sdk/client-lex-model-building-service';
+import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
+import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
 import { existsSync, writeFileSync } from 'fs';
 import type { LexModelFile } from 'jovo-model-lex';
-
+import { join as joinPaths } from 'path';
 import { LexCli } from '..';
-import { getLexLocale, LexIntent } from '../utils';
+import { getLexLocale, LexIntent } from '../utilities';
 
 export class DeployHook extends PluginHook<DeployPlatformEvents> {
   $plugin!: LexCli;
@@ -49,11 +48,11 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    */
   checkForPlatformsFolder(): void {
     if (!existsSync(this.$plugin.getPlatformPath())) {
-      throw new JovoCliError(
-        `Couldn't find the platform folder "${this.$plugin.platformDirectory}/".`,
-        this.$plugin.constructor.name,
-        `Please use "jovo build" to create platform-specific files.`,
-      );
+      throw new JovoCliError({
+        message: `Couldn't find the platform folder "${this.$plugin.platformDirectory}/".`,
+        module: this.$plugin.constructor.name,
+        hint: `Please use "jovo build" to create platform-specific files.`,
+      });
     }
   }
 
@@ -62,21 +61,24 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    */
   checkForAwsCredentials(): void {
     if (!this.$plugin.$config.credentials) {
-      throw new JovoCliError('Could not find your AWS credentials.', this.$plugin.constructor.name);
+      throw new JovoCliError({
+        message: 'Could not find your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
 
     if (!this.$plugin.$config.credentials.accessKeyId) {
-      throw new JovoCliError(
-        'Could not find accessKeyId for your AWS credentials.',
-        this.$plugin.constructor.name,
-      );
+      throw new JovoCliError({
+        message: 'Could not find accessKeyId for your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
 
     if (!this.$plugin.$config.credentials.secretAccessKey) {
-      throw new JovoCliError(
-        'Could not find secretAccessKey for your AWS credentials.',
-        this.$plugin.constructor.name,
-      );
+      throw new JovoCliError({
+        message: 'Could not find secretAccessKey for your AWS credentials.',
+        module: this.$plugin.constructor.name,
+      });
     }
   }
 
@@ -171,7 +173,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (error instanceof JovoCliError) {
         throw error;
       }
-      throw new JovoCliError(error.message, this.$plugin.constructor.name);
+      throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
     }
   }
 

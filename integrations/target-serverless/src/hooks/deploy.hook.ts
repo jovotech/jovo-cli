@@ -27,11 +27,11 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
     try {
       await execAsync('serverless -v');
     } catch (error) {
-      throw new JovoCliError(
-        error.stderr,
-        'ServerlessTarget',
-        'Please install the Serverless CLI using the command "npm install -g serverless".',
-      );
+      throw new JovoCliError({
+        message: error.stderr,
+        module: 'ServerlessTarget',
+        hint: 'Please install the Serverless CLI using the command "npm install -g serverless".',
+      });
     }
   }
 
@@ -42,11 +42,11 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
           cwd: this.$cli.$projectPath,
         });
       } catch (error) {
-        throw new JovoCliError(
-          'Something failed while bundling your project files.',
-          this.$plugin.constructor.name,
-          error.stderr,
-        );
+        throw new JovoCliError({
+          message: 'Something failed while bundling your project files.',
+          module: this.$plugin.constructor.name,
+          details: error.stderr,
+        });
       }
     });
     await bundleTask.run();
@@ -60,11 +60,11 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
       try {
         await execAsync('serverless deploy', { cwd: this.$cli.$projectPath });
       } catch (error) {
-        throw new JovoCliError(
-          'Serverless deployment failed.',
-          this.$plugin.constructor.name,
-          getServerlessError(error.stdout),
-        );
+        throw new JovoCliError({
+          message: 'Serverless deployment failed.',
+          module: this.$plugin.constructor.name,
+          details: getServerlessError(error.stdout),
+        });
       }
     });
     await deployTask.run();

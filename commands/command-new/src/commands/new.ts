@@ -147,7 +147,7 @@ export class New extends PluginCommand<NewEvents> {
           throw error;
         }
 
-        throw new JovoCliError(error.message, '@jovotech/cli-command-new');
+        throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
       }
     } else if (flags.preset) {
       preset = this.$cli.$userConfig.getPreset(flags.preset);
@@ -172,11 +172,11 @@ export class New extends PluginCommand<NewEvents> {
 
     // Directory is mandatory, so throw an error if omitted.
     if (!this.$context.projectName) {
-      throw new JovoCliError(
-        'Please provide a directory.',
-        this.$plugin.constructor.name,
-        'For more information, run "jovo new --help".',
-      );
+      throw new JovoCliError({
+        message: 'Please provide a directory.',
+        module: this.$plugin.constructor.name,
+        learnMore: 'For more information, run "jovo new --help".',
+      });
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
@@ -195,7 +195,7 @@ export class New extends PluginCommand<NewEvents> {
     }
 
     Log.spacer();
-    Log.info(`${WRENCH} I'm setting everything up`);
+    Log.info(`${WRENCH} Setting everything up`);
     Log.spacer();
 
     const newTask: Task = new Task(
@@ -213,7 +213,10 @@ export class New extends PluginCommand<NewEvents> {
       try {
         await downloadTemplate(this.$context.projectName);
       } catch (error) {
-        throw new JovoCliError('Could not download template.', this.$plugin.constructor.name);
+        throw new JovoCliError({
+          message: 'Could not download template.',
+          module: this.$plugin.constructor.name,
+        });
       }
     });
     await downloadTask.run();
