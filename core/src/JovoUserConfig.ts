@@ -79,16 +79,7 @@ export class JovoUserConfig {
             name: 'Default_TS',
             projectName: 'helloworld',
             locales: ['en'],
-            platforms: [
-              {
-                name: 'Amazon Alexa',
-                module: 'Alexa',
-                cliModule: 'AlexaCli',
-                package: '@jovotech/platform-alexa',
-                description: 'Build apps for Amazon Alexa',
-                tags: 'platforms',
-              },
-            ],
+            platforms: [],
             linter: true,
             unitTesting: true,
           },
