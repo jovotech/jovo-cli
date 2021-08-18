@@ -1,42 +1,37 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
-import { join as joinPaths, resolve } from 'path';
-import _merge from 'lodash.merge';
-import _pick from 'lodash.pick';
 import {
   ANSWER_CANCEL,
+  CliArgs,
+  CliFlags,
   CRYSTAL_BALL,
   deleteFolderRecursive,
   flags,
   JovoCliError,
-  Preset,
+  JovoCliPlugin,
+  Log,
+  MarketplacePlugin,
   PluginCommand,
+  PluginContext,
+  Preset,
   printHighlight,
   printSubHeadline,
   ProjectProperties,
   promptOverwrite,
+  TADA,
   Task,
   WRENCH,
-  CliFlags,
-  CliArgs,
-  TADA,
-  JovoCliPlugin,
-  PluginContext,
-  MarketplacePlugin,
-  Log,
 } from '@jovotech/cli-core';
 import { existsSync, mkdirSync } from 'fs';
-
+import _merge from 'lodash.merge';
+import _pick from 'lodash.pick';
+import { join as joinPaths, resolve } from 'path';
 import {
-  runNpmInstall,
   promptPreset,
   promptPresetName,
   promptProjectProperties,
   promptSavePreset,
-  TemplateBuilder,
-  downloadTemplate,
-} from '../utils';
+} from '../Prompts';
+import * as TemplateBuilder from '../TemplateBuilder';
+import { downloadTemplate, runNpmInstall } from '../utilities';
 
 export type NewArgs = CliArgs<typeof New>;
 export type NewFlags = CliFlags<typeof New>;
@@ -67,7 +62,7 @@ export class New extends PluginCommand<NewEvents> {
     }),
     'language': flags.string({
       description: 'Sets the programming language of the template.',
-      options: ['javascript', 'typescript'],
+      options: ['typescript'],
     }),
     'typescript': flags.boolean({
       description: 'Sets the programming language of the template to TypeScript.',
@@ -78,9 +73,6 @@ export class New extends PluginCommand<NewEvents> {
       dependsOn: ['no-wizard'],
       // TODO: Implement!
       // options: jovo.$userConfig.getPresets().map((preset) => preset.name),
-    }),
-    'skip-npminstall': flags.boolean({
-      description: 'Skips "npm install".',
     }),
     'no-wizard': flags.boolean({
       description: 'Disables wizard.',
@@ -147,7 +139,7 @@ export class New extends PluginCommand<NewEvents> {
           throw error;
         }
 
-        throw new JovoCliError(error.message, '@jovotech/cli-command-new');
+        throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
       }
     } else if (flags.preset) {
       preset = this.$cli.$userConfig.getPreset(flags.preset);
@@ -165,18 +157,21 @@ export class New extends PluginCommand<NewEvents> {
     });
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(this.$context));
+      const contextPreset: Partial<Preset> = _pick(
+        preset,
+        Object.keys(this.$context).filter((key) => key !== 'projectName'),
+      );
 
       _merge(this.$context, contextPreset);
     }
 
     // Directory is mandatory, so throw an error if omitted.
     if (!this.$context.projectName) {
-      throw new JovoCliError(
-        'Please provide a directory.',
-        this.$plugin.constructor.name,
-        'For more information, run "jovo new --help".',
-      );
+      throw new JovoCliError({
+        message: 'Please provide a directory.',
+        module: this.$plugin.constructor.name,
+        learnMore: 'For more information, run "jovo new --help".',
+      });
     }
 
     // Check if provided directory already exists, if so, prompt for overwrite.
@@ -195,7 +190,7 @@ export class New extends PluginCommand<NewEvents> {
     }
 
     Log.spacer();
-    Log.info(`${WRENCH} I'm setting everything up`);
+    Log.info(`${WRENCH} Setting everything up`);
     Log.spacer();
 
     const newTask: Task = new Task(
@@ -213,7 +208,10 @@ export class New extends PluginCommand<NewEvents> {
       try {
         await downloadTemplate(this.$context.projectName);
       } catch (error) {
-        throw new JovoCliError('Could not download template.', this.$plugin.constructor.name);
+        throw new JovoCliError({
+          message: 'Could not download template.',
+          module: this.$plugin.constructor.name,
+        });
       }
     });
     await downloadTask.run();
@@ -225,18 +223,19 @@ export class New extends PluginCommand<NewEvents> {
     });
     await generatePackageJsonTask.run();
 
-    // Install npm dependencies.
-    if (!flags['skip-npminstall']) {
-      const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
-      });
-      await installNpmTask.run();
-    }
+    // Install npm dependencies
+    const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
+      await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
+    });
+    await installNpmTask.run();
 
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating a default config
     // based on the current context.
     for (const platform of this.$context.platforms) {
+      if (!platform.cliModule) {
+        continue;
+      }
       // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
         joinPaths(this.$context.projectName, 'node_modules', platform.package),

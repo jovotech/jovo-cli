@@ -38,11 +38,10 @@ export class JovoUserConfig {
       }
 
       // Else propagate error.
-      throw new JovoCliError(
-        'Error while trying to parse .jovo/configv4.',
-        'JovoCliCore',
-        error.message,
-      );
+      throw new JovoCliError({
+        message: 'Error while trying to parse .jovo/configv4.',
+        details: error.message,
+      });
     }
   }
 
@@ -77,38 +76,10 @@ export class JovoUserConfig {
         ],
         presets: [
           {
-            name: 'Default_JS',
-            projectName: 'helloworld',
-            locales: ['en'],
-            language: 'javascript',
-            platforms: [
-              {
-                name: 'Amazon Alexa',
-                module: 'Alexa',
-                cliModule: 'AlexaCli',
-                package: '@jovotech/platform-alexa',
-                description: "Build apps for Amazon's Alexa assistant platform",
-                tags: 'platforms',
-              },
-            ],
-            linter: true,
-            unitTesting: true,
-          },
-          {
             name: 'Default_TS',
             projectName: 'helloworld',
             locales: ['en'],
-            language: 'typescript',
-            platforms: [
-              {
-                name: 'Amazon Alexa',
-                module: 'Alexa',
-                cliModule: 'AlexaCli',
-                package: '@jovotech/platform-alexa',
-                description: "Build apps for Amazon's Alexa assistant platform",
-                tags: 'platforms',
-              },
-            ],
+            platforms: [],
             linter: true,
             unitTesting: true,
           },
@@ -153,11 +124,10 @@ export class JovoUserConfig {
     const preset: Preset | undefined = presets.find((preset) => preset.name === presetKey);
 
     if (!preset) {
-      throw new JovoCliError(
-        `Could not find preset ${presetKey}.`,
-        'JovoCliCore',
-        'Please check for spelling or check your .jovo/config.',
-      );
+      throw new JovoCliError({
+        message: `Could not find preset ${presetKey}.`,
+        details: 'Please check for spelling or check your .jovo/config.',
+      });
     }
 
     return preset;
@@ -174,7 +144,7 @@ export class JovoUserConfig {
         `Preset ${preset.name} already exists. Do you want to overwrite it?`,
       );
       if (overwrite === ANSWER_CANCEL) {
-        throw new JovoCliError(`Preset ${chalk.bold(preset.name)} already exists.`, 'JovoCliCore');
+        throw new JovoCliError({ message: `Preset ${chalk.bold(preset.name)} already exists.` });
       } else {
         // Remove existing preset.
         this.config.cli.presets = this.config.cli.presets.filter((p) => p.name !== preset.name);

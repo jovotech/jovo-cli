@@ -51,10 +51,9 @@ export class JovoCli {
     if (this.isInProjectDirectory()) {
       this.$project = Project.getInstance(this.$projectPath);
     } else {
-      throw new JovoCliError(
-        `Project could not be instantiated for ${this.$projectPath}`,
-        'JovoCliCore',
-      );
+      throw new JovoCliError({
+        message: `Project could not be instantiated for ${this.$projectPath}`,
+      });
     }
   }
 
@@ -76,6 +75,7 @@ export class JovoCli {
   }
 
   collectCommandPlugins(): JovoCliPlugin[] {
+    Log.verbose(`Loading CLI commands from ${npm.packages}`, { indent: 2 });
     const globalPlugins: JovoCliPlugin[] = [];
 
     const plugins: string[] = (this.$userConfig.getParameter('cli.plugins') as string[]) || [];
@@ -101,6 +101,7 @@ export class JovoCli {
    * Loads both project plugins and command plugins and returns respective classes.
    */
   loadPlugins(): JovoCliPlugin[] {
+    Log.verbose('Loading CLI plugins');
     this.cliPlugins.push(...this.collectCommandPlugins());
 
     if (this.$project) {

@@ -1,13 +1,12 @@
-import util from 'util';
-import { join as joinPaths } from 'path';
-import { omit } from 'lomit';
-import _set from 'lodash.set';
+import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
 import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
-import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
-
-import { insert } from '.';
-import { NewContext } from '../commands/new';
+import _set from 'lodash.set';
+import { omit } from 'lomit';
+import { join as joinPaths } from 'path';
+import util from 'util';
+import { NewContext } from './commands/new';
+import { insert } from './utilities';
 
 /**
  * Mofifies dependencies from the project's package.json. Installs configured CLI plugins and
@@ -18,18 +17,30 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
   let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-  // Add CLI plugins to project dependencies.
+  // Add CLI platform plugins to project dependencies.
   for (const platform of context.platforms) {
     try {
       const version: string = await latestVersion(platform.package);
       _set(packageJson, `dependencies["${platform.package}"]`, `^${version}`);
     } catch (error) {
-      throw new JovoCliError(
-        `Could not retrieve latest version for ${platform.package}`,
-        'NewCommand',
-      );
+      throw new JovoCliError({
+        message: `Could not retrieve latest version for ${platform.package}`,
+        module: 'NewCommand',
+      });
     }
   }
+
+  // Add CLI platform plugins to project dependencies
+  for (const command of ['build', 'get', 'run', 'new', 'deploy']) {
+    const commandPackage: string = `@jovotech/cli-command-${command}`;
+    const version: string = await latestVersion(commandPackage);
+    _set(packageJson, `devDependencies["${commandPackage}"]`, `^${version}`);
+  }
+
+  // Add FileBuilder to project dependencies
+  const fileBuilderPackage: string = '@jovotech/filebuilder';
+  const fileBuilderVersion: string = await latestVersion(fileBuilderPackage);
+  _set(packageJson, `devDependencies["${fileBuilderPackage}"]`, `^${fileBuilderVersion}`);
 
   const omittedPackages: string[] = [];
   // Check if ESLint is enabled, if not, delete package.json entries and config.
@@ -72,6 +83,10 @@ export function generateProjectConfiguration(context: NewContext): void {
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
   const cliPluginsComment = '// Add Jovo CLI plugins here';
   for (const platform of context.platforms) {
+    if (!platform.cliModule) {
+      continue;
+    }
+
     projectConfig = insert(
       `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
       projectConfig,

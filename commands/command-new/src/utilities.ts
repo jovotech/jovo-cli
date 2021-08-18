@@ -1,7 +1,5 @@
 import { execAsync, JovoCliError, MarketplacePlugin } from '@jovotech/cli-core';
 import downloadGH from 'download-git-repo';
-export * from './Prompts';
-export * as TemplateBuilder from './TemplateBuilder';
 
 /**
  * Downloads and extracts a template.
@@ -24,7 +22,7 @@ export async function runNpmInstall(projectPath: string): Promise<void> {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
     // Suppress NPM warnings.
-    throw new JovoCliError(error.stderr, 'NewCommand');
+    throw new JovoCliError({ message: error.stderr, module: 'NewCommand' });
   }
 }
 
@@ -45,18 +43,54 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
   // TODO: Fetch from API.
   const plugins: MarketplacePlugin[] = [
     {
-      name: 'FileDB',
+      name: 'FileDb',
       module: 'FileDb',
       package: '@jovotech/db-filedb',
       description: 'Store user data in a local JSON file for fast prototyping and debugging',
       tags: 'databases',
     },
     {
+      name: 'DynamoDb',
+      module: 'DynamoDb',
+      package: '@jovotech/db-dynamodb',
+      description: 'Store user data to AWS DynamoDb',
+      tags: 'databases',
+    },
+    {
+      name: 'Jovo Core Platform',
+      module: 'CorePlatform',
+      package: '@jovotech/platform-core',
+      description: 'Build voice experiences for custom devices',
+      tags: 'platforms',
+    },
+    {
       name: 'Amazon Alexa',
-      module: 'Alexa',
+      module: 'AlexaPlatform',
       cliModule: 'AlexaCli',
       package: '@jovotech/platform-alexa',
-      description: "Build apps for Amazon's Alexa assistant platform",
+      description: 'Build apps for Amazon Alexa',
+      tags: 'platforms',
+    },
+    {
+      name: 'Google Assistant',
+      module: 'GoogleAssistantPlatform',
+      cliModule: 'GoogleAssistantCli',
+      package: '@jovotech/platform-googleassistant',
+      description: 'Build apps for Google Assistant',
+      tags: 'platforms',
+    },
+    {
+      name: 'Facebook Messenger',
+      module: 'FacebookMessengerPlatform',
+      package: '@jovotech/platform-facebookmessenger',
+      description: 'Build apps for Facebook Messenger',
+      tags: 'platforms',
+    },
+    {
+      name: 'Google Business Messages',
+      module: 'GoogleBusinessPlatform',
+      package: '@jovotech/platform-googlebusiness',
+      description: 'Build apps for Google Business Messages',
       tags: 'platforms',
     },
     {

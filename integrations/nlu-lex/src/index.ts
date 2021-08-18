@@ -1,12 +1,11 @@
-import { join as joinPaths } from 'path';
 import { JovoCliError, JovoCliPlugin, PluginHook, PluginType } from '@jovotech/cli-core';
-import { LexModelFile } from 'jovo-model-lex';
 import { existsSync } from 'fs';
-
-import { LexCliConfig } from './utils';
-import { DeployHook } from './hooks/DeployHook';
+import { LexModelFile } from '@jovotech/model-lex';
+import { join as joinPaths } from 'path';
 import { BuildHook } from './hooks/BuildHook';
+import { DeployHook } from './hooks/DeployHook';
 import { GetHook } from './hooks/GetHook';
+import { LexCliConfig } from './interfaces';
 
 export class LexCli extends JovoCliPlugin {
   readonly $id: string = 'lex';
@@ -69,11 +68,11 @@ export class LexCli extends JovoCliPlugin {
     try {
       return require(joinPaths(this.getPlatformPath(), locale));
     } catch (error) {
-      throw new JovoCliError(
-        `Something went wrong while trying to load Lex model for locale ${locale}.`,
-        this.constructor.name,
-        error.message,
-      );
+      throw new JovoCliError({
+        message: `Something went wrong while trying to load Lex model for locale ${locale}.`,
+        module: this.constructor.name,
+        details: error.message,
+      });
     }
   }
 }

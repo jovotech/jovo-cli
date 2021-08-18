@@ -1,6 +1,3 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,
@@ -88,11 +85,11 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
   checkForPlatformsFolder(): void {
     if (!existsSync(this.$cli.$project!.getBuildPath())) {
-      throw new JovoCliError(
-        "Couldn't find a platform folder.",
-        this.$plugin.constructor.name,
-        'Please use "jovo build" to create platform-specific files.',
-      );
+      throw new JovoCliError({
+        message: "Couldn't find a platform folder.",
+        module: this.$plugin.constructor.name,
+        details: 'Please use "jovo build" to create platform-specific files.',
+      });
     }
   }
 

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData } from 'jovo-model';
+import { JovoModelData } from '@jovotech/model';
 import { join as joinPaths, resolve } from 'path';
 import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
@@ -184,6 +184,7 @@ describe('getModel()', () => {
     jest.spyOn(Project.prototype, 'getModelPath').mockReturnValue(joinPaths(testPath, 'de'));
 
     const testModel: JovoModelData = {
+      version: '4.0',
       invocation: 'test',
     };
 
@@ -300,7 +301,7 @@ describe('saveModel()', () => {
       .mockReturnValue(joinPaths('models', 'en'));
 
     const project: Project = new Project('');
-    const model: JovoModelData = { invocation: 'test' };
+    const model: JovoModelData = { version: '4.0', invocation: 'test' };
     project.saveModel(model, 'en');
 
     expect(fs.existsSync).toBeCalledWith('models');

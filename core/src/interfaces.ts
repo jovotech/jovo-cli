@@ -33,6 +33,7 @@ export interface PluginConfig {
 }
 
 export interface ConfigHooks {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: ((context: PluginContext) => any)[];
 }
 
@@ -86,7 +87,6 @@ export interface MarketplacePlugin {
 
 export interface ProjectProperties {
   projectName: string;
-  language: 'javascript' | 'typescript';
   platforms: MarketplacePlugin[];
   locales: string[];
   linter: boolean;

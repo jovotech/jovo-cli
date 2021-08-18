@@ -8,10 +8,9 @@ import { JovoCliError } from './JovoCliError';
 export function validateLocale(locale?: string): void {
   const localeRegexp = /^[a-z]{2}-?([A-Z]{2})?$/;
   if (locale && !localeRegexp.test(locale)) {
-    throw new JovoCliError(
-      `Locale ${locale} is not valid.`,
-      'JovoCliCore',
-      'Valid locales are en, en-US, ...',
-    );
+    throw new JovoCliError({
+      message: `Locale ${locale} is not valid.`,
+      details: 'Valid locales are en, en-US, ...',
+    });
   }
 }

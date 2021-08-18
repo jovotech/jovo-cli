@@ -1,15 +1,15 @@
-import chalk from 'chalk';
 import {
-  Preset,
   MarketplacePlugin,
+  Preset,
   printHighlight,
   printUserInput,
   ProjectProperties,
   prompt,
   validateLocale,
 } from '@jovotech/cli-core';
-import { NewArgs, NewFlags } from '../commands/new';
-import { fetchMarketPlace } from '.';
+import chalk from 'chalk';
+import { NewArgs, NewFlags } from './commands/new';
+import { fetchMarketPlace } from './utilities';
 
 export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset: string }> {
   return await prompt(
@@ -20,9 +20,8 @@ export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset:
       choices: [
         // List all presets already defined in Jovo user config.
         ...presets.map((preset: Preset) => {
-          const language: string = chalk.blueBright(preset.language);
           const projectName: string = chalk.underline.blueBright(preset.projectName);
-          const output = `(${projectName}/, ${language})`;
+          const output = `(${projectName}/)`;
           return {
             title: printUserInput(preset.name),
             description: output,
@@ -67,17 +66,7 @@ export async function promptProjectProperties(
           this.rendered = printUserInput(this.rendered);
         },
       },
-      // Prompt for Programming Language (js/ts).
-      {
-        name: 'language',
-        message: 'Select the programming language you want to use:',
-        type: 'select',
-        choices: [
-          { title: printUserInput('TypeScript'), value: 'typescript' },
-          { title: printUserInput('JavaScript'), value: 'javascript' },
-        ],
-      },
-      // Prompt for Platforms (multiple).
+      // Prompt for Platforms (multiple)
       {
         name: 'platforms',
         message: 'Choose the platforms you want to use (select with space):',
@@ -88,6 +77,7 @@ export async function promptProjectProperties(
           .map((plugin) => ({
             title: printUserInput(plugin.name),
             value: plugin,
+            description: plugin.description,
           })),
       },
       {

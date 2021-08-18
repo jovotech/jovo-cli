@@ -3,15 +3,17 @@ import { ERROR_PREFIX } from './constants';
 import { printComment } from './prints';
 import { Log, LogLevel } from './Logger';
 
+export interface JovoCliErrorProperties {
+  message: string;
+  module?: string;
+  details?: string;
+  hint?: string;
+  learnMore?: string;
+}
+
 export class JovoCliError extends Error {
-  constructor(
-    readonly message: string,
-    readonly module: string = 'JovoCliCore',
-    readonly details?: string,
-    readonly hint?: string,
-    readonly learnMore?: string,
-  ) {
-    super(message);
+  constructor(private readonly properties: JovoCliErrorProperties) {
+    super(properties.message);
   }
 
   private static addProperty(key: string, value: string, logLevel = LogLevel.Error): void {
@@ -27,19 +29,19 @@ export class JovoCliError extends Error {
     Log.spacer();
     Log.error(`Error: ${'-'.repeat(80)}`);
     Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
-    this.addProperty('Message', error.message);
-    this.addProperty('Module', error.module);
+    this.addProperty('Message', error.properties.message);
+    this.addProperty('Module', error.properties.module || 'JovoCliCore');
 
-    if (error.details) {
-      this.addProperty('Details', error.details);
+    if (error.properties.details) {
+      this.addProperty('Details', error.properties.details);
     }
 
-    if (error.hint) {
-      this.addProperty('Hint', error.hint);
+    if (error.properties.hint) {
+      this.addProperty('Hint', error.properties.hint);
     }
 
-    if (error.learnMore) {
-      this.addProperty('Learn more', error.learnMore);
+    if (error.properties.learnMore) {
+      this.addProperty('Learn more', error.properties.learnMore);
     }
 
     if (error.stack) {

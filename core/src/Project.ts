@@ -1,7 +1,7 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData, ModelValidationError } from 'jovo-model';
+import { JovoModelData, ModelValidationError } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
@@ -102,7 +102,7 @@ export class Project {
       return content;
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        throw new JovoCliError(`Could not find model file for locale: ${locale}`);
+        throw new JovoCliError({ message: `Could not find model file for locale: ${locale}` });
       }
 
       throw new JovoCliError(error.message);
@@ -143,7 +143,9 @@ export class Project {
    */
   backupModel(locale: string): void {
     if (!this.hasModelFiles([locale])) {
-      throw new JovoCliError(`Model file for locale ${locale} to backup could not be found.`);
+      throw new JovoCliError({
+        message: `Model file for locale ${locale} to backup could not be found.`,
+      });
     }
 
     const todayDate: Date = new Date();
