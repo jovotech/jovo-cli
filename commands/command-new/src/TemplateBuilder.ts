@@ -109,9 +109,6 @@ export function generateProjectConfiguration(context: NewContext): void {
       platform.cliPlugin.$config[util.inspect.custom] = () =>
         unformattedConfig.replace(/\n/g, '\n\t\t');
 
-      console.log(unformattedConfig.replace(/\n/g, '\n\tŧ'));
-      console.log(util.inspect(platform.cliPlugin.$config, { depth: null, colors: false }));
-
       // Overwrite default config with formatted config.
       defaultConfig = util.inspect(platform.cliPlugin.$config, { depth: null, colors: false });
     }
