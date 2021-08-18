@@ -216,7 +216,6 @@ describe('getPresets()', () => {
             name: 'presetName',
             projectName: '',
             locales: [],
-            language: 'javascript',
             platforms: [],
             linter: true,
             unitTesting: true,
@@ -266,7 +265,6 @@ describe('getPreset()', () => {
             name: 'presetName',
             projectName: '',
             locales: [],
-            language: 'javascript',
             platforms: [],
             linter: true,
             unitTesting: true,
@@ -315,7 +313,6 @@ describe('savePreset()', () => {
     const preset: Preset = {
       name: 'test',
       projectName: '',
-      language: 'javascript',
       platforms: [],
       locales: [],
       linter: true,

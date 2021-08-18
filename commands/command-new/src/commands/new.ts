@@ -62,7 +62,7 @@ export class New extends PluginCommand<NewEvents> {
     }),
     'language': flags.string({
       description: 'Sets the programming language of the template.',
-      options: ['javascript', 'typescript'],
+      options: ['typescript'],
     }),
     'typescript': flags.boolean({
       description: 'Sets the programming language of the template to TypeScript.',
@@ -73,9 +73,6 @@ export class New extends PluginCommand<NewEvents> {
       dependsOn: ['no-wizard'],
       // TODO: Implement!
       // options: jovo.$userConfig.getPresets().map((preset) => preset.name),
-    }),
-    'skip-npminstall': flags.boolean({
-      description: 'Skips "npm install".',
     }),
     'no-wizard': flags.boolean({
       description: 'Disables wizard.',
@@ -160,7 +157,10 @@ export class New extends PluginCommand<NewEvents> {
     });
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(this.$context));
+      const contextPreset: Partial<Preset> = _pick(
+        preset,
+        Object.keys(this.$context).filter((key) => key !== 'projectName'),
+      );
 
       _merge(this.$context, contextPreset);
     }
@@ -223,18 +223,19 @@ export class New extends PluginCommand<NewEvents> {
     });
     await generatePackageJsonTask.run();
 
-    // Install npm dependencies.
-    if (!flags['skip-npminstall']) {
-      const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
-        await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
-      });
-      await installNpmTask.run();
-    }
+    // Install npm dependencies
+    const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
+      await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
+    });
+    await installNpmTask.run();
 
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating a default config
     // based on the current context.
     for (const platform of this.$context.platforms) {
+      if (!platform.cliModule) {
+        continue;
+      }
       // Load and instantiate the respective CLI plugin.
       const plugin: JovoCliPlugin = new (require(resolve(
         joinPaths(this.$context.projectName, 'node_modules', platform.package),

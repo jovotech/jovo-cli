@@ -79,7 +79,6 @@ export class JovoUserConfig {
             name: 'Default_TS',
             projectName: 'helloworld',
             locales: ['en'],
-            language: 'typescript',
             platforms: [
               {
                 name: 'Amazon Alexa',

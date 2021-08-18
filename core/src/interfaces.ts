@@ -86,7 +86,6 @@ export interface MarketplacePlugin {
 
 export interface ProjectProperties {
   projectName: string;
-  language: 'javascript' | 'typescript';
   platforms: MarketplacePlugin[];
   locales: string[];
   linter: boolean;
