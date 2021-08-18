@@ -184,6 +184,7 @@ describe('getModel()', () => {
     jest.spyOn(Project.prototype, 'getModelPath').mockReturnValue(joinPaths(testPath, 'de'));
 
     const testModel: JovoModelData = {
+      version: '4.0',
       invocation: 'test',
     };
 
@@ -300,7 +301,7 @@ describe('saveModel()', () => {
       .mockReturnValue(joinPaths('models', 'en'));
 
     const project: Project = new Project('');
-    const model: JovoModelData = { invocation: 'test' };
+    const model: JovoModelData = { version: '4.0', invocation: 'test' };
     project.saveModel(model, 'en');
 
     expect(fs.existsSync).toBeCalledWith('models');

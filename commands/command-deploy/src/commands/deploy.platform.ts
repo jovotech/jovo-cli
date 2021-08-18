@@ -1,4 +1,3 @@
-import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {
   checkForProjectDirectory,

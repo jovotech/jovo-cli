@@ -33,6 +33,7 @@ export interface PluginConfig {
 }
 
 export interface ConfigHooks {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: ((context: PluginContext) => any)[];
 }
 

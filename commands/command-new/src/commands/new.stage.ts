@@ -1,4 +1,3 @@
-
 import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
