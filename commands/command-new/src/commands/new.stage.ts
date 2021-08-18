@@ -181,7 +181,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       ] = `tsc-watch --onSuccess \"node ${joinPaths(...appStartPath)} --jovo-webhook\"`;
       packageJson.scripts[
         `bundle:${this.$context.args.stage}`
-      ] = `ncc build ${appBundlePath} -ms -o bundle/ --target es2020 && bestzip bundle.zip bundle/*`;
+      ] = `esbuild ${appBundlePath} --bundle --minify --sourcemap --platform=node --outfile=bundle/index.js`;
 
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
