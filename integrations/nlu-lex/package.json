@@ -18,8 +18,8 @@
     "@jovotech/cli-command-get": "^4.0.0-beta.1",
     "@jovotech/cli-core": "^4.0.0-beta.1",
     "@oclif/parser": "^3.8.5",
-    "jovo-model": "^3.0.1",
-    "jovo-model-lex": "^3.0.1",
+    "@jovotech/model": "^4.0.0-beta.1",
+    "@jovotech/model-lex": "^4.0.0-beta.1",
     "lodash.get": "^4.4.2",
     "lodash.mergewith": "^4.6.2",
     "lodash.pick": "^4.4.0"

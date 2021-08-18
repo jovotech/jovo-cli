@@ -1,6 +1,6 @@
 import fs from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData } from 'jovo-model';
+import { JovoModelData } from '@jovotech/model';
 import { join as joinPaths, resolve } from 'path';
 import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';

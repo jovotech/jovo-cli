@@ -12,7 +12,7 @@ import {
 import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
 import { existsSync, writeFileSync } from 'fs';
-import type { LexModelFile } from 'jovo-model-lex';
+import type { LexModelFile } from '@jovotech/model-lex';
 import { join as joinPaths } from 'path';
 import { LexCli } from '..';
 import { getLexLocale, LexIntent } from '../utilities';

@@ -1,7 +1,7 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData, ModelValidationError } from 'jovo-model';
+import { JovoModelData, ModelValidationError } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';

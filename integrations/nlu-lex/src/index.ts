@@ -1,6 +1,6 @@
 import { JovoCliError, JovoCliPlugin, PluginHook, PluginType } from '@jovotech/cli-core';
 import { existsSync } from 'fs';
-import { LexModelFile } from 'jovo-model-lex';
+import { LexModelFile } from '@jovotech/model-lex';
 import { join as joinPaths } from 'path';
 import { BuildHook } from './hooks/BuildHook';
 import { DeployHook } from './hooks/DeployHook';

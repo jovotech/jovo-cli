@@ -17,11 +17,11 @@ import {
   ANSWER_OVERWRITE,
   Log,
 } from '@jovotech/cli-core';
-import { JovoModelData, NativeFileInformation } from 'jovo-model';
+import { JovoModelData, NativeFileInformation } from '@jovotech/model';
 import _mergeWith from 'lodash.mergewith';
 import _pick from 'lodash.pick';
 import _get from 'lodash.get';
-import { JovoModelLex, JovoModelLexData, LexModelFile, LexModelFileResource } from 'jovo-model-lex';
+import { JovoModelLex, JovoModelLexData, LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 import { LexCli } from '..';
