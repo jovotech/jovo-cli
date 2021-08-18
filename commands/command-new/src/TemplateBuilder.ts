@@ -17,7 +17,7 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
   let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-  // Add CLI plugins to project dependencies.
+  // Add CLI platform plugins to project dependencies.
   for (const platform of context.platforms) {
     try {
       const version: string = await latestVersion(platform.package);
@@ -29,6 +29,18 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
       });
     }
   }
+
+  // Add CLI platform plugins to project dependencies
+  for (const command of ['build', 'get', 'run', 'new', 'deploy']) {
+    const commandPackage: string = `@jovotech/cli-command-${command}`;
+    const version: string = await latestVersion(commandPackage);
+    _set(packageJson, `devDependencies["${commandPackage}"]`, `^${version}`);
+  }
+
+  // Add FileBuilder to project dependencies
+  const fileBuilderPackage: string = '@jovotech/filebuilder';
+  const fileBuilderVersion: string = await latestVersion(fileBuilderPackage);
+  _set(packageJson, `devDependencies["${fileBuilderPackage}"]`, `^${fileBuilderVersion}`);
 
   const omittedPackages: string[] = [];
   // Check if ESLint is enabled, if not, delete package.json entries and config.
