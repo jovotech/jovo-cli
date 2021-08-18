@@ -1,5 +1,3 @@
-import { ChildProcess } from 'child_process';
-import open from 'open';
 import {
   CLOUD,
   execAsync,
@@ -13,7 +11,8 @@ import {
   PackageVersions,
   printUserInput,
 } from '@jovotech/cli-core';
-
+import { ChildProcess } from 'child_process';
+import open from 'open';
 import * as JovoWebhookConnector from './JovoWebhookConnector';
 
 /**
@@ -24,7 +23,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
-    throw new JovoCliError(error.stderr, 'RunCommand', error.stdout);
+    throw new JovoCliError({ message: error.stderr, module: 'RunCommand', details: error.stdout });
   }
 }
 

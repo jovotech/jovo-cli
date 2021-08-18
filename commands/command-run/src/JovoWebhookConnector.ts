@@ -1,8 +1,8 @@
+import { Log } from '@jovotech/cli-core';
+import { ClientRequest, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from 'http';
+import _merge from 'lodash.merge';
 import { ParsedUrlQueryInput, stringify } from 'querystring';
 import * as io from 'socket.io-client';
-import _merge from 'lodash.merge';
-import { ClientRequest, IncomingHttpHeaders, IncomingMessage, request, RequestOptions } from 'http';
-import { Log } from '@jovotech/cli-core';
 
 /**
  * Options for post request.

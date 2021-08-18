@@ -1,33 +1,31 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
-import { join as joinPaths, resolve } from 'path';
-import _merge from 'lodash.merge';
+
 import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
+  CliArgs,
+  CliFlags,
   flags,
-  PluginContext,
+  Log,
+  MarketplacePlugin,
   PluginCommand,
+  PluginContext,
   printHighlight,
   printSubHeadline,
+  printUserInput,
   prompt,
   promptOverwrite,
+  TADA,
   Task,
   wait,
   WRENCH,
-  CliFlags,
-  CliArgs,
-  TADA,
-  printUserInput,
-  MarketplacePlugin,
-  Log,
 } from '@jovotech/cli-core';
-import { existsSync, readFileSync, writeFileSync, copyFileSync } from 'fs';
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
+import _merge from 'lodash.merge';
+import { join as joinPaths, resolve } from 'path';
 import { Choice } from 'prompts';
-
-import { promptPlugins, insert, fetchMarketPlace, promptServer, runNpmInstall } from '../utils';
+import { promptPlugins, promptServer } from '../Prompts';
+import { fetchMarketPlace, insert, runNpmInstall } from '../utilities';
 
 export type NewStageArgs = CliArgs<typeof NewStage>;
 export type NewStageFlags = CliFlags<typeof NewStage>;

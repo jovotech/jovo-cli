@@ -1,20 +1,17 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
-import boxen from 'boxen';
-import { ChildProcess, spawn } from 'child_process';
 import {
   checkForProjectDirectory,
-  PluginContext,
+  CliFlags,
+  flags,
+  Log,
   PackageVersions,
   PluginCommand,
-  flags,
-  CliFlags,
-  printSubHeadline,
+  PluginContext,
   printComment,
-  Log,
+  printSubHeadline,
 } from '@jovotech/cli-core';
-import { shouldUpdatePackages, instantiateJovoWebhook } from '../utils';
+import boxen from 'boxen';
+import { ChildProcess, spawn } from 'child_process';
+import { instantiateJovoWebhook, shouldUpdatePackages } from '../utilities';
 
 export type RunFlags = CliFlags<typeof Run>;
 

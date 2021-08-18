@@ -1,13 +1,12 @@
-import util from 'util';
-import { join as joinPaths } from 'path';
-import { omit } from 'lomit';
-import _set from 'lodash.set';
+import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
 import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
-import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
-
-import { insert } from '.';
-import { NewContext } from '../commands/new';
+import _set from 'lodash.set';
+import { omit } from 'lomit';
+import { join as joinPaths } from 'path';
+import util from 'util';
+import { NewContext } from './commands/new';
+import { insert } from './utilities';
 
 /**
  * Mofifies dependencies from the project's package.json. Installs configured CLI plugins and
@@ -24,10 +23,10 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
       const version: string = await latestVersion(platform.package);
       _set(packageJson, `dependencies["${platform.package}"]`, `^${version}`);
     } catch (error) {
-      throw new JovoCliError(
-        `Could not retrieve latest version for ${platform.package}`,
-        'NewCommand',
-      );
+      throw new JovoCliError({
+        message: `Could not retrieve latest version for ${platform.package}`,
+        module: 'NewCommand',
+      });
     }
   }
 
@@ -72,6 +71,10 @@ export function generateProjectConfiguration(context: NewContext): void {
   let projectConfig = readFileSync(projectConfigPath, 'utf-8');
   const cliPluginsComment = '// Add Jovo CLI plugins here';
   for (const platform of context.platforms) {
+    if (!platform.cliModule) {
+      continue;
+    }
+
     projectConfig = insert(
       `const { ${platform.cliModule} } = require(\'${platform.package}\');\n`,
       projectConfig,
@@ -93,6 +96,9 @@ export function generateProjectConfiguration(context: NewContext): void {
       // Format default config with correct indentation.
       platform.cliPlugin.$config[util.inspect.custom] = () =>
         unformattedConfig.replace(/\n/g, '\n\t\t');
+
+      console.log(unformattedConfig.replace(/\n/g, '\n\tŧ'));
+      console.log(util.inspect(platform.cliPlugin.$config, { depth: null, colors: false }));
 
       // Overwrite default config with formatted config.
       defaultConfig = util.inspect(platform.cliPlugin.$config, { depth: null, colors: false });

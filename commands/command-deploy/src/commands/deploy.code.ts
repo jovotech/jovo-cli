@@ -1,7 +1,4 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
-import _merge from 'lodash.merge';
+
 import {
   checkForProjectDirectory,
   CliArgs,
@@ -15,7 +12,7 @@ import {
   printSubHeadline,
   TADA,
 } from '@jovotech/cli-core';
-
+import _merge from 'lodash.merge';
 import DeployCommand from '..';
 
 export type DeployCodeFlags = CliFlags<typeof DeployCode>;

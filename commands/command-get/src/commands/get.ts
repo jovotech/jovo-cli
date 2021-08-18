@@ -1,22 +1,19 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
+import { BuildEvents } from '@jovotech/cli-command-build';
+import {
+  checkForProjectDirectory,
+  CliArgs,
+  CliFlags,
+  EventEmitter,
+  flags,
+  JovoCli,
+  Log,
+  PluginCommand,
+  PluginContext,
+  printSubHeadline,
+  TADA,
+} from '@jovotech/cli-core';
 import { existsSync, mkdirSync } from 'fs';
 import _merge from 'lodash.merge';
-import {
-  JovoCli,
-  checkForProjectDirectory,
-  PluginContext,
-  PluginCommand,
-  printSubHeadline,
-  flags,
-  EventEmitter,
-  CliFlags,
-  CliArgs,
-  TADA,
-  Log,
-} from '@jovotech/cli-core';
-import { BuildEvents } from '@jovotech/cli-command-build';
 import GetCommand from '..';
 
 export type GetArgs = CliArgs<typeof Get>;

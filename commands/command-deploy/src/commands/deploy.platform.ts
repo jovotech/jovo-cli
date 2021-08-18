@@ -1,5 +1,3 @@
-// This import is necessary for inferred type annotation for PluginCommand.flags.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as Parser from '@oclif/parser';
 import { existsSync } from 'fs';
 import {

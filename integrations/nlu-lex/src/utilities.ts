@@ -1,10 +1,10 @@
 import { getResolvedLocales, JovoCliError, LocaleMap } from '@jovotech/cli-core';
 import { readdirSync } from 'fs';
-import { SupportedLocales } from './Constants';
-import { SupportedLocalesType } from './Interfaces';
+import { SupportedLocales } from './constants';
+import { SupportedLocalesType } from './interfaces';
 
-export * from './Interfaces';
-export * from './Constants';
+export * from './constants';
+export * from './interfaces';
 
 /**
  * Tries to get the locale from the Lex model inside of the build folder.
@@ -29,26 +29,32 @@ export function getLexLocale(
 
   if (lexLocales.length > 1) {
     if (resolvedLocales.length > 1) {
-      throw new JovoCliError(
-        `Amazon Lex does not support multiple language models (${resolvedLocales.join(',')}).`,
-        'LexCli',
-        'Please provide a locale by using the flag "--locale" or in your project configuration.',
-      );
+      throw new JovoCliError({
+        message: `Amazon Lex does not support multiple language models (${resolvedLocales.join(
+          ',',
+        )}).`,
+        module: 'LexCli',
+        hint: 'Please provide a locale by using the flag "--locale" or in your project configuration.',
+      });
     }
 
     if (!resolvedLocales.length) {
-      throw new JovoCliError(
-        'There are multiple Lex models available, however, Lex only supports one model at a time.',
-        'LexCli',
-        'Try building your model for only one locale or specify which model you want to use by using the flag "--locale" or in your project configuration.',
-      );
+      throw new JovoCliError({
+        message:
+          'There are multiple Lex models available, however, Lex only supports one model at a time.',
+        module: 'LexCli',
+        hint: 'Try building your model for only one locale or specify which model you want to use by using the flag "--locale" or in your project configuration.',
+      });
     }
 
     const locale: string = resolvedLocales.pop()!;
     if (lexLocales.includes(locale)) {
       return locale;
     } else {
-      throw new JovoCliError(`Couldn't find Lex model for locale ${locale}.`, 'LexCli');
+      throw new JovoCliError({
+        message: `Couldn't find Lex model for locale ${locale}.`,
+        module: 'LexCli',
+      });
     }
   }
 

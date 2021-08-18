@@ -1,4 +1,4 @@
-export * from './Interfaces';
+export * from './interfaces';
 
 /**
  * Tries to parse errors from the serverless CLI.

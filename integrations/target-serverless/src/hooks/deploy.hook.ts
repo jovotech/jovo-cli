@@ -1,7 +1,6 @@
+import { DeployCodeContext, DeployCodeEvents } from '@jovotech/cli-command-deploy';
 import { execAsync, JovoCliError, PACKAGE, PluginHook, ROCKET, Task } from '@jovotech/cli-core';
-import { DeployCodeEvents, DeployCodeContext } from '@jovotech/cli-command-deploy';
-
-import { getServerlessError, ServerlessConfig } from '../utils';
+import { getServerlessError, ServerlessConfig } from '../utilities';
 
 export class DeployHook extends PluginHook<DeployCodeEvents> {
   $config!: ServerlessConfig;
