@@ -37,7 +37,8 @@ async function wait(ms) {
     if (remote) {
       exec(`git push ${remote} ${latestTag}`);
     }
-  } // Check status of GitHub action
+  }
+  // Check status of GitHub action
   const match = remote.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
   if (!match || !match[1]) {
     throw new Error(`Could not parse repository from ${remote}`);
@@ -82,7 +83,7 @@ async function wait(ms) {
       }
     } else {
       // If workflow did not complete yet, wait for a second and try again
-      await wait(1000);
+      await wait(5000);
     }
   }
 })()
