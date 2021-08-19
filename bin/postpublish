@@ -17,31 +17,30 @@ async function wait(ms) {
 }
 
 (async () => {
-  const project = new Project();
-  const packages = await project.getPackages();
-
-  let upstream;
+  let remote;
   try {
-    upstream = exec('git config --get remote.upstream.url');
+    remote = exec('git config --get remote.upstream.url');
+  } catch (error) {
+    remote = exec('git config --get remote.origin.url');
   } finally {
-    if (!upstream) {
-      throw new Error(
-        'Remote upstream url not set. Configure it with "git remote add upstream {upstream}".',
-      );
+    if (!remote) {
+      throw new Error('Remote url not set. Configure it with "git remote add <remote> <url>".');
     }
   }
 
+  const project = new Project();
+  const packages = await project.getPackages();
   for (const pkg of packages) {
     // Push latest tag to upstream, if it exists
     const latestTag = exec(`git describe --abbrev=0 --match "${pkg.name}@*"`);
     console.log(`${tag} Pushing ${latestTag} to remote`);
-    if (upstream) {
-      exec(`git push ${upstream} ${latestTag}`);
+    if (remote) {
+      exec(`git push ${remote} ${latestTag}`);
     }
   } // Check status of GitHub action
-  const match = upstream.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
+  const match = remote.match(/^(?:git@.*:(.*)|https.*\.com\/(.*))\.git$/);
   if (!match || !match[1]) {
-    throw new Error(`Could not parse repository from ${upstream}`);
+    throw new Error(`Could not parse repository from ${remote}`);
   }
   const repository = match[1];
   const getActiveWorkflow = async () => {
