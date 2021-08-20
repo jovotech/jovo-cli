@@ -166,8 +166,8 @@ describe('getModel()', () => {
     jest.spyOn(Project.prototype, 'getModelPath').mockReturnValue('invalid');
 
     const project: Project = new Project('');
-    expect(project.getModel.bind(project, 'en')).toThrow(
-      'Could not find model file for locale: en',
+    return expect(project.getModel('en')).rejects.toEqual(
+      new Error('Could not find model file for locale: en'),
     );
   });
 
@@ -177,10 +177,10 @@ describe('getModel()', () => {
     fs.writeFileSync(joinPaths(testPath, 'en.json'), '{');
 
     const project: Project = new Project('');
-    expect(project.getModel.bind(project, 'en')).toThrow();
+    return expect(project.getModel('en')).rejects.toEqual(new Error());
   });
 
-  test('should return model', () => {
+  test('should return model', async () => {
     jest.spyOn(Project.prototype, 'getModelPath').mockReturnValue(joinPaths(testPath, 'de'));
 
     const testModel: JovoModelData = {
@@ -191,7 +191,7 @@ describe('getModel()', () => {
     fs.writeFileSync(joinPaths(testPath, 'de.json'), JSON.stringify(testModel));
 
     const project: Project = new Project('');
-    const projectModel: JovoModelData = project.getModel('de');
+    const projectModel: JovoModelData = await project.getModel('de');
     expect(projectModel).toBeDefined();
     expect(projectModel).toHaveProperty('invocation');
     expect(projectModel.invocation).toMatch('test');
@@ -214,7 +214,7 @@ describe('hasModelFiles()', () => {
   });
 
   test('should return true if all models could be loaded', () => {
-    jest.spyOn(Project.prototype, 'getModel').mockReturnThis();
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
 
     const project: Project = new Project('');
     expect(project.hasModelFiles(['en'])).toBeTruthy();
@@ -230,15 +230,15 @@ describe('validateModel()', () => {
     tv4.error = { message: 'Validation failed.' };
 
     const project: Project = new Project('');
-    expect(project.validateModel.bind(project, 'en', {})).toThrow('Validation failed.');
+    return expect(project.validateModel('en', {})).rejects.toEqual(new Error('Validation failed.'));
   });
 
-  test('should do nothing if model is valid', () => {
+  test('should do nothing if model is valid', async () => {
     jest.spyOn(Project.prototype, 'getModel').mockReturnThis();
     tv4.validate = jest.fn().mockReturnValueOnce(true);
 
     const project: Project = new Project('');
-    project.validateModel('en', {});
+    await project.validateModel('en', {});
   });
 });
 
