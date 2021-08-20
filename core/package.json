@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-core",
   "description": "Jovo CLI Core Functionality",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,11 +13,11 @@
     "link": "node bin/link"
   },
   "dependencies": {
+    "@jovotech/model": "^4.0.0-beta.1",
     "@oclif/command": "^1.8.0",
     "@oclif/parser": "^3.8.5",
     "@types/prompts": "^2.0.9",
     "@types/tv4": "^1.2.29",
-    "@jovotech/model": "^4.0.0-beta.1",
     "chalk": "^4.1.0",
     "dotenv": "^10.0.0",
     "global-dirs": "^3.0.0",
@@ -55,5 +55,5 @@
   "files": [
     "dist"
   ],
-  "gitHead": "eb5aa904911439ce37f9bb1715cd837d75c8fed7"
+  "gitHead": "9edb66662ac080853fd9fe02524c2d2ed88aa952"
 }

@@ -1,14 +1,18 @@
 # Changelog
 
-## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...HEAD)
+## [@jovotech/cli@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...@jovotech/cli@4.0.0-beta.3)
 
-> 29 June 2021
+> 19 August 2021
 
 ### Merged
+- ♻️ Prepare v4 Beta Launch  [#230](https://github.com/jovotech/jovo-cli/pull/230)
+- 🐛 Fix merging on postpublish [#229](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [#226](https://github.com/jovotech/jovo-cli/pull/226)
 
 ### Commits 
-- Merge commit '5bc417d1db6047f242e7d4188472ab7f35127ead' into v4 [#5a2592e](https://github.com/jovotech/jovo-cli/commit/5a2592e499b6922991b9e2aca98b72770756c10f)
+- :sparkles: Add CLI dependencies on project generation [#22b87af](https://github.com/jovotech/jovo-cli/commit/22b87af32e987a2ce45ed19c9cb1598f07247ada)
+- :arrow_up: Bump dependencies [#7e2a4c2](https://github.com/jovotech/jovo-cli/commit/7e2a4c223ac73057861decc5f79aeca3b925ba95)
+- :bug: Fix workflow issues [#3f92d14](https://github.com/jovotech/jovo-cli/commit/3f92d14de73133f49c6c94bba6104830269e2060)
 
 ## [@jovotech/cli@4.0.0-beta.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-alpha.13...@jovotech/cli@4.0.0-beta.1)
 

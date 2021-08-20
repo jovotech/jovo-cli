@@ -148,7 +148,7 @@ export class New extends PluginCommand<NewEvents> {
     _merge(this.$context, {
       args,
       flags,
-      projectName: args.directory,
+      projectName: '',
       language: flags.language || 'typescript',
       linter: false,
       unitTesting: false,
@@ -157,12 +157,13 @@ export class New extends PluginCommand<NewEvents> {
     });
     // Merge preset's project properties with context object.
     if (preset) {
-      const contextPreset: Partial<Preset> = _pick(
-        preset,
-        Object.keys(this.$context).filter((key) => key !== 'projectName'),
-      );
-
+      const contextPreset: Partial<Preset> = _pick(preset, Object.keys(this.$context));
       _merge(this.$context, contextPreset);
+    }
+
+    // If project name is explicitly provided, overwrite it
+    if (args.directory) {
+      this.$context.projectName = args.directory;
     }
 
     // Directory is mandatory, so throw an error if omitted.
@@ -224,7 +225,7 @@ export class New extends PluginCommand<NewEvents> {
     await generatePackageJsonTask.run();
 
     // Install npm dependencies
-    const installNpmTask: Task = new Task('Installing npm dependencies...', async () => {
+    const installNpmTask: Task = new Task('Installing npm dependencies', async () => {
       await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
     });
     await installNpmTask.run();
