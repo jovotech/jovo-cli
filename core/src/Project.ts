@@ -7,6 +7,7 @@ import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
+import { Log } from '.';
 
 export class Project {
   private static instance?: Project;
@@ -133,7 +134,10 @@ export class Project {
     const model: JovoModelData = this.getModel(locale);
 
     if (!tv4.validate(model, validator)) {
-      throw new ModelValidationError(tv4.error.message, locale, tv4.error.dataPath);
+      throw new JovoCliError({
+        message: `Validation failed for locale "${locale}" at ${tv4.error.dataPath}`,
+        details: tv4.error.message,
+      });
     }
   }
 
