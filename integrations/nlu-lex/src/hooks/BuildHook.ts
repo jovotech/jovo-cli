@@ -141,7 +141,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       const taskDetails: string =
         resolvedLocalesOutput === modelLocale ? '' : `(${resolvedLocalesOutput})`;
 
-      const localeTask: Task = new Task(`${modelLocale} ${taskDetails}`, () => {
+      const localeTask: Task = new Task(`${modelLocale} ${taskDetails}`, async () => {
         for (const resolvedLocale of resolvedLocales) {
           const model: JovoModelData = await this.getJovoModel(modelLocale);
           const jovoModel: JovoModelLex = new JovoModelLex(model, resolvedLocale);
