@@ -1,6 +1,6 @@
 import prompt from 'prompts';
 import { ANSWER_BACKUP, ANSWER_CANCEL, ANSWER_OVERWRITE } from './constants';
-import { printUserInput } from './prints';
+import { printHighlight, printUserInput } from './prints';
 
 /**
  * Prompt if existing model files should be overwritten.
@@ -69,8 +69,35 @@ export async function promptOverwrite(message: string): Promise<{ overwrite: str
       ],
     },
     {
-      onCancel(prompt, answers) {
+      onCancel(_prompt, answers) {
         answers.overwrite = ANSWER_CANCEL;
+      },
+    },
+  );
+}
+
+export async function promptSupportedLocales(
+  locale: string,
+  platform: string,
+  supportedLocales: string[],
+): Promise<{ locales: string[] }> {
+  return await prompt(
+    {
+      name: 'locales',
+      type: 'multiselect',
+      message: `Locale ${printHighlight(
+        locale,
+      )} is not supported by ${platform}.\nPlease provide an alternative locale (type to filter, select with space):`,
+      instructions: false,
+      min: 1,
+      choices: supportedLocales.map((locale) => ({
+        title: printUserInput(locale),
+        value: locale,
+      })),
+    },
+    {
+      onCancel() {
+        process.exit();
       },
     },
   );
