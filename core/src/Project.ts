@@ -1,13 +1,12 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData, ModelValidationError } from '@jovotech/model';
+import { JovoModelData } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
-import { Log } from '.';
 
 export class Project {
   private static instance?: Project;
