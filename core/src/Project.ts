@@ -135,8 +135,9 @@ export class Project {
 
     if (!tv4.validate(model, validator)) {
       throw new JovoCliError({
-        message: `Validation failed for locale "${locale}" at ${tv4.error.dataPath}`,
+        message: `Validation failed for locale "${locale}"`,
         details: tv4.error.message,
+        learnMore: tv4.error.dataPath ? `Path: ${tv4.error.dataPath}` : '',
       });
     }
   }
