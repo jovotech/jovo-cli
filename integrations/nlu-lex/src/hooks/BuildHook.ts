@@ -21,12 +21,7 @@ import { JovoModelData, NativeFileInformation } from '@jovotech/model';
 import _mergeWith from 'lodash.mergewith';
 import _pick from 'lodash.pick';
 import _get from 'lodash.get';
-import {
-  JovoModelLex,
-  JovoModelLexData,
-  LexModelFile,
-  LexModelFileResource,
-} from '@jovotech/model-lex';
+import { JovoModelLex, LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 import { LexCli } from '..';
@@ -111,7 +106,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
     for (const locale of this.$context.locales) {
       const localeTask = new Task(locale, async () => {
-        this.$cli.$project!.validateModel(locale, JovoModelLex.getValidator());
+        await this.$cli.$project!.validateModel(locale, JovoModelLex.getValidator());
         await wait(500);
       });
 
@@ -141,9 +136,9 @@ export class BuildHook extends PluginHook<BuildEvents> {
       const taskDetails: string =
         resolvedLocalesOutput === modelLocale ? '' : `(${resolvedLocalesOutput})`;
 
-      const localeTask: Task = new Task(`${modelLocale} ${taskDetails}`, () => {
+      const localeTask: Task = new Task(`${modelLocale} ${taskDetails}`, async () => {
         for (const resolvedLocale of resolvedLocales) {
-          const model: JovoModelData = this.getJovoModel(modelLocale);
+          const model: JovoModelData = await this.getJovoModel(modelLocale);
           const jovoModel: JovoModelLex = new JovoModelLex(model, resolvedLocale);
           // eslint-disable-next-line
           const lexModelFiles: NativeFileInformation[] =
@@ -288,8 +283,8 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * Loads a Jovo model specified by a locale and merges it with plugin-specific models.
    * @param locale - The locale that specifies which model to load.
    */
-  getJovoModel(locale: string): JovoModelData {
-    const model: JovoModelData = this.$cli.$project!.getModel(locale);
+  async getJovoModel(locale: string): Promise<JovoModelData> {
+    const model: JovoModelData = await this.$cli.$project!.getModel(locale);
 
     // Merge model with configured language model in project.js.
     _mergeWith(
@@ -311,7 +306,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * Loads a Lex model, specified by a locale.
    * @param locale - Locale of the Lex model.
    */
-  getLexModel(locale: string): JovoModelLexData {
+  getLexModel(locale: string): JovoModelData {
     return require(joinPaths(this.$plugin.getPlatformPath(), locale));
   }
 }

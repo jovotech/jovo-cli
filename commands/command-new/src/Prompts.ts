@@ -91,6 +91,8 @@ export async function promptProjectProperties(
               validateLocale(locale.trim());
             }
           } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             return error.message;
           }
 

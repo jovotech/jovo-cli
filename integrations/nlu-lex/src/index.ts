@@ -71,6 +71,8 @@ export class LexCli extends JovoCliPlugin {
       throw new JovoCliError({
         message: `Something went wrong while trying to load Lex model for locale ${locale}.`,
         module: this.constructor.name,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         details: error.message,
       });
     }
