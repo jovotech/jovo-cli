@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.2...HEAD)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.1...@jovotech/cli-command-deploy@4.0.0-beta.2)
 
 > 19 August 2021
