@@ -30,7 +30,7 @@ export interface GetContext extends PluginContext {
 
 export class Get extends PluginCommand<BuildEvents | GetEvents> {
   static id = 'get';
-  static description = 'Downloads an existing platform project into the platforms folder.';
+  static description = 'Downloads an existing platform project into the build folder.';
   static examples: string[] = [
     'jovo get alexaSkill --skill-id amzn1.ask.skill.xxxxxxxx',
     'jovo get googleAction --project-id testproject-xxxxxx',

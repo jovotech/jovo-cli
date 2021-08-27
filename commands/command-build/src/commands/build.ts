@@ -1,4 +1,4 @@
-import { DeployEvents } from '@jovotech/cli-command-deploy';
+import { DeployCodeEvents, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import {
   checkForProjectDirectory,
   CliFlags,
@@ -32,7 +32,7 @@ export interface BuildContext extends PluginContext {
 
 export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
 
-export class Build extends PluginCommand<BuildEvents | DeployEvents> {
+export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | DeployPlatformEvents> {
   static id = 'build';
   static description = 'Build platform-specific language models based on jovo models folder.';
   static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
@@ -160,9 +160,9 @@ export class Build extends PluginCommand<BuildEvents | DeployEvents> {
 
     if (flags.deploy) {
       Log.spacer();
-      await this.$emitter.run('before.deploy');
-      await this.$emitter.run('deploy');
-      await this.$emitter.run('after.deploy');
+      await this.$emitter.run('before.deploy:platform');
+      await this.$emitter.run('deploy:platform');
+      await this.$emitter.run('after.deploy:platform');
     }
 
     Log.spacer();
