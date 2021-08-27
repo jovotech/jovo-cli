@@ -1,7 +1,7 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData } from '@jovotech/model';
+import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
@@ -94,11 +94,14 @@ export class Project {
    * Requires and returns Jovo model for the provided locale.
    * @param locale - Locale under which the Jovo model is stored.
    */
-  async getModel(locale: string): Promise<JovoModelData> {
+  async getModel(locale: string): Promise<JovoModelData | JovoModelDataV3> {
     try {
       const path: string = this.getModelPath(locale);
       // Require model file, so it works with both .js and .json.
-      const content: JovoModelData | (() => Promise<JovoModelData>) = require(path);
+      const content:
+        | JovoModelData
+        | JovoModelDataV3
+        | (() => Promise<JovoModelData | JovoModelDataV3>) = require(path);
       if (typeof content === 'function') {
         const builtContent = await content();
         return builtContent;
@@ -137,7 +140,7 @@ export class Project {
   }
 
   async validateModel(locale: string, validator: tv4.JsonSchema): Promise<void> {
-    const model: JovoModelData = await this.getModel(locale);
+    const model: JovoModelData | JovoModelDataV3 = await this.getModel(locale);
 
     if (!tv4.validate(model, validator)) {
       throw new JovoCliError({
@@ -181,7 +184,7 @@ export class Project {
    * @param model - Model to save.
    * @param locale - Locale to save the model under.
    */
-  saveModel(model: JovoModelData, locale: string): void {
+  saveModel(model: JovoModelData | JovoModelDataV3, locale: string): void {
     const modelsPath: string = this.getModelsPath();
     if (!existsSync(modelsPath)) {
       mkdirSync(modelsPath);
