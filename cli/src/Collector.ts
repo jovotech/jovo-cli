@@ -79,6 +79,8 @@ export class Collector extends Plugin {
         });
       }
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       JovoCliError.print(error);
       process.exit(1);
     }
