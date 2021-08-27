@@ -32,6 +32,8 @@ export class JovoUserConfig {
       const data: string = readFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), 'utf-8');
       return JSON.parse(data);
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       // If file cannot be found, create it.
       if (error.code === 'ENOENT') {
         return this.create();
@@ -40,6 +42,8 @@ export class JovoUserConfig {
       // Else propagate error.
       throw new JovoCliError({
         message: 'Error while trying to parse .jovo/configv4.',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         details: error.message,
       });
     }

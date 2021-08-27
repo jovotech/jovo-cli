@@ -98,17 +98,21 @@ export class Project {
     try {
       const path: string = this.getModelPath(locale);
       // Require model file, so it works with both .js and .json.
-      const content: JovoModelData | (() => JovoModelData) = require(path);
+      const content: JovoModelData | (() => Promise<JovoModelData>) = require(path);
       if (typeof content === 'function') {
         const builtContent = await content();
         return builtContent;
       }
       return content;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (error.code === 'MODULE_NOT_FOUND') {
         throw new JovoCliError({ message: `Could not find model file for locale: ${locale}` });
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       throw new JovoCliError(error.message);
     }
   }

@@ -230,9 +230,8 @@ describe('validateModel()', () => {
     tv4.error = { message: 'Validation failed.' };
 
     const project: Project = new Project('');
-    expect(project.validateModel.bind(project, 'en', {})).toThrow(
-      'Validation failed for locale "en"',
-    );
+
+    expect(project.validateModel('en', {})).rejects.toMatch('Validation failed for locale "en"');
   });
 
   test('should do nothing if model is valid', async () => {
