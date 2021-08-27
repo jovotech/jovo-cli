@@ -102,7 +102,7 @@ export class Task {
           throw error;
         }
 
-        throw new JovoCliError(error.message);
+        throw new JovoCliError({ message: error.message });
       }
     }
   }

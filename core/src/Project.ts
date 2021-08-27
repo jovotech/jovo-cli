@@ -1,7 +1,7 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData, ModelValidationError } from '@jovotech/model';
+import { JovoModelData } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
@@ -136,7 +136,11 @@ export class Project {
     const model: JovoModelData = await this.getModel(locale);
 
     if (!tv4.validate(model, validator)) {
-      throw new ModelValidationError(tv4.error.message, locale, tv4.error.dataPath);
+      throw new JovoCliError({
+        message: `Validation failed for locale "${locale}"`,
+        details: tv4.error.message,
+        learnMore: tv4.error.dataPath ? `Path: ${tv4.error.dataPath}` : '',
+      });
     }
   }
 
