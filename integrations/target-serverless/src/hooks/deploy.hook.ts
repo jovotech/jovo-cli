@@ -27,6 +27,8 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
       await execAsync('serverless -v');
     } catch (error) {
       throw new JovoCliError({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         message: error.stderr,
         module: 'ServerlessTarget',
         hint: 'Please install the Serverless CLI using the command "npm install -g serverless".',
@@ -44,6 +46,8 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
         throw new JovoCliError({
           message: 'Something failed while bundling your project files.',
           module: this.$plugin.constructor.name,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           details: error.stderr,
         });
       }
@@ -62,6 +66,8 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
         throw new JovoCliError({
           message: 'Serverless deployment failed.',
           module: this.$plugin.constructor.name,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           details: getServerlessError(error.stdout),
         });
       }

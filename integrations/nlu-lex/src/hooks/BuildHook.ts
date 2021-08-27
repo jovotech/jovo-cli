@@ -21,12 +21,7 @@ import { JovoModelData, NativeFileInformation } from '@jovotech/model';
 import _mergeWith from 'lodash.mergewith';
 import _pick from 'lodash.pick';
 import _get from 'lodash.get';
-import {
-  JovoModelLex,
-  JovoModelLexData,
-  LexModelFile,
-  LexModelFileResource,
-} from '@jovotech/model-lex';
+import { JovoModelLex, LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 import { LexCli } from '..';
@@ -311,7 +306,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * Loads a Lex model, specified by a locale.
    * @param locale - Locale of the Lex model.
    */
-  getLexModel(locale: string): JovoModelLexData {
+  getLexModel(locale: string): JovoModelData {
     return require(joinPaths(this.$plugin.getPlatformPath(), locale));
   }
 }
