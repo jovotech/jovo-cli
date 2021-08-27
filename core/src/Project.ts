@@ -1,7 +1,7 @@
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import tv4 from 'tv4';
-import { JovoModelData, ModelValidationError } from '@jovotech/model';
+import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
 
 import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
@@ -94,17 +94,28 @@ export class Project {
    * Requires and returns Jovo model for the provided locale.
    * @param locale - Locale under which the Jovo model is stored.
    */
-  getModel(locale: string): JovoModelData {
+  async getModel(locale: string): Promise<JovoModelData | JovoModelDataV3> {
     try {
       const path: string = this.getModelPath(locale);
       // Require model file, so it works with both .js and .json.
-      const content: JovoModelData = require(path);
+      const content:
+        | JovoModelData
+        | JovoModelDataV3
+        | (() => Promise<JovoModelData | JovoModelDataV3>) = require(path);
+      if (typeof content === 'function') {
+        const builtContent = await content();
+        return builtContent;
+      }
       return content;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (error.code === 'MODULE_NOT_FOUND') {
         throw new JovoCliError({ message: `Could not find model file for locale: ${locale}` });
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       throw new JovoCliError(error.message);
     }
   }
@@ -120,20 +131,23 @@ export class Project {
 
     // If at least one model does not exist for a given locale, return false.
     for (const locale of locales) {
-      try {
-        this.getModel(locale);
-      } catch (error) {
+      const path: string = this.getModelPath(locale);
+      if (!existsSync(`${path}.js`) && !existsSync(`${path}.json`)) {
         return false;
       }
     }
     return true;
   }
 
-  validateModel(locale: string, validator: tv4.JsonSchema): void {
-    const model: JovoModelData = this.getModel(locale);
+  async validateModel(locale: string, validator: tv4.JsonSchema): Promise<void> {
+    const model: JovoModelData | JovoModelDataV3 = await this.getModel(locale);
 
     if (!tv4.validate(model, validator)) {
-      throw new ModelValidationError(tv4.error.message, locale, tv4.error.dataPath);
+      throw new JovoCliError({
+        message: `Validation failed for locale "${locale}"`,
+        details: tv4.error.message,
+        learnMore: tv4.error.dataPath ? `Path: ${tv4.error.dataPath}` : '',
+      });
     }
   }
 
@@ -170,7 +184,7 @@ export class Project {
    * @param model - Model to save.
    * @param locale - Locale to save the model under.
    */
-  saveModel(model: JovoModelData, locale: string): void {
+  saveModel(model: JovoModelData | JovoModelDataV3, locale: string): void {
     const modelsPath: string = this.getModelsPath();
     if (!existsSync(modelsPath)) {
       mkdirSync(modelsPath);

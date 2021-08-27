@@ -102,7 +102,9 @@ export class Task {
           throw error;
         }
 
-        throw new JovoCliError(error.message);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        throw new JovoCliError({ message: error.message });
       }
     }
   }

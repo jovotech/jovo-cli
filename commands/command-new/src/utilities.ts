@@ -21,6 +21,8 @@ export async function runNpmInstall(projectPath: string): Promise<void> {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // Suppress NPM warnings.
     throw new JovoCliError({ message: error.stderr, module: 'NewCommand' });
   }

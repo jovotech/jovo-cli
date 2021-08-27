@@ -84,6 +84,8 @@ export class Config {
     } catch (error) {
       throw new JovoCliError({
         message: 'Could not load project configuration.',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         details: error.message,
       });
     }

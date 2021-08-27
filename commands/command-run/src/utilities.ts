@@ -23,6 +23,8 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
   try {
     await execAsync('npm run tsc', { cwd: sourceFolder });
   } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     throw new JovoCliError({ message: error.stderr, module: 'RunCommand', details: error.stdout });
   }
 }

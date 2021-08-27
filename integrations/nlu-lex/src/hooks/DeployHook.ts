@@ -114,6 +114,8 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
           try {
             await deployIntent(intent);
           } catch (error) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             if (error.name === 'PreconditionFailedException') {
               const getIntentCommand: GetIntentCommand = new GetIntentCommand({
                 name: intent.name,
@@ -151,6 +153,8 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
         try {
           await deployBot();
         } catch (error) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           if (error.name === 'PreconditionFailedException') {
             const getBotCommand: GetBotCommand = new GetBotCommand({
               name: lexModel.resource.name,
@@ -173,6 +177,8 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (error instanceof JovoCliError) {
         throw error;
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
     }
   }
