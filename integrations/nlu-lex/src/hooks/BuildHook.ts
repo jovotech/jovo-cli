@@ -106,7 +106,8 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
     for (const locale of this.$context.locales) {
       const localeTask = new Task(locale, async () => {
-        await this.$cli.$project!.validateModel(locale, JovoModelLex.getValidator());
+        const model: JovoModelData | JovoModelDataV3 = await this.$cli.$project!.getModel(locale);
+        await this.$cli.$project!.validateModel(locale, model, JovoModelLex.getValidator(model));
         await wait(500);
       });
 
