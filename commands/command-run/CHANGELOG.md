@@ -1,6 +1,17 @@
 # Changelog
 
-## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.2...HEAD)
+## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.3...HEAD)
+
+> 13 September 2021
+
+### Merged
+- ✨ Improve Model Validation [#235](https://github.com/jovotech/jovo-cli/pull/235)
+
+### Commits 
+- :recycle: Refactor model validation [#37d1a13](https://github.com/jovotech/jovo-cli/commit/37d1a13008e3d77c9b92a6d5e9807523f9851127)
+- :recycle: Refactor model validation for Lex [#ec631c9](https://github.com/jovotech/jovo-cli/commit/ec631c9c28e6951f3186545c043ab557fa2eb602)
+
+## [@jovotech/cli-command-run@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.2...@jovotech/cli-command-run@4.0.0-beta.3)
 
 > 27 August 2021
 

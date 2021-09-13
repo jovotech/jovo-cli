@@ -1,6 +1,17 @@
 # Changelog
 
-## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.2...HEAD)
+## [Unreleased](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.3...HEAD)
+
+> 13 September 2021
+
+### Merged
+- ✨ Improve Model Validation [#235](https://github.com/jovotech/jovo-cli/pull/235)
+
+### Commits 
+- :recycle: Refactor model validation [#37d1a13](https://github.com/jovotech/jovo-cli/commit/37d1a13008e3d77c9b92a6d5e9807523f9851127)
+- :recycle: Refactor model validation for Lex [#ec631c9](https://github.com/jovotech/jovo-cli/commit/ec631c9c28e6951f3186545c043ab557fa2eb602)
+
+## [@jovotech/target-serverless@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.2...@jovotech/target-serverless@4.0.0-beta.3)
 
 > 27 August 2021
 
@@ -52,6 +63,20 @@
 - :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/jovotech/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
 - :recycle: Use Logger in version hook [#a407f85](https://github.com/jovotech/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
 
+## [@jovotech/nlu-lex@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.2...@jovotech/nlu-lex@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/nlu-lex@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.1...@jovotech/nlu-lex@4.0.0-beta.2)
 
 > 19 August 2021
@@ -89,6 +114,20 @@
 - Publish [#131ea22](https://github.com/jovotech/jovo-cli/commit/131ea22b04f59676a4099f13cacab478ca58035e)
 - :bug: Kill descendants of a child process on Windows [#eaaea60](https://github.com/jovotech/jovo-cli/commit/eaaea60633f0c5fed42d5f45d384d4385fd580e6)
 - :recycle: Use Logger in version hook [#a407f85](https://github.com/jovotech/jovo-cli/commit/a407f85daf95150b08419dee6daf7fd3bdd049fd)
+
+## [@jovotech/cli@4.0.0-beta.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.3...@jovotech/cli@4.0.0-beta.4)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
 
 ## [@jovotech/cli@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...@jovotech/cli@4.0.0-beta.3)
 
@@ -140,6 +179,20 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
+## [@jovotech/cli-core@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.2...@jovotech/cli-core@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/cli-core@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.1...@jovotech/cli-core@4.0.0-beta.2)
 
 > 19 August 2021
@@ -190,6 +243,20 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
+## [@jovotech/cli-command-run@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.2...@jovotech/cli-command-run@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.1...@jovotech/cli-command-run@4.0.0-beta.2)
 
 > 19 August 2021
@@ -229,6 +296,20 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
+## [@jovotech/cli-command-new@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.2...@jovotech/cli-command-new@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/cli-command-new@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.1...@jovotech/cli-command-new@4.0.0-beta.2)
 
 > 19 August 2021
@@ -267,6 +348,20 @@
 - :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/jovotech/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
+
+## [@jovotech/cli-command-get@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.2...@jovotech/cli-command-get@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.1...@jovotech/cli-command-get@4.0.0-beta.2)
 
@@ -318,6 +413,20 @@
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
 
+## [@jovotech/cli-command-deploy@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.2...@jovotech/cli-command-deploy@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.1...@jovotech/cli-command-deploy@4.0.0-beta.2)
 
 > 19 August 2021
@@ -367,6 +476,20 @@
 - :sparkles: Add Lex NLU CLI Plugin [#8a78eb0](https://github.com/jovotech/jovo-cli/commit/8a78eb0b71fafa1fc4da4861965ec69dfe899071)
 - :sparkles: Add Custom Logger [#c0326d3](https://github.com/jovotech/jovo-cli/commit/c0326d3ce35f8c26dc8e70316041f9c8fd807435)
 - :sparkles: Implement reverse build for Amazon Lex [#6a8f26a](https://github.com/jovotech/jovo-cli/commit/6a8f26a3607b34bea714f32fbb38c65e799b1fad)
+
+## [@jovotech/cli-command-build@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.2...@jovotech/cli-command-build@4.0.0-beta.3)
+
+> 27 August 2021
+
+### Merged
+- 🔖 Publish [#234](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [#233](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [#232](https://github.com/jovotech/jovo-cli/pull/232)
+
+### Commits 
+- :fire: Remove jovov4 deploy [#ae34dd4](https://github.com/jovotech/jovo-cli/commit/ae34dd4e909246975894b45ee11085df6360f100)
+- :pushpin: Update package-lock.json [#6acdab4](https://github.com/jovotech/jovo-cli/commit/6acdab49adc6e2da60768c032a914b88e3a0efdc)
+- Merge upstream/v4/development into origin/v4/development [#b7e4090](https://github.com/jovotech/jovo-cli/commit/b7e4090bd1816c04b19001182f6f5e2117aa9b15)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.1...@jovotech/cli-command-build@4.0.0-beta.2)
 
