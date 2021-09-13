@@ -5,11 +5,13 @@
 > 13 September 2021
 
 ### Merged
+- 🚑️ Fix installation of CLI commands [#237](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [#235](https://github.com/jovotech/jovo-cli/pull/235)
 
 ### Commits 
 - :recycle: Refactor model validation [#37d1a13](https://github.com/jovotech/jovo-cli/commit/37d1a13008e3d77c9b92a6d5e9807523f9851127)
-- :recycle: Refactor model validation for Lex [#ec631c9](https://github.com/jovotech/jovo-cli/commit/ec631c9c28e6951f3186545c043ab557fa2eb602)
+- :heavy_plus_sign: Add CLI command dependencies [#ab94de5](https://github.com/jovotech/jovo-cli/commit/ab94de5cb63d36ff6daec644fc60b6a9aaef3d4c)
+- :fire: Delete package-lock.json [#2a1b1e8](https://github.com/jovotech/jovo-cli/commit/2a1b1e8bc9c6f93c3ce99509451ddda10da5e0b2)
 
 ## [@jovotech/cli-core@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.2...@jovotech/cli-core@4.0.0-beta.3)
 
