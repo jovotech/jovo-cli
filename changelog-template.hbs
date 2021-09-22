@@ -6,25 +6,24 @@
 
 > {{niceDate}}
 
+{{#if summary}}
+{{summary}}
+{{/if}}
+
 {{#if merges}}
 ### Merged
-{{/if}}
-{{#each merges}}
-- {{message}} [#{{id}}]({{href}})
-{{/each}}
 
-{{#if commits}}
-### Commits 
-{{/if}}
-{{#each commits}}
-- {{subject}} [#{{shorthash}}]({{href}})
+{{#each merges}}
+- {{#if commit.breaking}}:boom: **Breaking change:** {{/if}}{{message}} {{#if href}}[`#{{id}}`]({{href}}){{/if}}
 {{/each}}
+{{/if}}
 
 {{#if fixes}}
 ### Fixed
-{{/if}}
+
 {{#each fixes}}
-- {{commit.subject}} [#{{fixes.0.id}}]({{commit.href}})
+- {{#if commit.breaking}}:boom: **Breaking change:** {{/if}}{{commit.subject}}{{#each fixes}} {{#if href}}[`#{{id}}`]({{href}}){{/if}}{{/each}}
 {{/each}}
+{{/if}}
 
 {{/each}}
