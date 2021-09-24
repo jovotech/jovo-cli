@@ -5,12 +5,12 @@ import { MiddlewareCollection, PluginContext } from './interfaces';
 
 export class PluginComponent {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected middlewareCollection!: MiddlewareCollection<any>;
+  middlewareCollection!: MiddlewareCollection<any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected $emitter!: EventEmitter<any>;
-  protected $plugin!: JovoCliPlugin;
-  protected $context!: PluginContext;
-  protected $cli!: JovoCli;
+  $emitter!: EventEmitter<any>;
+  $plugin!: JovoCliPlugin;
+  $context!: PluginContext;
+  $cli!: JovoCli;
 
   static install(cli: JovoCli, plugin: JovoCliPlugin, emitter: EventEmitter): void {
     this.prototype.$cli = cli;
