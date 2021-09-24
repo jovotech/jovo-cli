@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/target-serverless",
   "description": "Jovo CLI Plugin for building and deploying to Serverless",
-  "version": "4.0.0-beta.3",
+  "version": "4.0.0-beta.4",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,8 +12,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-command-deploy": "^4.0.0-beta.3",
-    "@jovotech/cli-core": "^4.0.0-beta.3",
+    "@jovotech/cli-command-deploy": "^4.0.0-beta.4",
+    "@jovotech/cli-core": "^4.0.0-beta.4",
     "@oclif/parser": "^3.8.5",
     "yaml": "^1.10.2"
   },

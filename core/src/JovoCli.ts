@@ -82,16 +82,22 @@ export class JovoCli {
 
     for (const pluginId of plugins) {
       // Load plugin from global 'node_modules/'.
-      const pluginPath: string = joinPaths(npm.packages, pluginId, 'dist', 'index.js');
+      const pluginPaths: string[] = [
+        joinPaths(npm.packages, '@jovotech', 'cli', 'node_modules', pluginId, 'dist', 'index.js'),
+        joinPaths(npm.packages, pluginId, 'dist', 'index.js'),
+      ];
 
-      // If the plugin does not exist, skip it quietly.
-      if (!existsSync(pluginPath)) {
-        continue;
+      for (const pluginPath of pluginPaths) {
+        // If the plugin does not exist, skip it quietly.
+        if (!existsSync(pluginPath)) {
+          continue;
+        }
+
+        const plugin: JovoCliPlugin = new (require(pluginPath).default)();
+
+        globalPlugins.push(plugin);
+        break;
       }
-
-      const plugin: JovoCliPlugin = new (require(pluginPath).default)();
-
-      globalPlugins.push(plugin);
     }
 
     return globalPlugins;
