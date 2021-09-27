@@ -154,9 +154,11 @@ export function generateAppConfiguration(context: NewContext): void {
     );
   }
   writeFileSync(appConfigPath, appConfig);
+}
 
+export function copyModels(context: NewContext): void {
   // Provide language models for each locale.
-  const modelsDirectory = 'models';
+  const modelsDirectory: string = 'models';
   for (const locale of context.locales) {
     if (locale === 'en') {
       continue;
@@ -166,5 +168,9 @@ export function generateAppConfiguration(context: NewContext): void {
       joinPaths(context.projectName, modelsDirectory, 'en.json'),
       joinPaths(context.projectName, modelsDirectory, `${locale}.json`),
     );
+  }
+
+  if (!context.locales.includes('en')) {
+    unlinkSync(joinPaths(context.projectName, modelsDirectory, 'en.json'));
   }
 }
