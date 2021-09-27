@@ -115,7 +115,7 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
     // Create build/ folder depending on user config.
     const buildPath: string = this.$cli.$project!.getBuildPath();
     if (!existsSync(buildPath)) {
-      mkdirSync(buildPath);
+      mkdirSync(buildPath, { recursive: true });
     }
   }
 

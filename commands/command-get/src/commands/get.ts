@@ -89,7 +89,7 @@ export class Get extends PluginCommand<BuildEvents | GetEvents> {
     // Create build/ folder depending on user config.
     const buildPath: string = this.$cli.$project!.getBuildPath();
     if (!existsSync(buildPath)) {
-      mkdirSync(buildPath);
+      mkdirSync(buildPath, { recursive: true });
     }
   }
 
