@@ -139,14 +139,17 @@ export class Project {
     return true;
   }
 
-  async validateModel(locale: string, validator: tv4.JsonSchema): Promise<void> {
-    const model: JovoModelData | JovoModelDataV3 = await this.getModel(locale);
-
+  async validateModel(
+    locale: string,
+    model: JovoModelData | JovoModelDataV3,
+    validator: tv4.JsonSchema,
+    plugin?: string,
+  ): Promise<void> {
     if (!tv4.validate(model, validator)) {
       throw new JovoCliError({
         message: `Validation failed for locale "${locale}"`,
-        details: tv4.error.message,
-        learnMore: tv4.error.dataPath ? `Path: ${tv4.error.dataPath}` : '',
+        module: plugin,
+        details: `${tv4.error.message} ${tv4.error.dataPath ? `at ${tv4.error.dataPath}` : ''}`,
       });
     }
   }

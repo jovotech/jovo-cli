@@ -20,8 +20,8 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   PluginComponent,
   OclifCommand,
 ) {
-  protected middlewareCollection!: MiddlewareCollection<T | DefaultEvents>;
-  protected $emitter!: EventEmitter<T | DefaultEvents>;
+  middlewareCollection!: MiddlewareCollection<T | DefaultEvents>;
+  $emitter!: EventEmitter<T | DefaultEvents>;
 
   static args: Parser.args.Input = [];
   static flags = {

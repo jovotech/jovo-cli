@@ -6,6 +6,7 @@
     "noImplicitAny": true,
     "removeComments": false,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "preserveConstEnums": true,
     "strict": true,
     "target": "es2017",
