@@ -113,7 +113,7 @@ describe('getBuildDirectory()', () => {
       .mockReturnValue(undefined);
 
     const project: Project = new Project('');
-    expect(project.getBuildDirectory()).toMatch('build/dev');
+    expect(project.getBuildDirectory()).toMatch(joinPaths('build', 'dev'));
   });
 });
 
