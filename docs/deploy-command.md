@@ -53,6 +53,7 @@ You can also add flags from the table below.
 | Flag | Description | Examples |
 |---|---|---|
 | `--locale`, `-l` | The locales to be deployed | `--locale en`, `--locale en, de` |
+| `--stage` | The stage to be deployed. See [staging](./project-config.md#staging). | `--stage dev`  |
 
 Platform integrations may also add their own flags. Learn more in the respective platform docs:
 

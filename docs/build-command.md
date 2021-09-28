@@ -38,6 +38,7 @@ You can also add flags from the table below.
 | Flag | Description | Examples |
 |---|---|---|
 | `--locale`, `-l` | The locales to be built | `--locale en`, `--locale en, de`  |
+| `--stage` | The stage to be built. See [staging](./project-config.md#staging). | `--stage dev`  |
 | `--clean` | Delete the relevant folders in `build` at the beginning of the process | |
 | `--reverse`, `-r` | Turn contents of the `build` folder into `models`. See [reverse build section](#reverse-build) below. | |
 
