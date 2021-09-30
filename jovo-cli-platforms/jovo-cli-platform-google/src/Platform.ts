@@ -380,15 +380,16 @@ export class JovoCliPlatformGoogle extends JovoCliPlatform {
         const supportedLanguages = this.getLocales();
 
         for (let locale of supportedLanguages) {
-          // transform en-us to en-US
-          if (locale.length === 5) {
-            locale = locale.substr(0, 2) + '-' + locale.substr(3).toUpperCase();
-          }
-
           reverseLocales.push({
             title: locale,
             task: async () => {
               const jovoModel = await this.reverse(locale);
+
+              // transform en-us to en-US
+              if (locale.length === 5) {
+                locale = locale.substr(0, 2) + '-' + locale.substr(3).toUpperCase();
+              }
+
               return project.saveModel(jovoModel, locale);
             },
           });
