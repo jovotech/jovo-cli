@@ -1,5 +1,5 @@
 import { ExecOptions, exec } from 'child_process';
-import { JovoCliError } from 'jovo-cli-core';
+import { JovoCliError, Utils } from 'jovo-cli-core';
 import _get from 'lodash.get';
 
 export * from './Interfaces';
@@ -25,7 +25,7 @@ export function getAskErrorV2(method: string, stderr: string): JovoCliError {
 
   const errorIndex: number = stderr.indexOf(splitter);
   if (errorIndex > -1) {
-    const errorString: string = stderr.substring(errorIndex + splitter.length);
+    const errorString: string = Utils.getRawString(stderr.substring(errorIndex + splitter.length));
     const parsedError = JSON.parse(errorString);
     const payload = _get(parsedError, 'detail.response', parsedError);
     const message: string = payload.message;

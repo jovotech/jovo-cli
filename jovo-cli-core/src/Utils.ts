@@ -1,6 +1,7 @@
+import * as chalk from 'chalk';
 import * as fs from 'fs';
 import { sep as pathSep } from 'path';
-import * as chalk from 'chalk';
+import stripAnsi from 'strip-ansi';
 
 export function log(msg: undefined | string | object) {
   let data = '';
@@ -53,4 +54,12 @@ export function printStage(stage: undefined | string) {
 
 export function printWarning(message: string) {
   return chalk.yellow.bold(`[WARN] ${message}`);
+}
+
+/**
+ * Strips ANSI escape codes from the provided string.
+ * @param output - String potentially containing ANSI escape codes to be stripped.
+ */
+export function getRawString(output: string): string {
+  return stripAnsi(output);
 }
