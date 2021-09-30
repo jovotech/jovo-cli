@@ -1,22 +1,21 @@
 import { existsSync } from 'fs';
-import { join as joinPaths } from 'path';
 import _get from 'lodash.get';
+import { dirname, join as joinPaths } from 'path';
 import { URL } from 'url';
-import { npm } from 'global-dirs';
 import {
+  Config,
+  JovoCliError,
   JovoCliPlugin,
   JovoUserConfig,
-  Project,
-  JovoCliError,
-  Config,
-  PluginType,
   JOVO_WEBHOOK_URL,
   Log,
+  PluginType,
+  Project,
 } from '.';
 
 export class JovoCli {
   private static instance?: JovoCli;
-  private cliPlugins: JovoCliPlugin[] = [];
+  private plugins: JovoCliPlugin[] = [];
 
   readonly $userConfig: JovoUserConfig;
 
@@ -75,9 +74,8 @@ export class JovoCli {
   }
 
   collectCommandPlugins(): JovoCliPlugin[] {
-    Log.verbose(`Loading CLI commands from ${npm.packages}`, { indent: 2 });
+    Log.verbose('Loading global CLI plugins');
     const globalPlugins: JovoCliPlugin[] = [];
-
     const plugins: string[] = (this.$userConfig.getParameter('cli.plugins') as string[]) || [];
 
     for (const pluginId of plugins) {
@@ -93,6 +91,7 @@ export class JovoCli {
           continue;
         }
 
+        Log.verbose(`Loading ${pluginId} from ${pluginPath}`, { indent: 2 });
         const plugin: JovoCliPlugin = new (require(pluginPath).default)();
 
         globalPlugins.push(plugin);
@@ -104,17 +103,16 @@ export class JovoCli {
   }
 
   /**
-   * Loads both project plugins and command plugins and returns respective classes.
+   * Loads both project plugins and command plugins and returns respective classes
    */
   loadPlugins(): JovoCliPlugin[] {
-    Log.verbose('Loading CLI plugins');
-    this.cliPlugins.push(...this.collectCommandPlugins());
+    this.plugins.push(...this.collectCommandPlugins());
 
     if (this.$project) {
-      this.cliPlugins.push(...this.$project.collectPlugins());
+      this.plugins.push(...this.$project.collectPlugins());
     }
 
-    return this.cliPlugins;
+    return this.plugins;
   }
 
   /**
@@ -122,7 +120,7 @@ export class JovoCli {
    * @param type - Type of CLI plugin.
    */
   getPluginsWithType(type: PluginType): JovoCliPlugin[] {
-    return this.cliPlugins.filter((plugin) => plugin.$type === type);
+    return this.plugins.filter((plugin) => plugin.$type === type);
   }
 
   getPlatforms(): string[] {

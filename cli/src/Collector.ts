@@ -40,6 +40,7 @@ export class Collector extends Plugin {
         command: commandId,
       };
 
+      Log.verbose('Installing CLI plugins');
       for (const plugin of plugins) {
         plugin.install(cli, emitter, context);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

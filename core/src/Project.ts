@@ -7,6 +7,7 @@ import { JovoCliError } from './JovoCliError';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './constants';
 import { JovoCliPlugin } from './JovoCliPlugin';
+import { Log } from '.';
 
 export class Project {
   private static instance?: Project;
@@ -256,6 +257,7 @@ export class Project {
   }
 
   collectPlugins(): JovoCliPlugin[] {
+    Log.verbose('Loading project-scoped CLI plugins');
     const plugins: JovoCliPlugin[] = [];
 
     const projectPlugins: JovoCliPlugin[] =
