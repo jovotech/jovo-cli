@@ -77,12 +77,13 @@ export class JovoCli {
     Log.verbose('Loading global CLI plugins');
     const globalPlugins: JovoCliPlugin[] = [];
     const plugins: string[] = (this.$userConfig.getParameter('cli.plugins') as string[]) || [];
+    const globalNpmFolder: string = dirname(process.env.JOVO_CLI_EXEC_PATH!);
 
     for (const pluginId of plugins) {
       // Load plugin from global 'node_modules/'.
       const pluginPaths: string[] = [
-        joinPaths(npm.packages, '@jovotech', 'cli', 'node_modules', pluginId, 'dist', 'index.js'),
-        joinPaths(npm.packages, pluginId, 'dist', 'index.js'),
+        joinPaths(process.env.JOVO_CLI_EXEC_PATH!, 'node_modules', pluginId, 'dist', 'index.js'),
+        joinPaths(globalNpmFolder, pluginId, 'dist', 'index.js'),
       ];
 
       for (const pluginPath of pluginPaths) {
