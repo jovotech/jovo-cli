@@ -34,10 +34,13 @@ You can also add flags from the table below.
 
 | Flag | Description | Examples |
 |---|---|---|
-| `--locale`, `-l` | The locales to be retrieved | `--locale en`, `--locale en, de`  |
+| `--locale`, `-l` | The locales to be retrieved | `--locale en`, `--locale en de`  |
 | `--overwrite` | Overwrite existing files in the `build` folder | |
+| `--stage` | The stage to be retrieved. See [staging](./project-config.md#staging). | `--stage dev` |
+| `--build-reverse` | Turn retrieved models into Jovo models in the `models` folder. See [`build` command docs](./build-command.md#reverse-build) for more information. | |
+
 
 CLI integrations may also add their own flags. Learn more in the respective platform docs:
 
-- [Alexa get](https://v4.jovo.tech/marketplace/platform-alexa/project-config#get-command)
-- [Google Assistant get](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#get-command)
+- [Alexa get](https://v4.jovo.tech/marketplace/platform-alexa/project-config#get)
+- [Google Assistant get](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#get)

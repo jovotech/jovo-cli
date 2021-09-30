@@ -20,6 +20,5 @@ You can also add flags from the table below.
 | Flag | Description | Examples |
 |---|---|---|
 | `--port`, `-p` | The port to be used for the server | `--port 3000` (default) |
-| `--timeout` | Timeout for the server process | `--inspect 5000` (default) |
-| `--inspect`, `-i` | The port to be used for debugging | `--inspect 3000` |
-| `--webhook-only` | Starts the Jovo Webhook proxy without executing the code | |
+| `--timeout` | Maximum amount of time in milliseconds before the server returns a timeout | `--timeout 5000` (default) |
+| `--stage` | The app stage (e.g. `app.dev.ts`) to be run. Only possible for stages that use the Jovo Express server. See [staging](https://v4.jovo.tech/docs/staging). | `--stage dev` (default) |

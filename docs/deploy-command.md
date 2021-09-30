@@ -52,13 +52,13 @@ You can also add flags from the table below.
 
 | Flag | Description | Examples |
 |---|---|---|
-| `--locale`, `-l` | The locales to be deployed | `--locale en`, `--locale en, de` |
-| `--stage` | The stage to be deployed. See [staging](./project-config.md#staging). | `--stage dev`  |
+| `--locale`, `-l` | The locales to be deployed | `--locale en`, `--locale en de` |
+| `--stage` | The project stage to be deployed. See [staging](./project-config.md#staging). | `--stage dev` |
 
 Platform integrations may also add their own flags. Learn more in the respective platform docs:
 
-- [Alexa deployment](https://v4.jovo.tech/marketplace/platform-alexa/project-config#deploy-command)
-- [Google Assistant deployment](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#deploy-command)
+- [Alexa deployment](https://v4.jovo.tech/marketplace/platform-alexa/project-config#deploy)
+- [Google Assistant deployment](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#deploy)
 
 
 ## deploy:code
@@ -67,6 +67,9 @@ The `deploy:code` command is used to bundle and deploy your project's code (typi
 
 ```sh
 $ jovov4 deploy:code <target>
+
+# Example
+$ jovov4 deploy:code serverless
 ```
 
 You can also add flags from the table below.
@@ -74,6 +77,7 @@ You can also add flags from the table below.
 | Flag | Description | Examples |
 |---|---|---|
 | `--src`, `-s` | Path to source files | `--src ./src` |
+| `--stage` | The app stage to be deployed. See [staging](https://v4.jovo.tech/docs/staging). | `--stage prod` |
 
 Deployment target integrations may also add their own flags and commands. Learn more in the respective docs:
 

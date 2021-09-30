@@ -12,7 +12,7 @@ Learn how to create new Jovo projects and other files using the `jovov4 new` com
 `jovov4 new` can be used for the following features:
 
 - [`new`](#new-project): Create a new Jovo project
-- [`new:stage`](#new:stage): Create a new stage
+- [`new:stage`](#new:stage): Create a new app stage
 
 
 ## New Project
@@ -29,19 +29,22 @@ You can also add flags from the table below.
 
 | Flag | Description | Examples |
 |---|---|---|
-| `--locale`, `-l` | The locales to be created | `--locale en`, `--locale en, de`  |
-| `--overwrite` | Overwrite existing files in the specified `<directory>` | |
-| `--no-wizard` | Creates a project from the default template without using the wizard | |
+| `--locale`, `-l` | The locales to be created | `--locale en`, `--locale en de`  |
 | `--language` | Specifies the code language of your project | `--language typescript` |
-
+| `--preset` | Skips the wizard and creates a project from a pre-configured preset | `--preset default` (Typescript default template) |
+| `--clean` | Delete existing files in the specified `<directory>` before creating the project | |
 
 
 ## new:stage
 
-The `new:stage` command helps you create a new stage. [Learn more about staging here](https://v4.jovo.tech/docs/staging).
+The `new:stage` command helps you create a new app stage, for example `app.prod.ts`. [Learn more about staging here](https://v4.jovo.tech/docs/staging).
 
 ```sh
 $ jovov4 new:stage <stage>
 ```
 
-The command will create a new file `app.<stage>.ts` and also offer to create a new server file.
+The command will do the following:
+
+- Create a new file `app.<stage>.ts`
+- Prompt to specify which server will be used, and create a server file, for example `server.express.ts` or `server.lambda.ts`
+- Add npm scripts `bundle:<stage>` (used by the [`deploy:code` command](./deploy-command.md#deploy:code)) and `start:<stage>` (used by the [`run` command](./run-command.md)) to the project's `package.json` file

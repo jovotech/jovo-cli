@@ -68,5 +68,5 @@ $ jovov4 build:serverless
 After that, you can use the [`deploy:code` command](https://v4.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code:
 
 ```sh
-$ jovov4 deploy:code
+$ jovov4 deploy:code serverless
 ```
