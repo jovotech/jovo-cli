@@ -57,8 +57,8 @@ You can also add flags from the table below.
 
 Platform integrations may also add their own flags. Learn more in the respective platform docs:
 
-- [Alexa deployment](https://v4.jovo.tech/marketplace/platform-alexa/project-config#deploy)
-- [Google Assistant deployment](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#deploy)
+- [Alexa deployment](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#deploy)
+- [Google Assistant deployment](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#deploy)
 
 
 ## deploy:code

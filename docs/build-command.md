@@ -50,8 +50,8 @@ You can also add flags from the table below.
 
 CLI integrations may also add their own flags. Learn more in the respective docs:
 
-- [Alexa build](https://v4.jovo.tech/marketplace/platform-alexa/project-config#build)
-- [Google Assistant build](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config#build)
+- [Alexa build](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#build)
+- [Google Assistant build](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#build)
 
 
 ## Reverse Build
