@@ -51,14 +51,6 @@ export class Config {
         const mergedPlugins: { [constructor: string]: JovoCliPlugin } = {};
 
         for (const plugin of plugins) {
-          if (!(plugin instanceof JovoCliPlugin)) {
-            throw new JovoCliError({
-              message: `Plugin ${plugin} is not an instance of JovoCliPlugin.`,
-              details:
-                'Make sure your plugin inherits JovoCliPlugin provided by @jovotech/cli-core',
-            });
-          }
-
           const constructor: string = plugin.constructor.name;
           // ! This has a potential runtime of O(n²).
           if (!Object.keys(mergedPlugins).includes(constructor)) {
