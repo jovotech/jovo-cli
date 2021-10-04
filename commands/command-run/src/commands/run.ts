@@ -13,36 +13,25 @@ import boxen from 'boxen';
 import { ChildProcess, spawn } from 'child_process';
 import { instantiateJovoWebhook, shouldUpdatePackages } from '../utilities';
 
-export type RunFlags = CliFlags<typeof Run>;
-
 export interface RunContext extends PluginContext {
-  flags: RunFlags;
+  flags: CliFlags<typeof Run>;
 }
 
 export type RunEvents = 'before.run' | 'run';
 
 export class Run extends PluginCommand<RunEvents> {
   static id = 'run';
-  static description = 'Runs a local development server (webhook).';
-  static examples: string[] = [];
+  static description =
+    'Start the local development server and test your app using the Jovo Debugger';
+  static examples: string[] = ['jovov4 run', 'jovov4 run --port 8008'];
   static flags = {
-    'port': flags.string({
+    port: flags.string({
       char: 'p',
-      description: 'Port to local development webhook.',
+      description: 'The port to be used for the server',
       default: '3000',
     }),
-    'inspect': flags.string({
-      char: 'i',
-      description: 'Debugging port.',
-    }),
-    'webhook-only': flags.boolean({
-      description: 'Starts the Jovo Webhook proxy without executing the code.',
-    }),
-    'disable-jovo-debugger': flags.boolean({
-      description: 'Disables Jovo Debugger (web version).',
-    }),
-    'timeout': flags.integer({
-      description: 'Sets timeout in milliseconds.',
+    timeout: flags.integer({
+      description: 'Maximum amount of time in milliseconds before the server returns a timeout',
       default: 5000,
     }),
     ...PluginCommand.flags,
@@ -58,8 +47,8 @@ export class Run extends PluginCommand<RunEvents> {
   async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
     const outOfDatePackages: PackageVersions = await shouldUpdatePackages(
-      this.$cli.$projectPath,
-      this.$cli.$userConfig,
+      this.$cli.projectPath,
+      this.$cli.userConfig,
     );
     if (Object.keys(outOfDatePackages).length) {
       const outputText: string[] = [];
@@ -89,35 +78,16 @@ export class Run extends PluginCommand<RunEvents> {
     Log.info(`jovo run: ${Run.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
 
-    const { flags }: { flags: RunFlags } = this.parse(Run);
+    const { flags } = this.parse(Run);
 
     // Set plugin context
     this.$context.flags = flags;
 
     await this.$emitter.run('before.run');
 
-    if (flags['webhook-only']) {
-      instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout });
-      await this.$emitter.run('run');
-      return;
-    }
-
     if (flags.port) {
       process.env.JOVO_PORT = flags.port;
     }
-
-    // TODO: How to add additional flags?
-    // if (flags.inspect) {
-    //   parameters.push(`--inspect=${flags.inspect}`);
-    // }
-
-    // if (this.$cli.$project!.$stage) {
-    //   parameters.push('--stage', this.$cli.$project!.$stage);
-    // }
-
-    // if (flags['disable-jovo-debugger']) {
-    //   parameters.push('--disable-jovo-debugger');
-    // }
 
     const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
