@@ -15,6 +15,12 @@ export class JovoUserConfig {
 
   constructor() {
     this.config = this.get();
+
+    // Save a default template for users with the beta configv4 file,
+    // since the default template previously had the key "Default_TS"
+    if (!this.config.cli.presets.find((preset) => preset.name === 'default')) {
+      this.savePreset(this.getDefaultPreset());
+    }
   }
 
   /**
@@ -42,9 +48,7 @@ export class JovoUserConfig {
       // Else propagate error.
       throw new JovoCliError({
         message: 'Error while trying to parse .jovo/configv4.',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        details: error.message,
+        details: (error as Error).message,
       });
     }
   }
@@ -78,16 +82,7 @@ export class JovoUserConfig {
           '@jovotech/cli-command-new',
           '@jovotech/cli-command-run',
         ],
-        presets: [
-          {
-            name: 'Default_TS',
-            projectName: 'helloworld',
-            locales: ['en'],
-            platforms: [],
-            linter: true,
-            unitTesting: true,
-          },
-        ],
+        presets: [this.getDefaultPreset()],
       },
     };
 
@@ -127,10 +122,12 @@ export class JovoUserConfig {
     const presets: Preset[] = this.getPresets();
     const preset: Preset | undefined = presets.find((preset) => preset.name === presetKey);
 
+    //
+
     if (!preset) {
       throw new JovoCliError({
         message: `Could not find preset ${presetKey}.`,
-        details: 'Please check for spelling or check your .jovo/config.',
+        hint: 'Please check for spelling or check your .jovo/configv4.',
       });
     }
 
@@ -158,5 +155,16 @@ export class JovoUserConfig {
     this.config.cli.presets.push(preset);
 
     this.save(this.config);
+  }
+
+  private getDefaultPreset(): Preset {
+    return {
+      name: 'default',
+      projectName: 'helloworld',
+      locales: ['en'],
+      platforms: [],
+      linter: true,
+      unitTesting: true,
+    };
   }
 }
