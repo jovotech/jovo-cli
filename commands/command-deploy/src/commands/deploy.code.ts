@@ -25,32 +25,29 @@ export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.dep
 
 export class DeployCode extends PluginCommand<DeployCodeEvents> {
   static id: string = 'deploy:code';
-  static description: string = 'Deploys project code.';
-  static examples: string[] = [
-    'jovo deploy --locale en-US --platform alexaSkill --stage dev',
-    'jovo deploy --target zip',
-  ];
+  static description: string = 'Upload the source code to a cloud provider';
+  static examples: string[] = ['jovo deploy:code serverless'];
   // Includes all available targets, which will be initialized on install().
   static availableTargets: string[] = [];
   static flags = {
-    locale: flags.string({
-      char: 'l',
-      description: 'Locale of the language model.\n<en|de|etc>',
-      multiple: true,
-    }),
     src: flags.string({
       char: 's',
-      description: 'Path to source files.',
+      description: 'Path to source files',
     }),
     ...PluginCommand.flags,
   };
   static args = [
     <const>{
       name: 'target',
-      description: 'Deploys.',
+      required: true,
+      description: 'Specify the cloud provider to be deployed to',
+      multiple: true,
       options: DeployCode.availableTargets,
     },
   ];
+  // Allow multiple arguments by disabling argument length validation
+  static strict = false;
+
   $context!: DeployCodeContext;
 
   static install(
@@ -68,16 +65,15 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
 
     Log.spacer();
     Log.info(`jovo deploy:code: ${DeployCode.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code'));
+    Log.spacer();
 
-    const { args, flags }: { args: DeployCodeArgs; flags: DeployCodeFlags } =
-      this.parse(DeployCode);
+    const { args, flags } = this.parse(DeployCode);
 
     _merge(this.$context, {
       args,
       flags,
-      locales: flags.locale || this.$cli.$project!.getLocales(),
-      target: args.target ? [args.target] : DeployCode.availableTargets,
+      target: args.target,
       src: flags.src,
     });
 
