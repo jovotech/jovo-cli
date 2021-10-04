@@ -72,6 +72,17 @@
         "./dist/hooks/VersionHook.js",
         "./dist/hooks/InitHook.js"
       ]
+    },
+    "topics": {
+      "build": {
+        "description": "Build your Jovo app using the following commands:"
+      },
+      "deploy": {
+        "description": "Deploy your Jovo app using the following commands:"
+      },
+      "get": {
+        "description": "Synchronize your Jovo app using the following commands:"
+      }
     }
   },
   "gitHead": "9edb66662ac080853fd9fe02524c2d2ed88aa952"
