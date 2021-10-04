@@ -35,7 +35,7 @@ You can also add flags from the table below.
 | Flag | Description | Examples |
 |---|---|---|
 | `--locale`, `-l` | The locales to be retrieved | `--locale en`, `--locale en de`  |
-| `--overwrite` | Overwrite existing files in the `build` folder | |
+| `--clean` | Overwrite existing files in the `build` folder | |
 | `--stage` | The stage to be retrieved. See [staging](./project-config.md#staging). | `--stage dev` |
 | `--build-reverse` | Turn retrieved models into Jovo models in the `models` folder. See [`build` command docs](./build-command.md#reverse-build) for more information. | |
 
