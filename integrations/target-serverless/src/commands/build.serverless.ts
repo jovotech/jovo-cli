@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as Parser from '@oclif/parser';
+import { DeployCodeEvents } from '@jovotech/cli-command-deploy';
 import {
   ANSWER_CANCEL,
   checkForProjectDirectory,
-  CliArgs,
-  CliFlags,
   deleteFolderRecursive,
   flags,
   Log,
@@ -17,10 +14,6 @@ import {
 } from '@jovotech/cli-core';
 import { existsSync, unlinkSync, writeFileSync } from 'fs';
 import yaml from 'yaml';
-import { DeployCodeEvents } from '@jovotech/cli-command-deploy';
-
-export type BuildServerlessArgs = CliArgs<typeof BuildServerless>;
-export type BuildServerlessFlags = CliFlags<typeof BuildServerless>;
 
 export class BuildServerless extends PluginCommand<DeployCodeEvents> {
   static id = 'build:serverless';
@@ -44,7 +37,8 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
 
     Log.spacer();
     Log.info(`jovo build:serverless: ${BuildServerless.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build'));
+    Log.spacer();
 
     const { flags } = this.parse(BuildServerless);
 
@@ -67,7 +61,7 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
      * Builds the serverless.yaml file.
      */
     const buildTask: Task = new Task('Generating serverless.yaml', async () => {
-      writeFileSync('serverless.yaml', yaml.stringify(this.$plugin.$config));
+      writeFileSync('serverless.yaml', yaml.stringify(this.$plugin.config));
       await wait(500);
       return '>> ./serverless.yaml';
     });
