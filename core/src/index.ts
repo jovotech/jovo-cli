@@ -1,33 +1,38 @@
-import prompt from 'prompts';
 import { config } from 'dotenv';
+import prompt from 'prompts';
 import { ProjectConfigFile } from './interfaces';
 
 // Load .env variables into process.env
 config();
 
 export { flags } from '@oclif/command';
-export { prompt };
-
-export * from './Logger';
-export * from './JovoCli';
-export * from './EventEmitter';
-export * from './PluginHook';
-export * from './PluginCommand';
-export * from './Task';
-export * from './Project';
-export * from './JovoCliPlugin';
-export * from './JovoCliError';
-export * from './JovoUserConfig';
 export * from './Config';
-export * from './utilities';
-export * from './interfaces';
-export * from './validators';
-export * from './prompts';
 export * from './constants';
+export * from './EventEmitter';
+export * from './interfaces';
+export * from './JovoCli';
+export * from './JovoCliError';
+export * from './JovoCliPlugin';
+export * from './JovoUserConfig';
+export * from './Logger';
+export * from './PluginCommand';
+export * from './PluginHook';
 export * from './prints';
+export * from './Project';
+export * from './prompts';
+export * from './Task';
+export * from './utilities';
+export * from './validators';
+export { prompt };
 
 export class ProjectConfig {
   constructor(config: ProjectConfigFile) {
     Object.assign(this, config);
+  }
+}
+
+declare module '@oclif/parser/lib/args' {
+  interface IArg {
+    multiple?: boolean;
   }
 }
