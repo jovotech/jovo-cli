@@ -1,17 +1,23 @@
 import { JovoCliError, JovoCliPlugin, PluginHook, PluginType } from '@jovotech/cli-core';
-import { existsSync } from 'fs';
 import { LexModelFile } from '@jovotech/model-lex';
+import { existsSync } from 'fs';
 import { join as joinPaths } from 'path';
 import { BuildHook } from './hooks/BuildHook';
 import { DeployHook } from './hooks/DeployHook';
 import { GetHook } from './hooks/GetHook';
 import { LexCliConfig } from './interfaces';
 
+declare module '@jovotech/cli-core/dist/PluginCommand' {
+  export interface PluginHook {
+    $plugin: LexCli;
+  }
+}
+
 export class LexCli extends JovoCliPlugin {
-  readonly $id: string = 'lex';
-  readonly $type: PluginType = 'platform';
+  readonly id: string = 'lex';
+  readonly type: PluginType = 'platform';
   readonly platformDirectory: string = 'platform.lex';
-  readonly $config!: LexCliConfig;
+  readonly config!: LexCliConfig;
 
   constructor(config?: LexCliConfig) {
     super(config);
@@ -19,10 +25,6 @@ export class LexCli extends JovoCliPlugin {
 
   getHooks(): typeof PluginHook[] {
     return [BuildHook, DeployHook, GetHook];
-  }
-
-  getPlatformPath(): string {
-    return joinPaths(this.$cli.$project!.getBuildPath(), this.platformDirectory);
   }
 
   getDefaultConfig(): LexCliConfig {
@@ -55,25 +57,27 @@ export class LexCli extends JovoCliPlugin {
     };
   }
 
+  get platformPath(): string {
+    return joinPaths(this.$cli.project!.getBuildPath(), this.platformDirectory);
+  }
+
   /**
    * Loads a previously built localized Lex model.
    * @param locale - Locale for the Lex model.
    */
   getLexModel(locale: string): LexModelFile | undefined {
-    const modelPath: string = joinPaths(this.getPlatformPath(), `${locale}.json`);
+    const modelPath: string = joinPaths(this.platformPath, `${locale}.json`);
     if (!existsSync(modelPath)) {
       return;
     }
 
     try {
-      return require(joinPaths(this.getPlatformPath(), locale));
+      return require(joinPaths(this.platformPath, locale));
     } catch (error) {
       throw new JovoCliError({
         message: `Something went wrong while trying to load Lex model for locale ${locale}.`,
         module: this.constructor.name,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        details: error.message,
+        details: (error as Error).message,
       });
     }
   }

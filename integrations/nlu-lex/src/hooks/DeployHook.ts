@@ -11,14 +11,12 @@ import {
 } from '@aws-sdk/client-lex-model-building-service';
 import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
-import { existsSync, writeFileSync } from 'fs';
 import type { LexModelFile } from '@jovotech/model-lex';
+import { existsSync, writeFileSync } from 'fs';
 import { join as joinPaths } from 'path';
-import { LexCli } from '..';
 import { getLexLocale, LexIntent } from '../utilities';
 
 export class DeployHook extends PluginHook<DeployPlatformEvents> {
-  $plugin!: LexCli;
   $context!: DeployPlatformContext;
 
   install(): void {
@@ -38,7 +36,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    */
   checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (this.$context.args.platform && this.$context.args.platform !== this.$plugin.$id) {
+    if (!this.$context.args.platform.includes(this.$plugin.id)) {
       this.uninstall();
     }
   }
@@ -47,7 +45,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    * Checks if the platform folder for the current plugin exists.
    */
   checkForPlatformsFolder(): void {
-    if (!existsSync(this.$plugin.getPlatformPath())) {
+    if (!existsSync(this.$plugin.platformPath)) {
       throw new JovoCliError({
         message: `Couldn't find the platform folder "${this.$plugin.platformDirectory}/".`,
         module: this.$plugin.constructor.name,
@@ -60,21 +58,21 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
    * Checks if all necessary credentials are set.
    */
   checkForAwsCredentials(): void {
-    if (!this.$plugin.$config.credentials) {
+    if (!this.$plugin.config.credentials) {
       throw new JovoCliError({
         message: 'Could not find your AWS credentials.',
         module: this.$plugin.constructor.name,
       });
     }
 
-    if (!this.$plugin.$config.credentials.accessKeyId) {
+    if (!this.$plugin.config.credentials.accessKeyId) {
       throw new JovoCliError({
         message: 'Could not find accessKeyId for your AWS credentials.',
         module: this.$plugin.constructor.name,
       });
     }
 
-    if (!this.$plugin.$config.credentials.secretAccessKey) {
+    if (!this.$plugin.config.credentials.secretAccessKey) {
       throw new JovoCliError({
         message: 'Could not find secretAccessKey for your AWS credentials.',
         module: this.$plugin.constructor.name,
@@ -85,16 +83,16 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
   async deploy(): Promise<void> {
     try {
       const locale: string = getLexLocale(
-        this.$plugin.getPlatformPath(),
+        this.$plugin.platformPath,
         this.$context.locales,
-        this.$plugin.$config.locales,
+        this.$plugin.config.locales,
       );
       const deployTask: Task = new Task(
         `${ROCKET} Deploying your Lex model for locale ${printHighlight(locale)}`,
       );
       const client = new LexModelBuildingServiceClient({
-        region: this.$plugin.$config.region,
-        credentials: this.$plugin.$config.credentials,
+        region: this.$plugin.config.region,
+        credentials: this.$plugin.config.credentials,
       });
 
       const lexModel: LexModelFile | undefined = this.$plugin.getLexModel(locale)!;
@@ -184,7 +182,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
   }
 
   writeLexModel(model: LexModelFile, locale: string): void {
-    const path: string = joinPaths(this.$plugin.getPlatformPath(), `${locale}.json`);
+    const path: string = joinPaths(this.$plugin.platformPath, `${locale}.json`);
     writeFileSync(path, JSON.stringify(model, null, 2));
   }
 }
