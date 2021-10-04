@@ -7,7 +7,7 @@ import { DeployHook } from './hooks/DeployHook';
 import { GetHook } from './hooks/GetHook';
 import { LexCliConfig } from './interfaces';
 
-declare module '@jovotech/cli-core/dist/PluginCommand' {
+declare module '@jovotech/cli-core/dist/PluginHook' {
   export interface PluginHook {
     $plugin: LexCli;
   }
