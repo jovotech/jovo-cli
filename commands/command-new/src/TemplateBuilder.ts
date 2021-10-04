@@ -96,9 +96,9 @@ export function generateProjectConfiguration(context: NewContext): void {
     // Build default config for CLI plugin (default = '').
     let defaultConfig: string = '';
 
-    if (Object.keys(platform.cliPlugin.$config).length) {
+    if (Object.keys(platform.cliPlugin.config).length) {
       // Serialize the plugin's default config for further processing.
-      const unformattedConfig: string = util.inspect(platform.cliPlugin.$config, {
+      const unformattedConfig: string = util.inspect(platform.cliPlugin.config, {
         depth: null,
         colors: false,
       });
@@ -110,7 +110,7 @@ export function generateProjectConfiguration(context: NewContext): void {
         unformattedConfig.replace(/\n/g, '\n\t\t');
 
       // Overwrite default config with formatted config.
-      defaultConfig = util.inspect(platform.cliPlugin.$config, { depth: null, colors: false });
+      defaultConfig = util.inspect(platform.cliPlugin.config, { depth: null, colors: false });
     }
 
     projectConfig = insert(

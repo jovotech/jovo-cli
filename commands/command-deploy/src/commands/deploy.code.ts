@@ -14,14 +14,10 @@ import {
 import _merge from 'lodash.merge';
 import DeployCommand from '..';
 
-export type DeployCodeFlags = CliFlags<typeof DeployCode>;
-export type DeployCodeArgs = CliArgs<typeof DeployCode>;
-
 export interface DeployCodeContext extends PluginContext {
-  args: DeployCodeArgs;
-  flags: DeployCodeFlags;
+  args: CliArgs<typeof DeployCode>;
+  flags: CliFlags<typeof DeployCode>;
   target: string[];
-  locales: string[];
   src?: string;
 }
 
@@ -63,7 +59,7 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
     emitter: EventEmitter<DeployCodeEvents>,
   ): void {
     // Override PluginComponent.install() to fill options for --platform.
-    this.availableTargets.push(...cli.getPluginsWithType('target').map((plugin) => plugin.$id));
+    this.availableTargets.push(...cli.getPluginsWithType('target').map((plugin) => plugin.id));
     super.install(cli, plugin, emitter);
   }
 

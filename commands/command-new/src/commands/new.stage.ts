@@ -3,7 +3,6 @@ import {
   checkForProjectDirectory,
   CliArgs,
   CliFlags,
-  flags,
   Log,
   MarketplacePlugin,
   PluginCommand,
@@ -23,32 +22,20 @@ import latestVersion from 'latest-version';
 import _merge from 'lodash.merge';
 import { join as joinPaths, resolve } from 'path';
 import { Choice } from 'prompts';
-import { promptPlugins, promptServer } from '../Prompts';
+import { promptPlugins, promptServer } from '../prompts';
 import { fetchMarketPlace, insert, runNpmInstall } from '../utilities';
 
-export type NewStageArgs = CliArgs<typeof NewStage>;
-export type NewStageFlags = CliFlags<typeof NewStage>;
-
 export interface NewStageContext extends PluginContext {
-  args: NewStageArgs;
-  flags: NewStageFlags;
+  args: CliArgs<typeof NewStage>;
+  flags: CliFlags<typeof NewStage>;
 }
 
 export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage';
 
 export class NewStage extends PluginCommand<NewStageEvents> {
   static id = 'new:stage';
-  // Prints out a description for this command.
   static description = 'Creates a new stage.';
-  // Prints out examples for this command.
   static examples: string[] = [];
-  // Defines flags for this command, such as --help.
-  static flags = {
-    overwrite: flags.boolean({
-      description: 'Forces overwriting an existing project.',
-    }),
-    ...PluginCommand.flags,
-  };
   // Defines arguments that can be passed to the command.
   static args = [
     <const>{
@@ -72,7 +59,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   async checkForExistingStage(): Promise<void> {
     const appFileName = `app.${this.$context.args.stage}.ts`;
 
-    if (existsSync(joinPaths('src', appFileName)) && !this.$context.flags.overwrite) {
+    if (existsSync(joinPaths('src', appFileName))) {
       const { overwrite } = await promptOverwrite(
         `Stage ${printHighlight(
           this.$context.args.stage,

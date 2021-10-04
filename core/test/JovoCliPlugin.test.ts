@@ -8,12 +8,12 @@ afterEach(() => {
 describe('new JovoCliPlugin()', () => {
   test('should instantiate a plugin with a default config', () => {
     const plugin: Plugin = new Plugin();
-    expect(plugin.$config).toStrictEqual({});
+    expect(plugin.config).toStrictEqual({});
   });
 
   test('should instantiate a plugin with a provided config', () => {
     const plugin: Plugin = new Plugin({ files: { foo: 'bar' } });
-    expect(plugin.$config).toStrictEqual({ files: { foo: 'bar' } });
+    expect(plugin.config).toStrictEqual({ files: { foo: 'bar' } });
   });
 });
 

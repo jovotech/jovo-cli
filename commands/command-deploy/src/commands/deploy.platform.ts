@@ -7,9 +7,6 @@ import {
   JovoCliError,
   PluginCommand,
   printSubHeadline,
-  TARGET_ALL,
-  TARGET_INFO,
-  TARGET_MODEL,
   CliFlags,
   CliArgs,
   TADA,
@@ -84,7 +81,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   }
 
   checkForPlatformsFolder(): void {
-    if (!existsSync(this.$cli.$project!.getBuildPath())) {
+    if (!existsSync(this.$cli.project!.getBuildPath())) {
       throw new JovoCliError({
         message: "Couldn't find a platform folder.",
         module: this.$plugin.constructor.name,

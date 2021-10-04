@@ -5,14 +5,14 @@ import { Plugin } from './__mocks__/plugins/Plugin';
 beforeEach(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  delete PluginComponent.prototype['$config'];
+  delete PluginComponent.prototype['config'];
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   delete PluginComponent.prototype['$emitter'];
 });
 
 describe('EventHandler.install()', () => {
-  test('should set $plugin, $emitter and $config if not set already', () => {
+  test('should set $plugin, $emitter and config if not set already', () => {
     const mocked: jest.SpyInstance = jest
       .spyOn(PluginComponent.prototype, 'loadMiddlewareCollection')
       .mockReturnThis();

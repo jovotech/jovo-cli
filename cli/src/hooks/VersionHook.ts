@@ -22,7 +22,7 @@ const hook: Hook<'init'> = async function () {
   // Check for versions of Jovo modules within a project
   const cli: JovoCli = JovoCli.getInstance();
   if (cli.isInProjectDirectory()) {
-    const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.$projectPath);
+    const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.projectPath);
     if (Object.keys(versions).length) {
       const output: string[] = [];
       let updatesAvailable: boolean = false;
