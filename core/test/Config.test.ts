@@ -102,20 +102,6 @@ describe('get()', () => {
     expect(configContent.stages).toBeUndefined();
   });
 
-  test('should throw an error if a plugin is not an instance of JovoCliPlugin', () => {
-    jest.spyOn(Config.prototype, 'getContent').mockReturnValue({
-      endpoint: 'test',
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      plugins: ['invalid'],
-      stages: { dev: { endpoint: 'dev' } },
-    });
-    jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
-
-    const config: Config = new Config('', 'dev');
-    expect(config.get.bind(config)).toThrow('Plugin invalid is not an instance of JovoCliPlugin.');
-  });
-
   test('should merge and return the config with merged plugins for the provided stage', () => {
     const stagedPlugin: Plugin = new Plugin({ files: { foo2: 'bar2' } });
     stagedPlugin.id = 'stagedCliPlugin';
