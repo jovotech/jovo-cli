@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { dirname } from 'path';
 
 process.env.FORCE_COLOR = '1';

@@ -2,10 +2,9 @@ import Command, { flags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 import { Mixin } from 'ts-mixer';
 import { EventEmitter } from './EventEmitter';
+import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
-import { CliArgs, CliFlags, DefaultEvents, Events, MiddlewareCollection } from './interfaces';
-import { ParserInput } from '@oclif/parser/lib/parse';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
