@@ -87,7 +87,10 @@ export class NewStage extends PluginCommand<NewStageEvents> {
         description: plugin.description,
       }));
     const { server } = await promptServer(servers);
-    const serverFileName = `server.${server.module.toLowerCase()}`;
+
+    const serverFileName: string | undefined = server
+      ? `server.${server.module.toLowerCase()}`
+      : undefined;
 
     // Offer the user a range of plugins consisting of database and analytics plugins.
     const availableAppPlugins: prompt.Choice[] = marketPlacePlugins
@@ -146,20 +149,20 @@ export class NewStage extends PluginCommand<NewStageEvents> {
         packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
       // Add selected server dependency to package.json
-      packageJson.dependencies[server.package] = await latestVersion(server.package);
+      if (server) {
+        packageJson.dependencies[server.package] = await latestVersion(server.package);
+      }
 
       // Create new npm scripts
       const appStartPath: string[] = [`app.${this.$context.args.stage}.js`];
-      if (this.$cli.$project!.isTypeScriptProject()) {
+      if (this.$cli.project!.isTypeScriptProject()) {
         appStartPath.unshift('dist');
       } else {
         appStartPath.unshift('src');
       }
       const appBundlePath: string = joinPaths(
         'src',
-        `app.${this.$context.args.stage}.${
-          this.$cli.$project!.isTypeScriptProject() ? 'ts' : 'js'
-        }`,
+        `app.${this.$context.args.stage}.${this.$cli.project!.isTypeScriptProject() ? 'ts' : 'js'}`,
       );
 
       packageJson.scripts[
@@ -171,16 +174,34 @@ export class NewStage extends PluginCommand<NewStageEvents> {
 
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
-
-      copyFileSync(
-        joinPaths('node_modules', server.package, 'boilerplate', `${serverFileName}.ts`),
-        joinPaths('src', `${serverFileName}.ts`),
-      );
     });
 
     stageTask.add(addPluginsTask, installTask);
 
     await stageTask.run();
+
+    const serverFilePath: string | undefined = server
+      ? joinPaths('src', `${serverFileName}.ts`)
+      : undefined;
+    Log.verbose(serverFilePath!);
+
+    if (serverFilePath) {
+      if (existsSync(serverFilePath)) {
+        Log.spacer();
+        const { overwrite } = await promptOverwrite(
+          `${serverFilePath} already exists. Do you want to overwrite it?`,
+        );
+
+        if (overwrite === ANSWER_CANCEL) {
+          return;
+        }
+      }
+
+      copyFileSync(
+        joinPaths('node_modules', server!.package, 'boilerplate', `${serverFileName}.ts`),
+        serverFilePath,
+      );
+    }
   }
 
   async run(): Promise<void> {
@@ -191,7 +212,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage'));
     Log.spacer();
 
-    const { args, flags }: { args: NewStageArgs; flags: NewStageFlags } = this.parse(NewStage);
+    const { args, flags } = this.parse(NewStage);
 
     _merge(this.$context, { args, flags });
 
