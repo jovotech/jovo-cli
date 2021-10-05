@@ -17,8 +17,7 @@
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
-    "link": "node bin/link",
-    "postinstall": "node bin/postinstall"
+    "link": "node bin/link"
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
