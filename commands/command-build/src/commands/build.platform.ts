@@ -138,7 +138,7 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
     if (flags.reverse) {
       if (this.$context.platforms.length !== 1) {
-        const { platform } = await promptForPlatform(this.$cli.getPlatforms());
+        const { platform } = await promptForPlatform(this.$context.platforms);
         this.$context.platforms = [platform];
       }
 
