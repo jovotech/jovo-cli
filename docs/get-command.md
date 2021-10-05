@@ -42,5 +42,5 @@ You can also add flags from the table below.
 
 CLI integrations may also add their own flags. Learn more in the respective platform docs:
 
-- [Alexa get](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#get)
-- [Google Assistant get](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#get)
+- [Alexa `get`](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#get)
+- [Google Assistant `get`](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#get)

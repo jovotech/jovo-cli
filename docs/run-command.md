@@ -1,5 +1,5 @@
 ---
-title: 'run Command - Jovo CLI'
+title: 'run CLI Command'
 excerpt: 'Learn more about the Jovo CLI run command.'
 ---
 

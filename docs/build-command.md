@@ -1,5 +1,5 @@
 ---
-title: 'build Command - CLI'
+title: 'build CLI Command'
 excerpt: 'Learn more about the Jovo CLI build command.'
 ---
 
@@ -14,10 +14,10 @@ The Jovo CLI can be used to deploy projects to various developer consoles like t
 The `jovov4 build` command helps with this. It turns the files from the [`models` folder](https://v4.jovo.tech/docs/models) and the [project configuration from `jovo.project.js`](./project-config.md) into platform specific files in the `build` folder. These files can then be used for deployment.
 
 ```sh
-$ jovov4 build
+$ jovov4 build:platform <platform>
 ```
 
-Running the `build` command from above will execute the command for all platform plugins that are added to the [project configuration](./project-config.md). Learn more about the command flags in the [`build:platform` section](#build:platform).
+Running the `build` command from above will execute the command for a platform plugin that needs to added to the [project configuration](./project-config.md) before. Learn more about the command flags in the [`build:platform` section](#build:platform).
 
 It is also possible to reverse the process and create `models` from the contents of the `build` folder. Learn more in the [reverse build section](#reverse-build).
 
@@ -27,10 +27,6 @@ It is also possible to reverse the process and create `models` from the contents
 The `build:platform` file is used to build files for a single platform. The files are created into the `build` folder, specifically a `platform.<platform>` subfolder:
 
 ```sh
-# Build all platforms
-$ jovov4 build
-
-# Build single platform
 $ jovov4 build:platform <platform>
 
 # Example
@@ -50,8 +46,8 @@ You can also add flags from the table below.
 
 CLI integrations may also add their own flags. Learn more in the respective docs:
 
-- [Alexa build](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#build)
-- [Google Assistant build](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#build)
+- [Alexa `build`](https://v4.jovo.tech/marketplace/platform-alexa/cli-commands#build)
+- [Google Assistant `build`](https://v4.jovo.tech/marketplace/platform-googleassistant/cli-commands#build)
 
 
 ## Reverse Build
