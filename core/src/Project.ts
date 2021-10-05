@@ -53,15 +53,17 @@ export class Project {
   }
 
   /**
-   * Returns directory name for build folder.
-   * @param stage - Optional config stage.
+   * Returns directory name for build folder
    */
   getBuildDirectory(): string {
-    return (this.$config.getParameter('buildDirectory') as string) || 'build';
+    const buildDirectory: string =
+      (this.$config.getParameter('buildDirectory') as string) || 'build';
+    // If a stage is provided, generate build files in a subfolder for that stage
+    return joinPaths(buildDirectory, this.$stage || '');
   }
 
   /**
-   * Returns path to build folder.
+   * Returns path to build folder
    */
   getBuildPath(): string {
     return joinPaths(this.projectPath, this.getBuildDirectory());
@@ -69,7 +71,6 @@ export class Project {
 
   /**
    * Returns directory name for models folder.
-   * @param stage - Optional config stage.
    */
   getModelsDirectory(): string {
     return (this.$config.getParameter('modelsDirectory') as string) || 'models';
@@ -121,15 +122,15 @@ export class Project {
   }
 
   /**
-   * Checks if model files for given locales exist.
-   * @param locales - Locales for which to check.
+   * Checks if model files for given locales exist
+   * @param locales - Locales for which to check
    */
   hasModelFiles(locales?: string[]): boolean {
     if (!locales) {
       return false;
     }
 
-    // If at least one model does not exist for a given locale, return false.
+    // If at least one model does not exist for a given locale, return false
     for (const locale of locales) {
       const path: string = this.getModelPath(locale);
       if (!existsSync(`${path}.js`) && !existsSync(`${path}.json`)) {

@@ -105,6 +105,16 @@ describe('getBuildDirectory()', () => {
     const project: Project = new Project('');
     expect(project.getBuildDirectory()).toMatch('modifiedBuildDirectory');
   });
+
+  test('should return staged build directory', () => {
+    jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValueOnce('dev')
+      .mockReturnValue(undefined);
+
+    const project: Project = new Project('');
+    expect(project.getBuildDirectory()).toMatch(joinPaths('build', 'dev'));
+  });
 });
 
 describe('getBuildPath()', () => {
@@ -222,16 +232,18 @@ describe('hasModelFiles()', () => {
 });
 
 describe('validateModel()', () => {
-  test('should throw a ModelValidationError if model is not valid', () => {
+  test('should throw a ModelValidationError if model is not valid', async () => {
     jest.spyOn(Project.prototype, 'getModel').mockReturnThis();
     tv4.validate = jest.fn().mockReturnValueOnce(false);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    tv4.error = { message: 'Validation failed.' };
+    tv4.error = { message: 'Validation failed' };
 
     const project: Project = new Project('');
 
-    expect(project.validateModel('en', {})).rejects.toMatch('Validation failed for locale "en"');
+    await expect(project.validateModel('en', { invocation: 'test' }, {})).rejects.toEqual(
+      new Error('Validation failed for locale "en"'),
+    );
   });
 
   test('should do nothing if model is valid', async () => {
@@ -239,7 +251,7 @@ describe('validateModel()', () => {
     tv4.validate = jest.fn().mockReturnValueOnce(true);
 
     const project: Project = new Project('');
-    await project.validateModel('en', {});
+    await project.validateModel('en', { invocation: 'test' }, {});
   });
 });
 
