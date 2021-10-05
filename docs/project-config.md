@@ -199,6 +199,8 @@ const project = new ProjectConfig({
 
 By default, only the elements outside the `stages` are used. If a specific stage is active, all content from this stage is merged into the generic config.
 
+During the [`build` command](./build-command.md), the selected stage gets built into into a stage subfolder `build/<stage>`, for example `build/dev`.
+
 The active stage is determined in the following order (most prioritized first):
 
 * The stage is added as flag, e.g. `jovov4 build --stage someStage`
