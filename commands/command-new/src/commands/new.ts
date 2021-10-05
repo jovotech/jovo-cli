@@ -4,7 +4,9 @@ import {
   CliFlags,
   CRYSTAL_BALL,
   deleteFolderRecursive,
+  EventEmitter,
   flags,
+  JovoCli,
   JovoCliError,
   JovoCliPlugin,
   Log,
@@ -24,21 +26,19 @@ import { existsSync, mkdirSync } from 'fs';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
 import { join as joinPaths, resolve } from 'path';
+import NewCommand from '..';
 import {
   promptPreset,
   promptPresetName,
   promptProjectProperties,
   promptSavePreset,
-} from '../Prompts';
+} from '../prompts';
 import * as TemplateBuilder from '../TemplateBuilder';
 import { downloadTemplate, runNpmInstall } from '../utilities';
 
-export type NewArgs = CliArgs<typeof New>;
-export type NewFlags = CliFlags<typeof New>;
-
 export interface NewContext extends PluginContext, Omit<ProjectProperties, 'name' | 'key'> {
-  args: NewArgs;
-  flags: NewFlags;
+  args: CliArgs<typeof New>;
+  flags: CliFlags<typeof New>;
   platforms: (MarketplacePlugin & { cliPlugin: JovoCliPlugin })[];
 }
 
@@ -46,39 +46,26 @@ export type NewEvents = 'new';
 
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
-  // Prints out a description for this command.
-  static description = 'Creates a new Jovo project.';
-  // Prints out examples for this command.
-  static examples = [
-    'jovo new jovo-example-project',
-    'jovo new jovo-example-project --locale de --language typescript',
-  ];
-  // Defines flags for this command, such as --help.
+  static description = 'Creates a new Jovo project';
+  static examples = ['jovov4 new helloworld', 'jovov4 new --preset default'];
+  static availablePresets: string[] = [];
   static flags = {
-    'locale': flags.string({
+    locale: flags.string({
       char: 'l',
-      description: 'Locale of the language model.',
+      description: 'The locales to be created	',
       multiple: true,
     }),
-    'language': flags.string({
-      description: 'Sets the programming language of the template.',
+    language: flags.string({
+      description: 'Specifies the code language of your project',
       options: ['typescript'],
     }),
-    'typescript': flags.boolean({
-      description: 'Sets the programming language of the template to TypeScript.',
-    }),
-    'preset': flags.string({
+    preset: flags.string({
       description:
-        'Selects a preconfigured preset from the wizard without going through the selection process.',
-      dependsOn: ['no-wizard'],
-      // TODO: Implement!
-      // options: jovo.$userConfig.getPresets().map((preset) => preset.name),
+        'Selects a preconfigured preset from the wizard without going through the selection process',
+      options: New.availablePresets,
     }),
-    'no-wizard': flags.boolean({
-      description: 'Disables wizard.',
-    }),
-    'overwrite': flags.boolean({
-      description: 'Forces overwriting an existing project.',
+    clean: flags.boolean({
+      description: 'Forces overwriting an existing project',
     }),
     ...PluginCommand.flags,
   };
@@ -86,7 +73,7 @@ export class New extends PluginCommand<NewEvents> {
   static args = [
     <const>{
       name: 'directory',
-      description: 'Project directory.',
+      description: 'Project directory',
       parse(directory?: string) {
         if (directory && !/^[0-9a-zA-Z-_]+$/.test(directory)) {
           Log.info('Please use a valid directory name.');
@@ -99,21 +86,28 @@ export class New extends PluginCommand<NewEvents> {
   ];
   $context!: NewContext;
 
-  async run(): Promise<void> {
-    const { args, flags }: { args: NewArgs; flags: NewFlags } = this.parse(New);
+  static install(cli: JovoCli, plugin: NewCommand, emitter: EventEmitter<NewEvents>): void {
+    // Override PluginCommand.install() to fill options for --platform.
+    this.availablePresets.push(...cli.userConfig.getPresets().map((preset) => preset.name));
+    super.install(cli, plugin, emitter);
+  }
 
-    Log.spacer(' ');
+  async run(): Promise<void> {
+    const { args, flags } = this.parse(New);
+
+    Log.spacer();
     Log.info(`jovo new: ${New.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new'));
+    Log.spacer();
 
     let preset: Preset | undefined;
 
-    if (!flags['no-wizard']) {
-      Log.info(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard.`);
+    if (!flags['preset']) {
+      Log.info(`${CRYSTAL_BALL} Welcome to the Jovo CLI Wizard`);
       Log.spacer();
 
       try {
-        const { selectedPreset } = await promptPreset(this.$cli.$userConfig.getPresets());
+        const { selectedPreset } = await promptPreset(this.$cli.userConfig.getPresets());
         if (selectedPreset === 'manual') {
           // Manually select project properties.
           const options: ProjectProperties = await promptProjectProperties(args, flags);
@@ -129,10 +123,10 @@ export class New extends PluginCommand<NewEvents> {
 
             preset.name = presetName;
 
-            await this.$cli.$userConfig.savePreset(preset);
+            await this.$cli.userConfig.savePreset(preset);
           }
         } else {
-          preset = this.$cli.$userConfig.getPreset(selectedPreset);
+          preset = this.$cli.userConfig.getPreset(selectedPreset);
         }
       } catch (error) {
         if (error instanceof JovoCliError) {
@@ -144,7 +138,7 @@ export class New extends PluginCommand<NewEvents> {
         throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
       }
     } else if (flags.preset) {
-      preset = this.$cli.$userConfig.getPreset(flags.preset);
+      preset = this.$cli.userConfig.getPreset(flags.preset);
     }
 
     _merge(this.$context, {
@@ -179,7 +173,7 @@ export class New extends PluginCommand<NewEvents> {
 
     // Check if provided directory already exists, if so, prompt for overwrite.
     if (this.$cli.hasExistingProject(this.$context.projectName)) {
-      if (!flags.overwrite) {
+      if (!flags.clean) {
         const { overwrite } = await promptOverwrite(
           `The directory ${printHighlight(
             this.$context.projectName,
@@ -202,7 +196,7 @@ export class New extends PluginCommand<NewEvents> {
         if (!existsSync(this.$context.projectName)) {
           mkdirSync(this.$context.projectName);
         }
-        return joinPaths(this.$cli.$projectPath, this.$context.projectName);
+        return joinPaths(this.$cli.projectPath, this.$context.projectName);
       },
     );
     await newTask.run();
@@ -228,7 +222,7 @@ export class New extends PluginCommand<NewEvents> {
 
     // Install npm dependencies
     const installNpmTask: Task = new Task('Installing npm dependencies', async () => {
-      await runNpmInstall(joinPaths(this.$cli.$projectPath, this.$context.projectName));
+      await runNpmInstall(joinPaths(this.$cli.projectPath, this.$context.projectName));
     });
     await installNpmTask.run();
 
@@ -250,6 +244,7 @@ export class New extends PluginCommand<NewEvents> {
 
     await this.$emitter.run('new');
 
+    TemplateBuilder.copyModels(this.$context);
     TemplateBuilder.generateProjectConfiguration(this.$context);
 
     Log.spacer();

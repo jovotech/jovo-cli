@@ -5,7 +5,7 @@ import {
   GetBotsCommandOutput,
   LexModelBuildingServiceClient,
 } from '@aws-sdk/client-lex-model-building-service';
-import type { GetContext, GetEvents } from '@jovotech/cli-command-get';
+import type { GetPlatformContext, GetPlatformEvents } from '@jovotech/cli-command-get';
 import {
   ANSWER_CANCEL,
   flags,
@@ -19,32 +19,30 @@ import {
   Task,
   wait,
 } from '@jovotech/cli-core';
-import { existsSync, writeFileSync } from 'fs';
 import { LexModelFile } from '@jovotech/model-lex';
+import { existsSync, writeFileSync } from 'fs';
 import { join as joinPaths } from 'path';
-import { LexCli } from '..';
 
-export interface LexGetContext extends GetContext {
-  flags: GetContext['flags'] & { 'bot-name'?: string };
+export interface LexGetContext extends GetPlatformContext {
+  flags: GetPlatformContext['flags'] & { 'bot-name'?: string };
   lex: {
     botName?: string;
   };
 }
 
-export class GetHook extends PluginHook<GetEvents> {
-  $plugin!: LexCli;
+export class GetHook extends PluginHook<GetPlatformEvents> {
   $context!: LexGetContext;
 
   install(): void {
     this.middlewareCollection = {
       'install': [this.addCliOptions.bind(this)],
-      'before.get': [
+      'before.get:platform': [
         this.checkForPlatform.bind(this),
         this.updatePluginContext.bind(this),
         this.checkForAwsCredentials.bind(this),
         this.checkForExistingPlatformFiles.bind(this),
       ],
-      'get': [this.get.bind(this)],
+      'get:platform': [this.get.bind(this)],
     };
   }
 
@@ -68,7 +66,7 @@ export class GetHook extends PluginHook<GetEvents> {
    */
   checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (this.$context.platform && this.$context.platform !== this.$plugin.$id) {
+    if (!this.$context.platforms.includes(this.$plugin.id)) {
       this.uninstall();
     }
   }
@@ -81,28 +79,28 @@ export class GetHook extends PluginHook<GetEvents> {
       this.$context.lex = {};
     }
 
-    this.$context.lex.botName = this.$context.flags['bot-name'] || this.$plugin.$config.name;
+    this.$context.lex.botName = this.$context.flags['bot-name'] || this.$plugin.config.name;
   }
 
   /**
    * Checks if all necessary credentials are set.
    */
   checkForAwsCredentials(): void {
-    if (!this.$plugin.$config.credentials) {
+    if (!this.$plugin.config.credentials) {
       throw new JovoCliError({
         message: 'Could not find your AWS credentials.',
         module: this.$plugin.constructor.name,
       });
     }
 
-    if (!this.$plugin.$config.credentials.accessKeyId) {
+    if (!this.$plugin.config.credentials.accessKeyId) {
       throw new JovoCliError({
         message: 'Could not find accessKeyId for your AWS credentials.',
         module: this.$plugin.constructor.name,
       });
     }
 
-    if (!this.$plugin.$config.credentials.secretAccessKey) {
+    if (!this.$plugin.config.credentials.secretAccessKey) {
       throw new JovoCliError({
         message: 'Could not find secretAccessKey for your AWS credentials.',
         module: this.$plugin.constructor.name,
@@ -114,7 +112,7 @@ export class GetHook extends PluginHook<GetEvents> {
    * Checks if platform-specific files already exist and prompts for overwriting them.
    */
   async checkForExistingPlatformFiles(): Promise<void> {
-    if (!this.$context.flags.overwrite && existsSync(this.$plugin.getPlatformPath())) {
+    if (!this.$context.flags.clean && existsSync(this.$plugin.platformPath)) {
       const answer = await promptOverwrite('Found existing project files. How to proceed?');
       if (answer.overwrite === ANSWER_CANCEL) {
         this.uninstall();
@@ -125,8 +123,8 @@ export class GetHook extends PluginHook<GetEvents> {
   async get(): Promise<void> {
     try {
       const client: LexModelBuildingServiceClient = new LexModelBuildingServiceClient({
-        region: this.$plugin.$config.region,
-        credentials: this.$plugin.$config.credentials,
+        region: this.$plugin.config.region,
+        credentials: this.$plugin.config.credentials,
       });
 
       if (!this.$context.lex.botName) {
@@ -172,7 +170,7 @@ export class GetHook extends PluginHook<GetEvents> {
             resource: response,
           };
           writeFileSync(
-            joinPaths(this.$plugin.getPlatformPath(), `${response.locale!}.json`),
+            joinPaths(this.$plugin.platformPath, `${response.locale!}.json`),
             JSON.stringify(lexModel, null, 2),
           );
           await wait(500);

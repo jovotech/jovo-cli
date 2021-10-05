@@ -3,8 +3,8 @@ const { JovoCliPlugin } = require('../../../../../dist');
 class Plugin extends JovoCliPlugin {
   constructor(config) {
     super(config);
-    this.$id = 'commandPlugin';
-    this.$type = 'command';
+    this.id = 'commandPlugin';
+    this.type = 'command';
   }
 }
 

@@ -1,11 +1,11 @@
-import { join as joinPaths, sep as pathSeperator } from 'path';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import tv4 from 'tv4';
 import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
-
-import { JovoCliError } from './JovoCliError';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { join as joinPaths, sep as pathSeperator } from 'path';
+import tv4 from 'tv4';
+import { Log } from '.';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './constants';
+import { JovoCliError } from './JovoCliError';
 import { JovoCliPlugin } from './JovoCliPlugin';
 
 export class Project {
@@ -13,8 +13,8 @@ export class Project {
 
   private projectPath: string;
 
-  readonly $config: Config;
-  readonly $stage?: string;
+  readonly config: Config;
+  readonly stage?: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
@@ -23,20 +23,20 @@ export class Project {
     const stageIndex: number = process.argv.findIndex((el) => el === '--stage');
     // If a flag --stage has been set, set it to this.jovoStage. Otherwise intialize default stage.
     if (stageIndex > -1) {
-      this.$stage = process.argv[stageIndex + 1];
+      this.stage = process.argv[stageIndex + 1];
     } else {
       if (process.env.JOVO_STAGE) {
-        this.$stage = process.env.JOVO_STAGE;
+        this.stage = process.env.JOVO_STAGE;
       } else if (process.env.NODE_ENV) {
-        this.$stage = process.env.NODE_ENV;
+        this.stage = process.env.NODE_ENV;
       }
     }
 
-    this.$config = Config.getInstance(this.projectPath, this.$stage);
+    this.config = Config.getInstance(this.projectPath, this.stage);
 
     // If stage was not explicitly defined, try to get it from config.
-    if (!this.$stage) {
-      this.$stage = this.$config.getParameter('defaultStage') as string | undefined;
+    if (!this.stage) {
+      this.stage = this.config.getParameter('defaultStage') as string | undefined;
     }
   }
 
@@ -53,15 +53,17 @@ export class Project {
   }
 
   /**
-   * Returns directory name for build folder.
-   * @param stage - Optional config stage.
+   * Returns directory name for build folder
    */
   getBuildDirectory(): string {
-    return (this.$config.getParameter('buildDirectory') as string) || 'build';
+    const buildDirectory: string =
+      (this.config.getParameter('buildDirectory') as string) || 'build';
+    // If a stage is provided, generate build files in a subfolder for that stage
+    return joinPaths(buildDirectory, this.stage || '');
   }
 
   /**
-   * Returns path to build folder.
+   * Returns path to build folder
    */
   getBuildPath(): string {
     return joinPaths(this.projectPath, this.getBuildDirectory());
@@ -69,10 +71,9 @@ export class Project {
 
   /**
    * Returns directory name for models folder.
-   * @param stage - Optional config stage.
    */
   getModelsDirectory(): string {
-    return (this.$config.getParameter('modelsDirectory') as string) || 'models';
+    return (this.config.getParameter('modelsDirectory') as string) || 'models';
   }
 
   /**
@@ -121,15 +122,15 @@ export class Project {
   }
 
   /**
-   * Checks if model files for given locales exist.
-   * @param locales - Locales for which to check.
+   * Checks if model files for given locales exist
+   * @param locales - Locales for which to check
    */
   hasModelFiles(locales?: string[]): boolean {
     if (!locales) {
       return false;
     }
 
-    // If at least one model does not exist for a given locale, return false.
+    // If at least one model does not exist for a given locale, return false
     for (const locale of locales) {
       const path: string = this.getModelPath(locale);
       if (!existsSync(`${path}.js`) && !existsSync(`${path}.json`)) {
@@ -139,14 +140,17 @@ export class Project {
     return true;
   }
 
-  async validateModel(locale: string, validator: tv4.JsonSchema): Promise<void> {
-    const model: JovoModelData | JovoModelDataV3 = await this.getModel(locale);
-
+  async validateModel(
+    locale: string,
+    model: JovoModelData | JovoModelDataV3,
+    validator: tv4.JsonSchema,
+    plugin?: string,
+  ): Promise<void> {
     if (!tv4.validate(model, validator)) {
       throw new JovoCliError({
         message: `Validation failed for locale "${locale}"`,
-        details: tv4.error.message,
-        learnMore: tv4.error.dataPath ? `Path: ${tv4.error.dataPath}` : '',
+        module: plugin,
+        details: `${tv4.error.message} ${tv4.error.dataPath ? `at ${tv4.error.dataPath}` : ''}`,
       });
     }
   }
@@ -253,10 +257,11 @@ export class Project {
   }
 
   collectPlugins(): JovoCliPlugin[] {
+    Log.verbose('Loading project-scoped CLI plugins');
     const plugins: JovoCliPlugin[] = [];
 
     const projectPlugins: JovoCliPlugin[] =
-      (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
+      (this.config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
       plugins.push(plugin);

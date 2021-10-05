@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli",
-  "description": "Jovo Command Line Interface (Alpha) ",
-  "version": "4.0.0-beta.4",
+  "description": "Jovo Command Line Interface (Beta) ",
+  "version": "4.0.0-beta.8",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,12 +17,16 @@
     "tsc": "tsc",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
-    "link": "node bin/link",
-    "postinstall": "node bin/postinstall"
+    "link": "node bin/link"
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
-    "@jovotech/cli-core": "^4.0.0-beta.3",
+    "@jovotech/cli-command-build": "^4.0.0-beta.5",
+    "@jovotech/cli-command-deploy": "^4.0.0-beta.5",
+    "@jovotech/cli-command-get": "^4.0.0-beta.5",
+    "@jovotech/cli-command-new": "^4.0.0-beta.5",
+    "@jovotech/cli-command-run": "^4.0.0-beta.5",
+    "@jovotech/cli-core": "^4.0.0-beta.5",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.2",
@@ -67,6 +71,17 @@
         "./dist/hooks/VersionHook.js",
         "./dist/hooks/InitHook.js"
       ]
+    },
+    "topics": {
+      "build": {
+        "description": "Build your Jovo app using the following commands:"
+      },
+      "deploy": {
+        "description": "Deploy your Jovo app using the following commands:"
+      },
+      "get": {
+        "description": "Synchronize your Jovo app using the following commands:"
+      }
     }
   },
   "gitHead": "9edb66662ac080853fd9fe02524c2d2ed88aa952"

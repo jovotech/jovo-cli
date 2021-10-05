@@ -96,9 +96,9 @@ export function generateProjectConfiguration(context: NewContext): void {
     // Build default config for CLI plugin (default = '').
     let defaultConfig: string = '';
 
-    if (Object.keys(platform.cliPlugin.$config).length) {
+    if (Object.keys(platform.cliPlugin.config).length) {
       // Serialize the plugin's default config for further processing.
-      const unformattedConfig: string = util.inspect(platform.cliPlugin.$config, {
+      const unformattedConfig: string = util.inspect(platform.cliPlugin.config, {
         depth: null,
         colors: false,
       });
@@ -110,7 +110,7 @@ export function generateProjectConfiguration(context: NewContext): void {
         unformattedConfig.replace(/\n/g, '\n\t\t');
 
       // Overwrite default config with formatted config.
-      defaultConfig = util.inspect(platform.cliPlugin.$config, { depth: null, colors: false });
+      defaultConfig = util.inspect(platform.cliPlugin.config, { depth: null, colors: false });
     }
 
     projectConfig = insert(
@@ -154,9 +154,11 @@ export function generateAppConfiguration(context: NewContext): void {
     );
   }
   writeFileSync(appConfigPath, appConfig);
+}
 
+export function copyModels(context: NewContext): void {
   // Provide language models for each locale.
-  const modelsDirectory = 'models';
+  const modelsDirectory: string = 'models';
   for (const locale of context.locales) {
     if (locale === 'en') {
       continue;
@@ -166,5 +168,9 @@ export function generateAppConfiguration(context: NewContext): void {
       joinPaths(context.projectName, modelsDirectory, 'en.json'),
       joinPaths(context.projectName, modelsDirectory, `${locale}.json`),
     );
+  }
+
+  if (!context.locales.includes('en')) {
+    unlinkSync(joinPaths(context.projectName, modelsDirectory, 'en.json'));
   }
 }

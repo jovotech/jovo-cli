@@ -81,9 +81,9 @@ export function instantiateJovoWebhook(
   options: JovoWebhookConnector.PostOptions,
   childProcess?: ChildProcess,
 ): void {
-  const webhookId: string = cli.$userConfig.getWebhookUuid();
+  const webhookId: string = cli.userConfig.getWebhookUuid();
   // Get endpoint directly from config to skip eval() from $configReader.
-  const endpointRaw: string = cli.$project!.$config.getParameter('endpoint') as string;
+  const endpointRaw: string = cli.project!.config.getParameter('endpoint') as string;
   // Resolve endpoint. Transforms `JOVO_WEBHOOK_URL` to actual webhook url.
   const endpoint: string = cli.resolveEndpoint(endpointRaw);
 

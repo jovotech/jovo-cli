@@ -1,11 +1,11 @@
 import { JovoCliPlugin, PluginCommand, PluginHook, PluginType } from '@jovotech/cli-core';
 import { BuildServerless } from './commands/build.serverless';
-import { DeployHook } from './hooks/deploy.hook';
+import { DeployHook } from './hooks/DeployHook';
 import { ServerlessConfig } from './interfaces';
 
 export class ServerlessCli extends JovoCliPlugin {
-  $id: string = 'serverless';
-  $type: PluginType = 'target';
+  id: string = 'serverless';
+  type: PluginType = 'target';
 
   constructor(config: ServerlessConfig) {
     super(config);

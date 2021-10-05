@@ -7,9 +7,6 @@ import {
   JovoCliError,
   PluginCommand,
   printSubHeadline,
-  TARGET_ALL,
-  TARGET_INFO,
-  TARGET_MODEL,
   CliFlags,
   CliArgs,
   TADA,
@@ -19,52 +16,42 @@ import {
 import _merge from 'lodash.merge';
 import DeployCommand from '..';
 
-export type DeployPlatformFlags = CliFlags<typeof DeployPlatform>;
-export type DeployPlatformArgs = CliArgs<typeof DeployPlatform>;
 export type DeployPlatformEvents =
   | 'before.deploy:platform'
   | 'deploy:platform'
   | 'after.deploy:platform';
-export type DeployTarget = typeof TARGET_ALL | typeof TARGET_INFO | typeof TARGET_MODEL;
 
 export interface DeployPlatformContext extends PluginContext {
-  args: DeployPlatformArgs;
-  flags: DeployPlatformFlags;
-  target: DeployTarget;
+  args: CliArgs<typeof DeployPlatform>;
+  flags: CliFlags<typeof DeployPlatform>;
   platforms: string[];
   locales: string[];
 }
 
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id = 'deploy:platform';
-  static description = 'Deploys platform configuration.';
-  static examples: string[] = [
-    'jovo deploy --locale en-US --platform alexaSkill --stage dev',
-    'jovo deploy --target zip',
-  ];
+  static description = "Deploy to the specified platform's developer console";
+  static examples: string[] = ['jovov4 deploy:platform', 'jovov4 deploy:platform alexa'];
   static availablePlatforms: string[] = [];
   static flags = {
     locale: flags.string({
       char: 'l',
-      description: 'Locale of the language model.\n<en|de|etc>',
+      description: 'The locales to be deployed',
       multiple: true,
-    }),
-    target: flags.string({
-      char: 't',
-      description: 'Deploy target.',
-      options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL],
-      default: TARGET_ALL,
     }),
     ...PluginCommand.flags,
   };
   static args = [
     <const>{
       name: 'platform',
-      required: true,
-      description: 'Specifies a build platform.',
+      description: 'Specify the platform to be deployed to',
+      multiple: true,
       options: DeployPlatform.availablePlatforms,
     },
   ];
+  // Allow multiple arguments by disabling argument length validation
+  static strict = false;
+
   $context!: DeployPlatformContext;
 
   static install(
@@ -84,7 +71,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   }
 
   checkForPlatformsFolder(): void {
-    if (!existsSync(this.$cli.$project!.getBuildPath())) {
+    if (!existsSync(this.$cli.project!.getBuildPath())) {
       throw new JovoCliError({
         message: "Couldn't find a platform folder.",
         module: this.$plugin.constructor.name,
@@ -98,17 +85,16 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
 
     Log.spacer();
     Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform'));
+    Log.spacer();
 
-    const { args, flags }: { args: DeployPlatformArgs; flags: DeployPlatformFlags } =
-      this.parse(DeployPlatform);
+    const { args, flags } = this.parse(DeployPlatform);
 
     _merge(this.$context, {
       args,
       flags,
-      platforms: args.platform ? [args.platform] : this.$cli.getPlatforms(),
-      locales: flags.locale || this.$cli.$project!.getLocales(),
-      target: flags.target,
+      platforms: args.platform.length ? args.platform : this.$cli.getPlatforms(),
+      locales: flags.locale || this.$cli.project!.getLocales(),
     });
 
     await this.$emitter.run('before.deploy:platform');

@@ -1,35 +1,34 @@
 import { existsSync } from 'fs';
-import { join as joinPaths } from 'path';
 import _get from 'lodash.get';
+import { dirname, join as joinPaths } from 'path';
 import { URL } from 'url';
-import { npm } from 'global-dirs';
 import {
+  Config,
+  JovoCliError,
   JovoCliPlugin,
   JovoUserConfig,
-  Project,
-  JovoCliError,
-  Config,
-  PluginType,
   JOVO_WEBHOOK_URL,
   Log,
+  PluginType,
+  Project,
 } from '.';
 
 export class JovoCli {
   private static instance?: JovoCli;
-  private cliPlugins: JovoCliPlugin[] = [];
+  private plugins: JovoCliPlugin[] = [];
 
-  readonly $userConfig: JovoUserConfig;
+  readonly userConfig: JovoUserConfig;
 
-  $projectPath: string;
-  $project?: Project;
+  projectPath: string;
+  project?: Project;
 
   constructor() {
-    this.$projectPath = process.cwd();
-    this.$userConfig = new JovoUserConfig();
+    this.projectPath = process.cwd();
+    this.userConfig = new JovoUserConfig();
 
     if (this.isInProjectDirectory()) {
-      Log.verbose(`Found Jovo project in ${this.$projectPath}`);
-      this.$project = Project.getInstance(this.$projectPath);
+      Log.verbose(`Found Jovo project in ${this.projectPath}`);
+      this.project = Project.getInstance(this.projectPath);
     }
   }
 
@@ -46,13 +45,13 @@ export class JovoCli {
    * @param path - Project path.
    */
   initializeProject(path: string): void {
-    this.$projectPath = path;
+    this.projectPath = path;
 
     if (this.isInProjectDirectory()) {
-      this.$project = Project.getInstance(this.$projectPath);
+      this.project = Project.getInstance(this.projectPath);
     } else {
       throw new JovoCliError({
-        message: `Project could not be instantiated for ${this.$projectPath}`,
+        message: `Project could not be instantiated for ${this.projectPath}`,
       });
     }
   }
@@ -61,7 +60,7 @@ export class JovoCli {
    * Checks whether current working directory is a Jovo project.
    */
   isInProjectDirectory(): boolean {
-    const packageJsonPath: string = joinPaths(this.$projectPath, 'package.json');
+    const packageJsonPath: string = joinPaths(this.projectPath, 'package.json');
     if (!existsSync(packageJsonPath)) {
       return false;
     }
@@ -71,44 +70,50 @@ export class JovoCli {
       return false;
     }
 
-    return existsSync(joinPaths(this.$projectPath, Config.getFileName()));
+    return existsSync(joinPaths(this.projectPath, Config.getFileName()));
   }
 
   collectCommandPlugins(): JovoCliPlugin[] {
-    Log.verbose(`Loading CLI commands from ${npm.packages}`, { indent: 2 });
+    Log.verbose('Loading global CLI plugins');
     const globalPlugins: JovoCliPlugin[] = [];
-
-    const plugins: string[] = (this.$userConfig.getParameter('cli.plugins') as string[]) || [];
+    const plugins: string[] = (this.userConfig.getParameter('cli.plugins') as string[]) || [];
+    const globalNpmFolder: string = dirname(process.env.JOVO_CLI_EXEC_PATH!);
 
     for (const pluginId of plugins) {
       // Load plugin from global 'node_modules/'.
-      const pluginPath: string = joinPaths(npm.packages, pluginId, 'dist', 'index.js');
+      const pluginPaths: string[] = [
+        joinPaths(process.env.JOVO_CLI_EXEC_PATH!, 'node_modules', pluginId, 'dist', 'index.js'),
+        joinPaths(globalNpmFolder, pluginId, 'dist', 'index.js'),
+      ];
 
-      // If the plugin does not exist, skip it quietly.
-      if (!existsSync(pluginPath)) {
-        continue;
+      for (const pluginPath of pluginPaths) {
+        // If the plugin does not exist, skip it quietly.
+        if (!existsSync(pluginPath)) {
+          continue;
+        }
+
+        Log.verbose(`Loading ${pluginId} from ${pluginPath}`, { indent: 2 });
+        const plugin: JovoCliPlugin = new (require(pluginPath).default)();
+
+        globalPlugins.push(plugin);
+        break;
       }
-
-      const plugin: JovoCliPlugin = new (require(pluginPath).default)();
-
-      globalPlugins.push(plugin);
     }
 
     return globalPlugins;
   }
 
   /**
-   * Loads both project plugins and command plugins and returns respective classes.
+   * Loads both project plugins and command plugins and returns respective classes
    */
   loadPlugins(): JovoCliPlugin[] {
-    Log.verbose('Loading CLI plugins');
-    this.cliPlugins.push(...this.collectCommandPlugins());
+    this.plugins.push(...this.collectCommandPlugins());
 
-    if (this.$project) {
-      this.cliPlugins.push(...this.$project.collectPlugins());
+    if (this.project) {
+      this.plugins.push(...this.project.collectPlugins());
     }
 
-    return this.cliPlugins;
+    return this.plugins;
   }
 
   /**
@@ -116,11 +121,11 @@ export class JovoCli {
    * @param type - Type of CLI plugin.
    */
   getPluginsWithType(type: PluginType): JovoCliPlugin[] {
-    return this.cliPlugins.filter((plugin) => plugin.$type === type);
+    return this.plugins.filter((plugin) => plugin.type === type);
   }
 
   getPlatforms(): string[] {
-    return this.getPluginsWithType('platform').map((el: JovoCliPlugin) => el.$id);
+    return this.getPluginsWithType('platform').map((el: JovoCliPlugin) => el.id);
   }
 
   /**
@@ -139,7 +144,7 @@ export class JovoCli {
    * Returns the default Jovo Webhook URL.
    */
   getJovoWebhookUrl(): string {
-    const { href } = new URL(this.$userConfig.getWebhookUuid(), JOVO_WEBHOOK_URL);
+    const { href } = new URL(this.userConfig.getWebhookUuid(), JOVO_WEBHOOK_URL);
     return href;
   }
 

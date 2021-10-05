@@ -1,4 +1,4 @@
-import { prompt } from '@jovotech/cli-core';
+import { printUserInput, prompt } from '@jovotech/cli-core';
 
 /**
  * Prompts for the platform to use.
@@ -11,7 +11,7 @@ export async function promptForPlatform(platforms: string[]): Promise<{ platform
     type: 'select',
     message: 'Please select the platform you want to reverse build from:',
     choices: platforms.map((platform) => {
-      return { title: platform, value: platform };
+      return { title: printUserInput(platform), value: platform };
     }),
   });
 }
