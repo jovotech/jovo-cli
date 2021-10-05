@@ -9,7 +9,7 @@ Learn how you can use the `jovov4 build` command to create platform specific pro
 
 ## Introduction
 
-The Jovo CLI can be used to deploy projects to various developer consoles like the Alexa and Actions on Google consoles. The `build` command helps with creating platform specific files that the [`deploy` command](./deploy-command.md).
+The Jovo CLI can be used to deploy projects to various developer consoles like the Alexa and Actions on Google consoles. The `build` command helps with creating platform specific files, that can be deployed to the platform's developer console using the [`deploy` command](./deploy-command.md).
 
 `jovov4 build` turns the files from the [`models` folder](https://v4.jovo.tech/docs/models) and the [project configuration from `jovo.project.js`](./project-config.md) into platform specific files in the `build` folder. These files can then be used for deployment.
 
@@ -33,7 +33,7 @@ $ jovov4 build:platform <platform>
 $ jovov4 build:platform alexa
 ```
 
-If you added stages to your [project configuration](./project-config.md), the platform folder will be inside stage folder: `build/<stage>/platform.<platform>`.
+If you added stages to your [project configuration](./project-config.md), the platform folder will be inside the respective stage folder: `build/<stage>/platform.<platform>`.
 
 You can also add flags from the table below.
 
