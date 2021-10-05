@@ -28,10 +28,8 @@ export interface GetPlatformContext extends PluginContext {
 
 export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatformEvents> {
   static id = 'get:platform';
-  // TODO: with punctuation or not?
   static description = 'Synchronize your local build files with platform developer consoles';
   static examples: string[] = ['jovov4 get:platform alexa'];
-  // Includes all available platforms, which will be initialized on install()
   static availablePlatforms: string[] = [];
   static flags = {
     'locale': flags.string({
@@ -55,6 +53,8 @@ export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatform
       options: GetPlatform.availablePlatforms,
     },
   ];
+  // Allow multiple arguments by disabling argument length validation
+  static strict = false;
   $context!: GetPlatformContext;
 
   static install(cli: JovoCli, plugin: GetCommand, emitter: EventEmitter<GetPlatformEvents>): void {
