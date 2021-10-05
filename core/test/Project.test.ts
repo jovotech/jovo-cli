@@ -105,6 +105,16 @@ describe('getBuildDirectory()', () => {
     const project: Project = new Project('');
     expect(project.getBuildDirectory()).toMatch('modifiedBuildDirectory');
   });
+
+  test('should return staged build directory', () => {
+    jest
+      .spyOn(Config.prototype, 'getParameter')
+      .mockReturnValueOnce('dev')
+      .mockReturnValue(undefined);
+
+    const project: Project = new Project('');
+    expect(project.getBuildDirectory()).toMatch(joinPaths('build', 'dev'));
+  });
 });
 
 describe('getBuildPath()', () => {
@@ -227,7 +237,7 @@ describe('validateModel()', () => {
     tv4.validate = jest.fn().mockReturnValueOnce(false);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    tv4.error = { message: 'Validation failed.' };
+    tv4.error = { message: 'Validation failed' };
 
     const project: Project = new Project('');
 
@@ -243,7 +253,7 @@ describe('validateModel()', () => {
     tv4.validate = jest.fn().mockReturnValueOnce(true);
 
     const project: Project = new Project('');
-    await project.validateModel('en', { invocation: '' }, {});
+    await project.validateModel('en', { invocation: 'test' }, {});
   });
 });
 

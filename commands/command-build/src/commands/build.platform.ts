@@ -114,7 +114,7 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
     // Create build/ folder depending on user config.
     const buildPath: string = this.$cli.project!.getBuildPath();
     if (!existsSync(buildPath)) {
-      mkdirSync(buildPath);
+      mkdirSync(buildPath, { recursive: true });
     }
   }
 

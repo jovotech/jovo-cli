@@ -244,6 +244,7 @@ export class New extends PluginCommand<NewEvents> {
 
     await this.$emitter.run('new');
 
+    TemplateBuilder.copyModels(this.$context);
     TemplateBuilder.generateProjectConfiguration(this.$context);
 
     Log.spacer();
