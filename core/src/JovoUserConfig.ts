@@ -18,7 +18,7 @@ export class JovoUserConfig {
 
     // Save a default template for users with the beta configv4 file,
     // since the default template previously had the key "Default_TS"
-    if (!this.config.cli.presets.find((preset) => preset.name === 'default')) {
+    if (!this.config?.cli?.presets?.find((preset) => preset.name === 'default')) {
       this.savePreset(this.getDefaultPreset());
     }
   }

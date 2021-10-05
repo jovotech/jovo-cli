@@ -222,7 +222,7 @@ describe('hasModelFiles()', () => {
 });
 
 describe('validateModel()', () => {
-  test('should throw a ModelValidationError if model is not valid', () => {
+  test('should throw a ModelValidationError if model is not valid', async () => {
     jest.spyOn(Project.prototype, 'getModel').mockReturnThis();
     tv4.validate = jest.fn().mockReturnValueOnce(false);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -231,7 +231,11 @@ describe('validateModel()', () => {
 
     const project: Project = new Project('');
 
-    expect(project.validateModel('en', {})).rejects.toMatch('Validation failed for locale "en"');
+    try {
+      await project.validateModel('en', { invocation: '' }, {});
+    } catch (error) {
+      expect((error as Error).message).toMatch('Validation failed for locale "en"');
+    }
   });
 
   test('should do nothing if model is valid', async () => {
@@ -239,7 +243,7 @@ describe('validateModel()', () => {
     tv4.validate = jest.fn().mockReturnValueOnce(true);
 
     const project: Project = new Project('');
-    await project.validateModel('en', {});
+    await project.validateModel('en', { invocation: '' }, {});
   });
 });
 

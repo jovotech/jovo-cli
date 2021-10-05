@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join as joinPaths, resolve } from 'path';
 import {
   Config,
@@ -10,11 +10,8 @@ import {
   Project,
 } from '../src';
 
-jest.mock('global-dirs', () => ({
-  npm: {
-    packages: resolve(joinPaths('test', '__mocks__', 'plugins')),
-  },
-}));
+// Mock JovoUserConfig
+jest.mock('../src/JovoUserConfig');
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
 describe('JovoCli.getInstance()', () => {
@@ -123,19 +120,22 @@ describe('isInProjectDirectory()', () => {
     const jovo: JovoCli = new JovoCli();
     jovo.projectPath = testPath;
 
-    const packageJsonFile = { dependencies: { 'jovo-framework': '1.0.0' } };
+    const packageJsonFile = { dependencies: { '@jovotech/framework': '1.0.0' } };
+    jest.mock(joinPaths(testPath, 'package.json'), () => packageJsonFile, { virtual: true });
     writeFileSync(joinPaths(testPath, 'package.json'), JSON.stringify(packageJsonFile));
 
     expect(jovo.isInProjectDirectory()).toBeFalsy();
   });
 
-  test.skip('should return true if config exists', () => {
+  test('should return true if config exists', () => {
     jest.spyOn(JovoCli.prototype, 'isInProjectDirectory').mockReturnValueOnce(false);
 
     const jovo: JovoCli = new JovoCli();
     jovo.projectPath = testPath;
 
-    const packageJsonFile = { dependencies: { 'jovo-framework': '1.0.0' } };
+    const packageJsonFile = { dependencies: { '@jovotech/framework': '1.0.0' } };
+    jest.mock(joinPaths(testPath, 'package.json'), () => packageJsonFile, { virtual: true });
+
     writeFileSync(joinPaths(testPath, 'package.json'), JSON.stringify(packageJsonFile));
     writeFileSync(joinPaths(testPath, Config.getFileName()), '');
 
@@ -163,9 +163,6 @@ describe('hasExistingProject()', () => {
 describe('getJovoWebhookUrl()', () => {
   test('should return webhook url', () => {
     // Mock JovoUserConfig.
-    const mockedGet: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'get')
-      .mockReturnThis();
     const mockedWebhook: jest.SpyInstance = jest
       .spyOn(JovoUserConfig.prototype, 'getWebhookUuid')
       .mockReturnValue('1234');
@@ -174,7 +171,6 @@ describe('getJovoWebhookUrl()', () => {
 
     expect(jovo.getJovoWebhookUrl()).toMatch('https://webhookv4.jovo.cloud/1234');
 
-    mockedGet.mockRestore();
     mockedWebhook.mockRestore();
   });
 });
@@ -295,11 +291,12 @@ describe('collectCommandPlugins()', () => {
     mocked.mockRestore();
   });
 
-  test.skip('should return an array containing an instantiated JovoCliPlugin', () => {
+  test('should return an array containing an instantiated JovoCliPlugin', () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
       .spyOn(JovoUserConfig.prototype, 'getParameter')
       .mockReturnValue(['Plugin']);
+    process.env.JOVO_CLI_EXEC_PATH = resolve(joinPaths('test', '__mocks__', 'plugins', 'Plugin'));
 
     const jovo: JovoCli = new JovoCli();
     const commandPlugins: JovoCliPlugin[] = jovo.collectCommandPlugins();
@@ -308,6 +305,7 @@ describe('collectCommandPlugins()', () => {
     expect(commandPlugins).toHaveLength(1);
     expect(commandPlugins[0].id).toMatch('commandPlugin');
 
+    delete process.env.JOVO_CLI_EXEC_PATH;
     mocked.mockRestore();
   });
 });
