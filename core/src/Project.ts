@@ -57,9 +57,9 @@ export class Project {
    */
   getBuildDirectory(): string {
     const buildDirectory: string =
-      (this.$config.getParameter('buildDirectory') as string) || 'build';
+      (this.config.getParameter('buildDirectory') as string) || 'build';
     // If a stage is provided, generate build files in a subfolder for that stage
-    return joinPaths(buildDirectory, this.$stage || '');
+    return joinPaths(buildDirectory, this.stage || '');
   }
 
   /**
