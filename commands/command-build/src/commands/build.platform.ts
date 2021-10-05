@@ -1,6 +1,7 @@
-import { DeployCodeEvents, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
+import { DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import {
   checkForProjectDirectory,
+  CliArgs,
   CliFlags,
   EventEmitter,
   flags,
@@ -10,9 +11,6 @@ import {
   PluginContext,
   printSubHeadline,
   TADA,
-  TARGET_ALL,
-  TARGET_INFO,
-  TARGET_MODEL,
   Task,
   wait,
 } from '@jovotech/cli-core';
@@ -21,63 +19,64 @@ import _merge from 'lodash.merge';
 import BuildCommand from '..';
 import { promptForPlatform } from '../utilities';
 
-export type BuildFlags = CliFlags<typeof Build>;
-
-export interface BuildContext extends PluginContext {
-  flags: BuildFlags;
+export interface BuildPlatformContext extends PluginContext {
+  args: CliArgs<typeof BuildPlatform>;
+  flags: CliFlags<typeof BuildPlatform>;
   platforms: string[];
   locales: string[];
-  target: string;
 }
 
-export type BuildEvents = 'before.build' | 'build' | 'after.build' | 'reverse.build';
+export type BuildPlatformEvents =
+  | 'before.build:platform'
+  | 'build:platform'
+  | 'build:platform.reverse'
+  | 'after.build:platform';
 
-export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | DeployPlatformEvents> {
-  static id = 'build';
-  static description = 'Build platform-specific language models based on jovo models folder.';
-  static examples: string[] = ['jovo build --platform alexaSkill', 'jovo build --target zip'];
+export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPlatformEvents> {
+  static id = 'build:platform';
+  static description = 'Build platform-specific language models based on jovo models folder';
+  static examples = ['jovo build:platform alexa'];
   static availablePlatforms: string[] = [];
   static flags = {
     clean: flags.boolean({
-      description:
-        'Deletes all platform folders and executes a clean build. If --platform is specified, it deletes only the respective platforms folder.',
+      description: 'Delete the relevant folders in build at the beginning of the process',
     }),
     deploy: flags.boolean({
       char: 'd',
-      description: 'Runs deploy after build.',
+      description:
+        'Directly deploy the platform after the build process. Run "deploy:platform --help" command for more information.',
       exclusive: ['reverse'],
-    }),
-    force: flags.boolean({
-      description: 'Forces overwrite of existing project for reverse build.',
-      dependsOn: ['reverse'],
     }),
     locale: flags.string({
       char: 'l',
-      description: 'Locale of the language model.\n<en|de|etc>',
-      multiple: true,
-    }),
-    platform: flags.string({
-      char: 'p',
-      description: 'Specifies a build platform.',
-      options: Build.availablePlatforms,
+      description: 'The locales to be built from the models folder',
       multiple: true,
     }),
     reverse: flags.boolean({
       char: 'r',
-      description: 'Builds Jovo language model from platform specific language model.',
+      description: 'Turn contents of the build folder into Jovo Model files',
       exclusive: ['deploy'],
-    }),
-    target: flags.string({
-      char: 't',
-      description: 'Target of build.',
-      options: [TARGET_ALL, TARGET_INFO, TARGET_MODEL],
-      default: TARGET_ALL,
     }),
     ...PluginCommand.flags,
   };
-  $context!: BuildContext;
+  static args = [
+    <const>{
+      name: 'platform',
+      description: 'Specifies a build platform',
+      options: BuildPlatform.availablePlatforms,
+      multiple: true,
+    },
+  ];
+  // Allow multiple arguments by disabling argument length validation
+  static strict = false;
 
-  static install(cli: JovoCli, plugin: BuildCommand, emitter: EventEmitter<BuildEvents>): void {
+  $context!: BuildPlatformContext;
+
+  static install(
+    cli: JovoCli,
+    plugin: BuildCommand,
+    emitter: EventEmitter<BuildPlatformEvents>,
+  ): void {
     // Override PluginCommand.install() to fill options for --platform.
     this.availablePlatforms.push(...cli.getPlatforms());
     super.install(cli, plugin, emitter);
@@ -85,7 +84,7 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
 
   install(): void {
     this.middlewareCollection = {
-      build: [this.prepareBuild.bind(this)],
+      'build:platform': [this.prepareBuild.bind(this)],
     };
   }
 
@@ -101,7 +100,7 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
       },
     );
     const collectModelsTask: Task = new Task(
-      `Collecting Jovo language model files from ./${this.$cli.$project!.getModelsDirectory()} folder.`,
+      `Collecting Jovo language model files from ./${this.$cli.project!.getModelsDirectory()} folder.`,
       async () => {
         await wait(500);
         return `Locales: ${this.$context.locales.join(',')}`;
@@ -113,7 +112,7 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
     await initTask.run();
 
     // Create build/ folder depending on user config.
-    const buildPath: string = this.$cli.$project!.getBuildPath();
+    const buildPath: string = this.$cli.project!.getBuildPath();
     if (!existsSync(buildPath)) {
       mkdirSync(buildPath, { recursive: true });
     }
@@ -123,17 +122,17 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
     checkForProjectDirectory(this.$cli.isInProjectDirectory());
 
     Log.spacer();
-    Log.info(`jovo build: ${Build.description}`);
+    Log.info(`jovo build:platform: ${BuildPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
 
-    const { flags }: { flags: BuildFlags } = this.parse(Build);
+    const { args, flags } = this.parse(BuildPlatform);
 
     // Build plugin context, containing information about the current command environment.
     _merge(this.$context, {
+      args,
       flags,
-      locales: flags.locale || this.$cli.$project!.getLocales(),
-      platforms: flags.platform || this.$cli.getPlatforms(),
-      target: flags.target,
+      locales: flags.locale || this.$cli.project!.getLocales(),
+      platforms: args.platform.length ? args.platform : this.$cli.getPlatforms(),
     });
 
     // If --reverse flag has been set and more than one platform has been specified, prompt for one.
@@ -146,7 +145,7 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
       // On build --reverse, omit selecting default locales with $project.getLocales()
       this.$context.locales = flags.locale || [];
 
-      await this.$emitter.run('reverse.build');
+      await this.$emitter.run('build:platform.reverse');
 
       Log.spacer();
       Log.info(`${TADA} Reverse build completed.`);
@@ -154,9 +153,9 @@ export class Build extends PluginCommand<BuildEvents | DeployCodeEvents | Deploy
       return;
     }
 
-    await this.$emitter.run('before.build');
-    await this.$emitter.run('build');
-    await this.$emitter.run('after.build');
+    await this.$emitter.run('before.build:platform');
+    await this.$emitter.run('build:platform');
+    await this.$emitter.run('after.build:platform');
 
     if (flags.deploy) {
       Log.spacer();

@@ -1,21 +1,19 @@
 import _merge from 'lodash.merge';
-
 import { JovoCli } from '.';
 import { EventEmitter } from './EventEmitter';
+import { PluginConfig, PluginContext, PluginType } from './interfaces';
 import { Log } from './Logger';
 import { PluginCommand } from './PluginCommand';
 import { PluginHook } from './PluginHook';
-import { PluginConfig, PluginContext, PluginType } from './interfaces';
 
 export abstract class JovoCliPlugin {
-  abstract readonly $type: PluginType;
-  abstract readonly $id: string;
-
-  $config: PluginConfig;
+  abstract readonly type: PluginType;
+  abstract readonly id: string;
+  readonly config: PluginConfig;
   $cli!: JovoCli;
 
   constructor(config?: PluginConfig) {
-    this.$config = _merge(this.getDefaultConfig(), config);
+    this.config = _merge(this.getDefaultConfig(), config);
   }
 
   getCommands(): typeof PluginCommand[] {

@@ -2,9 +2,9 @@ import Command, { flags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 import { Mixin } from 'ts-mixer';
 import { EventEmitter } from './EventEmitter';
+import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
-import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -51,6 +51,30 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    */
   abstract run(): Promise<unknown>;
 
+  /**
+   * Overwrite parse()
+   */
+  parse<FLAGS>(
+    command: Parser.Input<FLAGS> = this.constructor as unknown as Parser.Input<FLAGS>,
+    argv?: string[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Parser.Output<FLAGS, any> {
+    const output = super.parse(command, argv);
+
+    for (const arg of Object.keys(output.args)) {
+      const commandArgument = command.args!.find((el) => el.name === arg)!;
+
+      // TODO: Multiple as last argument?
+      if (!commandArgument.multiple || command.args!.length > 1) {
+        break;
+      }
+
+      const argValues: string[] = output.argv.filter((el) => !el.startsWith('-'));
+      output.args[arg] = argValues;
+    }
+
+    return output;
+  }
   /**
    * Catch possible errors and print them.
    * @param error - JovoCliError.

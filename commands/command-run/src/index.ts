@@ -4,8 +4,8 @@ import { Run } from './commands/run';
 export * from './commands/run';
 
 export class RunCommand extends JovoCliPlugin {
-  $id: string = 'run';
-  $type: PluginType = 'command';
+  id: string = 'run';
+  type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
     return [Run];

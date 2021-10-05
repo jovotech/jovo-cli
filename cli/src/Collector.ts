@@ -40,6 +40,7 @@ export class Collector extends Plugin {
         command: commandId,
       };
 
+      Log.verbose('Installing CLI plugins');
       for (const plugin of plugins) {
         plugin.install(cli, emitter, context);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -49,7 +50,7 @@ export class Collector extends Plugin {
 
       // Load hooks from project configuration.
       if (cli.isInProjectDirectory()) {
-        const hooks: ConfigHooks = cli.$project!.$config.getParameter('hooks') as ConfigHooks;
+        const hooks: ConfigHooks = cli.project!.config.getParameter('hooks') as ConfigHooks;
         if (hooks) {
           for (const [eventKey, events] of Object.entries(hooks)) {
             for (const event of events) {

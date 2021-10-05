@@ -14,7 +14,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   }
 
   checkForTarget(): void {
-    if (!this.$context.target.includes(this.$plugin.$id)) {
+    if (!this.$context.target.includes(this.$plugin.id)) {
       this.uninstall();
     }
   }
@@ -39,8 +39,8 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   async bundle(): Promise<void> {
     const bundleTask: Task = new Task(`${PACKAGE} Bundling your code`, async () => {
       try {
-        await execAsync(`npm run bundle:${this.$cli.$project!.$stage}`, {
-          cwd: this.$cli.$projectPath,
+        await execAsync(`npm run bundle:${this.$cli.project!.stage || 'dev'}`, {
+          cwd: this.$cli.projectPath,
         });
       } catch (error) {
         throw new JovoCliError({
@@ -61,7 +61,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   async deployServerless(): Promise<void> {
     const deployTask: Task = new Task(`${ROCKET} Deploying to Serverless`, async () => {
       try {
-        await execAsync('serverless deploy', { cwd: this.$cli.$projectPath });
+        await execAsync('serverless deploy', { cwd: this.$cli.projectPath });
       } catch (error) {
         throw new JovoCliError({
           message: 'Serverless deployment failed.',

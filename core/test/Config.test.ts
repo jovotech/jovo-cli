@@ -104,7 +104,7 @@ describe('get()', () => {
 
   test('should merge and return the config with merged plugins for the provided stage', () => {
     const stagedPlugin: Plugin = new Plugin({ files: { foo2: 'bar2' } });
-    stagedPlugin.$id = 'stagedCliPlugin';
+    stagedPlugin.id = 'stagedCliPlugin';
 
     jest.spyOn(Config.prototype, 'getContent').mockReturnValue({
       plugins: [new Plugin({ files: { foo1: 'bar1' } })],
@@ -123,11 +123,11 @@ describe('get()', () => {
     expect(configContent.stages).toBeUndefined();
     expect(configContent).toHaveProperty('plugins');
     expect(configContent.plugins).toHaveLength(1);
-    expect(configContent.plugins![0].$id).toMatch('stagedCliPlugin');
-    expect(configContent.plugins![0].$config.files).toHaveProperty('foo1');
-    expect(configContent.plugins![0].$config.files!.foo1).toMatch('bar1');
-    expect(configContent.plugins![0].$config.files).toHaveProperty('foo2');
-    expect(configContent.plugins![0].$config.files!.foo2).toMatch('bar2');
+    expect(configContent.plugins![0].id).toMatch('stagedCliPlugin');
+    expect(configContent.plugins![0].config.files).toHaveProperty('foo1');
+    expect(configContent.plugins![0].config.files!.foo1).toMatch('bar1');
+    expect(configContent.plugins![0].config.files).toHaveProperty('foo2');
+    expect(configContent.plugins![0].config.files!.foo2).toMatch('bar2');
   });
 });
 

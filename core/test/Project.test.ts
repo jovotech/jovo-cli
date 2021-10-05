@@ -50,15 +50,15 @@ describe('new Project()', () => {
 
     const project: Project = new Project('testPath');
     expect(project['projectPath']).toMatch('testPath');
-    expect(project.$config).toBeDefined();
-    expect(project.$stage).toBeUndefined();
+    expect(project.config).toBeDefined();
+    expect(project.stage).toBeUndefined();
   });
 
   test('should get the stage from command arguments', () => {
     process.argv.push('--stage', 'dev');
     const project: Project = new Project('');
-    expect(project.$stage).toBeDefined();
-    expect(project.$stage).toMatch('dev');
+    expect(project.stage).toBeDefined();
+    expect(project.stage).toMatch('dev');
     // Remove stage argument.
     process.argv.splice(-2);
   });
@@ -66,16 +66,16 @@ describe('new Project()', () => {
   test('should get the stage from process.env.JOVO_STAGE', () => {
     process.env.JOVO_STAGE = 'dev';
     const project: Project = new Project('');
-    expect(project.$stage).toBeDefined();
-    expect(project.$stage).toMatch('dev');
+    expect(project.stage).toBeDefined();
+    expect(project.stage).toMatch('dev');
     delete process.env.JOVO_STAGE;
   });
 
   test('should get the stage from process.env.NODE_ENV', () => {
     process.env.NODE_ENV = 'dev';
     const project: Project = new Project('');
-    expect(project.$stage).toBeDefined();
-    expect(project.$stage).toMatch('dev');
+    expect(project.stage).toBeDefined();
+    expect(project.stage).toMatch('dev');
     delete process.env.NODE_ENV;
   });
 
@@ -83,8 +83,8 @@ describe('new Project()', () => {
     jest.spyOn(Config.prototype, 'getParameter').mockReturnValue('dev');
 
     const project: Project = new Project('');
-    expect(project.$stage).toBeDefined();
-    expect(project.$stage).toMatch('dev');
+    expect(project.stage).toBeDefined();
+    expect(project.stage).toMatch('dev');
   });
 });
 
@@ -241,9 +241,11 @@ describe('validateModel()', () => {
 
     const project: Project = new Project('');
 
-    await expect(project.validateModel('en', { invocation: 'test' }, {})).rejects.toEqual(
-      new Error('Validation failed for locale "en"'),
-    );
+    try {
+      await project.validateModel('en', { invocation: '' }, {});
+    } catch (error) {
+      expect((error as Error).message).toMatch('Validation failed for locale "en"');
+    }
   });
 
   test('should do nothing if model is valid', async () => {
@@ -429,10 +431,10 @@ describe('collectPlugins()', () => {
     const plugins: JovoCliPlugin[] = project.collectPlugins();
 
     expect(plugins).toHaveLength(1);
-    expect(plugins[0]).toHaveProperty('$config');
-    expect(plugins[0].$config).toHaveProperty('files');
-    expect(plugins[0].$config.files).toHaveProperty('foo');
-    expect(plugins[0].$config.files!.foo).toMatch('bar');
-    expect(plugins[0].$id).toMatch('commandPlugin');
+    expect(plugins[0]).toHaveProperty('config');
+    expect(plugins[0].config).toHaveProperty('files');
+    expect(plugins[0].config.files).toHaveProperty('foo');
+    expect(plugins[0].config.files!.foo).toMatch('bar');
+    expect(plugins[0].id).toMatch('commandPlugin');
   });
 });

@@ -8,7 +8,7 @@ import {
   validateLocale,
 } from '@jovotech/cli-core';
 import chalk from 'chalk';
-import { NewArgs, NewFlags } from './commands/new';
+import { NewContext } from './commands/new';
 import { fetchMarketPlace } from './utilities';
 
 export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset: string }> {
@@ -43,13 +43,13 @@ export async function promptPreset(presets: Preset[]): Promise<{ selectedPreset:
 }
 
 export async function promptProjectProperties(
-  args: NewArgs,
-  flags: NewFlags,
+  args: NewContext['args'],
+  flags: NewContext['flags'],
 ): Promise<ProjectProperties> {
   // Override, thus preanswer certain prompts, depending on process arguments.
   prompt.override({
     projectName: args.directory,
-    language: flags.language || (flags.typescript ? 'typescript' : undefined),
+    language: flags.language,
     locales: flags.locale,
   });
 
@@ -185,13 +185,17 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
 
 export async function promptServer(
   servers: prompt.Choice[],
-): Promise<{ server: MarketplacePlugin }> {
+): Promise<{ server: MarketplacePlugin | undefined }> {
   return await prompt(
     {
+      // TODO: No or Ill add it later
       name: 'server',
       message: 'Which server do you want to use?',
       type: 'select',
-      choices: servers,
+      choices: [
+        ...servers,
+        { title: printUserInput("None (or I'll add it later)"), value: undefined },
+      ],
     },
     {
       onCancel() {

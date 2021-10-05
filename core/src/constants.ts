@@ -33,9 +33,3 @@ export const PACKAGE: string = SUPPORTS_EMOJI ? get('package') : '';
 export const DOWNLOAD: string = SUPPORTS_EMOJI ? get('inbox_tray') : '';
 export const MAGNIFYING_GLASS: string = SUPPORTS_EMOJI ? get('mag') : '';
 export const DISK: string = SUPPORTS_EMOJI ? get('floppy_disk') : '';
-
-// ####### TARGETS #######
-export const TARGET_ALL = 'all';
-export const TARGET_ZIP = 'zip';
-export const TARGET_INFO = 'info';
-export const TARGET_MODEL = 'model';

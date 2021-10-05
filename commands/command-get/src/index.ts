@@ -1,14 +1,14 @@
 import { JovoCliPlugin, PluginCommand, PluginType } from '@jovotech/cli-core';
-import { Get } from './commands/get';
+import { GetPlatform } from './commands/get.platform';
 
-export * from './commands/get';
+export * from './commands/get.platform';
 
 export class GetCommand extends JovoCliPlugin {
-  $id: string = 'get';
-  $type: PluginType = 'command';
+  id: string = 'get';
+  type: PluginType = 'command';
 
   getCommands(): typeof PluginCommand[] {
-    return [Get];
+    return [GetPlatform];
   }
 }
 

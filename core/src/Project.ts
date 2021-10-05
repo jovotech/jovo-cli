@@ -1,11 +1,11 @@
-import { join as joinPaths, sep as pathSeperator } from 'path';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'fs';
-import tv4 from 'tv4';
 import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
-
-import { JovoCliError } from './JovoCliError';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { join as joinPaths, sep as pathSeperator } from 'path';
+import tv4 from 'tv4';
+import { Log } from '.';
 import { Config } from './Config';
 import { DEFAULT_LOCALE } from './constants';
+import { JovoCliError } from './JovoCliError';
 import { JovoCliPlugin } from './JovoCliPlugin';
 
 export class Project {
@@ -13,8 +13,8 @@ export class Project {
 
   private projectPath: string;
 
-  readonly $config: Config;
-  readonly $stage?: string;
+  readonly config: Config;
+  readonly stage?: string;
 
   constructor(projectPath: string) {
     this.projectPath = projectPath;
@@ -23,20 +23,20 @@ export class Project {
     const stageIndex: number = process.argv.findIndex((el) => el === '--stage');
     // If a flag --stage has been set, set it to this.jovoStage. Otherwise intialize default stage.
     if (stageIndex > -1) {
-      this.$stage = process.argv[stageIndex + 1];
+      this.stage = process.argv[stageIndex + 1];
     } else {
       if (process.env.JOVO_STAGE) {
-        this.$stage = process.env.JOVO_STAGE;
+        this.stage = process.env.JOVO_STAGE;
       } else if (process.env.NODE_ENV) {
-        this.$stage = process.env.NODE_ENV;
+        this.stage = process.env.NODE_ENV;
       }
     }
 
-    this.$config = Config.getInstance(this.projectPath, this.$stage);
+    this.config = Config.getInstance(this.projectPath, this.stage);
 
     // If stage was not explicitly defined, try to get it from config.
-    if (!this.$stage) {
-      this.$stage = this.$config.getParameter('defaultStage') as string | undefined;
+    if (!this.stage) {
+      this.stage = this.config.getParameter('defaultStage') as string | undefined;
     }
   }
 
@@ -57,9 +57,9 @@ export class Project {
    */
   getBuildDirectory(): string {
     const buildDirectory: string =
-      (this.$config.getParameter('buildDirectory') as string) || 'build';
+      (this.config.getParameter('buildDirectory') as string) || 'build';
     // If a stage is provided, generate build files in a subfolder for that stage
-    return joinPaths(buildDirectory, this.$stage || '');
+    return joinPaths(buildDirectory, this.stage || '');
   }
 
   /**
@@ -73,7 +73,7 @@ export class Project {
    * Returns directory name for models folder.
    */
   getModelsDirectory(): string {
-    return (this.$config.getParameter('modelsDirectory') as string) || 'models';
+    return (this.config.getParameter('modelsDirectory') as string) || 'models';
   }
 
   /**
@@ -257,10 +257,11 @@ export class Project {
   }
 
   collectPlugins(): JovoCliPlugin[] {
+    Log.verbose('Loading project-scoped CLI plugins');
     const plugins: JovoCliPlugin[] = [];
 
     const projectPlugins: JovoCliPlugin[] =
-      (this.$config.getParameter('plugins') as JovoCliPlugin[]) || [];
+      (this.config.getParameter('plugins') as JovoCliPlugin[]) || [];
 
     for (const plugin of projectPlugins) {
       plugins.push(plugin);

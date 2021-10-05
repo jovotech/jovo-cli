@@ -1,46 +1,43 @@
-import { join as joinPaths } from 'path';
-import type { BuildContext, BuildEvents } from '@jovotech/cli-command-build';
+import type { BuildPlatformContext, BuildPlatformEvents } from '@jovotech/cli-command-build';
 import {
+  ANSWER_CANCEL,
+  ANSWER_OVERWRITE,
   deleteFolderRecursive,
   getResolvedLocales,
   JovoCliError,
+  Log,
   mergeArrayCustomizer,
   OK_HAND,
   PluginHook,
   printHighlight,
+  promptOverwriteReverseBuild,
+  REVERSE_ARROWS,
   STATION,
   Task,
   wait,
-  promptOverwriteReverseBuild,
-  ANSWER_CANCEL,
-  REVERSE_ARROWS,
-  ANSWER_OVERWRITE,
-  Log,
 } from '@jovotech/cli-core';
 import { JovoModelData, JovoModelDataV3, NativeFileInformation } from '@jovotech/model';
-import _mergeWith from 'lodash.mergewith';
-import _pick from 'lodash.pick';
-import _get from 'lodash.get';
 import { JovoModelLex, LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-
-import { LexCli } from '..';
+import _get from 'lodash.get';
+import _mergeWith from 'lodash.mergewith';
+import _pick from 'lodash.pick';
+import { join as joinPaths } from 'path';
 import { getLexLocale, SupportedLocales, SupportedLocalesType } from '../utilities';
 
-export class BuildHook extends PluginHook<BuildEvents> {
-  $plugin!: LexCli;
-  $context!: BuildContext;
+export class BuildHook extends PluginHook<BuildPlatformEvents> {
+  $context!: BuildPlatformContext;
 
   install(): void {
     this.middlewareCollection = {
-      'before.build': [
+      'before.build:platform': [
         this.checkForPlatform.bind(this),
         this.checkForCleanBuild.bind(this),
         this.validateLocales.bind(this),
         this.validateModels.bind(this),
       ],
-      'build': [this.buildLexModel.bind(this)],
-      'reverse.build': [this.buildReverse.bind(this)],
+      'build:platform': [this.buildLexModel.bind(this)],
+      'build:platform.reverse': [this.buildReverse.bind(this)],
     };
   }
 
@@ -50,7 +47,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
    */
   checkForPlatform(): void {
     // Check if this plugin should be used or not.
-    if (this.$context.platforms && !this.$context.platforms.includes(this.$plugin.$id)) {
+    if (!this.$context.platforms.includes(this.$plugin.id)) {
       this.uninstall();
     }
   }
@@ -61,7 +58,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
   checkForCleanBuild(): void {
     // If --clean has been set, delete the respective platform folders before building.
     if (this.$context.flags.clean) {
-      deleteFolderRecursive(this.$plugin.getPlatformPath());
+      deleteFolderRecursive(this.$plugin.platformPath);
     }
   }
 
@@ -71,7 +68,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
   validateLocales(): void {
     const locales: SupportedLocalesType[] = this.$context.locales.reduce(
       (locales: string[], locale: string) => {
-        locales.push(...getResolvedLocales(locale, SupportedLocales, this.$plugin.$config.locales));
+        locales.push(...getResolvedLocales(locale, SupportedLocales, this.$plugin.config.locales));
         return locales;
       },
       [],
@@ -106,8 +103,8 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
     for (const locale of this.$context.locales) {
       const localeTask = new Task(locale, async () => {
-        const model: JovoModelData | JovoModelDataV3 = await this.$cli.$project!.getModel(locale);
-        await this.$cli.$project!.validateModel(locale, model, JovoModelLex.getValidator(model));
+        const model: JovoModelData | JovoModelDataV3 = await this.$cli.project!.getModel(locale);
+        await this.$cli.project!.validateModel(locale, model, JovoModelLex.getValidator(model));
         await wait(500);
       });
 
@@ -118,7 +115,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
   }
 
   async buildLexModel(): Promise<void> {
-    const platformPath: string = this.$plugin.getPlatformPath();
+    const platformPath: string = this.$plugin.platformPath;
     if (!existsSync(platformPath)) {
       mkdirSync(platformPath);
     }
@@ -129,7 +126,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
       const resolvedLocales: string[] = getResolvedLocales(
         modelLocale,
         SupportedLocales,
-        this.$plugin.$config.locales,
+        this.$plugin.config.locales,
       );
 
       const resolvedLocalesOutput: string = resolvedLocales.join(', ');
@@ -168,7 +165,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const configResource: LexModelFileResource = _pick(
-              this.$plugin.$config,
+              this.$plugin.config,
               resourceProperties,
             );
             // Additionally merge already existing model files.
@@ -197,16 +194,16 @@ export class BuildHook extends PluginHook<BuildEvents> {
    */
   async buildReverse(): Promise<void> {
     // Since platform can be prompted for, check if this plugin should actually be executed again.
-    if (!this.$context.platforms.includes(this.$plugin.$id)) {
+    if (!this.$context.platforms.includes(this.$plugin.id)) {
       return;
     }
 
     // Get locale to reverse build from.
     // If a locale is specified, check if it's available to reverse build from.
     const platformLocale: string = getLexLocale(
-      this.$plugin.getPlatformPath(),
+      this.$plugin.platformPath,
       this.$context.locales,
-      this.$plugin.$config.locales,
+      this.$plugin.config.locales,
     );
     if (this.$context.flags.locale && this.$context.flags.locale[0] !== platformLocale) {
       throw new JovoCliError({
@@ -218,14 +215,14 @@ export class BuildHook extends PluginHook<BuildEvents> {
       });
     }
 
-    // Try to resolve the locale according to the locale map provided in this.$plugin.$config.locales.
+    // Try to resolve the locale according to the locale map provided in this.$plugin.config.locales.
     let modelLocale: string = platformLocale;
-    if (this.$plugin.$config.locales) {
-      for (const locale in this.$plugin.$config.locales) {
+    if (this.$plugin.config.locales) {
+      for (const locale in this.$plugin.config.locales) {
         const resolvedLocales: string[] = getResolvedLocales(
           locale,
           SupportedLocales,
-          this.$plugin.$config.locales,
+          this.$plugin.config.locales,
         );
 
         if (resolvedLocales.includes(platformLocale)) {
@@ -237,7 +234,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
 
     const reverseBuildTask: Task = new Task(`${REVERSE_ARROWS} Reversing model files`);
     // If Jovo model files for the current locales exist, ask whether to back them up or not.
-    if (this.$cli.$project!.hasModelFiles([modelLocale]) && !this.$context.flags.force) {
+    if (this.$cli.project!.hasModelFiles([modelLocale]) && !this.$context.flags.clean) {
       const answer = await promptOverwriteReverseBuild();
       if (answer.overwrite === ANSWER_CANCEL) {
         return;
@@ -246,7 +243,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
         // Backup old files.
         const backupTask: Task = new Task('Creating backups', async () => {
           const localeTask: Task = new Task(modelLocale, () => {
-            this.$cli.$project!.backupModel(modelLocale);
+            this.$cli.project!.backupModel(modelLocale);
             Log.spacer();
           });
           await localeTask.run();
@@ -272,7 +269,7 @@ export class BuildHook extends PluginHook<BuildEvents> {
           module: this.$plugin.constructor.name,
         });
       }
-      this.$cli.$project!.saveModel(nativeData, modelLocale);
+      this.$cli.project!.saveModel(nativeData, modelLocale);
       await wait(500);
     });
 
@@ -285,18 +282,18 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * @param locale - The locale that specifies which model to load.
    */
   async getJovoModel(locale: string): Promise<JovoModelData | JovoModelDataV3> {
-    const model: JovoModelData | JovoModelDataV3 = await this.$cli.$project!.getModel(locale);
+    const model: JovoModelData | JovoModelDataV3 = await this.$cli.project!.getModel(locale);
 
     // Merge model with configured language model in project.js.
     _mergeWith(
       model,
-      this.$cli.$project!.$config.getParameter(`languageModel.${locale}`) || {},
+      this.$cli.project!.config.getParameter(`languageModel.${locale}`) || {},
       mergeArrayCustomizer,
     );
     // Merge model with configured, platform-specific language model in project.js.
     _mergeWith(
       model,
-      _get(this.$plugin.$config, `options.languageModel.${locale}`, {}),
+      _get(this.$plugin.config, `options.languageModel.${locale}`, {}),
       mergeArrayCustomizer,
     );
 
@@ -308,6 +305,6 @@ export class BuildHook extends PluginHook<BuildEvents> {
    * @param locale - Locale of the Lex model.
    */
   getLexModel(locale: string): JovoModelData | JovoModelDataV3 {
-    return require(joinPaths(this.$plugin.getPlatformPath(), locale));
+    return require(joinPaths(this.$plugin.platformPath, locale));
   }
 }

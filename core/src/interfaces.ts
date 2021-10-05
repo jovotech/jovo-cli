@@ -132,17 +132,7 @@ export type CliFlags<COMMAND extends typeof PluginCommand> = COMMAND extends Par
     Parser.Output<T, any>['flags']
   : never;
 
-export interface CommandArgument<NAME extends string> {
-  name: NAME;
-  parse?: Function;
-  required?: boolean;
-  description?: string;
-  hidden?: boolean;
-  default?: string;
-  options?: string[];
-}
-
 export type CliArgs<COMMAND extends typeof PluginCommand> = Record<
   COMMAND['args'][number]['name'],
-  string
+  COMMAND['args'][number]['multiple'] extends true ? string[] : string
 >;
