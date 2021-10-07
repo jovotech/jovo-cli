@@ -4,8 +4,6 @@
 
 > 5 October 2021
 
-### Merged
-
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
 - Add v4 docs [`#241`](https://github.com/jovotech/jovo-cli/pull/241)
@@ -16,16 +14,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/target-serverless@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.2...@jovotech/target-serverless@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -35,8 +29,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -45,23 +37,17 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/target-serverless@4.0.0-alpha.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-alpha.2...@jovotech/target-serverless@4.0.0-alpha.3)
 
 > 1 June 2021
 
-### Merged
-
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
 ## [@jovotech/nlu-lex@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.4...@jovotech/nlu-lex@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -73,16 +59,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/nlu-lex@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.2...@jovotech/nlu-lex@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -92,8 +74,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -102,23 +82,17 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/nlu-lex@4.0.0-alpha.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-alpha.2...@jovotech/nlu-lex@4.0.0-alpha.3)
 
 > 1 June 2021
 
-### Merged
-
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
 ## [@jovotech/cli@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.5...@jovotech/cli@4.0.0-beta.7)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -130,16 +104,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli@4.0.0-beta.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.3...@jovotech/cli@4.0.0-beta.4)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -149,8 +119,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -159,15 +127,11 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/cli@4.0.0-alpha.13](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-alpha.12...@jovotech/cli@4.0.0-alpha.13)
 
 > 1 June 2021
-
-### Merged
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -175,15 +139,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-core@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.4...@jovotech/cli-core@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -195,16 +155,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-core@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.2...@jovotech/cli-core@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -214,8 +170,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -224,15 +178,11 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/cli-core@4.0.0-alpha.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-alpha.8...@jovotech/cli-core@4.0.0-alpha.9)
 
 > 1 June 2021
-
-### Merged
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -240,15 +190,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-run@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.4...@jovotech/cli-command-run@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -260,16 +206,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-command-run@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.2...@jovotech/cli-command-run@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -279,8 +221,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -289,8 +229,6 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -298,15 +236,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-new@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.4...@jovotech/cli-command-new@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -318,16 +252,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-command-new@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.2...@jovotech/cli-command-new@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -337,8 +267,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -347,8 +275,6 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -356,15 +282,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.4...@jovotech/cli-command-get@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -376,16 +298,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.2...@jovotech/cli-command-get@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -395,8 +313,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -405,15 +321,11 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/cli-command-get@4.0.0-alpha.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-alpha.8...@jovotech/cli-command-get@4.0.0-alpha.9)
 
 > 1 June 2021
-
-### Merged
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -421,15 +333,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-deploy@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.4...@jovotech/cli-command-deploy@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -441,16 +349,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-command-deploy@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.2...@jovotech/cli-command-deploy@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -460,8 +364,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -470,15 +372,11 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/cli-command-deploy@4.0.0-alpha.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-alpha.8...@jovotech/cli-command-deploy@4.0.0-alpha.9)
 
 > 1 June 2021
-
-### Merged
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -486,15 +384,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.4...@jovotech/cli-command-build@4.0.0-beta.5)
 
 > 5 October 2021
-
-### Merged
 
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
@@ -506,16 +400,12 @@
 
 > 13 September 2021
 
-### Merged
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.2...@jovotech/cli-command-build@4.0.0-beta.3)
 
 > 27 August 2021
-
-### Merged
 
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
@@ -525,8 +415,6 @@
 
 > 19 August 2021
 
-### Merged
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -535,15 +423,11 @@
 
 > 29 June 2021
 
-### Merged
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
 
 ## [@jovotech/cli-command-build@4.0.0-alpha.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-alpha.8...@jovotech/cli-command-build@4.0.0-alpha.9)
 
 > 1 June 2021
-
-### Merged
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
@@ -551,15 +435,11 @@
 
 > 26 May 2021
 
-### Merged
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
 ## [@jovotech/cli-command-build@4.0.0-alpha.7]()
 
 > 7 May 2021
-
-### Merged
 
 - 🚚 Abstract JovoCli class, pass instance to plugins [`#200`](https://github.com/jovotech/jovo-cli/pull/200)
 - 🔨 Update jovo run process [`#199`](https://github.com/jovotech/jovo-cli/pull/199)
@@ -627,9 +507,7 @@
 - :sparkles: Add staging configuration to app.json + Bugfixes [`#17`](https://github.com/jovotech/jovo-cli/pull/17)
 - fix #13 by using resolve-bin to locate nodemon [`#16`](https://github.com/jovotech/jovo-cli/pull/16)
 - :recycle: Add --src parameter to lambda deployment, chainable get command, bugfixing [`#12`](https://github.com/jovotech/jovo-cli/pull/12)
-- :boom: **Breaking change:** :boom: Version 1.0.0 [`#6`](https://github.com/jovotech/jovo-cli/pull/6)
-
-### Fixed
+- **Breaking change:** :boom: Version 1.0.0 [`#6`](https://github.com/jovotech/jovo-cli/pull/6)
 
 - Merge pull request #16 from fgnass/master [`#13`](https://github.com/jovotech/jovo-cli/issues/13)
 - use resolve-bin (fixes #13) [`#13`](https://github.com/jovotech/jovo-cli/issues/13)
