@@ -1,14 +1,13 @@
-import { Command, Plugin, Topic } from '@oclif/config';
 import {
-  DefaultEvents,
-  EventEmitter,
   ConfigHooks,
-  JovoCliPlugin,
+  EventEmitter,
   JovoCli,
   JovoCliError,
+  JovoCliPlugin,
   Log,
   PluginContext,
 } from '@jovotech/cli-core';
+import { Command, Plugin, Topic } from '@oclif/config';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {

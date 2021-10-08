@@ -1,6 +1,5 @@
 import {
   GetBotCommand,
-  GetBotCommandOutput,
   GetBotsCommand,
   GetBotsCommandOutput,
   LexModelBuildingServiceClient,
