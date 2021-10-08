@@ -1,5 +1,12 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.5...@jovotech/target-serverless@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/target-serverless@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.4...@jovotech/target-serverless@4.0.0-beta.5)
 
 > 5 October 2021
@@ -45,6 +52,13 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/nlu-lex@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.5...@jovotech/nlu-lex@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/nlu-lex@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.4...@jovotech/nlu-lex@4.0.0-beta.5)
 
 > 5 October 2021
@@ -89,6 +103,13 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/cli@4.0.0-beta.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.7...@jovotech/cli@4.0.0-beta.9)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
 
 ## [@jovotech/cli@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.5...@jovotech/cli@4.0.0-beta.7)
 
@@ -141,6 +162,13 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-core@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.5...@jovotech/cli-core@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/cli-core@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.4...@jovotech/cli-core@4.0.0-beta.5)
 
 > 5 October 2021
@@ -192,6 +220,13 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-run@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.5...@jovotech/cli-command-run@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.4...@jovotech/cli-command-run@4.0.0-beta.5)
 
 > 5 October 2021
@@ -238,6 +273,13 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.5...@jovotech/cli-command-new@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/cli-command-new@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.4...@jovotech/cli-command-new@4.0.0-beta.5)
 
 > 5 October 2021
@@ -283,6 +325,13 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.5...@jovotech/cli-command-get@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.4...@jovotech/cli-command-get@4.0.0-beta.5)
 
@@ -335,6 +384,13 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.5...@jovotech/cli-command-deploy@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.4...@jovotech/cli-command-deploy@4.0.0-beta.5)
 
 > 5 October 2021
@@ -385,6 +441,13 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.5...@jovotech/cli-command-build@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.4...@jovotech/cli-command-build@4.0.0-beta.5)
 

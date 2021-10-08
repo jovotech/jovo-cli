@@ -1,5 +1,12 @@
 # Changelog
 
+## [@jovotech/cli@4.0.0-beta.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.7...@jovotech/cli@4.0.0-beta.9)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/cli@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.5...@jovotech/cli@4.0.0-beta.7)
 
 > 5 October 2021

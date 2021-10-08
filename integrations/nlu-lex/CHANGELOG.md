@@ -1,5 +1,12 @@
 # Changelog
 
+## [@jovotech/nlu-lex@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.5...@jovotech/nlu-lex@4.0.0-beta.6)
+
+> 8 October 2021
+
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+
 ## [@jovotech/nlu-lex@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.4...@jovotech/nlu-lex@4.0.0-beta.5)
 
 > 5 October 2021
