@@ -80,8 +80,14 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
    * @param error - JovoCliError.
    */
   async catch(error: JovoCliError | Error): Promise<void> {
-    if (!(error instanceof JovoCliError)) {
-      error = new JovoCliError({ message: error.message });
+    // Since the Jovo CLI works with global and local modules,
+    // the instanceof parameter won't work at times when an error is
+    // thrown in a local and validated in a global module.
+    // Hence we must check manually if the error satisfies properties of JovoCliError.
+    if (!(error instanceof JovoCliError) && !(error as JovoCliError)['properties']) {
+      error = new JovoCliError({
+        message: error.message,
+      });
     }
     JovoCliError.print(error as JovoCliError);
     process.exit(1);
