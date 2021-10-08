@@ -2,7 +2,7 @@ import fs from 'fs';
 import tv4 from 'tv4';
 import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
 import { join as joinPaths, resolve } from 'path';
-import { Config, deleteFolderRecursive, JovoCliPlugin, Project } from '../src';
+import { Config, deleteFolderRecursive, JovoCliError, JovoCliPlugin, Project } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
@@ -187,7 +187,9 @@ describe('getModel()', () => {
     fs.writeFileSync(joinPaths(testPath, 'en.json'), '{');
 
     const project: Project = new Project('');
-    return expect(project.getModel('en')).rejects.toEqual(new Error());
+    return expect(project.getModel('en')).rejects.toEqual(
+      new JovoCliError({ message: 'Unexpected end of JSON input' }),
+    );
   });
 
   test('should return model', async () => {
