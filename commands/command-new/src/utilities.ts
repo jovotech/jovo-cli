@@ -1,4 +1,4 @@
-import { execAsync, JovoCliError, MarketplacePlugin } from '@jovotech/cli-core';
+import { execAsync, ExecResponse, JovoCliError, MarketplacePlugin } from '@jovotech/cli-core';
 import downloadGH from 'download-git-repo';
 
 /**
@@ -21,10 +21,8 @@ export async function runNpmInstall(projectPath: string): Promise<void> {
   try {
     await execAsync('npm install', { cwd: projectPath });
   } catch (error) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     // Suppress NPM warnings.
-    throw new JovoCliError({ message: error.stderr, module: 'NewCommand' });
+    throw new JovoCliError({ message: (error as ExecResponse).stderr!, module: 'NewCommand' });
   }
 }
 

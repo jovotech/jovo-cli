@@ -60,9 +60,7 @@ export async function promptProjectProperties(
         message: "Please enter your project's name:",
         type: 'text',
         initial: 'helloworld',
-        onState() {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+        onState(this: { rendered: string }) {
           this.rendered = printUserInput(this.rendered);
         },
       },
@@ -91,16 +89,12 @@ export async function promptProjectProperties(
               validateLocale(locale.trim());
             }
           } catch (error) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            return error.message;
+            return (error as Error).message;
           }
 
           return true;
         },
-        onState() {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+        onState(this: { rendered: string }) {
           this.rendered = printUserInput(this.rendered);
         },
       },
@@ -169,9 +163,7 @@ export async function promptPresetName(): Promise<{ presetName: string }> {
       format(presetName: string) {
         return presetName.trim();
       },
-      onState() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      onState(this: { rendered: string }) {
         this.rendered = printUserInput(this.rendered);
       },
     },

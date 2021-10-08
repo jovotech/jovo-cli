@@ -19,7 +19,7 @@ import {
   Task,
   wait,
 } from '@jovotech/cli-core';
-import { LexModelFile } from '@jovotech/model-lex';
+import { LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
 import { existsSync, writeFileSync } from 'fs';
 import { join as joinPaths } from 'path';
 
@@ -155,9 +155,7 @@ export class GetHook extends PluginHook<GetPlatformEvents> {
             versionOrAlias: '$LATEST',
           });
 
-          const response: GetBotCommandOutput = await client.send(command);
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          const response: Partial<GetBotsCommandOutput> = await client.send(command);
           delete response.$metadata;
           const lexModel: LexModelFile = {
             metadata: {
@@ -165,12 +163,13 @@ export class GetHook extends PluginHook<GetPlatformEvents> {
               importType: 'LEX',
               importFormat: 'JSON',
             },
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            resource: response,
+            resource: response as LexModelFileResource,
           };
           writeFileSync(
-            joinPaths(this.$plugin.platformPath, `${response.locale!}.json`),
+            joinPaths(
+              this.$plugin.platformPath,
+              `${(response as LexModelFileResource).locale}.json`,
+            ),
             JSON.stringify(lexModel, null, 2),
           );
           await wait(500);
@@ -178,9 +177,10 @@ export class GetHook extends PluginHook<GetPlatformEvents> {
       );
       await getTask.run();
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
+      throw new JovoCliError({
+        message: (error as Error).message,
+        module: this.$plugin.constructor.name,
+      });
     }
   }
 

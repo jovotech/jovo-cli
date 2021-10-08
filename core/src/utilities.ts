@@ -1,12 +1,11 @@
 import { exec, ExecException, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
-import { join as joinPaths } from 'path';
 import latestVersion from 'latest-version';
 import _get from 'lodash.get';
+import { join as joinPaths } from 'path';
 import stripAnsi from 'strip-ansi';
-
+import { DependencyFile, ExecResponse, LocaleMap, Packages, PackageVersions } from './interfaces';
 import { JovoCliError } from './JovoCliError';
-import { DependencyFile, LocaleMap, Packages, PackageVersions } from './interfaces';
 import { Log } from './Logger';
 
 /**
@@ -15,10 +14,7 @@ import { Log } from './Logger';
  * @param cmd
  * @param options
  */
-export function execAsync(
-  cmd: string,
-  options: ExecOptions = {},
-): Promise<{ stdout?: string; stderr?: string }> {
+export function execAsync(cmd: string, options: ExecOptions = {}): Promise<ExecResponse> {
   return new Promise((resolve, reject) => {
     exec(cmd, options, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {

@@ -1,5 +1,12 @@
 import { DeployCodeContext, DeployCodeEvents } from '@jovotech/cli-command-deploy';
-import { execAsync, JovoCliError, PACKAGE, PluginHook, ROCKET, Task } from '@jovotech/cli-core';
+import {
+  execAsync,
+  JovoCliError,
+  PACKAGE,
+  PluginHook,
+  ExecResponse,
+  Task,
+} from '@jovotech/cli-core';
 import { getServerlessError, ServerlessConfig } from '../utilities';
 
 export class DeployHook extends PluginHook<DeployCodeEvents> {
@@ -27,9 +34,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
       await execAsync('serverless -v');
     } catch (error) {
       throw new JovoCliError({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        message: error.stderr,
+        message: (error as ExecResponse).stderr,
         module: 'ServerlessTarget',
         hint: 'Please install the Serverless CLI using the command "npm install -g serverless".',
       });
@@ -46,9 +51,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
         throw new JovoCliError({
           message: 'Something failed while bundling your project files.',
           module: this.$plugin.constructor.name,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          details: error.stderr,
+          details: (error as { stderr: string }).stderr,
         });
       }
     });
@@ -66,9 +69,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
         throw new JovoCliError({
           message: 'Serverless deployment failed.',
           module: this.$plugin.constructor.name,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          details: getServerlessError(error.stdout),
+          details: getServerlessError((error as { stdout: string }).stdout),
         });
       }
     });

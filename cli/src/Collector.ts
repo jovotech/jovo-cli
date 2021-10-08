@@ -18,7 +18,7 @@ export class Collector extends Plugin {
   commands: Command.Plugin[] = [];
 
   async install(commandId: string): Promise<void> {
-    const emitter = new EventEmitter<DefaultEvents>();
+    const emitter = new EventEmitter();
 
     await this.loadPlugins(commandId, emitter);
   }
@@ -29,7 +29,7 @@ export class Collector extends Plugin {
    * @param project - The instantiated project.
    * @param emitter - The Event Emitter.
    */
-  async loadPlugins(commandId: string, emitter: EventEmitter<DefaultEvents>): Promise<void> {
+  async loadPlugins(commandId: string, emitter: EventEmitter): Promise<void> {
     try {
       Log.verbose('Initiating Jovo CLI');
       const cli: JovoCli = JovoCli.getInstance();
@@ -43,9 +43,7 @@ export class Collector extends Plugin {
       Log.verbose('Installing CLI plugins');
       for (const plugin of plugins) {
         plugin.install(cli, emitter, context);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.commands.push(...plugin.getCommands());
+        this.commands.push(...(plugin.getCommands() as unknown as Command.Plugin[]));
       }
 
       // Load hooks from project configuration.
@@ -54,8 +52,6 @@ export class Collector extends Plugin {
         if (hooks) {
           for (const [eventKey, events] of Object.entries(hooks)) {
             for (const event of events) {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
               emitter.on(eventKey, event.bind(null, context));
             }
           }

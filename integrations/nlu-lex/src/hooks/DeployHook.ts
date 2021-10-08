@@ -5,8 +5,10 @@ import {
   GetIntentCommandOutput,
   LexModelBuildingServiceClient,
   PutBotCommand,
+  PutBotCommandInput,
   PutBotResponse,
   PutIntentCommand,
+  PutIntentCommandInput,
   PutIntentCommandOutput,
 } from '@aws-sdk/client-lex-model-building-service';
 import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
@@ -99,9 +101,9 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
 
       // In the case that the checksum for an intent is falsy, this function can be called again after fetching the correct checksum.
       const deployIntent = async (intent: LexIntent) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const putIntentCommand: PutIntentCommand = new PutIntentCommand(intent);
+        const putIntentCommand: PutIntentCommand = new PutIntentCommand(
+          intent as PutIntentCommandInput,
+        );
         const response: PutIntentCommandOutput = await client.send(putIntentCommand);
         intent.checksum = response.checksum;
       };
@@ -112,9 +114,7 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
           try {
             await deployIntent(intent);
           } catch (error) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (error.name === 'PreconditionFailedException') {
+            if ((error as Error).name === 'PreconditionFailedException') {
               const getIntentCommand: GetIntentCommand = new GetIntentCommand({
                 name: intent.name,
                 version: '$LATEST',
@@ -130,20 +130,16 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       });
 
       const deployBot = async () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         lexModel.resource.intents = (lexModel.resource.intents || []).map((intent) => ({
           intentName: intent.name,
           intentVersion: intent.version,
           ...intent,
         }));
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const putBotCommand: PutBotCommand = new PutBotCommand(lexModel.resource);
+        const putBotCommand: PutBotCommand = new PutBotCommand(
+          lexModel.resource as PutBotCommandInput,
+        );
         const response: PutBotResponse = await client.send(putBotCommand);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        lexModel.resource.checksum = response.checksum;
+        (lexModel.resource as LexIntent).checksum = response.checksum;
         this.writeLexModel(lexModel, locale);
       };
 
@@ -151,17 +147,13 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
         try {
           await deployBot();
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          if (error.name === 'PreconditionFailedException') {
+          if ((error as Error).name === 'PreconditionFailedException') {
             const getBotCommand: GetBotCommand = new GetBotCommand({
               name: lexModel.resource.name,
               versionOrAlias: '$LATEST',
             });
             const response: GetBotCommandOutput = await client.send(getBotCommand);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            lexModel.resource.checksum = response.checksum;
+            (lexModel.resource as LexIntent).checksum = response.checksum;
             await deployBot();
           } else {
             throw error;
@@ -175,9 +167,10 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       if (error instanceof JovoCliError) {
         throw error;
       }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
+      throw new JovoCliError({
+        message: (error as Error).message,
+        module: this.$plugin.constructor.name,
+      });
     }
   }
 
