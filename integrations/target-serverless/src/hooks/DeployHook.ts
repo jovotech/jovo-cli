@@ -6,6 +6,7 @@ import {
   PluginHook,
   ExecResponse,
   Task,
+  ROCKET,
 } from '@jovotech/cli-core';
 import { getServerlessError, ServerlessConfig } from '../utilities';
 
@@ -34,7 +35,7 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
       await execAsync('serverless -v');
     } catch (error) {
       throw new JovoCliError({
-        message: (error as ExecResponse).stderr,
+        message: (error as ExecResponse).stderr!,
         module: 'ServerlessTarget',
         hint: 'Please install the Serverless CLI using the command "npm install -g serverless".',
       });
