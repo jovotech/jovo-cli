@@ -133,9 +133,10 @@ export class New extends PluginCommand<NewEvents> {
           throw error;
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        throw new JovoCliError({ message: error.message, module: this.$plugin.constructor.name });
+        throw new JovoCliError({
+          message: (error as Error).message,
+          module: this.$plugin.constructor.name,
+        });
       }
     } else if (flags.preset) {
       preset = this.$cli.userConfig.getPreset(flags.preset);

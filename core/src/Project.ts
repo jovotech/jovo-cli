@@ -109,15 +109,11 @@ export class Project {
       }
       return content;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      if (error.code === 'MODULE_NOT_FOUND') {
+      if ((error as { code: string }).code === 'MODULE_NOT_FOUND') {
         throw new JovoCliError({ message: `Could not find model file for locale: ${locale}` });
       }
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      throw new JovoCliError(error.message);
+      throw new JovoCliError({ message: (error as Error).message });
     }
   }
 

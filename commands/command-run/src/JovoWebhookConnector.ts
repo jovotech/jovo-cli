@@ -114,9 +114,7 @@ function post(
         try {
           resolve(JSON.parse(rawData));
         } catch (error) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          error.rawData = rawData;
+          (error as { rawData: unknown }).rawData = rawData;
           reject(error);
         }
       });

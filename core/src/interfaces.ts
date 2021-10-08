@@ -136,3 +136,10 @@ export type CliArgs<COMMAND extends typeof PluginCommand> = Record<
   COMMAND['args'][number]['name'],
   COMMAND['args'][number]['multiple'] extends true ? string[] : string
 >;
+
+// ####### UTILITIES #######
+
+export interface ExecResponse {
+  stderr?: string;
+  stdout?: string;
+}

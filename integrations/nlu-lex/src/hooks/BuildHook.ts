@@ -23,6 +23,7 @@ import _get from 'lodash.get';
 import _mergeWith from 'lodash.mergewith';
 import _pick from 'lodash.pick';
 import { join as joinPaths } from 'path';
+import { LexCliConfig } from '../interfaces';
 import { getLexLocale, SupportedLocales, SupportedLocalesType } from '../utilities';
 
 export class BuildHook extends PluginHook<BuildPlatformEvents> {
@@ -162,9 +163,7 @@ export class BuildHook extends PluginHook<BuildPlatformEvents> {
               'idleSessionTTLInSeconds',
               'detectSentiment',
             ];
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const configResource: LexModelFileResource = _pick(
+            const configResource: Partial<LexCliConfig> = _pick(
               this.$plugin.config,
               resourceProperties,
             );
