@@ -1,6 +1,5 @@
 import { DeployPlatformEvents } from '@jovotech/cli-command-deploy';
 import {
-  checkForProjectDirectory,
   CliArgs,
   CliFlags,
   EventEmitter,
@@ -9,6 +8,7 @@ import {
   Log,
   PluginCommand,
   PluginContext,
+  ProjectCommand,
   printSubHeadline,
   TADA,
   Task,
@@ -32,6 +32,7 @@ export type BuildPlatformEvents =
   | 'build:platform.reverse'
   | 'after.build:platform';
 
+@ProjectCommand()
 export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPlatformEvents> {
   static id = 'build:platform';
   static description = 'Build platform-specific language models based on jovo models folder';
@@ -119,8 +120,6 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo build:platform: ${BuildPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
