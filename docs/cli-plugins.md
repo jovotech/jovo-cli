@@ -24,8 +24,8 @@ The following plugin types are available:
 import { JovoCliPlugin, PluginCommand, PluginType } from '@jovotech/cli-core';
 
 export class YourPlugin extends JovoCliPlugin {
-  $id: string = '<id>';
-  $type: PluginType = 'command'; // target, platform
+  readonly id: string = '<id>';
+  readonly type: PluginType = 'command'; // target, platform
 
   getCommands(): typeof PluginCommand[] {
     return [];
