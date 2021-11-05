@@ -61,7 +61,7 @@
     "jovo"
   ],
   "oclif": {
-    "bin": "jovov4",
+    "bin": "jovo",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-not-found"
