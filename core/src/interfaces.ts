@@ -56,15 +56,6 @@ export interface DeployConfiguration {
   target?: string[];
 }
 
-export interface ProjectConfigFile {
-  deploy?: DeployConfiguration;
-  endpoint?: string;
-  plugins?: JovoCliPlugin[];
-  hooks?: ConfigHooks;
-  defaultStage?: string;
-  stages?: { [key: string]: ProjectConfigFile };
-}
-
 export interface JovoUserConfigFile {
   webhook: {
     uuid: string;

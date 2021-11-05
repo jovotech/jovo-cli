@@ -1,6 +1,5 @@
 import { config } from 'dotenv';
 import prompt from 'prompts';
-import { ProjectConfigFile } from './interfaces';
 
 // Load .env variables into process.env
 config();
@@ -15,6 +14,7 @@ export * from './JovoCliError';
 export * from './JovoCliPlugin';
 export * from './JovoUserConfig';
 export * from './Logger';
+export * from './ProjectConfig';
 export * from './PluginCommand';
 export * from './PluginHook';
 export * from './prints';
@@ -24,12 +24,6 @@ export * from './Task';
 export * from './utilities';
 export * from './validators';
 export { prompt };
-
-export class ProjectConfig {
-  constructor(config: ProjectConfigFile) {
-    Object.assign(this, config);
-  }
-}
 
 declare module '@oclif/parser/lib/args' {
   interface IArg {
