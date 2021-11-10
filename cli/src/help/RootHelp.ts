@@ -86,7 +86,17 @@ export default class HelpOutput extends HelpBase {
       .filter((cmd) => cmd.id.includes(':'))
       .map((cmd) => {
         return cmd.id.split(':')[0];
-      });
+      })
+      .filter((command, index, self) => self.indexOf(command) === index);
+
+    const commandsWithoutTopics: Command.Plugin[] = commands.filter(
+      (cmd) => !cmd.id.includes(':') && !commandTopics.includes(cmd.id),
+    );
+
+    for (const command of commandsWithoutTopics) {
+      Log.info(`${command.id} - ${command.description}`, { indent: 2 });
+      Log.spacer();
+    }
 
     for (const topic of commandTopics) {
       const topicCommands: Command.Plugin[] = commands.filter((cmd) => cmd.id.includes(topic));
@@ -95,19 +105,10 @@ export default class HelpOutput extends HelpBase {
         continue;
       }
 
-      Log.info(topic.toUpperCase(), { indent: 2 });
+      Log.info(chalk.dim(topic.toUpperCase()), { indent: 2 });
       for (const command of topicCommands) {
         Log.info(`${command.id} - ${command.description}`, { indent: 4 });
       }
-      Log.spacer();
-    }
-
-    const commandsWithoutTopics: Command.Plugin[] = commands.filter(
-      (cmd) => !cmd.id.includes(':') && !commandTopics.includes(cmd.id),
-    );
-
-    for (const command of commandsWithoutTopics) {
-      Log.info(`${command.id} - ${command.description}`, { indent: 2 });
       Log.spacer();
     }
   }
