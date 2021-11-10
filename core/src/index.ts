@@ -1,10 +1,10 @@
 import { config } from 'dotenv';
 import prompt from 'prompts';
+import chalk from 'chalk';
 
 // Load .env variables into process.env
 config();
 
-export { flags } from '@oclif/command';
 export * from './Config';
 export * from './constants';
 export * from './EventEmitter';
@@ -23,7 +23,9 @@ export * from './prompts';
 export * from './Task';
 export * from './utilities';
 export * from './validators';
-export { prompt };
+
+export { chalk, prompt };
+export { flags } from '@oclif/command';
 
 declare module '@oclif/parser/lib/args' {
   interface IArg {
