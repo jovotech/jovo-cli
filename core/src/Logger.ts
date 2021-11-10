@@ -15,6 +15,10 @@ export enum LogLevel {
 
 export type Output = string | boolean | number | object;
 
+export type LogOutput<OPTIONS extends LogOptions> = OPTIONS['dry'] extends true
+  ? string
+  : undefined;
+
 export interface LogOptions {
   logLevel?: LogLevel;
   dry?: boolean;
@@ -88,7 +92,7 @@ export class Log {
     stream: NodeJS.WritableStream = process.stdout,
   ): string | undefined {
     if (!this.isLogLevel(options.logLevel!)) {
-      return;
+      return undefined;
     }
 
     // Pretty print boolean values in orange
@@ -144,11 +148,14 @@ export class Log {
     return this.log(symbol.repeat(repeat), { logLevel: LogLevel.Info, ...options });
   }
 
-  static info(output: Output, options?: LogOptions): string | undefined {
-    return this.log(output, { logLevel: LogLevel.Info, ...options });
+  static info<OPTIONS extends LogOptions>(output: Output, options?: OPTIONS): LogOutput<OPTIONS> {
+    return this.log(output, { logLevel: LogLevel.Info, ...options }) as LogOutput<OPTIONS>;
   }
 
-  static warning(output: Output, options?: LogOptions): string | undefined {
+  static warning<OPTIONS extends LogOptions>(
+    output: Output,
+    options?: OPTIONS,
+  ): LogOutput<OPTIONS> {
     return this.log(
       chalk.yellowBright(output),
       {
@@ -157,10 +164,13 @@ export class Log {
         ...options,
       },
       process.stderr,
-    );
+    ) as LogOutput<OPTIONS>;
   }
 
-  static error(error: Error | Output, options?: LogOptions): string | undefined {
+  static error<OPTIONS extends LogOptions>(
+    error: Error | Output,
+    options?: OPTIONS,
+  ): LogOutput<OPTIONS> {
     return this.log(
       chalk.redBright(error),
       {
@@ -169,18 +179,21 @@ export class Log {
         ...options,
       },
       process.stderr,
-    );
+    ) as LogOutput<OPTIONS>;
   }
 
-  static debug(output: Output, options?: LogOptions): string | undefined {
-    return this.log(output, { logLevel: LogLevel.Debug, ...options });
+  static debug<OPTIONS extends LogOptions>(output: Output, options?: OPTIONS): LogOutput<OPTIONS> {
+    return this.log(output, { logLevel: LogLevel.Debug, ...options }) as LogOutput<OPTIONS>;
   }
 
-  static verbose(output: Output, options?: LogOptions): string | undefined {
+  static verbose<OPTIONS extends LogOptions>(
+    output: Output,
+    options?: OPTIONS,
+  ): LogOutput<OPTIONS> {
     return this.log(output, {
       logLevel: LogLevel.Verbose,
       prefix: chalk.bgMagenta.white('DEBUG'),
       ...options,
-    });
+    }) as LogOutput<OPTIONS>;
   }
 }
