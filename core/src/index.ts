@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import prompt from 'prompts';
 import chalk from 'chalk';
+import which from 'which';
 
 // Load .env variables into process.env
 config();
@@ -24,7 +25,7 @@ export * from './Task';
 export * from './utilities';
 export * from './validators';
 
-export { chalk, prompt };
+export { chalk, prompt, which };
 export { flags } from '@oclif/command';
 
 declare module '@oclif/parser/lib/args' {

@@ -53,33 +53,6 @@ describe('JovoCli.getInstance()', () => {
   });
 });
 
-describe('initializeProject()', () => {
-  test('should throw an error, if the current directory is not a project directory', () => {
-    const mocked: jest.SpyInstance = jest
-      .spyOn(JovoCli.prototype, 'isInProjectDirectory')
-      .mockReturnValue(false);
-
-    const jovo: JovoCli = new JovoCli();
-
-    expect(jovo.initializeProject.bind(jovo, './')).toThrow('Project could not be instantiated');
-
-    mocked.mockRestore();
-  });
-
-  test('should instantiate a new project', () => {
-    const mocked: jest.SpyInstance = jest
-      .spyOn(JovoCli.prototype, 'isInProjectDirectory')
-      .mockReturnValue(true);
-
-    const jovo: JovoCli = new JovoCli();
-    jovo.initializeProject('./');
-
-    expect(jovo.project).toBeDefined();
-
-    mocked.mockRestore();
-  });
-});
-
 describe('isInProjectDirectory()', () => {
   const testPath: string = resolve(joinPaths('test', 'tmpTestFolderJovoCli'));
 

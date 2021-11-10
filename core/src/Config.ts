@@ -101,4 +101,11 @@ export class Config {
   static getFileName(): string {
     return 'jovo.project.js';
   }
+
+  /**
+   * Returns the name of the Jovo config file (v3).
+   */
+  static getV3FileName(): string {
+    return 'project.js';
+  }
 }

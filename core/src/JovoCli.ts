@@ -2,16 +2,10 @@ import { existsSync } from 'fs';
 import _get from 'lodash.get';
 import { dirname, join as joinPaths } from 'path';
 import { URL } from 'url';
-import {
-  Config,
-  JovoCliError,
-  JovoCliPlugin,
-  JovoUserConfig,
-  JOVO_WEBHOOK_URL,
-  Log,
-  PluginType,
-  Project,
-} from '.';
+import which from 'which';
+import { Config, JovoCliPlugin, JovoUserConfig, JOVO_WEBHOOK_URL, PluginType, Project } from '.';
+import { Log } from './Logger';
+import { printHighlight } from './prints';
 
 export class JovoCli {
   private static instance?: JovoCli;
@@ -25,6 +19,24 @@ export class JovoCli {
   constructor() {
     this.projectPath = process.cwd();
     this.userConfig = new JovoUserConfig();
+
+    if (this.isInV3ProjectDirectory()) {
+      Log.spacer();
+      Log.warning(
+        'The current project is incompatible with the Jovo CLI @v4. Consider using the Jovo CLI @v3 instead.',
+      );
+      try {
+        which.sync('jovo3');
+      } catch (error) {
+        Log.warning(
+          `You can install its latest version using "npm install -g jovo-cli" and access it with ${printHighlight(
+            'jovo3',
+          )}.`,
+        );
+      }
+      Log.spacer();
+      process.exit(1);
+    }
 
     if (this.isInProjectDirectory()) {
       Log.verbose(`Found Jovo project in ${this.projectPath}`);
@@ -40,20 +52,18 @@ export class JovoCli {
     return this.instance;
   }
 
-  /**
-   * Initializes a new project at the provided path.
-   * @param path - Project path.
-   */
-  initializeProject(path: string): void {
-    this.projectPath = path;
-
-    if (this.isInProjectDirectory()) {
-      this.project = Project.getInstance(this.projectPath);
-    } else {
-      throw new JovoCliError({
-        message: `Project could not be instantiated for ${this.projectPath}`,
-      });
+  isInV3ProjectDirectory(): boolean {
+    const packageJsonPath: string = joinPaths(this.projectPath, 'package.json');
+    if (!existsSync(packageJsonPath)) {
+      return false;
     }
+
+    const packageJson = require(packageJsonPath);
+    if (!_get(packageJson, 'dependencies["jovo-framework"]')) {
+      return false;
+    }
+
+    return existsSync(joinPaths(this.projectPath, Config.getV3FileName()));
   }
 
   /**
