@@ -20,7 +20,7 @@
     "version": "oclif-dev readme && git add README.md"
   },
   "bin": {
-    "jovo": "./bin/run"
+    "jovo3": "./bin/run"
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
