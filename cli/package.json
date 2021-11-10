@@ -35,8 +35,7 @@
     "cli-progress": "^3.9.0",
     "envinfo": "^7.8.1",
     "latest-version": "^5.1.0",
-    "lodash.get": "^4.4.2",
-    "which": "^2.0.2"
+    "lodash.get": "^4.4.2"
   },
   "devDependencies": {
     "@types/envinfo": "^7.8.0",

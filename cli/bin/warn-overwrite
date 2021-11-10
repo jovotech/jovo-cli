@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-const { Log, execAsync, chalk, printHighlight } = require('@jovotech/cli-core');
-const which = require('which');
+const { chalk, execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
 
 (async () => {
   // If the Jovo CLI is not installed in the first place, there is no need
