@@ -46,7 +46,7 @@ export type NewEvents = 'new';
 
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
-  static description = 'Creates a new Jovo project';
+  static description = 'Create a new Jovo project';
   static examples = ['jovov4 new helloworld', 'jovov4 new --preset default'];
   static availablePresets: string[] = [];
   static flags = {
