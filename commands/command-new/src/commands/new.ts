@@ -52,7 +52,7 @@ export class New extends PluginCommand<NewEvents> {
   static flags = {
     locale: flags.string({
       char: 'l',
-      description: 'The locales to be created	',
+      description: 'The locales to be created',
       multiple: true,
     }),
     language: flags.string({
