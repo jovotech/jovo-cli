@@ -11,8 +11,8 @@ import {
   InputFlags,
   JovoTaskContext,
 } from 'jovo-cli-core';
-import * as Listr from 'listr';
-import * as _ from 'lodash';
+import Listr from 'listr';
+import  _ from 'lodash';
 import * as path from 'path';
 import {
   addBaseCliOptions,
@@ -23,7 +23,7 @@ import {
   tasks,
   validators,
 } from '../utils';
-const { ANSWER_CANCEL, promptNewProject, promptOverwriteProject } = prompts;
+const { ANSWER_CANCEL, promptOverwriteProject } = prompts;
 const { isValidProjectName, isValidTemplate } = validators;
 const { buildTask, deployTask } = tasks;
 

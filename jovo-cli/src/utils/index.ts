@@ -1,14 +1,14 @@
 import { flags } from '@oclif/command';
 import chalk from 'chalk';
-import * as elegantSpinner from 'elegant-spinner';
+import  elegantSpinner from 'elegant-spinner';
 // tslint:disable-next-line:no-implicit-dependencies
 // @ts-ignore
-import * as figures from 'figures';
+import figures from 'figures';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { getProject, InputFlags, JovoCliError } from 'jovo-cli-core';
 import latestVersion from 'latest-version';
 import { ListrOptions } from 'listr';
-import * as logSymbols from 'log-symbols';
+import logSymbols from 'log-symbols';
 import { join as pathJoin } from 'path';
 import * as deployTargets from './DeployTargets';
 import { ListrTaskHelper, PackageVersions, PackageVersionsNpm } from './Interfaces';
