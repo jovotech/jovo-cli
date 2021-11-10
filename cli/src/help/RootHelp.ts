@@ -1,4 +1,4 @@
-import { JovoCliError, Log, PluginCommand } from '@jovotech/cli-core';
+import { chalk, JovoCliError, Log, PluginCommand } from '@jovotech/cli-core';
 import { Command, Topic } from '@oclif/config';
 import { HelpBase } from '@oclif/plugin-help';
 import CommandHelp from './CommandHelp';

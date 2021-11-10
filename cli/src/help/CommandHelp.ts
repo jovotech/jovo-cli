@@ -4,6 +4,10 @@ import BaseCommandHelp from '@oclif/plugin-help/lib/command';
 import { renderList } from '@oclif/plugin-help/lib/list';
 
 export default class CommandHelp extends BaseCommandHelp {
+  /**
+   * Mimicks the functionality of super.flags(), but customizes some minor
+   * things such as output of flag parameters
+   */
   flags(flags: Command.Flag[]): string | undefined {
     const output: string = renderList(
       flags.map((flag) => {
