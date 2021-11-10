@@ -1,4 +1,5 @@
 import {
+  chalk,
   checkForProjectDirectory,
   CliFlags,
   flags,
@@ -6,7 +7,6 @@ import {
   PackageVersions,
   PluginCommand,
   PluginContext,
-  printComment,
   printSubHeadline,
 } from '@jovotech/cli-core';
 import boxen from 'boxen';
@@ -54,7 +54,7 @@ export class Run extends PluginCommand<RunEvents> {
       const outputText: string[] = [];
       outputText.push('Updates available for the following Jovo packages:');
       for (const [key, pkg] of Object.entries(outOfDatePackages)) {
-        const text = `  - ${key}: ${pkg.local} ${printComment(`-> ${pkg.npm}`)}`;
+        const text = `  - ${key}: ${pkg.local} ${chalk.grey(`-> ${pkg.npm}`)}`;
         outputText.push(text);
       }
 
