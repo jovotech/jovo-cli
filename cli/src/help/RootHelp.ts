@@ -37,11 +37,9 @@ export default class HelpOutput extends HelpBase {
 
       throw new JovoCliError({ message: 'Command not found' });
     } catch (error) {
-      // @ts-ignore
-      if (!error instanceof JovoCliError) {
-        throw error;
+      if (!(error instanceof JovoCliError)) {
+        error = new JovoCliError({ message: error.message });
       }
-      console.log(error);
 
       JovoCliError.print(error as JovoCliError);
       process.exit(1);
@@ -49,11 +47,27 @@ export default class HelpOutput extends HelpBase {
   }
 
   showCommandHelp(command: Command.Plugin): void {
-    const output = new CommandHelp(command, this.config, this.opts);
-    Log.info(output.generate());
+    if (command.description) {
+      Log.info(command.description || '');
+      Log.spacer();
+    }
+
+    const help: CommandHelp = new CommandHelp(command, this.config, this.opts);
+    Log.info(help.generate());
   }
 
-  showTopicHelp(topic: Topic): void {}
+  showTopicHelp(topic: Topic): void {
+    this.printTopic(topic);
+
+    // Collect all corresponding commands and print them
+    const topicCommands: Command.Plugin[] = this.config.commands.filter((cmd) =>
+      cmd.id.startsWith(topic.name + ':'),
+    );
+
+    if (topicCommands.length) {
+      this.printCommands(topicCommands, false);
+    }
+  }
 
   private printDescription(): void {
     const description: string =
@@ -80,7 +94,7 @@ export default class HelpOutput extends HelpBase {
     Log.spacer();
   }
 
-  private printCommands(commands: Command.Plugin[]): void {
+  private printCommands(commands: Command.Plugin[], showTopic: boolean = true): void {
     Log.info('COMMANDS');
     const commandTopics: string[] = commands
       .filter((cmd) => cmd.id.includes(':'))
@@ -105,15 +119,17 @@ export default class HelpOutput extends HelpBase {
         continue;
       }
 
-      Log.info(chalk.dim(topic.toUpperCase()), { indent: 2 });
+      if (showTopic) {
+        Log.info(chalk.dim(topic.toUpperCase()), { indent: 2 });
+      }
       for (const command of topicCommands) {
-        Log.info(`${command.id} - ${command.description}`, { indent: 4 });
+        Log.info(`${command.id} - ${command.description}`, { indent: showTopic ? 4 : 2 });
       }
       Log.spacer();
     }
   }
 
-  private printGlobalFlags() {
+  private printGlobalFlags(): void {
     const validFlags: Command.Flag[] = Object.entries(this.globalFlags)
       .map(([flagKey, flag]) => {
         flag.name = flagKey;
@@ -124,6 +140,22 @@ export default class HelpOutput extends HelpBase {
     Log.info(CommandHelp.prototype.flags.call(this, validFlags)!);
   }
 
+  private printTopic(topic: Topic): void {
+    if (topic.description) {
+      Log.info(topic.description);
+      Log.spacer();
+    }
+
+    Log.info('USAGE');
+    Log.info(`$ ${this.config.bin} ${topic.name}:COMMAND`, { indent: 2 });
+    Log.spacer();
+  }
+
+  /**
+   * Returns the current subject, i.e. "build" for "jovo help build"
+   * or "jovo build --help"
+   * @param argv - Current command line arguments
+   */
   private getHelpSubject(argv: string[]): string | undefined {
     for (const arg of argv) {
       if (arg === 'help' || arg === '--help' || arg === '-h') continue;
