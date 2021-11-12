@@ -13,7 +13,8 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "newLine": "LF",
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "useUnknownInCatchVariables": false
   },
   "include": ["**/*.d.ts", "src/**/*"],
   "exclude": ["dist/**/*", "node_modules/**/*", "**/*.spec.ts"]
