@@ -107,15 +107,6 @@ export async function promptProjectProperties(
           { title: printUserInput("No (or I'll add it later)"), value: false },
         ],
       },
-      {
-        name: 'unitTesting',
-        message: 'Do you want to use Unit Testing?',
-        type: 'select',
-        choices: [
-          { title: printUserInput('Yes, Jest'), value: true },
-          { title: printUserInput("No (or I'll add it later)"), value: false },
-        ],
-      },
     ],
     {
       onCancel() {

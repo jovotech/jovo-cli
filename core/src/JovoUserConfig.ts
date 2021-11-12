@@ -1,14 +1,13 @@
-import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import chalk from 'chalk';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
 import { homedir } from 'os';
-import { v4 as uuidv4 } from 'uuid';
 import { join as joinPaths } from 'path';
-
-import { JovoCliError } from './JovoCliError';
-import chalk from 'chalk';
-import { Preset, JovoUserConfigFile } from './interfaces';
-import { promptOverwrite } from './prompts';
+import { v4 as uuidv4 } from 'uuid';
 import { ANSWER_CANCEL } from './constants';
+import { JovoUserConfigFile, Preset } from './interfaces';
+import { JovoCliError } from './JovoCliError';
+import { promptOverwrite } from './prompts';
 
 export class JovoUserConfig {
   private config: JovoUserConfigFile;
@@ -162,7 +161,6 @@ export class JovoUserConfig {
       locales: ['en'],
       platforms: [],
       linter: true,
-      unitTesting: true,
     };
   }
 }

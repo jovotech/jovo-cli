@@ -29,9 +29,9 @@ export class JovoCli {
         which.sync('jovo3');
       } catch (error) {
         Log.warning(
-          `You can install its latest version using "npm install -g jovo-cli" and access it with ${printHighlight(
+          `You can install its latest version using "npm install -g jovo-cli" and access it with "${printHighlight(
             'jovo3',
-          )}.`,
+          )}".`,
         );
       }
       Log.spacer();

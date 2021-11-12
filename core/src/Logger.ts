@@ -157,7 +157,7 @@ export class Log {
     options?: OPTIONS,
   ): LogOutput<OPTIONS> {
     return this.log(
-      chalk.yellowBright(output),
+      output,
       {
         logLevel: LogLevel.Warn,
         prefix: WARNING,

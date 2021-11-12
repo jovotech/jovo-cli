@@ -1,7 +1,5 @@
-import * as Parser from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-
-import { JovoCliPlugin } from './JovoCliPlugin';
+import * as Parser from '@oclif/parser';
 import { PluginCommand } from './PluginCommand';
 
 // ####### EVENT EMITTER #######
@@ -81,7 +79,6 @@ export interface ProjectProperties {
   platforms: MarketplacePlugin[];
   locales: string[];
   linter: boolean;
-  unitTesting: boolean;
 }
 
 export interface Preset extends ProjectProperties {

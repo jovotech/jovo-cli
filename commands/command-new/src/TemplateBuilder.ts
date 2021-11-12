@@ -56,18 +56,6 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
     );
   }
 
-  // Check if Jest is enabled, if not, delete package.json entries and config.
-  if (!context.unitTesting) {
-    unlinkSync(joinPaths(context.projectName, 'jest.config.js'));
-    deleteFolderRecursive(joinPaths(context.projectName, 'test'));
-    omittedPackages.push(
-      'devDependencies.jest',
-      'devDependencies.ts-jest',
-      'devDependencies.@types/jest',
-      'scripts.test',
-    );
-  }
-
   packageJson = omit(packageJson, omittedPackages);
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
