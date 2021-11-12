@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { chalk, execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
+const { execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
 
 (async () => {
   // If the Jovo CLI is not installed in the first place, there is no need
@@ -22,14 +22,11 @@ const { chalk, execAsync, Log, printHighlight, which } = require('@jovotech/cli-
 
   const version = match[1];
   if (version.startsWith('3')) {
-    Log.info(`You can now use ${printHighlight('jovo')} to call the Jovo CLI @v4.`, {
-      prefix: chalk.bgYellowBright.white('WARN'),
-    });
-    Log.info(
-      `If you still want to use the Jovo CLI @v3, you can install its latest version using "npm install -g jovo-cli" and access it with ${printHighlight(
+    Log.warning(`You can now use "${printHighlight('jovo')}" to call the Jovo CLI @v4.`);
+    Log.warning(
+      `If you still want to use the Jovo CLI @v3, you can install its latest version using "npm install -g jovo-cli" and access it with "${printHighlight(
         'jovo3',
-      )}.`,
-      { prefix: chalk.bgYellowBright.white('WARN') },
+      )}".`,
     );
     Log.spacer();
   }
