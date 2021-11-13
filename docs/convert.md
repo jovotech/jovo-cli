@@ -1,17 +1,17 @@
 # jovo convert
 
-> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/convert
+> To view this page on the Jovo website, visit https://v3.jovo.tech/marketplace/jovo-cli/convert
 
 Learn more about how to convert your i18n model to csv and vice versa to quickly either import your spreadsheet data to an i18n model or import your i18n model to a cms of your choice with the `jovo convert` CLI command.
 
-* [Introduction](#introduction)
-* [Workflow](#workflow)
+- [Introduction](#introduction)
+- [Workflow](#workflow)
 
 ## Introduction
 
 `jovo convert` is the Jovo CLI command to either convert i18n.json-files to .csv-files, or .csv-files to i18n.json-files. This way you can import your i18n-model to a cms of your choice, or convert your cms data to respective local i18n files.
 
-> [Find out more about Jovo's CMS Integrations here](https://www.jovo.tech/docs/cms).
+> [Find out more about Jovo's CMS Integrations here](https://v3.jovo.tech/docs/cms).
 
 ## Workflow
 
@@ -22,7 +22,7 @@ The `jovo convert` command is followed by the function type you want to run depe
 $ jovo convert i18nToCsv|csvToI18n --from <originPath>
 
 # Options
-$ jovo convert i18nToCsv|csvToI18n --from <originPath> [--to <targetPath>] 
+$ jovo convert i18nToCsv|csvToI18n --from <originPath> [--to <targetPath>]
 ```
 
 The respective output files will be created either in your directory of choice, which you can optionally set with `--to <targetPath>` or in your root project folder, either in a `i18n/` folder or as a `responses.csv` file.

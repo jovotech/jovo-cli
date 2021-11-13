@@ -1,17 +1,17 @@
 # jovo run
 
-> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/run
+> To view this page on the Jovo website, visit https://v3.jovo.tech/marketplace/jovo-cli/run
 
 Learn how to use the `jovo run` command of the Jovo CLI to test your code locally.
 
-* [Introduction](#introduction)
-* [Options](#options)
-* [Integrations](#integrations)
-   * [nodemon](#nodemon)
+- [Introduction](#introduction)
+- [Options](#options)
+- [Integrations](#integrations)
+  - [nodemon](#nodemon)
 
 ## Introduction
 
-![jovo run command](../img/jovo-run.png "jovo run command")
+![jovo run command](../img/jovo-run.png 'jovo run command')
 
 You can use the `jovo run` command to start the development server in your `index.js` file (default is port `3000`), and then point the Jovo Webhook to it.
 
@@ -36,7 +36,6 @@ $ jovo run src/index.js
 $ node src/index.js --webhook --cwd ./src
 ```
 
-
 ## Options
 
 `--port`, `-p`: Defines the port that will be used to run the local development server. Default: `3000`.
@@ -55,9 +54,7 @@ $ node src/index.js --webhook --cwd ./src
 
 `--record`, `-r`: Can be used to record requests and responses of your Jovo app for testing purposes.
 
-
 `--cwd`: Changes the current working directory of the source code. Typically, it would be `./src`.
-
 
 ## Integrations
 
@@ -65,9 +62,9 @@ $ node src/index.js --webhook --cwd ./src
 
 Here is a list of integrations that work with `jovo run`:
 
-Command | Description 
------------- | ------------- 
-[`--watch`](#watch) | Uses `nodemon` to monitor changes and automatically restart the server
+| Command             | Description                                                            |
+| ------------------- | ---------------------------------------------------------------------- |
+| [`--watch`](#watch) | Uses `nodemon` to monitor changes and automatically restart the server |
 
 ### nodemons
 

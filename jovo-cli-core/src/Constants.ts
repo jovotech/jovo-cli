@@ -22,7 +22,7 @@ export const ENDPOINT_NGROK = 'ngrok';
 export const ENDPOINT_NONE = 'none';
 
 export const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
-export const REPO_URL = 'https://www.jovo.tech/repo/sample-apps/';
+export const REPO_URL = 'https://v3.jovo.tech/repo/sample-apps/';
 
 export enum ERROR_TYPE {
   ERR = 'ERR',

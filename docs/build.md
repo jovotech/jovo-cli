@@ -1,17 +1,16 @@
 # jovo build
 
-> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/build
+> To view this page on the Jovo website, visit https://v3.jovo.tech/marketplace/jovo-cli/build
 
-Learn more about how to translate your Jovo project files like the [`project.js`](https://www.jovo.tech/docs/project-js) and the [Jovo Language Model](https://www.jovo.tech/docs/model) into platform specific files like an Alexa Skill Interaction Model or a Dialogflow Agent with the `jovo build` CLI command.
+Learn more about how to translate your Jovo project files like the [`project.js`](https://v3.jovo.tech/docs/project-js) and the [Jovo Language Model](https://v3.jovo.tech/docs/model) into platform specific files like an Alexa Skill Interaction Model or a Dialogflow Agent with the `jovo build` CLI command.
 
-* [Introduction](#introduction)
-* [Workflow](#workflow)
-* [Options](#options)
-
+- [Introduction](#introduction)
+- [Workflow](#workflow)
+- [Options](#options)
 
 ## Introduction
 
-![jovo build command](../img/jovo-build.png "jovo build command")
+![jovo build command](../img/jovo-build.png 'jovo build command')
 
 `jovo build` is the command to create and update the platform specific interaction models using the Jovo model. Using the files in the `/models` folder and converting them into files in the `/platforms` folder.
 
@@ -19,15 +18,14 @@ Learn more about how to translate your Jovo project files like the [`project.js`
 $ jovo build
 ```
 
-> To learn more about Jovo Language Model, take a look [Docs: Basic Concepts > Model](https://www.jovo.tech/docs/model).
+> To learn more about Jovo Language Model, take a look [Docs: Basic Concepts > Model](https://v3.jovo.tech/docs/model).
 
 ## Workflow
 
 The `jovo build` command uses two elements of a Jovo project to create platform specific files:
 
-* The platforms that are defined in the `project.js` file (e.g. `alexaSkill` and `googleAction`)
-* The Jovo Language Model files that can be found in the `models` folder (e.g. `en-US.json`)
-
+- The platforms that are defined in the `project.js` file (e.g. `alexaSkill` and `googleAction`)
+- The Jovo Language Model files that can be found in the `models` folder (e.g. `en-US.json`)
 
 ```sh
 # Default
@@ -40,9 +38,9 @@ $ jovo build [-p | --platform <platform>] [-r | --reverse] [-l | --locale <local
 
 ### Reverse Build
 
-![jovo build reverse converter](../img/jovo-build-reverse.png "jovo build reverse command")
+![jovo build reverse converter](../img/jovo-build-reverse.png 'jovo build reverse command')
 
-In this reverse process, you can create a [Jovo Language Model](https://www.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://www.jovo.tech/marketplace/jovo-cli/get).
+In this reverse process, you can create a [Jovo Language Model](https://v3.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://v3.jovo.tech/marketplace/jovo-cli/get).
 
 ```sh
 # Alexa Skill
@@ -62,24 +60,22 @@ $ jovo build -p alexaSkill --reverse --overwrite
 $ jovo build -p googleAction --reverse --overwrite
 ```
 
-
-
 ## Options
 
 `--platform`, `-p`: If you want to update all your platforms, you can leave it out and it will update the ones listed in `project.js`. If you want to update a specific platform folder you can pass the platform name as an argument: `alexaSkill` or `googleAction`.
 
 `--locale`, `-l`: Specify the locale, which should be created/updated. Arguments: `en-US`, `de-DE`, et cetera. Default: All files in the `models` folder.
 
-`--deploy`, `-d`: This is a shortcut to the [`jovo deploy`](https://www.jovo.tech/marketplace/jovo-cli/deploy) command. Deploy the platform files to their respective developer console.
+`--deploy`, `-d`: This is a shortcut to the [`jovo deploy`](https://v3.jovo.tech/marketplace/jovo-cli/deploy) command. Deploy the platform files to their respective developer console.
 
 `--target`, `-t`: Used in combination with `--deploy` to specify target of deployment. Arguments: `info` (Skill Information), `model` (Interaction Model), `all`. Default: `all`.
 
-`--src`, `-s`: Used in combination with `--deploy`. Path to source files. Default: `src`. 
+`--src`, `-s`: Used in combination with `--deploy`. Path to source files. Default: `src`.
 
 `--stage`: Specify the stage where the configuration will be taken from.
 
 `--ask-profile`: Used in combination with `--deploy`. Specifies which profile set up in [ASK CLI](https://developer.amazon.com/docs/smapi/quick-start-alexa-skills-kit-command-line-interface.html) should be used to deploy. Default: `default`.
 
-`--reverse`, `-r`: In this reverse process, you can create a [Jovo Language Model](https://www.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://www.jovo.tech/marketplace/jovo-cli/get).
+`--reverse`, `-r`: In this reverse process, you can create a [Jovo Language Model](https://v3.jovo.tech/docs/model) from an existing `/platforms` folder, e.g. after you fetched the files with [`jovo get`](https://v3.jovo.tech/marketplace/jovo-cli/get).
 
 `--overwrite`: Can be used together with the `--reverse` command. This ignores the question if the existing files should really be overwritten.
