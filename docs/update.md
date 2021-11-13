@@ -22,7 +22,7 @@ The easiest way to fix that is by using the latest version of each package. For 
 Running the `jovo update` command in your Jovo project will update all of your Jovo packages to the latest version
 
 ```shell
-$ jovo update
+$ jovo3 update
 ```
 
 After that, the dependency issues should be fixed.

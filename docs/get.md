@@ -15,7 +15,7 @@ Learn how to import an existing Alexa Skill or Google Action into Jovo with the 
 `jovo get` will import an existing Alexa Skill (Skill Information and Interaction Model) or Dialogflow agent (work in progress) into the `/platforms` folder.
 
 ```sh
-$ jovo get <platform>
+$ jovo3 get <platform>
 ```
 
 ## Workflow
@@ -24,17 +24,17 @@ To get the Skill from the Amazon developer console, you have to set up [ASK CLI]
 
 ```sh
 # Choose from list of Skills
-$ jovo get <alexaSkill|googleAction>
+$ jovo3 get <alexaSkill|googleAction>
 
 # Get specific Alexa Skill using the Skill ID
-$ jovo get alexaSkill --skill-id <skill ID>
+$ jovo3 get alexaSkill --skill-id <skill ID>
 
 # Get specific Dialogflow agent using the Project ID
 # Coming soon
-$ jovo get googleAction --project-id <project ID>
+$ jovo3 get googleAction --project-id <project ID>
 
 # Options
-$ jovo get alexaSkill [-s | --skill-id <skill ID>] [--project-id <project ID>] [-l | --locale] [--list-skills] [--ask-profile] [-t | --target <target>] [--stage <stage>] [-r | --reverse] [-b | --build] [--overwrite]
+$ jovo3 get alexaSkill [-s | --skill-id <skill ID>] [--project-id <project ID>] [-l | --locale] [--list-skills] [--ask-profile] [-t | --target <target>] [--stage <stage>] [-r | --reverse] [-b | --build] [--overwrite]
 ```
 
 ## Options

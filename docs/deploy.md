@@ -23,10 +23,10 @@ Learn how to deploy your Alexa Skills and Google Actions with the `jovo deploy` 
 
 ```sh
 # Default
-$ jovo deploy
+$ jovo3 deploy
 
 # Options
-$ jovo deploy --platform <platform> [--project-id <project ID>] [-l | --locale <locale>] [-t | --target <target>] [--stage <stage>] [-s | --src <src>] [--endpoint <endpoint>] [--ask-profile <profileName>]
+$ jovo3 deploy --platform <platform> [--project-id <project ID>] [-l | --locale <locale>] [-t | --target <target>] [--stage <stage>] [-s | --src <src>] [--endpoint <endpoint>] [--ask-profile <profileName>]
 ```
 
 ## Deploy Platform Projects
@@ -54,13 +54,13 @@ You can then deploy your Alexa Skill project with the Jovo CLI:
 
 ```sh
 # Deploy to all platforms in project.js
-$ jovo deploy
+$ jovo3 deploy
 
 # Deploy only to Alexa
-$ jovo deploy --platform alexaSkill
+$ jovo3 deploy --platform alexaSkill
 
 # Deploy to specific ASK Profile
-$ jovo deploy --ask-profile <profileName>
+$ jovo3 deploy --ask-profile <profileName>
 ```
 
 ### Google Assistant Deployment
@@ -74,10 +74,10 @@ To deploy a Dialogflow agent you have 2 options:
 
 ```sh
 # Deploy to all platforms in project.js
-$ jovo deploy
+$ jovo3 deploy
 
 # Deploy only to Dialogflow/Google Assistant
-$ jovo deploy --platform googleAction
+$ jovo3 deploy --platform googleAction
 ```
 
 ### Deploy Source Code
@@ -90,7 +90,7 @@ You can create a ready-to-deploy `bundle.zip` file with either of the following 
 
 ```sh
 # Bundle files
-$ jovo deploy --target zip
+$ jovo3 deploy --target zip
 
 # Alternative
 $ npm run bundle
@@ -106,7 +106,7 @@ If you have a Lambda endpoint defined in your `project.js` file, the `jovo deplo
 
 ```sh
 # Deploy platform projects and source code
-$ jovo deploy
+$ jovo3 deploy
 ```
 
 ## Options

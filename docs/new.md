@@ -15,10 +15,10 @@ You can create a Jovo project into a new directory with the following command:
 
 ```sh
 ## Default
-$ jovo new <directory>
+$ jovo3 new <directory>
 
 ## Options
-$ jovo new <directory> [-t | --template <template-name>] [-l | --locale <locale>] [--invocation <name>]
+$ jovo3 new <directory> [-t | --template <template-name>] [-l | --locale <locale>] [--invocation <name>]
   [-i | --init <platform>] [-b | --build] [-d | --deploy] [--ff <platform>] [--skip-npminstall]
   [--ask-profile <profileName>] [--endpoint <endpoint>]
 ```

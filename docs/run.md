@@ -17,20 +17,20 @@ You can use the `jovo run` command to start the development server in your `inde
 
 ```sh
 # Default
-$ jovo run
+$ jovo3 run
 
 # Options
-$ jovo run [-b | --bst-proxy] [-w | --watch] [-p, --port <port>] [--inspect <port>] [--stage <stage>] [--webhook-only]
+$ jovo3 run [-b | --bst-proxy] [-w | --watch] [-p, --port <port>] [--inspect <port>] [--stage <stage>] [--webhook-only]
   [--disable-jovo-debugger] [--model-test] [--timeout <timeout>] [-r | --record <name>]
 ```
 
 You can also specify the file you want to run:
 
 ```sh
-$ jovo run <file>
+$ jovo3 run <file>
 
 # Example
-$ jovo run src/index.js
+$ jovo3 run src/index.js
 
 # Alternative
 $ node src/index.js --webhook --cwd ./src
@@ -71,7 +71,7 @@ Here is a list of integrations that work with `jovo run`:
 With this integration, you don't have to manually restart your server with every change you make to the application:
 
 ```sh
-$ jovo run --watch
+$ jovo3 run --watch
 ```
 
 For this, we're using [`nodemon`](https://github.com/remy/nodemon), a neat package that monitors your app files and automatically restarts the server.

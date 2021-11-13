@@ -22,7 +22,7 @@ The `jovo load` command is followed by the name of the Conversational Component 
 $ npm install jovo-component-get-email -s
 
 # Load Component from node_modules/ to components folder
-$ jovo load jovo-component-get-email
+$ jovo3 load jovo-component-get-email
 ```
 
 This will load the component into either `./src/components/`, or just `./components/`. Now you can import it in your `app.js`, instantiate it in `app.useComponents()` and use it in your handler by calling `this.delegate()` with the respective parameters.

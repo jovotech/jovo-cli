@@ -32,13 +32,13 @@ $ npm install -g jovo-cli
 After successful installation, you should be able to see the jovo menu by just typing the following into your command line:
 
 ```sh
-$ jovo
+$ jovo3
 ```
 
 You can check the version number (and compare it to the [jovo-cli npm package](https://www.npmjs.com/package/jovo-cli) version) with this command:
 
 ```sh
-$ jovo -V
+$ jovo3 -V
 ```
 
 ### Troubleshooting
@@ -78,7 +78,7 @@ You can create a Jovo project into a new directory with the following command:
 
 ```sh
 ## Default
-$ jovo new <directory>
+$ jovo3 new <directory>
 ```
 
 > Learn more about this command here: [cli/new](https://v3.jovo.tech/marketplace/jovo-cli/new).
@@ -93,7 +93,7 @@ Learn more here: [Docs: Configuration > Hosting](https://v3.jovo.tech/docs/hosti
 
 ```sh
 # Default
-$ jovo run
+$ jovo3 run
 ```
 
 > Learn more about this command here: [cli/run](https://v3.jovo.tech/marketplace/jovo-cli).
@@ -104,7 +104,7 @@ To update to the latest minor version (updating either `x` or `y` in `2.x.y`) of
 
 ```sh
 # Update all Jovo packages
-$ jovo update
+$ jovo3 update
 ```
 
 This is are necessary (as opposed to `$ npm install jovo-framework`) because the framework is now split into different modules.
@@ -132,7 +132,7 @@ You can either run `build` separately for each platform, or just let the CLI fet
 
 ```sh
 # Default
-$ jovo build
+$ jovo3 build
 ```
 
 > Learn more about this command here: [cli/build](https://v3.jovo.tech/marketplace/jovo-cli/build).
@@ -147,7 +147,7 @@ To get the Skill from the Amazon developer console, you have to set up [ASK CLI]
 
 ```sh
 # Choose from list of Skills
-$ jovo get <alexaSkill|googleAction>
+$ jovo3 get <alexaSkill|googleAction>
 ```
 
 > Learn more about this command here: [cli/get](https://v3.jovo.tech/marketplace/jovo-cli/get).
@@ -160,7 +160,7 @@ $ jovo get <alexaSkill|googleAction>
 
 ```sh
 # Default
-$ jovo deploy
+$ jovo3 deploy
 ```
 
 > Learn more about this command here: [cli/deploy](https://v3.jovo.tech/marketplace/jovo-cli/deploy).

@@ -274,7 +274,7 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
   try {
     id = project.getOrCreateJovoWebhookId();
   } catch (err) {
-    console.log('Warning: Please initialize your project: $ jovo init');
+    console.log('Warning: Please initialize your project: $ jovo3 init');
     return;
   }
 

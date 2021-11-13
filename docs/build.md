@@ -15,7 +15,7 @@ Learn more about how to translate your Jovo project files like the [`project.js`
 `jovo build` is the command to create and update the platform specific interaction models using the Jovo model. Using the files in the `/models` folder and converting them into files in the `/platforms` folder.
 
 ```sh
-$ jovo build
+$ jovo3 build
 ```
 
 > To learn more about Jovo Language Model, take a look [Docs: Basic Concepts > Model](https://v3.jovo.tech/docs/model).
@@ -29,10 +29,10 @@ The `jovo build` command uses two elements of a Jovo project to create platform 
 
 ```sh
 # Default
-$ jovo build
+$ jovo3 build
 
 # Options
-$ jovo build [-p | --platform <platform>] [-r | --reverse] [-l | --locale <locale>] [-d | --deploy]
+$ jovo3 build [-p | --platform <platform>] [-r | --reverse] [-l | --locale <locale>] [-d | --deploy]
   [-t | --target <target>] [-s | --src <src>] [--stage <stage>] [--endpoint <endpoint>] [--ask-profile <profileName>] [--overwrite]
 ```
 
@@ -44,20 +44,20 @@ In this reverse process, you can create a [Jovo Language Model](https://v3.jovo.
 
 ```sh
 # Alexa Skill
-$ jovo build -p alexaSkill --reverse
+$ jovo3 build -p alexaSkill --reverse
 
 # Google Action
-$ jovo build -p googleAction --reverse
+$ jovo3 build -p googleAction --reverse
 ```
 
 This will prompt you if you want to overwrite the existing files or rather create a backup first. You can also skip this step and overwrite the files right away by using the `--overwrite` option:
 
 ```sh
 # Alexa Skill with overwrite
-$ jovo build -p alexaSkill --reverse --overwrite
+$ jovo3 build -p alexaSkill --reverse --overwrite
 
 # Google Action with overwrite
-$ jovo build -p googleAction --reverse --overwrite
+$ jovo3 build -p googleAction --reverse --overwrite
 ```
 
 ## Options

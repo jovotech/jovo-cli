@@ -19,10 +19,10 @@ The `jovo convert` command is followed by the function type you want to run depe
 
 ```sh
 # Default
-$ jovo convert i18nToCsv|csvToI18n --from <originPath>
+$ jovo3 convert i18nToCsv|csvToI18n --from <originPath>
 
 # Options
-$ jovo convert i18nToCsv|csvToI18n --from <originPath> [--to <targetPath>]
+$ jovo3 convert i18nToCsv|csvToI18n --from <originPath> [--to <targetPath>]
 ```
 
 The respective output files will be created either in your directory of choice, which you can optionally set with `--to <targetPath>` or in your root project folder, either in a `i18n/` folder or as a `responses.csv` file.
