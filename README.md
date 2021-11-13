@@ -19,6 +19,8 @@ The Jovo Command Line Tools offer the ability to create, prototype, test, and de
 
 ## Introduction
 
+> This is the CLI for Jovo `v3`, which you can now access using `jovo3`. Learn more here: https://www.jovo.tech/docs/migration-from-v3#use-v4-and-v3-in-parallel
+
 The Jovo CLI (GitHub Repository: [jovotech/jovo-cli](https://github.com/jovotech/jovo-cli)) is the center of voice app development with the Jovo Framework. With it, you can quickly create new Jovo projects, create language models and deploy them to the voice platforms, and run your voice apps locally for easy prototyping and testing.
 
 ### Installation
@@ -29,7 +31,7 @@ To make best use of the Jovo CLI, install it globally via npm:
 $ npm install -g jovo-cli
 ```
 
-After successful installation, you should be able to see the jovo menu by just typing the following into your command line:
+After successful installation, you should be able to see the menu by just typing the following into your command line:
 
 ```sh
 $ jovo3
@@ -57,14 +59,14 @@ If you run into other problems, please submit an issue here: [jovotech/jovo-cli]
 
 Jovo CLI commands can be divided into [basic commands](#basic-commands) (to create and run projects) and [platform commands](#platform-commands) (to interact with a voice platform).
 
-|                                         | Command                       | Description                                                                               |
-| --------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
-| [Basic Commands](#basic-commands)       | [`jovo new`](#jovo-new)       | Creates a new Jovo project                                                                |
-|                                         | [`jovo run`](#jovo-run)       | Runs a local development server (webhook)                                                 |
-|                                         | [`jovo update`](#jovo-update) | Update all of the Jovo packages in your project                                           |
-| [Platform Commands](#platform-commands) | [`jovo build`](#jovo-build)   | Builds platform-specific language model files into `/platforms` based on `/models` folder |
-|                                         | [`jovo get`](#jovo-get)       | Downloads an existing platform project into the `/platforms` folder                       |
-|                                         | [`jovo deploy`](#jovo-deploy) | Deploys the `/platforms` project files to the voice platforms                             |
+|                                         | Command                        | Description                                                                               |
+| --------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
+| [Basic Commands](#basic-commands)       | [`jovo3 new`](#jovo-new)       | Creates a new Jovo project                                                                |
+|                                         | [`jovo3 run`](#jovo-run)       | Runs a local development server (webhook)                                                 |
+|                                         | [`jovo3 update`](#jovo-update) | Update all of the Jovo packages in your project                                           |
+| [Platform Commands](#platform-commands) | [`jovo3 build`](#jovo-build)   | Builds platform-specific language model files into `/platforms` based on `/models` folder |
+|                                         | [`jovo3 get`](#jovo-get)       | Downloads an existing platform project into the `/platforms` folder                       |
+|                                         | [`jovo3 deploy`](#jovo-deploy) | Deploys the `/platforms` project files to the voice platforms                             |
 
 ## Basic Commands
 
