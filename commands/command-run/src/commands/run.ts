@@ -59,7 +59,7 @@ export class Run extends PluginCommand<RunEvents> {
         outputText.push(text);
       }
 
-      outputText.push('\nUse "jovo update" to get the newest versions.');
+      outputText.push('\nUse "npm update" to get the newest versions.');
 
       Log.info(
         boxen(outputText.join('\n'), {
