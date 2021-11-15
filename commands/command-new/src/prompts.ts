@@ -5,9 +5,11 @@ import {
   printUserInput,
   ProjectProperties,
   prompt,
+  SUPPORTED_LANGUAGES,
   validateLocale,
 } from '@jovotech/cli-core';
 import chalk from 'chalk';
+import { Choice } from 'prompts';
 import { NewContext } from './commands/new';
 import { fetchMarketPlace } from './utilities';
 
@@ -99,13 +101,14 @@ export async function promptProjectProperties(
         },
       },
       {
-        name: 'linter',
-        message: 'Do you want to use a Linter?',
+        name: 'language',
+        message: 'Choose the programming language you want to use:',
         type: 'select',
-        choices: [
-          { title: printUserInput('Yes, ESLint + Prettier'), value: true },
-          { title: printUserInput("No (or I'll add it later)"), value: false },
-        ],
+        instructions: false,
+        choices: SUPPORTED_LANGUAGES.map((lng) => ({
+          title: printUserInput(lng),
+          value: lng,
+        })),
       },
     ],
     {

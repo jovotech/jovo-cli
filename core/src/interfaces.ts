@@ -1,5 +1,6 @@
 import { Input } from '@oclif/command/lib/flags';
 import * as Parser from '@oclif/parser';
+import { SUPPORTED_LANGUAGES } from './constants';
 import { PluginCommand } from './PluginCommand';
 
 // ####### EVENT EMITTER #######
@@ -50,6 +51,8 @@ export interface PluginContext extends Context {}
 
 // ####### CONFIG #######
 
+export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
+
 export interface DeployConfiguration {
   target?: string[];
 }
@@ -78,7 +81,7 @@ export interface ProjectProperties {
   projectName: string;
   platforms: MarketplacePlugin[];
   locales: string[];
-  linter: boolean;
+  language: SupportedLanguages;
 }
 
 export interface Preset extends ProjectProperties {

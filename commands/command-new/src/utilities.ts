@@ -1,13 +1,23 @@
-import { execAsync, ExecResponse, JovoCliError, MarketplacePlugin } from '@jovotech/cli-core';
+import {
+  execAsync,
+  ExecResponse,
+  JovoCliError,
+  MarketplacePlugin,
+  SupportedLanguages,
+} from '@jovotech/cli-core';
 import downloadGH from 'download-git-repo';
 
 /**
  * Downloads and extracts a template.
  * @param projectPath - Path to download and extract the template to.
  */
-export async function downloadTemplate(projectPath: string): Promise<void> {
+export async function downloadTemplate(
+  projectPath: string,
+  language: SupportedLanguages,
+): Promise<void> {
   return new Promise((resolve, reject) => {
-    downloadGH('jovotech/jovo-v4-template', projectPath, (error: Error) => {
+    const url: string = `jovotech/jovo-v4-template${language === 'javascript' ? '-js' : ''}`;
+    downloadGH(url, projectPath, (error: Error) => {
       if (error) {
         return reject(error);
       }

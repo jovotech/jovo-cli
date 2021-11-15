@@ -160,7 +160,7 @@ export class JovoUserConfig {
       projectName: 'helloworld',
       locales: ['en'],
       platforms: [],
-      linter: true,
+      language: 'typescript',
     };
   }
 }
