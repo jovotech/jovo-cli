@@ -11,7 +11,7 @@ import {
 } from '@jovotech/cli-core';
 import boxen from 'boxen';
 import { ChildProcess, spawn } from 'child_process';
-import { instantiateJovoWebhook, shouldUpdatePackages } from '../utilities';
+import { shouldUpdatePackages } from '../utilities';
 
 export interface RunContext extends PluginContext {
   flags: CliFlags<typeof Run>;
@@ -93,8 +93,6 @@ export class Run extends PluginCommand<RunEvents> {
       shell: true,
       windowsVerbatimArguments: true,
     });
-
-    instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout }, nodeProcess);
 
     await this.$emitter.run('run');
 
