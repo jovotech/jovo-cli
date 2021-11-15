@@ -1,72 +1,20 @@
----
-title: 'Serverless CLI Integration'
-excerpt: 'This Jovo CLI plugin bundles and deploys your Jovo app code using the Serverless CLI.'
----
+# Jovo CLI Serverless Integration
 
-# Serverless CLI Integration
+[![Jovo Framework](https://v4.jovo.tech/img/github-header.png)](https://v4.jovo.tech)
 
-This Jovo CLI plugin bundles and deploys your Jovo app code using the [Serverless CLI](https://www.serverless.com/).
+<p>
+<a href="https://v4.jovo.tech" target="_blank">Website</a> -  <a href="https://v4.jovo.tech/docs" target="_blank">Docs</a> - <a href="https://v4.jovo.tech/marketplace" target="_blank">Marketplace</a> - <a href="https://github.com/jovotech/jovo-v4-template" target="_blank">Template</a>   
+</p>
 
+<p>
+<a href="https://www.npmjs.com/package/@jovotech/target-serverless" target="_blank"><img src="https://badge.fury.io/js/@jovotech%2Ftarget-serverless.svg"></a>      
+<a href="https://opencollective.com/jovo-framework" target="_blank"><img src="https://opencollective.com/jovo-framework/tiers/badge.svg"></a>
+</p>
 
-## Installation
+This package enables you to integrate the Jovo CLI with the Serverless CLI.
 
-Install the plugin like this:
-
-```sh
-$ npm install @jovotech/target-serverless
+```bash
+$ npm install -g @jovotech/target-serverless
 ```
 
-If you haven't installed the official Serverless CLI globally yet, you can do so with this command:
-
-```sh
-$ npm install -g @serverless
-```
-
-
-## Configuration
-
-Add the plugin to your `jovo.project.js` [project configuration](https://v4.jovo.tech/docs/project-config) file like this:
-
-```js
-const { ProjectConfig } = require('@jovotech/cli-core');
-const { ServerlessCli } = require('@jovotech/target-serverless');
-
-// ...
-
-const project = new ProjectConfig({
-  
-  // ...
-
-  plugins: [
-    // ...
-
-    new ServerlessCli({ /* options */ })
-  ],
-});
-```
-
-Learn more about Serverless configuration in their [official documentation](https://www.serverless.com/framework/docs/).
-
-For example, to get started with AWS; you need to make the following keys accessible:
-
-```sh
-export AWS_ACCESS_KEY_ID=<your-key-here>
-export AWS_SECRET_ACCESS_KEY=<your-secret-key-here>
-```
-
-
-## Usage
-
-The Serverless CLI integration works with two commands.
-
-Use the `build:serverless` command to generate a `serverless.yaml` file into the root of your Jovo project. This only needs to be done once until you make changes to the config in the `jovo.project.js` file:
-
-```sh
-$ jovov4 build:serverless
-```
-
-After that, you can use the [`deploy:code` command](https://v4.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code:
-
-```sh
-$ jovov4 deploy:code serverless
-```
+> Learn more in the docs: https://v4.jovo.tech/marketplace/target-serverless

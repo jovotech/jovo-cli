@@ -1,6 +1,5 @@
 import {
   ANSWER_CANCEL,
-  checkForProjectDirectory,
   CliArgs,
   CliFlags,
   Log,
@@ -12,6 +11,7 @@ import {
   printUserInput,
   prompt,
   promptOverwrite,
+  ProjectCommand,
   TADA,
   Task,
   wait,
@@ -32,6 +32,7 @@ export interface NewStageContext extends PluginContext {
 
 export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage';
 
+@ProjectCommand()
 export class NewStage extends PluginCommand<NewStageEvents> {
   static id = 'new:stage';
   static description = 'Create a new stage';
@@ -205,8 +206,6 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo new:stage: ${NewStage.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage'));

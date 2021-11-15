@@ -5,6 +5,7 @@
     "declaration": true,
     "noImplicitAny": true,
     "removeComments": false,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "preserveConstEnums": true,

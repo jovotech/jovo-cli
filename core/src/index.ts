@@ -22,6 +22,7 @@ export * from './prints';
 export * from './Project';
 export * from './prompts';
 export * from './Task';
+export * from './decorators';
 export * from './utilities';
 export * from './validators';
 

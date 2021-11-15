@@ -1,20 +1,12 @@
 import {
-  CLOUD,
   execAsync,
   ExecResponse,
   getPackageVersions,
-  JovoCli,
   JovoCliError,
   JovoUserConfig,
   JovoUserConfigFile,
-  JOVO_WEBHOOK_URL,
-  Log,
   PackageVersions,
-  printUserInput,
 } from '@jovotech/cli-core';
-import { ChildProcess } from 'child_process';
-import open from 'open';
-import * as JovoWebhookConnector from './JovoWebhookConnector';
 
 /**
  * Compile TypeScript code of Jovo project to JavaScript.
@@ -72,98 +64,4 @@ export async function shouldUpdatePackages(
   }
 
   return outOfDatePackages;
-}
-
-/**
- * Initializes a connection to the Jovo Webhook.
- * @param options - Options for the JovoWebhookConnector.
- * @param childProcess - Optional child process to write data into.
- */
-export function instantiateJovoWebhook(
-  cli: JovoCli,
-  options: JovoWebhookConnector.PostOptions,
-  childProcess?: ChildProcess,
-): void {
-  const webhookId: string = cli.userConfig.getWebhookUuid();
-  // Get endpoint directly from config to skip eval() from $configReader.
-  const endpointRaw: string = cli.project!.config.getParameter('endpoint') as string;
-  // Resolve endpoint. Transforms `JOVO_WEBHOOK_URL` to actual webhook url.
-  const endpoint: string = cli.resolveEndpoint(endpointRaw);
-
-  if (endpoint && endpoint.startsWith('arn')) {
-    Log.warning(
-      "Your configured endpoint is a lambda endpoint. Lambda isn't supported with jovo run.",
-    );
-  }
-
-  // Open socket redirect from server to localhost.
-  JovoWebhookConnector.open(webhookId, JOVO_WEBHOOK_URL, options);
-
-  const debuggerUrl = `${JOVO_WEBHOOK_URL}/${webhookId}`;
-
-  // Check if the current output is being piped to somewhere.
-  if (process.stdout.isTTY) {
-    // Check if we can enable raw mode for input stream to capture raw keystrokes.
-    if (process.stdin.setRawMode) {
-      setTimeout(() => {
-        Log.info(
-          `\n${CLOUD} To open Jovo Debugger in your browser, enter ${printUserInput('.')}\n`,
-        );
-      }, 2500);
-
-      // Capture unprocessed key input.
-      process.stdin.setRawMode(true);
-      // Explicitly resume emitting data from the stream.
-      process.stdin.resume();
-      // Capture readable input as opposed to binary.
-      process.stdin.setEncoding('utf-8');
-
-      // Collect input text from input stream.
-      let inputText = '';
-      process.stdin.on('data', async (keyRaw: Buffer) => {
-        const key: string = keyRaw.toString();
-        // When dot gets pressed, try to open the debugger in browser.
-        if (key === '.') {
-          try {
-            await open(debuggerUrl);
-          } catch (error) {
-            Log.info(
-              '\nCould not open browser. Please open debugger manually by visiting this url:',
-            );
-            Log.info(debuggerUrl);
-          }
-          inputText = '';
-        } else {
-          // When anything else got pressed, record it and send it on enter into the child process.
-          if (key.charCodeAt(0) === 13) {
-            // Send recorded input to child process. This is useful for restarting a nodemon process with rs, for example.
-            if (childProcess) {
-              childProcess.stdin!.write(inputText + '\n');
-            }
-            process.stdout.write('\n');
-            inputText = '';
-          } else if (key.charCodeAt(0) === 3) {
-            // Ctrl+C has been pressed, kill process.
-            if (process.platform === 'win32') {
-              Log.info('Press Ctrl + C again to exit.');
-              process.stdin.pause();
-              process.stdin.setRawMode(false);
-            } else {
-              process.exit();
-            }
-          } else {
-            // Record input text and write it into terminal.
-            inputText += key;
-            process.stdout.write(key);
-          }
-        }
-      });
-    } else {
-      setTimeout(() => {
-        Log.info(
-          `\n${CLOUD} To open Jovo Debugger open this url in your browser:\n${debuggerUrl}\n`,
-        );
-      }, 2500);
-    }
-  }
 }
