@@ -55,10 +55,9 @@ describe('new JovoUserConfig()', () => {
     expect(mockedSavePreset).toBeCalledWith<Preset[]>({
       name: 'default',
       platforms: [],
-      linter: true,
       locales: ['en'],
       projectName: 'helloworld',
-      unitTesting: true,
+      language: 'typescript',
     });
   });
 });
@@ -252,8 +251,7 @@ describe('getPresets()', () => {
             projectName: '',
             locales: [],
             platforms: [],
-            linter: true,
-            unitTesting: true,
+            language: 'typescript',
           },
         ],
       },
@@ -303,8 +301,7 @@ describe('getPreset()', () => {
             projectName: '',
             locales: [],
             platforms: [],
-            linter: true,
-            unitTesting: true,
+            language: 'typescript',
           },
         ],
       },
@@ -345,8 +342,7 @@ describe('savePreset()', () => {
         presets: [
           {
             name: 'default',
-            unitTesting: true,
-            linter: true,
+            language: 'typescript',
             platforms: [],
             projectName: '',
             locales: [],
@@ -362,8 +358,7 @@ describe('savePreset()', () => {
       projectName: '',
       platforms: [],
       locales: [],
-      linter: true,
-      unitTesting: true,
+      language: 'typescript',
     };
     await config.savePreset(preset);
     expect(config['config'].cli.presets).toHaveLength(2);
