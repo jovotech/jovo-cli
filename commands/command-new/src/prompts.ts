@@ -9,7 +9,6 @@ import {
   validateLocale,
 } from '@jovotech/cli-core';
 import chalk from 'chalk';
-import { Choice } from 'prompts';
 import { NewContext } from './commands/new';
 import { fetchMarketPlace } from './utilities';
 
