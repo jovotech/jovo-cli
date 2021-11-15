@@ -25,7 +25,6 @@
     "lodash.mergewith": "^4.6.2",
     "lodash.pick": "^4.4.0",
     "lodash.set": "^4.3.2",
-    "lomit": "^1.0.8",
     "node-emoji": "^1.10.0",
     "prompts": "^2.4.0"
   },
