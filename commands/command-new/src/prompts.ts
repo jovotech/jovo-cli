@@ -173,7 +173,6 @@ export async function promptServer(
 ): Promise<{ server: MarketplacePlugin | undefined }> {
   return await prompt(
     {
-      // TODO: No or Ill add it later
       name: 'server',
       message: 'Which server do you want to use?',
       type: 'select',

@@ -155,23 +155,21 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       }
 
       // Create new npm scripts
-      const appStartPath: string[] = [`app.${this.$context.args.stage}.js`];
-      if (this.$cli.project!.isTypeScriptProject()) {
-        appStartPath.unshift('dist');
-      } else {
-        appStartPath.unshift('src');
-      }
-      const appBundlePath: string = joinPaths(
-        'src',
-        `app.${this.$context.args.stage}.${this.$cli.project!.isTypeScriptProject() ? 'ts' : 'js'}`,
-      );
+      const appPath: string = this.$cli.project!.isTypeScriptProject()
+        ? joinPaths('src', `app.${this.$context.args.stage}.ts`)
+        : joinPaths('dist', `app.${this.$context.args.stage}.js`);
 
-      packageJson.scripts[
-        `start:${this.$context.args.stage}`
-      ] = `tsc-watch --onSuccess \"node ${joinPaths(...appStartPath)} --jovo-webhook\"`;
-      packageJson.scripts[
-        `bundle:${this.$context.args.stage}`
-      ] = `esbuild ${appBundlePath} --bundle --minify --sourcemap --platform=node --outfile=bundle/index.js`;
+      if (this.$cli.project!.isTypeScriptProject()) {
+        packageJson.scripts[
+          `start:${this.$context.args.stage}`
+        ] = `tsc-watch --onSuccess \"node ${appPath} --jovo-webhook\" --noClear`;
+      } else {
+        packageJson.scripts[
+          `start:${this.$context.args.stage}`
+        ] = `nodemon --watch src --exec \"babel src --out-dir dist && node ${appPath} --jovo-webhook\"`;
+      }
+
+      packageJson.scripts[`bundle:${this.$context.args.stage}`] = `npm run bundle -- ${appPath}`;
 
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
