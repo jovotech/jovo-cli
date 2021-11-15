@@ -23,16 +23,14 @@ export class JovoCli {
     if (this.isInV3ProjectDirectory()) {
       Log.spacer();
       Log.warning(
-        'The current project is incompatible with the Jovo CLI @v4. Consider using the Jovo CLI @v3 instead.',
+        `The current project is incompatible with the Jovo CLI @v4. Consider using the Jovo CLI @v3 instead. You can access it with "${printHighlight(
+          'jovo3',
+        )}".`,
       );
       try {
         which.sync('jovo3');
       } catch (error) {
-        Log.warning(
-          `You can install its latest version using "npm install -g jovo-cli" and access it with "${printHighlight(
-            'jovo3',
-          )}".`,
-        );
+        Log.warning(`You can install its latest version using "npm install -g jovo-cli".`);
       }
       Log.spacer();
       process.exit(1);
