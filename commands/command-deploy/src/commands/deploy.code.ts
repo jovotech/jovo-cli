@@ -1,5 +1,4 @@
 import {
-  checkForProjectDirectory,
   CliArgs,
   CliFlags,
   EventEmitter,
@@ -9,6 +8,7 @@ import {
   PluginCommand,
   PluginContext,
   printSubHeadline,
+  ProjectCommand,
   TADA,
 } from '@jovotech/cli-core';
 import _merge from 'lodash.merge';
@@ -23,6 +23,7 @@ export interface DeployCodeContext extends PluginContext {
 
 export type DeployCodeEvents = 'before.deploy:code' | 'deploy:code' | 'after.deploy:code';
 
+@ProjectCommand()
 export class DeployCode extends PluginCommand<DeployCodeEvents> {
   static id: string = 'deploy:code';
   static description: string = 'Upload the source code to a cloud provider';
@@ -61,8 +62,6 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo deploy:code: ${DeployCode.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code'));

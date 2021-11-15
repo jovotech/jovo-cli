@@ -1,11 +1,11 @@
 import {
-  checkForProjectDirectory,
   CliFlags,
   flags,
   Log,
   PackageVersions,
   PluginCommand,
   PluginContext,
+  ProjectCommand,
   printComment,
   printSubHeadline,
 } from '@jovotech/cli-core';
@@ -19,6 +19,7 @@ export interface RunContext extends PluginContext {
 
 export type RunEvents = 'before.run' | 'run';
 
+@ProjectCommand()
 export class Run extends PluginCommand<RunEvents> {
   static id = 'run';
   static description =
@@ -72,8 +73,6 @@ export class Run extends PluginCommand<RunEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo run: ${Run.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));

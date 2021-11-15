@@ -17,7 +17,7 @@ import {
   wait,
 } from '@jovotech/cli-core';
 import { JovoModelData, JovoModelDataV3, NativeFileInformation } from '@jovotech/model';
-import { JovoModelLex, LexModelFile, LexModelFileResource } from '@jovotech/model-lex';
+import { JovoModelLex, LexModelFile } from '@jovotech/model-lex';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
 import _mergeWith from 'lodash.mergewith';

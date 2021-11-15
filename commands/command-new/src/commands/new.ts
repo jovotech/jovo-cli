@@ -6,6 +6,7 @@ import {
   deleteFolderRecursive,
   EventEmitter,
   flags,
+  GlobalCommand,
   JovoCli,
   JovoCliError,
   JovoCliPlugin,
@@ -44,6 +45,7 @@ export interface NewContext extends PluginContext, Omit<ProjectProperties, 'name
 
 export type NewEvents = 'new';
 
+@GlobalCommand()
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
   static description = 'Creates a new Jovo project';
