@@ -4,7 +4,14 @@ import latestVersion from 'latest-version';
 import _get from 'lodash.get';
 import { join as joinPaths } from 'path';
 import stripAnsi from 'strip-ansi';
-import { DependencyFile, ExecResponse, LocaleMap, Packages, PackageVersions } from './interfaces';
+import {
+  DependencyFile,
+  ExecResponse,
+  LocaleMap,
+  Packages,
+  PackageVersions,
+  SupportedLanguages,
+} from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { Log } from './Logger';
 
@@ -238,4 +245,19 @@ export function getResolvedLocales(
   }
 
   return [locale];
+}
+
+/**
+ * Converts the provided programming language to Pascal Case
+ * @param lng - Programming language to convert
+ */
+export function getLanguagePascalCase(lng: SupportedLanguages): string {
+  switch (lng) {
+    case 'typescript':
+      return 'TypeScript';
+    case 'javascript':
+      return 'JavaScript';
+    default:
+      return '';
+  }
 }

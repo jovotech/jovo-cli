@@ -6,6 +6,7 @@ export const DEFAULT_LOCALE = 'en';
 export const JOVO_WEBHOOK_URL = 'https://webhookv4.jovo.cloud';
 export const ENDPOINTS: string[] = ['jovo-webhook', 'ngrok', 'none'];
 export const REPO_URL = 'https://www.jovo.tech/repo/sample-apps';
+export const SUPPORTED_LANGUAGES = ['typescript', 'javascript'] as const;
 
 // ####### PROMPT ANSWERS #######
 export const ANSWER_OVERWRITE = 'overwrite';

@@ -3,6 +3,7 @@ import { Input } from '@oclif/command/lib/flags';
 
 import { JovoCliPlugin } from './JovoCliPlugin';
 import { PluginCommand } from './PluginCommand';
+import { SUPPORTED_LANGUAGES } from './constants';
 
 // ####### EVENT EMITTER #######
 
@@ -52,6 +53,8 @@ export interface PluginContext extends Context {}
 
 // ####### CONFIG #######
 
+export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
+
 export interface DeployConfiguration {
   target?: string[];
 }
@@ -89,8 +92,7 @@ export interface ProjectProperties {
   projectName: string;
   platforms: MarketplacePlugin[];
   locales: string[];
-  linter: boolean;
-  unitTesting: boolean;
+  language: SupportedLanguages;
 }
 
 export interface Preset extends ProjectProperties {
