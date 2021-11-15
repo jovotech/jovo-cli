@@ -1,6 +1,5 @@
 import { BuildPlatformEvents } from '@jovotech/cli-command-build';
 import {
-  checkForProjectDirectory,
   CliArgs,
   CliFlags,
   EventEmitter,
@@ -9,6 +8,7 @@ import {
   Log,
   PluginCommand,
   PluginContext,
+  ProjectCommand,
   printSubHeadline,
   TADA,
 } from '@jovotech/cli-core';
@@ -26,6 +26,7 @@ export interface GetPlatformContext extends PluginContext {
   clean: boolean;
 }
 
+@ProjectCommand()
 export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatformEvents> {
   static id = 'get:platform';
   static description = 'Synchronize your local build files with platform developer consoles';
@@ -78,8 +79,6 @@ export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatform
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo get: ${GetPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get'));

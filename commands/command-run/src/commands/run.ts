@@ -1,17 +1,17 @@
 import {
-  checkForProjectDirectory,
   CliFlags,
   flags,
   Log,
   PackageVersions,
   PluginCommand,
   PluginContext,
+  ProjectCommand,
   printComment,
   printSubHeadline,
 } from '@jovotech/cli-core';
 import boxen from 'boxen';
 import { ChildProcess, spawn } from 'child_process';
-import { instantiateJovoWebhook, shouldUpdatePackages } from '../utilities';
+import { shouldUpdatePackages } from '../utilities';
 
 export interface RunContext extends PluginContext {
   flags: CliFlags<typeof Run>;
@@ -19,6 +19,7 @@ export interface RunContext extends PluginContext {
 
 export type RunEvents = 'before.run' | 'run';
 
+@ProjectCommand()
 export class Run extends PluginCommand<RunEvents> {
   static id = 'run';
   static description =
@@ -72,8 +73,6 @@ export class Run extends PluginCommand<RunEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo run: ${Run.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
@@ -93,8 +92,6 @@ export class Run extends PluginCommand<RunEvents> {
       shell: true,
       windowsVerbatimArguments: true,
     });
-
-    instantiateJovoWebhook(this.$cli, { port: flags.port, timeout: flags.timeout }, nodeProcess);
 
     await this.$emitter.run('run');
 
