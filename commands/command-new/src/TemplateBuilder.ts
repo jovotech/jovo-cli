@@ -1,8 +1,7 @@
-import { Config as ProjectConfig, deleteFolderRecursive, JovoCliError } from '@jovotech/cli-core';
+import { Config as ProjectConfig, JovoCliError } from '@jovotech/cli-core';
 import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import _set from 'lodash.set';
-import { omit } from 'lomit';
 import { join as joinPaths } from 'path';
 import util from 'util';
 import { NewContext } from './commands/new';
@@ -15,7 +14,7 @@ import { insert } from './utilities';
  */
 export async function modifyDependencies(context: NewContext): Promise<void> {
   const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
-  let packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
   // Add CLI platform plugins to project dependencies.
   for (const platform of context.platforms) {
@@ -42,21 +41,6 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
   const fileBuilderVersion: string = await latestVersion(fileBuilderPackage);
   _set(packageJson, `devDependencies["${fileBuilderPackage}"]`, `^${fileBuilderVersion}`);
 
-  const omittedPackages: string[] = [];
-  // Check if ESLint is enabled, if not, delete package.json entries and config.
-  if (!context.linter) {
-    unlinkSync(joinPaths(context.projectName, '.eslintrc.js'));
-    omittedPackages.push(
-      'devDependencies.eslint',
-      'devDependencies.@typescript-eslint/eslint-plugin',
-      'devDependencies.@typescript-eslint/parser',
-      'devDependencies.eslint-config-prettier',
-      'devDependencies.eslint-plugin-prettier',
-      'scripts.eslint',
-    );
-  }
-
-  packageJson = omit(packageJson, omittedPackages);
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
