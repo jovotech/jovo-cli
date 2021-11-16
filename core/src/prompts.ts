@@ -87,7 +87,7 @@ export async function promptSupportedLocales(
       type: 'multiselect',
       message: `Locale ${printHighlight(
         locale,
-      )} is not supported by ${platform}.\nPlease provide an alternative locale (type to filter, select with space):`,
+      )} is not supported by ${platform}.\n  Please provide an alternative locale (type to filter, select with space):`,
       instructions: false,
       min: 1,
       choices: supportedLocales.map((locale) => ({
