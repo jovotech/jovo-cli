@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-core",
   "description": "Jovo CLI Core Functionality",
-  "version": "4.0.0-beta.6",
+  "version": "4.0.0-beta.7",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,8 +9,7 @@
   "scripts": {
     "test": "jest",
     "tsc": "tsc",
-    "eslint": "eslint src test --ext .ts --fix",
-    "link": "node bin/link"
+    "eslint": "eslint src test --ext .ts --fix"
   },
   "dependencies": {
     "@jovotech/model": "^4.0.0-beta.2",

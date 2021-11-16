@@ -1,6 +1,5 @@
 import { existsSync } from 'fs';
 import {
-  checkForProjectDirectory,
   EventEmitter,
   flags,
   JovoCli,
@@ -12,6 +11,7 @@ import {
   TADA,
   Log,
   PluginContext,
+  ProjectCommand,
 } from '@jovotech/cli-core';
 import _merge from 'lodash.merge';
 import DeployCommand from '..';
@@ -28,6 +28,7 @@ export interface DeployPlatformContext extends PluginContext {
   locales: string[];
 }
 
+@ProjectCommand()
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id = 'deploy:platform';
   static description = "Deploy to the specified platform's developer console";
@@ -81,8 +82,6 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   }
 
   async run(): Promise<void> {
-    checkForProjectDirectory(this.$cli.isInProjectDirectory());
-
     Log.spacer();
     Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform'));

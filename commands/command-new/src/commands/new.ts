@@ -6,6 +6,7 @@ import {
   deleteFolderRecursive,
   EventEmitter,
   flags,
+  GlobalCommand,
   JovoCli,
   JovoCliError,
   JovoCliPlugin,
@@ -18,6 +19,7 @@ import {
   printSubHeadline,
   ProjectProperties,
   promptOverwrite,
+  SUPPORTED_LANGUAGES,
   TADA,
   Task,
   WRENCH,
@@ -44,6 +46,7 @@ export interface NewContext extends PluginContext, Omit<ProjectProperties, 'name
 
 export type NewEvents = 'new';
 
+@GlobalCommand()
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
   static description = 'Creates a new Jovo project';
@@ -57,7 +60,7 @@ export class New extends PluginCommand<NewEvents> {
     }),
     language: flags.string({
       description: 'Specifies the code language of your project',
-      options: ['typescript'],
+      options: SUPPORTED_LANGUAGES as unknown as string[],
     }),
     preset: flags.string({
       description:
@@ -204,7 +207,7 @@ export class New extends PluginCommand<NewEvents> {
 
     const downloadTask: Task = new Task('Downloading and extracting template', async () => {
       try {
-        await downloadTemplate(this.$context.projectName);
+        await downloadTemplate(this.$context.projectName, this.$context.language);
       } catch (error) {
         throw new JovoCliError({
           message: 'Could not download template.',
