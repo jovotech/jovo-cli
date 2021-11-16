@@ -1,5 +1,14 @@
 # Changelog
 
+## [@jovotech/cli-command-run@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.6...@jovotech/cli-command-run@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.5...@jovotech/cli-command-run@4.0.0-beta.6)
 
 > 8 October 2021
