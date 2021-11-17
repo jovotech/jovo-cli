@@ -3,7 +3,7 @@ import _get from 'lodash.get';
 import { dirname, join as joinPaths } from 'path';
 import { URL } from 'url';
 import which from 'which';
-import { Config, JovoCliPlugin, JovoUserConfig, JOVO_WEBHOOK_URL, PluginType, Project } from '.';
+import { Config, JovoCliPlugin, UserConfig, JOVO_WEBHOOK_URL, PluginType, Project } from '.';
 import { Log } from './Logger';
 import { printHighlight } from './prints';
 
@@ -11,14 +11,14 @@ export class JovoCli {
   private static instance?: JovoCli;
   private plugins: JovoCliPlugin[] = [];
 
-  readonly userConfig: JovoUserConfig;
+  readonly userConfig: UserConfig;
 
   projectPath: string;
   project?: Project;
 
   constructor() {
     this.projectPath = process.cwd();
-    this.userConfig = new JovoUserConfig();
+    this.userConfig = new UserConfig();
 
     if (this.isInV3ProjectDirectory()) {
       Log.spacer();

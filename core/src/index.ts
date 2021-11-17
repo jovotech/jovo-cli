@@ -13,7 +13,7 @@ export * from './interfaces';
 export * from './JovoCli';
 export * from './JovoCliError';
 export * from './JovoCliPlugin';
-export * from './JovoUserConfig';
+export * from './UserConfig';
 export * from './Logger';
 export * from './ProjectConfig';
 export * from './PluginCommand';
