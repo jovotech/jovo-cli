@@ -12,7 +12,6 @@
     "eslint": "eslint src test --ext .ts --fix"
   },
   "dependencies": {
-    "@jovotech/common": "^4.0.0-beta.3",
     "@jovotech/model": "^4.0.0-beta.2",
     "@oclif/command": "^1.8.0",
     "@oclif/parser": "^3.8.5",
@@ -52,7 +51,7 @@
     "prettier": "^2.4.1",
     "symlink-dir": "^5.0.1",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4"
+    "typescript": "~4.2.4"
   },
   "files": [
     "dist"
