@@ -4,8 +4,8 @@
 	"scripts": {
 		"lerna": "lerna",
 		"init": "lerna bootstrap",
-	  	"prettier": "lerna exec npm run prettier",
-	  	"tsc": "lerna exec npm run tsc",
+		"prettier": "lerna exec npm run prettier",
+		"tsc": "lerna exec npm run tsc",
 		"tslint": "lerna exec npm run tslint",
 		"test": "lerna exec npm test",
 		"clean": "lerna clean",
@@ -24,8 +24,8 @@
 		"jest": "^25.1.0",
 		"lerna": "^3.20.2",
 		"ts-jest": "^25.2.0",
-	  	"tslint": "^5.19.0",
-	  	"tslint-config-prettier": "^1.18.0",
+		"tslint": "^5.19.0",
+		"tslint-config-prettier": "^1.18.0",
 		"typescript": "^3.7.5"
 	},
 	"dependencies": {}

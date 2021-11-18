@@ -34,12 +34,12 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "chalk": "^4.0.1",
+    "chalk": "^4.1.0",
     "jovo-cli-core": "^3.2.1",
     "jovo-model": "^3.0.0",
     "jovo-model-google": "^3.0.4",
     "jovo-webhook-connector": "^3.0.6",
-    "listr": "^0.14.2",
+    "listr": "^0.14.3",
     "lodash": "^4.17.15",
     "yaml": "^1.10.0"
   },

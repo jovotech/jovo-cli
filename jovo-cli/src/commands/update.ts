@@ -1,11 +1,11 @@
 import { Command } from '@oclif/command';
 import chalk from 'chalk';
 import { exec } from 'child_process';
-import { statSync, writeFile } from 'fs-extra';
+import { statSync } from 'fs-extra';
 import { getProject, JovoCliError } from 'jovo-cli-core';
 import Listr = require('listr');
 import { join as pathJoin } from 'path';
-import * as rimraf from 'rimraf';
+import rimraf from 'rimraf';
 import { promisify } from 'util';
 import { getPackageVersionsNpm, JovoCliRenderer, OutdatedPackages } from '../utils';
 import { ANSWER_UPDATE, promptUpdateVersions } from '../utils/Prompts';

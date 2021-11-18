@@ -1,9 +1,9 @@
 import { Command, flags } from '@oclif/command';
 import chalk from 'chalk';
 import { ListrTask } from 'listr';
-import * as csvToJson from 'csvtojson';
+import  csvToJson from 'csvtojson';
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs-extra';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import Listr = require('listr');
 import { JovoCliRenderer } from '../utils';
 

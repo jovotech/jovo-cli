@@ -1,14 +1,11 @@
 import { flags } from '@oclif/command';
 import chalk from 'chalk';
-import * as elegantSpinner from 'elegant-spinner';
-// tslint:disable-next-line:no-implicit-dependencies
-// @ts-ignore
-import * as figures from 'figures';
+import  elegantSpinner from 'elegant-spinner';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { getProject, InputFlags, JovoCliError } from 'jovo-cli-core';
 import latestVersion from 'latest-version';
 import { ListrOptions } from 'listr';
-import * as logSymbols from 'log-symbols';
+import logSymbols from 'log-symbols';
 import { join as pathJoin } from 'path';
 import * as deployTargets from './DeployTargets';
 import { ListrTaskHelper, PackageVersions, PackageVersionsNpm } from './Interfaces';
@@ -27,9 +24,7 @@ const project = getProject();
 /**
  * From Listr utils
  */
-// ToDo: Refactor!
-// @ts-ignore
-const pointer = chalk.yellow(figures.pointer);
+const pointer = chalk.yellow('>');
 
 export function isDefined(x: any) {
   // tslint:disable-line:no-any

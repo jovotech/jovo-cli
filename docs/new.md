@@ -1,24 +1,24 @@
 # jovo new
 
-> To view this page on the Jovo website, visit https://www.jovo.tech/marketplace/jovo-cli/new
+> To view this page on the Jovo website, visit https://v3.jovo.tech/marketplace/jovo-cli/new
 
 Learn how to create a new Jovo Project with the `jovo new` command of the Jovo CLI.
 
-* [Introduction](#introduction)
-* [Options](#options)
+- [Introduction](#introduction)
+- [Options](#options)
 
 ## Introduction
 
-![jovo new command](../img/jovo-new.png "jovo new command")
+![jovo new command](../img/jovo-new.png 'jovo new command')
 
 You can create a Jovo project into a new directory with the following command:
 
 ```sh
 ## Default
-$ jovo new <directory>
+$ jovo3 new <directory>
 
 ## Options
-$ jovo new <directory> [-t | --template <template-name>] [-l | --locale <locale>] [--invocation <name>]
+$ jovo3 new <directory> [-t | --template <template-name>] [-l | --locale <locale>] [--invocation <name>]
   [-i | --init <platform>] [-b | --build] [-d | --deploy] [--ff <platform>] [--skip-npminstall]
   [--ask-profile <profileName>] [--endpoint <endpoint>]
 ```
@@ -45,21 +45,19 @@ $ jovo new <directory> [-t | --template <template-name>] [-l | --locale <locale>
 
 `--endpoint`: Choose the type of endpoint for `--init`: `jovo-webhook`, `bst-proxy`, `ngrok` or `none`. Default: `jovo-webhook`
 
-
-
 **Templates**
 
 Below is a list of templates that can currently be used with the `jovo new` command.
 
 You can find the complete repository on GitHub: [jovotech/jovo-templates](https://github.com/jovotech/jovo-templates).
 
-Name | Description 
-:--- | :---
-[`helloworld`](https://github.com/jovotech/jovo-templates/tree/master/01_helloworld) | `Default`. Jovo Sample Voice App with a simple "Hello World!" + asking for the user's name 
-[`trivia-game`](https://github.com/jovotech/jovo-templates/tree/master/02_trivia-game) | Trivia game voice app that makes use of states, helper functions, and i18n
-[`unit-testing`](https://github.com/jovotech/jovo-templates/tree/master/03_unit-testing) | Template for the Jovo built-in unit testing feature.
-[`alexa/audioplayer`](https://github.com/jovotech/jovo-templates/tree/master/alexa/audioplayer) | Sample Alexa Audioplayer Skill that plays a longform audio file with the Audioplayer directive
-[`alexa/dialoginterface`](https://github.com/jovotech/jovo-templates/tree/master/alexa/dialoginterface) | Sample implementation of the Alexa Dialog Interface
-[`alexa/skillevents`](https://github.com/jovotech/jovo-templates/tree/master/alexa/skillevents) | Sample implementation of the Alexa Skill Events.
-[`alexa/isp`](https://github.com/jovotech/jovo-templates/tree/master/alexa/isp) | Sample implementation of the Alexa in-skill purchases feature.
-[`google/mediaresponse`](https://github.com/jovotech/jovo-templates/tree/master/google/mediaresponse) | Sample Google Action media response app that plays longform audio file
+| Name                                                                                                    | Description                                                                                    |
+| :------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------- |
+| [`helloworld`](https://github.com/jovotech/jovo-templates/tree/master/01_helloworld)                    | `Default`. Jovo Sample Voice App with a simple "Hello World!" + asking for the user's name     |
+| [`trivia-game`](https://github.com/jovotech/jovo-templates/tree/master/02_trivia-game)                  | Trivia game voice app that makes use of states, helper functions, and i18n                     |
+| [`unit-testing`](https://github.com/jovotech/jovo-templates/tree/master/03_unit-testing)                | Template for the Jovo built-in unit testing feature.                                           |
+| [`alexa/audioplayer`](https://github.com/jovotech/jovo-templates/tree/master/alexa/audioplayer)         | Sample Alexa Audioplayer Skill that plays a longform audio file with the Audioplayer directive |
+| [`alexa/dialoginterface`](https://github.com/jovotech/jovo-templates/tree/master/alexa/dialoginterface) | Sample implementation of the Alexa Dialog Interface                                            |
+| [`alexa/skillevents`](https://github.com/jovotech/jovo-templates/tree/master/alexa/skillevents)         | Sample implementation of the Alexa Skill Events.                                               |
+| [`alexa/isp`](https://github.com/jovotech/jovo-templates/tree/master/alexa/isp)                         | Sample implementation of the Alexa in-skill purchases feature.                                 |
+| [`google/mediaresponse`](https://github.com/jovotech/jovo-templates/tree/master/google/mediaresponse)   | Sample Google Action media response app that plays longform audio file                         |

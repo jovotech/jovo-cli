@@ -1,15 +1,15 @@
 import Command, { flags } from '@oclif/command';
 import * as boxen from 'boxen';
 import chalk from 'chalk';
-import * as spawn from 'cross-spawn';
+import spawn from 'cross-spawn';
 import * as JovoWebhookConnector from 'jovo-webhook-connector';
 import * as path from 'path';
-import * as open from 'open';
-const resolveBin = require('resolve-bin');
+import open from 'open';
+import resolveBin from 'resolve-bin';
 import { ChildProcess } from 'child_process';
 import { accessSync, readFileSync } from 'fs-extra';
 import { getProject, InputFlags, JOVO_WEBHOOK_URL, JovoCliError } from 'jovo-cli-core';
-import _ = require('lodash');
+import _ from 'lodash';
 import {
   addBaseCliOptions,
   getPackageVersionsNpm,
@@ -274,7 +274,7 @@ function jovoWebhook(options: object, stage: string, childProcess?: ChildProcess
   try {
     id = project.getOrCreateJovoWebhookId();
   } catch (err) {
-    console.log('Warning: Please initialize your project: $ jovo init');
+    console.log('Warning: Please initialize your project: $ jovo3 init');
     return;
   }
 

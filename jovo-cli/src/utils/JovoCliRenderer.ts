@@ -1,7 +1,7 @@
-import * as chalk from 'chalk';
-import indentString = require('indent-string');
+import chalk from 'chalk';
+import indentString from 'indent-string';
 import { ListrOptions, ListrRenderer } from 'listr';
-import * as logUpdate from 'log-update';
+import logUpdate from 'log-update';
 import { getSymbol, isDefined } from './';
 import { ListrTaskHelper } from './Interfaces';
 
