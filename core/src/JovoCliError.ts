@@ -22,6 +22,7 @@ export class JovoCliError extends Error {
       prefix: ERROR_PREFIX,
       logLevel,
     });
+    Log.spacer();
   }
 
   static print(error: JovoCliError): void {
