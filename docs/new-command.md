@@ -14,7 +14,6 @@ Learn how to create new Jovo projects and other files using the `jovov4 new` com
 - [`new`](#new-project): Create a new Jovo project
 - [`new:stage`](#new:stage): Create a new app stage
 
-
 ## New Project
 
 You can create a Jovo project into a new directory with the following command:
@@ -27,17 +26,16 @@ This will open a wizard that helps you create a new Jovo project by defining pla
 
 You can also add flags from the table below.
 
-| Flag | Description | Examples |
-|---|---|---|
-| `--locale`, `-l` | The locales to be created | `--locale en`, `--locale en de`  |
-| `--language` | Specifies the code language of your project | `--language typescript` |
-| `--preset` | Skips the wizard and creates a project from a pre-configured preset | `--preset default` (Typescript default template) |
-| `--clean` | Delete existing files in the specified `<directory>` before creating the project | |
-
+| Flag             | Description                                                                      | Examples                                         |
+| ---------------- | -------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `--locale`, `-l` | The locales to be created                                                        | `--locale en`, `--locale en de`                  |
+| `--language`     | Specifies the code language of your project                                      | `--language typescript`                          |
+| `--preset`       | Skips the wizard and creates a project from a pre-configured preset              | `--preset default` (Typescript default template) |
+| `--clean`        | Delete existing files in the specified `<directory>` before creating the project |                                                  |
 
 ## new:stage
 
-The `new:stage` command helps you create a new app stage, for example `app.prod.ts`. [Learn more about staging here](https://v4.jovo.tech/docs/staging).
+The `new:stage` command helps you create a new app stage, for example `app.prod.ts`. [Learn more about staging here](https://www.jovo.tech/docs/staging).
 
 ```sh
 $ jovov4 new:stage <stage>

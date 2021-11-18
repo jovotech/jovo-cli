@@ -9,7 +9,7 @@ Learn how to build your own Jovo CLI plugin.
 
 ## Introduction
 
-The Jovo CLI allows you to create custom CLI plugins that can hook into existing commands, and even create their own. For example, the [Serverless CLI plugin](https://v4.jovo.tech/marketplace/target-serverless) allows you to deploy your code to various cloud providers by hooking into the [`deploy` command](./deploy-command.md) and even creating its own `build:serverless` command.
+The Jovo CLI allows you to create custom CLI plugins that can hook into existing commands, and even create their own. For example, the [Serverless CLI plugin](https://www.jovo.tech/marketplace/target-serverless) allows you to deploy your code to various cloud providers by hooking into the [`deploy` command](./deploy-command.md) and even creating its own `build:serverless` command.
 
 In the next few sections, we're first going to take a look at the [structure or a CLI plugin](#structure-of-a-cli-plugin), including examples for [command hooks](#command-hooks) and [custom commands](#custom-commands).
 
@@ -36,8 +36,8 @@ These properties must be set for the plugin to work:
 
 - `id`: Used by the CLI to reference the plugin. For example, in `jovov4 build:platform alexa`, the ID is `alexa`.
 - `type`: The following plugin types are available:
-  - `platform`: Builds and deploys platform specific files. Often part of a [framework platform integration](https://v4.jovo.tech/docs/platforms).
-  - `target`: A deployment plugin like the [Serverless CLI plugin](https://v4.jovo.tech/marketplace/target-serverless).
+  - `platform`: Builds and deploys platform specific files. Often part of a [framework platform integration](https://www.jovo.tech/docs/platforms).
+  - `target`: A deployment plugin like the [Serverless CLI plugin](https://www.jovo.tech/marketplace/target-serverless).
   - `command`: A custom command.
 
 ### Command Hooks

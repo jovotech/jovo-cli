@@ -13,9 +13,9 @@ The Jovo CLI allows you to speed up the development process of voice and chat ap
 
 With the Jovo CLI, you can do many things, including:
 
-- Create new Jovo projects with the [`new` command](https://v4.jovo.tech/docs/new-command)
-- Develop Jovo apps locally using the [`run` command](https://v4.jovo.tech/docs/run-command)
-- [`build`](https://v4.jovo.tech/docs/build-command) and [`deploy`](https://v4.jovo.tech/docs/deploy-command) projects to various platforms and services
+- Create new Jovo projects with the [`new` command](https://www.jovo.tech/docs/new-command)
+- Develop Jovo apps locally using the [`run` command](https://www.jovo.tech/docs/run-command)
+- [`build`](https://www.jovo.tech/docs/build-command) and [`deploy`](https://www.jovo.tech/docs/deploy-command) projects to various platforms and services
 - [Extend the CLI](#extend-the-jovo-cli) with your own custom hooks and plugins
 
 Learn how to install the Jovo CLI in the [installation](#installation) section. In the [configuration](#configuration) section, we'll take a look at configurations and plugins that can be added to the CLI.
@@ -55,25 +55,25 @@ const project = new ProjectConfig({
 });
 ```
 
-[Learn more in the project configuration documentation](https://v4.jovo.tech/docs/project-config).
+[Learn more in the project configuration documentation](https://www.jovo.tech/docs/project-config).
 
 ## Commands
 
 Learn more about the Jovo CLI commands:
 
-- [`new`](https://v4.jovo.tech/docs/new-command): Create a new Jovo project
-- [`run`](https://v4.jovo.tech/docs/run-command): Start the local development server
-- [`build`](https://v4.jovo.tech/docs/build-command): Create platform-specific project files
-- [`deploy`](https://v4.jovo.tech/docs/deplooy-command): Deploy to various platforms and services
-- [`get`](https://v4.jovo.tech/docs/get-command): Sync your local files with platform files
+- [`new`](https://www.jovo.tech/docs/new-command): Create a new Jovo project
+- [`run`](https://www.jovo.tech/docs/run-command): Start the local development server
+- [`build`](https://www.jovo.tech/docs/build-command): Create platform-specific project files
+- [`deploy`](https://www.jovo.tech/docs/deplooy-command): Deploy to various platforms and services
+- [`get`](https://www.jovo.tech/docs/get-command): Sync your local files with platform files
 
 ## Integrations
 
 Currently, these integrations are available for the Jovo CLI:
 
-- [Amazon Alexa](https://v4.jovo.tech/marketplace/platform-alexa/project-config): Build and deploy project files to the Alexa Developer Console
-- [Google Assistant](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config): Build and deploy project files to the Actions on Google Console
-- [Serverless](https://v4.jovo.tech/marketplace/target-lex): Deploy your Jovo code using the Serverless Framework
+- [Amazon Alexa](https://www.jovo.tech/marketplace/platform-alexa/project-config): Build and deploy project files to the Alexa Developer Console
+- [Google Assistant](https://www.jovo.tech/marketplace/platform-googleassistant/project-config): Build and deploy project files to the Actions on Google Console
+- [Serverless](https://www.jovo.tech/marketplace/target-lex): Deploy your Jovo code using the Serverless Framework
 
 ## Extend the Jovo CLI
 
@@ -81,5 +81,5 @@ There are many use cases where it could make sense to customize the Jovo CLI to 
 
 There are two ways how you can extend the Jovo CLI:
 
-- [CLI hooks](https://v4.jovo.tech/docs/project-config#hooks): Hook into existing CLI commands. For example, call an API and retrieve data as part of the `build` command.
-- [CLI plugins](https://v4.jovo.tech/docs/cli-plugins): Create your own plugins that could hook into commands, or even create commands on their own.
+- [CLI hooks](https://www.jovo.tech/docs/project-config#hooks): Hook into existing CLI commands. For example, call an API and retrieve data as part of the `build` command.
+- [CLI plugins](https://www.jovo.tech/docs/cli-plugins): Create your own plugins that could hook into commands, or even create commands on their own.
