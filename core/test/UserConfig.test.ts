@@ -152,7 +152,9 @@ describe('save()', () => {
   test('should create .jovo/ folder if it does not exist', () => {
     expect(existsSync(joinPaths(configDirectory))).toBeFalsy();
 
-    jest.spyOn(UserConfig.prototype, 'get').mockReturnThis();
+    jest
+      .spyOn(UserConfig.prototype, 'get')
+      .mockReturnValue({ webhook: { uuid: '' }, cli: { plugins: [], presets: [] } });
     jest.spyOn(UserConfig.prototype, 'savePreset').mockReturnThis();
 
     const config: UserConfig = new UserConfig();
@@ -170,7 +172,9 @@ describe('save()', () => {
   });
 
   test('should save the new config', () => {
-    jest.spyOn(UserConfig.prototype, 'get').mockReturnThis();
+    jest
+      .spyOn(UserConfig.prototype, 'get')
+      .mockReturnValue({ webhook: { uuid: '' }, cli: { plugins: [], presets: [] } });
     jest.spyOn(UserConfig.prototype, 'savePreset').mockReturnThis();
 
     const config: UserConfig = new UserConfig();
