@@ -32,7 +32,7 @@ export interface DeployPlatformContext extends PluginContext {
 export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   static id = 'deploy:platform';
   static description = "Deploy to the specified platform's developer console";
-  static examples: string[] = ['jovov4 deploy:platform', 'jovov4 deploy:platform alexa'];
+  static examples: string[] = ['jovo deploy:platform', 'jovo deploy:platform alexa'];
   static availablePlatforms: string[] = [];
   static flags = {
     locale: flags.string({

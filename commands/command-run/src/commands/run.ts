@@ -24,7 +24,7 @@ export class Run extends PluginCommand<RunEvents> {
   static id = 'run';
   static description =
     'Start the local development server and test your app using the Jovo Debugger';
-  static examples: string[] = ['jovov4 run', 'jovov4 run --port 8008'];
+  static examples: string[] = ['jovo run', 'jovo run --port 8008'];
   static flags = {
     port: flags.string({
       char: 'p',

@@ -20,7 +20,7 @@ export function ProjectCommand(): Function {
 /**
  * This decorator has no logical body and executes no code,
  * however for consistency this can be used on commands
- * that can be used anywhere with jovov4
+ * that can be used anywhere with jovo
  */
 export function GlobalCommand(): Function {
   return () => {};
