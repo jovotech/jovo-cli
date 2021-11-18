@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-core",
   "description": "Jovo CLI Core Functionality",
-  "version": "4.0.0-beta.8",
+  "version": "4.0.0",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
