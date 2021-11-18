@@ -5,13 +5,13 @@ import {
   deleteFolderRecursive,
   JovoCli,
   JovoCliPlugin,
-  JovoUserConfig,
+  UserConfig,
   PluginType,
   Project,
 } from '../src';
 
 // Mock JovoUserConfig
-jest.mock('../src/JovoUserConfig');
+jest.mock('../src/UserConfig');
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
 describe('JovoCli.getInstance()', () => {
@@ -137,7 +137,7 @@ describe('getJovoWebhookUrl()', () => {
   test('should return webhook url', () => {
     // Mock JovoUserConfig.
     const mockedWebhook: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'getWebhookUuid')
+      .spyOn(UserConfig.prototype, 'getWebhookUuid')
       .mockReturnValue('1234');
 
     const jovo: JovoCli = new JovoCli();
@@ -233,7 +233,7 @@ describe('collectCommandPlugins()', () => {
   test('should return an empty array if no command plugins can be found', () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'getParameter')
+      .spyOn(UserConfig.prototype, 'getParameter')
       .mockReturnValue([]);
     process.env.JOVO_CLI_EXEC_PATH = '';
 
@@ -250,7 +250,7 @@ describe('collectCommandPlugins()', () => {
   test("should return an empty array if the command plugin path can't be found", () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'getParameter')
+      .spyOn(UserConfig.prototype, 'getParameter')
       .mockReturnValue(['test']);
     process.env.JOVO_CLI_EXEC_PATH = '';
 
@@ -267,7 +267,7 @@ describe('collectCommandPlugins()', () => {
   test('should return an array containing an instantiated JovoCliPlugin', () => {
     // Mock JovoUserConfig.
     const mocked: jest.SpyInstance = jest
-      .spyOn(JovoUserConfig.prototype, 'getParameter')
+      .spyOn(UserConfig.prototype, 'getParameter')
       .mockReturnValue(['Plugin']);
     process.env.JOVO_CLI_EXEC_PATH = resolve(joinPaths('test', '__mocks__', 'plugins', 'Plugin'));
 

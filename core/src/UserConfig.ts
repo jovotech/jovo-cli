@@ -152,7 +152,7 @@ export class UserConfig {
     if (!preset) {
       throw new JovoCliError({
         message: `Could not find preset ${presetKey}.`,
-        hint: 'Please check for spelling or check your .jovo/configv4.',
+        hint: 'Please check for spelling or check your .jovo/config.',
       });
     }
 
