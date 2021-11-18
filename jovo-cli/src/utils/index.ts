@@ -1,9 +1,6 @@
 import { flags } from '@oclif/command';
 import chalk from 'chalk';
 import  elegantSpinner from 'elegant-spinner';
-// tslint:disable-next-line:no-implicit-dependencies
-// @ts-ignore
-import figures from 'figures';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import { getProject, InputFlags, JovoCliError } from 'jovo-cli-core';
 import latestVersion from 'latest-version';
@@ -27,9 +24,7 @@ const project = getProject();
 /**
  * From Listr utils
  */
-// ToDo: Refactor!
-// @ts-ignore
-const pointer = chalk.yellow(figures.pointer);
+const pointer = chalk.yellow('>');
 
 export function isDefined(x: any) {
   // tslint:disable-line:no-any
