@@ -18,7 +18,7 @@
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
     "link": "node bin/link",
-    "preinstall": "node bin/warn-overwrite"
+    "preinstall": "node bin/overwrite"
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {

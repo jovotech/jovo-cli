@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
+const { execAsync, Log, JovoCliError, printHighlight, which } = require('@jovotech/cli-core');
 
 (async () => {
   // If the Jovo CLI is not installed in the first place, there is no need
@@ -22,6 +22,22 @@ const { execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
 
   const version = match[1];
   if (version.startsWith('3')) {
+    // Uninstall existing Jovo CLI
+    try {
+      await execAsync('npm uninstall -g jovo-cli');
+    } catch (error) {
+      const e = new JovoCliError({
+        message: 'Something went wrong while installing the Jovo CLI @v4',
+        details: error.stderr,
+        hint: `Try removing your existing Jovo CLI with "${printHighlight(
+          'npm uninstall -g jovo-cli',
+        )}" and install again`,
+      });
+
+      JovoCliError.print(e);
+      process.exit(1);
+    }
+
     Log.warning(`You can now use "${printHighlight('jovo')}" to call the Jovo CLI @v4.`);
     Log.warning(
       `If you still want to use the Jovo CLI @v3, you can install its latest version using "npm install -g jovo-cli" and access it with "${printHighlight(
