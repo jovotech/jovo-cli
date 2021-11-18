@@ -5,14 +5,14 @@ excerpt: 'Learn more about the Jovo CLI run command.'
 
 # run Command
 
-Learn how to use the `jovov4 run` command for local development of Jovo apps.
+Learn how to use the `jovo run` command for local development of Jovo apps.
 
 ## Introduction
 
-You can use the `jovov4 run` command to start the local development server and test your app using the [Jovo Debugger](https://www.jovo.tech/docs/debugger).
+You can use the `jovo run` command to start the local development server and test your app using the [Jovo Debugger](https://www.jovo.tech/docs/debugger).
 
 ```sh
-$ jovov4 run
+$ jovo run
 ```
 
 You can also add flags from the table below.

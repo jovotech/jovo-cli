@@ -5,11 +5,11 @@ excerpt: 'Learn more about the Jovo CLI deploy command.'
 
 # deploy Command
 
-The `jovov4 deploy` CLI command can be used to deploy your project to various developer consoles and cloud providers.
+The `jovo deploy` CLI command can be used to deploy your project to various developer consoles and cloud providers.
 
 ## Introduction
 
-The `jovov4 deploy` command offers the following features:
+The `jovo deploy` command offers the following features:
 
 - [`deploy:platform`](#deploy:platform): Upload project files to platform developer consoles (e.g. Amazon Alexa Developer Console, Actions on Google Console)
 - [`deploy:code`](#deploy:platform): Upload the source code to a cloud provider (e.g. AWS Lambda)
@@ -42,10 +42,10 @@ Many platforms offer their own developer consoles where you need to deploy your 
 Before running the command, make sure that you've used the [`build` command](./build-command.md) to prepare all the files. The contents of the `build` will be used by the `deploy:platform` command.
 
 ```sh
-$ jovov4 deploy:platform <platform>
+$ jovo deploy:platform <platform>
 
 # Example
-$ jovov4 deploy:platform alexa
+$ jovo deploy:platform alexa
 ```
 
 You can also add flags from the table below.
@@ -65,10 +65,10 @@ Platform integrations may also add their own flags. Learn more in the respective
 The `deploy:code` command is used to bundle and deploy your project's code (typically the contents of the `src` folder) to a cloud provider.
 
 ```sh
-$ jovov4 deploy:code <target>
+$ jovo deploy:code <target>
 
 # Example
-$ jovov4 deploy:code serverless
+$ jovo deploy:code serverless
 ```
 
 You can also add flags from the table below.

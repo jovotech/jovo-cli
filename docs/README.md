@@ -33,10 +33,8 @@ $ npm install -g @jovotech/cli
 After successful installation, you should be able to see the Jovo CLI menu by typing the following into your command line:
 
 ```sh
-$ jovov4 -v
+$ jovo
 ```
-
-**A note on versions:** For Jovo `v4`, we're moving to [organization scoped packages](https://docs.npmjs.com/creating-and-publishing-an-organization-scoped-package). Instead of e.g. `jovo-cli`, you are now installing `@jovotech/cli`. This is especially helpful for the beta phase: You will still be able to use the `jovo-cli` package with the CLI name `jovo` in parallel with the `@jovotech/cli` package and the CLI name `jovov4`.
 
 ## Configuration
 

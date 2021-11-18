@@ -34,7 +34,7 @@ export default YourPlugin;
 
 These properties must be set for the plugin to work:
 
-- `id`: Used by the CLI to reference the plugin. For example, in `jovov4 build:platform alexa`, the ID is `alexa`.
+- `id`: Used by the CLI to reference the plugin. For example, in `jovo build:platform alexa`, the ID is `alexa`.
 - `type`: The following plugin types are available:
   - `platform`: Builds and deploys platform specific files. Often part of a [framework platform integration](https://www.jovo.tech/docs/platforms).
   - `target`: A deployment plugin like the [Serverless CLI plugin](https://www.jovo.tech/marketplace/target-serverless).

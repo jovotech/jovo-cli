@@ -195,7 +195,7 @@ During the [`build` command](./build-command.md), the selected stage gets built 
 
 The active stage is determined in the following order (most prioritized first):
 
-- The stage is added as flag, e.g. `jovov4 build --stage someStage`
+- The stage is added as flag, e.g. `jovo build --stage someStage`
 - The stage is set in the environment variables with `JOVO_STAGE=someStage`
 - The stage is set in the environment variables with `NODE_ENV=someStage`
 - The default stage is set with `defaultStage: 'someStage'`

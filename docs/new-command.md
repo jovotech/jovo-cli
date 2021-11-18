@@ -5,11 +5,11 @@ excerpt: 'Learn more about the Jovo CLI new command.'
 
 # new Command
 
-Learn how to create new Jovo projects and other files using the `jovov4 new` command of the Jovo CLI.
+Learn how to create new Jovo projects and other files using the `jovo new` command of the Jovo CLI.
 
 ## Introduction
 
-`jovov4 new` can be used for the following features:
+`jovo new` can be used for the following features:
 
 - [`new`](#new-project): Create a new Jovo project
 - [`new:stage`](#new:stage): Create a new app stage
@@ -19,7 +19,7 @@ Learn how to create new Jovo projects and other files using the `jovov4 new` com
 You can create a Jovo project into a new directory with the following command:
 
 ```sh
-$ jovov4 new <directory>
+$ jovo new <directory>
 ```
 
 This will open a wizard that helps you create a new Jovo project by defining platforms to develop for, languages, and more.
@@ -38,7 +38,7 @@ You can also add flags from the table below.
 The `new:stage` command helps you create a new app stage, for example `app.prod.ts`. [Learn more about staging here](https://www.jovo.tech/docs/staging).
 
 ```sh
-$ jovov4 new:stage <stage>
+$ jovo new:stage <stage>
 ```
 
 The command will do the following:
