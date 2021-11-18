@@ -82,15 +82,7 @@ export class Task {
             output = [output];
           }
           for (const str of output) {
-            if (Log.isRaw()) {
-              Log.info(chalk.white.dim(str), { indent: 2 });
-            } else {
-              // Spinnies does not support output with stdout directly, so provide output by adding a non-spinnable spinner.
-              Task.spinners.add(chalk.white.dim(str), {
-                indent: this.indentation + 2,
-                status: 'non-spinnable',
-              });
-            }
+            Log.info(chalk.white.dim(str), { indent: 2 });
           }
         }
       } catch (error) {
