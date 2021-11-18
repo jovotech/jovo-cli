@@ -53,7 +53,7 @@ describe('build', () => {
 
     expect(skillJson.manifest.publishingInformation.locales['en-US'].name).toBe(projectName);
     expect(skillJson.manifest.apis.custom.endpoint.uri.substr(0, 27)).toBe(
-      'https://webhook.jovo.cloud/',
+      'https://webhookv3.jovo.cloud/',
     );
 
     expect(existsSync(modelPath)).toBe(true);
@@ -99,7 +99,7 @@ describe('build', () => {
       ),
     );
 
-    expect(agentJson.webhook.url.substr(0, 27)).toBe('https://webhook.jovo.cloud/');
+    expect(agentJson.webhook.url.substr(0, 27)).toBe('https://webhookv3.jovo.cloud/');
 
     expect(
       existsSync(path.join(projectFolder, 'platforms', 'googleAction', 'dialogflow', 'intents')),
