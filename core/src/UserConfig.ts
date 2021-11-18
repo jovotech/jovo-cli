@@ -17,16 +17,22 @@ export class UserConfig {
     this.config = this.get();
 
     // Rename the configv4 to config and deprecate the v3 config
-    if (!this.config.cli && existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
+    if (!this.config.cli) {
+      // Rename the v3 config to config3
       renameSync(
         joinPaths(homedir(), UserConfig.getPath()),
         joinPaths(homedir(), UserConfig.getPathV3()),
       );
 
-      renameSync(
-        joinPaths(homedir(), '.jovo', 'configv4'),
-        joinPaths(homedir(), UserConfig.getPath()),
-      );
+      // If configv4 exists, rename it, otherwise create a fresh config
+      if (existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
+        renameSync(
+          joinPaths(homedir(), '.jovo', 'configv4'),
+          joinPaths(homedir(), UserConfig.getPath()),
+        );
+      } else {
+        this.create();
+      }
 
       Log.spacer();
       Log.warning(`The Jovo CLI @v4 is now using ${UserConfig.getPath()} as the default config.`);
