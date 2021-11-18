@@ -1,4 +1,5 @@
 import {
+  chalk,
   CliFlags,
   flags,
   Log,
@@ -6,7 +7,6 @@ import {
   PluginCommand,
   PluginContext,
   ProjectCommand,
-  printComment,
   printSubHeadline,
 } from '@jovotech/cli-core';
 import boxen from 'boxen';
@@ -24,7 +24,7 @@ export class Run extends PluginCommand<RunEvents> {
   static id = 'run';
   static description =
     'Start the local development server and test your app using the Jovo Debugger';
-  static examples: string[] = ['jovov4 run', 'jovov4 run --port 8008'];
+  static examples: string[] = ['jovo run', 'jovo run --port 8008'];
   static flags = {
     port: flags.string({
       char: 'p',
@@ -55,11 +55,11 @@ export class Run extends PluginCommand<RunEvents> {
       const outputText: string[] = [];
       outputText.push('Updates available for the following Jovo packages:');
       for (const [key, pkg] of Object.entries(outOfDatePackages)) {
-        const text = `  - ${key}: ${pkg.local} ${printComment(`-> ${pkg.npm}`)}`;
+        const text = `  - ${key}: ${pkg.local} ${chalk.grey(`-> ${pkg.npm}`)}`;
         outputText.push(text);
       }
 
-      outputText.push('\nUse "jovo update" to get the newest versions.');
+      outputText.push('\nUse "npm update" to get the newest versions.');
 
       Log.info(
         boxen(outputText.join('\n'), {

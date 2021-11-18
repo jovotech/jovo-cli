@@ -104,6 +104,7 @@ export async function promptProjectProperties(
         name: 'language',
         message: 'Choose the programming language you want to use:',
         type: 'select',
+        instructions: false,
         choices: SUPPORTED_LANGUAGES.map((lng) => ({
           title: printUserInput(getLanguagePascalCase(lng)),
           value: lng,

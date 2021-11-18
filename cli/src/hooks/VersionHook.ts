@@ -1,5 +1,5 @@
 import { Hook } from '@oclif/config';
-import { getPackageVersions, JovoCli, PackageVersions, printCode, Log } from '@jovotech/cli-core';
+import { chalk, getPackageVersions, JovoCli, PackageVersions, Log } from '@jovotech/cli-core';
 import latestVersion from 'latest-version';
 import envinfo from 'envinfo';
 
@@ -15,7 +15,7 @@ const hook: Hook<'init'> = async function () {
   Log.spacer();
   Log.info(
     `${packageJson.name}: ${current} ${
-      current !== latest ? `(update to ${printCode(latest)} available)` : ''
+      current !== latest ? `(update to ${chalk.green(latest)} available)` : ''
     }`,
   );
 
@@ -30,7 +30,7 @@ const hook: Hook<'init'> = async function () {
         let versionOutput: string = `  - ${packageName}: ${version.local}`;
         if (version.npm !== version.local) {
           updatesAvailable = true;
-          versionOutput += printCode(` -> ${version.npm}`);
+          versionOutput += chalk.green(` -> ${version.npm}`);
         }
         output.push(versionOutput);
       }
@@ -49,7 +49,7 @@ const hook: Hook<'init'> = async function () {
   // Log environment info, such as operating system
   const env = await envinfo.run({
     System: ['OS'],
-    Binaries: ['Node', 'npm', 'jovov4'],
+    Binaries: ['Node', 'npm', 'jovo'],
   });
 
   Log.spacer();

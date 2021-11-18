@@ -1,20 +1,46 @@
-import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import chalk from 'chalk';
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
 import { homedir } from 'os';
-import { v4 as uuidv4 } from 'uuid';
 import { join as joinPaths } from 'path';
-
-import { JovoCliError } from './JovoCliError';
-import chalk from 'chalk';
-import { Preset, JovoUserConfigFile } from './interfaces';
-import { promptOverwrite } from './prompts';
+import { v4 as uuidv4 } from 'uuid';
+import { Log } from '.';
 import { ANSWER_CANCEL } from './constants';
+import { JovoUserConfigFile, Preset } from './interfaces';
+import { JovoCliError } from './JovoCliError';
+import { promptOverwrite } from './prompts';
 
-export class JovoUserConfig {
+export class UserConfig {
   private config: JovoUserConfigFile;
 
   constructor() {
     this.config = this.get();
+
+    // Rename the configv4 to config and deprecate the v3 config
+    if (!this.config.cli) {
+      // Rename the v3 config to config3
+      renameSync(
+        joinPaths(homedir(), UserConfig.getPath()),
+        joinPaths(homedir(), UserConfig.getPathV3()),
+      );
+
+      // If configv4 exists, rename it, otherwise create a fresh config
+      if (existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
+        renameSync(
+          joinPaths(homedir(), '.jovo', 'configv4'),
+          joinPaths(homedir(), UserConfig.getPath()),
+        );
+      } else {
+        this.create();
+      }
+
+      Log.spacer();
+      Log.warning(`The Jovo CLI @v4 is now using ${UserConfig.getPath()} as the default config.`);
+      Log.warning(`Your existing config has been moved to ${UserConfig.getPathV3()}.`);
+      Log.spacer();
+
+      this.config = this.get();
+    }
 
     // Save a default template for users with the beta configv4 file,
     // since the default template previously had the key "Default_TS"
@@ -27,7 +53,14 @@ export class JovoUserConfig {
    * Returns the path of the Jovo user config.
    */
   static getPath(): string {
-    return joinPaths('.jovo', 'configv4');
+    return joinPaths('.jovo', 'config');
+  }
+
+  /**
+   * Returns the path of the Jovo user config @v3.
+   */
+  static getPathV3(): string {
+    return joinPaths('.jovo', 'config3');
   }
 
   /**
@@ -35,7 +68,7 @@ export class JovoUserConfig {
    */
   get(): JovoUserConfigFile {
     try {
-      const data: string = readFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), 'utf-8');
+      const data: string = readFileSync(joinPaths(homedir(), UserConfig.getPath()), 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       // If file cannot be found, create it.
@@ -45,7 +78,7 @@ export class JovoUserConfig {
 
       // Else propagate error.
       throw new JovoCliError({
-        message: 'Error while trying to parse .jovo/configv4.',
+        message: `Error while trying to parse ${UserConfig.getPath()}.`,
         details: (error as Error).message,
       });
     }
@@ -60,7 +93,7 @@ export class JovoUserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), UserConfig.getPath()), JSON.stringify(config, null, 2));
     this.config = config;
   }
 
@@ -88,7 +121,7 @@ export class JovoUserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), JovoUserConfig.getPath()), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), UserConfig.getPath()), JSON.stringify(config, null, 2));
 
     return config;
   }
@@ -125,7 +158,7 @@ export class JovoUserConfig {
     if (!preset) {
       throw new JovoCliError({
         message: `Could not find preset ${presetKey}.`,
-        hint: 'Please check for spelling or check your .jovo/configv4.',
+        hint: 'Please check for spelling or check your .jovo/config.',
       });
     }
 

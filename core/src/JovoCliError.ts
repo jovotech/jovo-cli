@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { ERROR_PREFIX } from './constants';
-import { printComment } from './prints';
 import { Log, LogLevel } from './Logger';
 
 export interface JovoCliErrorProperties {
@@ -23,6 +22,7 @@ export class JovoCliError extends Error {
       prefix: ERROR_PREFIX,
       logLevel,
     });
+    Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
   }
 
   static print(error: JovoCliError): void {
@@ -49,9 +49,8 @@ export class JovoCliError extends Error {
       this.addProperty('Stack', error.stack, LogLevel.Debug);
     }
 
-    Log.spacer(' ', 80, { prefix: ERROR_PREFIX, logLevel: LogLevel.Error });
     Log.info(
-      printComment(
+      chalk.grey(
         'If you think this is not on you, you can submit an issue here: https://github.com/jovotech/jovo-cli/issues.',
       ),
       { prefix: ERROR_PREFIX, logLevel: LogLevel.Error },

@@ -17,7 +17,6 @@ export async function downloadTemplate(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const url: string = `jovotech/jovo-v4-template${language === 'javascript' ? '-js' : ''}`;
-
     downloadGH(url, projectPath, (error: Error) => {
       if (error) {
         return reject(error);

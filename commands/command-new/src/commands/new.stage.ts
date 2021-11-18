@@ -35,7 +35,7 @@ export type NewStageEvents = 'before.new:stage' | 'new:stage' | 'after.new:stage
 @ProjectCommand()
 export class NewStage extends PluginCommand<NewStageEvents> {
   static id = 'new:stage';
-  static description = 'Creates a new stage.';
+  static description = 'Create a new stage';
   static examples: string[] = [];
   // Defines arguments that can be passed to the command.
   static args = [

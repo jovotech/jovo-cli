@@ -49,13 +49,13 @@ export type NewEvents = 'new';
 @GlobalCommand()
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
-  static description = 'Creates a new Jovo project';
-  static examples = ['jovov4 new helloworld', 'jovov4 new --preset default'];
+  static description = 'Create a new Jovo project';
+  static examples = ['jovo new helloworld', 'jovo new --preset default'];
   static availablePresets: string[] = [];
   static flags = {
     locale: flags.string({
       char: 'l',
-      description: 'The locales to be created	',
+      description: 'The locales to be created',
       multiple: true,
     }),
     language: flags.string({

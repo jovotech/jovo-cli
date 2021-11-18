@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+const { execAsync, Log, printHighlight, which } = require('@jovotech/cli-core');
+
+(async () => {
+  // If the Jovo CLI is not installed in the first place, there is no need
+  // to print a warning for overwriting the binary
+  try {
+    await which('jovo');
+  } catch (error) {
+    // which.sync() will throw if the binary is not found, so we can safely return here
+    return;
+  }
+
+  const { stdout } = await execAsync('jovo --version');
+  const versionRegExp = new RegExp(/^[^\d\n]*(\d.\d.\d(?:-[a-z]*\.\d*)?)$/gm);
+  const match = versionRegExp.exec(stdout);
+
+  if (!match) {
+    return;
+  }
+
+  const version = match[1];
+  if (version.startsWith('3')) {
+    Log.warning(`You can now use "${printHighlight('jovo')}" to call the Jovo CLI @v4.`);
+    Log.warning(
+      `If you still want to use the Jovo CLI @v3, you can install its latest version using "npm install -g jovo-cli" and access it with "${printHighlight(
+        'jovo3',
+      )}".`,
+    );
+    Log.spacer();
+  }
+})();
