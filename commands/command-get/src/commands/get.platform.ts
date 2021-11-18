@@ -30,7 +30,7 @@ export interface GetPlatformContext extends PluginContext {
 export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatformEvents> {
   static id = 'get:platform';
   static description = 'Synchronize your local build files with platform developer consoles';
-  static examples: string[] = ['jovov4 get:platform alexa'];
+  static examples: string[] = ['jovo get:platform alexa'];
   static availablePlatforms: string[] = [];
   static flags = {
     'locale': flags.string({

@@ -11,7 +11,7 @@
     "url": "https://github.com/jovotech/jovo-cli"
   },
   "bin": {
-    "jovov4": "./bin/run"
+    "jovo": "./bin/run"
   },
   "scripts": {
     "tsc": "tsc",

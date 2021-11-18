@@ -49,7 +49,7 @@ const hook: Hook<'init'> = async function () {
   // Log environment info, such as operating system
   const env = await envinfo.run({
     System: ['OS'],
-    Binaries: ['Node', 'npm', 'jovov4'],
+    Binaries: ['Node', 'npm', 'jovo'],
   });
 
   Log.spacer();

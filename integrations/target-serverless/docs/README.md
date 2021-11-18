@@ -25,7 +25,7 @@ $ npm install -g @serverless
 
 ## Configuration
 
-Add the plugin to your `jovo.project.js` [project configuration](https://v4.jovo.tech/docs/project-config) file like this:
+Add the plugin to your `jovo.project.js` [project configuration](https://www.jovo.tech/docs/project-config) file like this:
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli-core');
@@ -62,11 +62,11 @@ The Serverless CLI integration works with two commands.
 Use the `build:serverless` command to generate a `serverless.yaml` file into the root of your Jovo project. This only needs to be done once until you make changes to the config in the `jovo.project.js` file:
 
 ```sh
-$ jovov4 build:serverless
+$ jovo build:serverless
 ```
 
-After that, you can use the [`deploy:code` command](https://v4.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code:
+After that, you can use the [`deploy:code` command](https://www.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code:
 
 ```sh
-$ jovov4 deploy:code serverless
+$ jovo deploy:code serverless
 ```

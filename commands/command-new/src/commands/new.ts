@@ -50,7 +50,7 @@ export type NewEvents = 'new';
 export class New extends PluginCommand<NewEvents> {
   static id = 'new';
   static description = 'Create a new Jovo project';
-  static examples = ['jovov4 new helloworld', 'jovov4 new --preset default'];
+  static examples = ['jovo new helloworld', 'jovo new --preset default'];
   static availablePresets: string[] = [];
   static flags = {
     locale: flags.string({
