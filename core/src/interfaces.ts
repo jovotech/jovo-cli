@@ -53,10 +53,6 @@ export interface PluginContext extends Context {}
 
 export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
 
-export interface DeployConfiguration {
-  target?: string[];
-}
-
 export interface JovoUserConfigFile {
   webhook: {
     uuid: string;

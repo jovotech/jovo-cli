@@ -1,7 +1,6 @@
-import { ConfigHooks, DeployConfiguration, JovoCliPlugin } from '.';
+import { ConfigHooks, JovoCliPlugin } from '.';
 
 export class ProjectConfig {
-  deploy?: DeployConfiguration;
   endpoint?: string;
   plugins?: JovoCliPlugin[];
   hooks?: ConfigHooks;
