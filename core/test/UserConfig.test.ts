@@ -134,7 +134,7 @@ describe('get()', () => {
     writeFileSync(joinPaths(configDirectory, 'config'), '{');
 
     const config: UserConfig = new UserConfig();
-    expect(config.get.bind(config)).toThrow('Error while trying to parse .jovo/config.');
+    expect(config.get.bind(config)).toThrow(`Error while trying to parse ${UserConfig.getPath()}.`);
 
     deleteFolderRecursive(testPath);
   });
