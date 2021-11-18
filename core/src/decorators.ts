@@ -1,4 +1,4 @@
-import { checkForProjectDirectory, PluginCommand } from '.';
+import { checkForProjectDirectory, JovoCli, PluginCommand } from '.';
 
 /**
  * Decorator that checks if the current working directory
@@ -6,11 +6,14 @@ import { checkForProjectDirectory, PluginCommand } from '.';
  */
 export function ProjectCommand(): Function {
   return (command: typeof PluginCommand) => {
-    const run = command.prototype.run;
-    command.prototype.run = async function (this: PluginCommand): Promise<void> {
-      checkForProjectDirectory(this.$cli.isInProjectDirectory());
-      await run();
-    }.bind(command.prototype);
+    if (
+      process.argv.includes(command.id) &&
+      !process.argv.includes('help') &&
+      !process.argv.includes('--help')
+    ) {
+      const cli = new JovoCli();
+      checkForProjectDirectory(cli.isInProjectDirectory());
+    }
   };
 }
 

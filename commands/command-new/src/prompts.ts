@@ -1,4 +1,5 @@
 import {
+  getLanguagePascalCase,
   MarketplacePlugin,
   Preset,
   printHighlight,
@@ -105,7 +106,7 @@ export async function promptProjectProperties(
         type: 'select',
         instructions: false,
         choices: SUPPORTED_LANGUAGES.map((lng) => ({
-          title: printUserInput(lng),
+          title: printUserInput(getLanguagePascalCase(lng)),
           value: lng,
         })),
       },

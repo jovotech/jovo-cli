@@ -91,13 +91,10 @@ export class Run extends PluginCommand<RunEvents> {
     const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
       windowsVerbatimArguments: true,
+      stdio: [process.stdin, process.stdout, process.stderr],
     });
 
     await this.$emitter.run('run');
-
-    // Pipe everyhing the node process prints to output stream.
-    nodeProcess.stdout!.pipe(process.stdout);
-    nodeProcess.stderr!.pipe(process.stderr);
 
     // Ensure our child process is terminated upon exit. This is needed in the situation
     // where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
