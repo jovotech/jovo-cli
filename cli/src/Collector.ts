@@ -75,6 +75,10 @@ export class Collector extends Plugin {
         });
       }
     } catch (error) {
+      if (!(error instanceof JovoCliError) && !(error as JovoCliError)['properties']) {
+        error = new JovoCliError({ message: error.message });
+      }
+
       JovoCliError.print(error as JovoCliError);
       process.exit(1);
     }
