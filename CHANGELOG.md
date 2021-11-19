@@ -1,5 +1,14 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.6...@jovotech/target-serverless@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/target-serverless@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.5...@jovotech/target-serverless@4.0.0-beta.6)
 
 > 8 October 2021
@@ -51,6 +60,15 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/nlu-lex@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.6...@jovotech/nlu-lex@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
 
 ## [@jovotech/nlu-lex@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.5...@jovotech/nlu-lex@4.0.0-beta.6)
 
@@ -136,10 +154,26 @@
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
 - 🥅 Improve error handling [`#232`](https://github.com/jovotech/jovo-cli/pull/232)
 
-## [@jovotech/cli@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...@jovotech/cli@4.0.0-beta.3)
+## [@jovotech/cli@4.0.0-beta.10](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...@jovotech/cli@4.0.0-beta.10)
 
-> 19 August 2021
+> 16 November 2021
 
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+- :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
+- :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
+- Add v4 docs [`#241`](https://github.com/jovotech/jovo-cli/pull/241)
+- :fire: Remove unneeded instance check for plugins [`#238`](https://github.com/jovotech/jovo-cli/pull/238)
+- :sparkles: Add color logging [`#239`](https://github.com/jovotech/jovo-cli/pull/239)
+- 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
+- ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
+- 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [`#232`](https://github.com/jovotech/jovo-cli/pull/232)
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
@@ -161,6 +195,15 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-core@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.6...@jovotech/cli-core@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
 
 ## [@jovotech/cli-core@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.5...@jovotech/cli-core@4.0.0-beta.6)
 
@@ -220,6 +263,15 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-run@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.6...@jovotech/cli-command-run@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.5...@jovotech/cli-command-run@4.0.0-beta.6)
 
 > 8 October 2021
@@ -273,6 +325,15 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.6...@jovotech/cli-command-new@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/cli-command-new@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.5...@jovotech/cli-command-new@4.0.0-beta.6)
 
 > 8 October 2021
@@ -325,6 +386,15 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.6...@jovotech/cli-command-get@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.5...@jovotech/cli-command-get@4.0.0-beta.6)
 
@@ -384,6 +454,15 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.6...@jovotech/cli-command-deploy@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.5...@jovotech/cli-command-deploy@4.0.0-beta.6)
 
 > 8 October 2021
@@ -441,6 +520,15 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.6...@jovotech/cli-command-build@4.0.0-beta.7)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.5...@jovotech/cli-command-build@4.0.0-beta.6)
 
