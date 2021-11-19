@@ -1,5 +1,13 @@
 # Changelog
 
+## [@jovotech/cli-command-deploy@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.7...@jovotech/cli-command-deploy@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.6...@jovotech/cli-command-deploy@4.0.0-beta.7)
 
 > 16 November 2021

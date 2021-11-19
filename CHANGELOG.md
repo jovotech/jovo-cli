@@ -1,5 +1,13 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.7...@jovotech/target-serverless@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/target-serverless@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.6...@jovotech/target-serverless@4.0.0-beta.7)
 
 > 16 November 2021
@@ -60,6 +68,14 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/nlu-lex@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.7...@jovotech/nlu-lex@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 
 ## [@jovotech/nlu-lex@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.6...@jovotech/nlu-lex@4.0.0-beta.7)
 
@@ -122,6 +138,19 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/cli@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.9...@jovotech/cli@4.0.1)
+
+> 19 November 2021
+
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli@4.0.0-beta.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.7...@jovotech/cli@4.0.0-beta.9)
 
 > 8 October 2021
@@ -153,6 +182,14 @@
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
 - 🥅 Improve error handling [`#232`](https://github.com/jovotech/jovo-cli/pull/232)
+
+## [@jovotech/cli@4.0.0-beta.11](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.10...@jovotech/cli@4.0.0-beta.11)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 
 ## [@jovotech/cli@4.0.0-beta.10](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.1...@jovotech/cli@4.0.0-beta.10)
 
@@ -195,6 +232,14 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-core@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.7...@jovotech/cli-core@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 
 ## [@jovotech/cli-core@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.6...@jovotech/cli-core@4.0.0-beta.7)
 
@@ -263,6 +308,14 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-run@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.7...@jovotech/cli-command-run@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.6...@jovotech/cli-command-run@4.0.0-beta.7)
 
 > 16 November 2021
@@ -325,6 +378,14 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.7...@jovotech/cli-command-new@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli-command-new@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.6...@jovotech/cli-command-new@4.0.0-beta.7)
 
 > 16 November 2021
@@ -386,6 +447,14 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.7...@jovotech/cli-command-get@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.6...@jovotech/cli-command-get@4.0.0-beta.7)
 
@@ -454,6 +523,14 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.7...@jovotech/cli-command-deploy@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.6...@jovotech/cli-command-deploy@4.0.0-beta.7)
 
 > 16 November 2021
@@ -520,6 +597,14 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.7...@jovotech/cli-command-build@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.6...@jovotech/cli-command-build@4.0.0-beta.7)
 

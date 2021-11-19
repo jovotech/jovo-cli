@@ -1,5 +1,19 @@
 # Changelog
 
+## [@jovotech/cli@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.11...@jovotech/cli@4.0.1)
+
+> 19 November 2021
+
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
+## [@jovotech/cli@4.0.0-beta.11](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.10...@jovotech/cli@4.0.0-beta.11)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli@4.0.0-beta.10](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.9...@jovotech/cli@4.0.0-beta.10)
 
 > 16 November 2021
