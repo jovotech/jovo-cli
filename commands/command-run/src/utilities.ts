@@ -3,7 +3,7 @@ import {
   ExecResponse,
   getPackageVersions,
   JovoCliError,
-  JovoUserConfig,
+  UserConfig,
   JovoUserConfigFile,
   PackageVersions,
 } from '@jovotech/cli-core';
@@ -30,7 +30,7 @@ export async function compileTypeScriptProject(sourceFolder: string): Promise<vo
  */
 export async function shouldUpdatePackages(
   projectPath: string,
-  userConfig: JovoUserConfig,
+  userConfig: UserConfig,
 ): Promise<PackageVersions> {
   const jovoUserConfig: JovoUserConfigFile = userConfig.get();
   // Calculate update interval (24 hours) into ms.

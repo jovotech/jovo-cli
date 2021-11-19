@@ -1,9 +1,7 @@
-import * as Parser from '@oclif/parser';
 import { Input } from '@oclif/command/lib/flags';
-
-import { JovoCliPlugin } from './JovoCliPlugin';
-import { PluginCommand } from './PluginCommand';
+import * as Parser from '@oclif/parser';
 import { SUPPORTED_LANGUAGES } from './constants';
+import { PluginCommand } from './PluginCommand';
 
 // ####### EVENT EMITTER #######
 
@@ -54,19 +52,6 @@ export interface PluginContext extends Context {}
 // ####### CONFIG #######
 
 export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
-
-export interface DeployConfiguration {
-  target?: string[];
-}
-
-export interface ProjectConfigFile {
-  deploy?: DeployConfiguration;
-  endpoint?: string;
-  plugins?: JovoCliPlugin[];
-  hooks?: ConfigHooks;
-  defaultStage?: string;
-  stages?: { [key: string]: ProjectConfigFile };
-}
 
 export interface JovoUserConfigFile {
   webhook: {

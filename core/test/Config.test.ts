@@ -1,5 +1,5 @@
 import { join as joinPaths, resolve } from 'path';
-import { Config, ProjectConfigFile } from '../src';
+import { Config, ProjectConfig } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
@@ -65,7 +65,7 @@ describe('get()', () => {
     jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('');
-    const configContent: ProjectConfigFile = config.get();
+    const configContent: ProjectConfig = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -79,7 +79,7 @@ describe('get()', () => {
     jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigFile = config.get();
+    const configContent: ProjectConfig = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -94,7 +94,7 @@ describe('get()', () => {
     jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigFile = config.get();
+    const configContent: ProjectConfig = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');
@@ -117,7 +117,7 @@ describe('get()', () => {
     jest.spyOn(Config.prototype, 'get').mockReturnValueOnce({});
 
     const config: Config = new Config('', 'dev');
-    const configContent: ProjectConfigFile = config.get();
+    const configContent: ProjectConfig = config.get();
 
     expect(configContent).toBeDefined();
     expect(configContent.stages).toBeUndefined();
@@ -137,7 +137,7 @@ describe('getContent()', () => {
     jest.spyOn(Config.prototype, 'get').mockReturnThis();
 
     const config: Config = new Config(resolve(joinPaths('test', '__mocks__')));
-    const configContent: ProjectConfigFile = config.getContent();
+    const configContent: ProjectConfig = config.getContent();
 
     expect(configContent).toBeDefined();
     expect(configContent).toHaveProperty('endpoint');

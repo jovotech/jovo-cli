@@ -26,10 +26,10 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
   static args: Parser.args.Input = [];
   static flags = {
     stage: flags.string({
-      description: 'Takes configuration from specified stage.',
+      description: 'Takes configuration from specified stage',
     }),
     debug: flags.boolean({
-      description: 'Shows debugging information, such as the error trace stack.',
+      description: 'Shows debugging information, such as the error trace stack',
       parse(debug: boolean) {
         if (debug) {
           process.env.JOVO_CLI_LOG_LEVEL = 'DEBUG';

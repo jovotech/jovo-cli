@@ -10,6 +10,7 @@ import {
   PluginContext,
   ProjectCommand,
   printSubHeadline,
+  CONSTRUCTION,
   TADA,
   Task,
   wait,
@@ -91,7 +92,7 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
 
   async prepareBuild(): Promise<void> {
     // Create "fake" tasks for more verbose logs.
-    const initTask: Task = new Task(`${TADA} Initializing build process`);
+    const initTask: Task = new Task(`${CONSTRUCTION} Initializing build process`);
 
     const collectConfigTask: Task = new Task(
       'Collecting platform configuration from project.js.',

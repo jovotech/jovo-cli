@@ -18,14 +18,6 @@ export function printHighlight(text: string): string {
 }
 
 /**
- * Returns a string of a grey comment.
- * @param comment - Comment to print.
- */
-export function printComment(comment: string): string {
-  return chalk.grey(comment);
-}
-
-/**
  * Returns a string of a grey sub headline.
  * @param hl - Subheadline to print.
  */
@@ -39,14 +31,6 @@ export function printSubHeadline(hl: string): string {
  */
 export function printAskProfile(askProfile?: string): string {
   return askProfile ? `[ASK profile: ${printHighlight(askProfile)}]` : '';
-}
-
-/**
- * Prints green code snippets.
- * @param code - Code to print.
- */
-export function printCode(code: string): string {
-  return chalk.green(code);
 }
 
 /**

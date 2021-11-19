@@ -5,7 +5,7 @@ excerpt: 'Learn more about the Jovo project config (jovo.project.js) that is use
 
 # Project Configuration
 
-The Jovo project config is used by the Jovo CLI to build and deploy your project to various platforms. [For app related configuration, take a look here](https://v4.jovo.tech/docs/app-config).
+The Jovo project config is used by the Jovo CLI to build and deploy your project to various platforms. [For app related configuration, take a look here](https://www.jovo.tech/docs/app-config).
 
 ## Introduction
 
@@ -28,11 +28,10 @@ const project = new ProjectConfig({
 
 It consists of the following elements:
 
-* [`endpoint`](#endpoint): How the platform can call your Jovo app, e.g. Jovo Webhook URL.
-* [`plugins`](#plugins): CLI plugins that are used, e.g. Alexa.
-* [Staging](#staging): Set up different staging environments, e.g. `dev` and `prod`.
-* [`hooks`](#hooks): Hook into CLI commands, e.g. to retrieve data from an API before running the `build` command.
-
+- [`endpoint`](#endpoint): How the platform can call your Jovo app, e.g. Jovo Webhook URL.
+- [`plugins`](#plugins): CLI plugins that are used, e.g. Alexa.
+- [Staging](#staging): Set up different staging environments, e.g. `dev` and `prod`.
+- [`hooks`](#hooks): Hook into CLI commands, e.g. to retrieve data from an API before running the `build` command.
 
 ## Endpoint
 
@@ -47,17 +46,15 @@ const project = new ProjectConfig({
 });
 ```
 
-
 ## Plugins
 
 Jovo CLI plugins can be used for many use cases. Here are some examples:
 
-* [Platform](https://v4.jovo.tech/docs/platforms) CLI integrations like `AlexaCli` provide the necessary tools to [`build`](./build-command.md) the Alexa interaction model and [`deploy`](./deploy-command.md#deploy:platform) the project to the Alexa developer console.
-* Deployment CLI integrations like [`ServerlessCli`](https://v4.jovo.tech/marketplace/target-serverless) allow you to [`deploy`](./deploy-command.md#deploy:code) your Jovo app to a cloud environment using the Serverless Framework.
-* CLI plugins can even create their own Jovo CLI commands.
-  
-In the next few sections, we'll take a closer look how CLI plugins can be [installed](#installation), [configured](#configuration), and how the Jovo [File Builder](#file-builder) can be used in some cases.
+- [Platform](https://www.jovo.tech/docs/platforms) CLI integrations like `AlexaCli` provide the necessary tools to [`build`](./build-command.md) the Alexa interaction model and [`deploy`](./deploy-command.md#deploy:platform) the project to the Alexa developer console.
+- Deployment CLI integrations like [`ServerlessCli`](https://www.jovo.tech/marketplace/target-serverless) allow you to [`deploy`](./deploy-command.md#deploy:code) your Jovo app to a cloud environment using the Serverless Framework.
+- CLI plugins can even create their own Jovo CLI commands.
 
+In the next few sections, we'll take a closer look how CLI plugins can be [installed](#installation), [configured](#configuration), and how the Jovo [File Builder](#file-builder) can be used in some cases.
 
 ### Installation
 
@@ -71,14 +68,11 @@ const { AlexaCli } = require('@jovotech/platform-alexa');
 
 const project = new ProjectConfig({
   // ...
-  plugins: [
-    new AlexaCli()
-  ],
+  plugins: [new AlexaCli()],
 });
 ```
 
-Many of the platforms or plugins that you add to your [app config](https://v4.jovo.tech/docs/app-config) already come with a CLI plugin. This means that you don't need to install the CLI package separately, if the plugin specific documentation doesn't tell you otherwise.
-
+Many of the platforms or plugins that you add to your [app config](https://www.jovo.tech/docs/app-config) already come with a CLI plugin. This means that you don't need to install the CLI package separately, if the plugin specific documentation doesn't tell you otherwise.
 
 ### Configuration
 
@@ -90,16 +84,15 @@ const project = new ProjectConfig({
   plugins: [
     new AlexaCli({
       // Configuration
-    })
+    }),
   ],
 });
 ```
 
 Each plugin has its own set of options that you can find on the respective documentation pages, for example:
 
-- [Alexa project configuration](https://v4.jovo.tech/marketplace/platform-alexa/project-config)
-- [Google Assistant project configuration](https://v4.jovo.tech/marketplace/platform-googleassistant/project-config)
-
+- [Alexa project configuration](https://www.jovo.tech/marketplace/platform-alexa/project-config)
+- [Google Assistant project configuration](https://www.jovo.tech/marketplace/platform-googleassistant/project-config)
 
 ### File Builder
 
@@ -115,11 +108,11 @@ const project = new ProjectConfig({
       files: {
         'path/': {
           'to/': {
-            'file.json': 'Hello World!'
-          }
-        }
-      }
-    })
+            'file.json': 'Hello World!',
+          },
+        },
+      },
+    }),
   ],
 });
 ```
@@ -134,13 +127,12 @@ const project = new ProjectConfig({
   plugins: [
     new AlexaCli({
       files: {
-        'path/to/file.json': 'Hello World!'
-      }
-    })
+        'path/to/file.json': 'Hello World!',
+      },
+    }),
   ],
 });
 ```
-
 
 ## Staging
 
@@ -161,8 +153,8 @@ const project = new ProjectConfig({
     prod: {
       endpoint: process.env.ENDPOINT_PROD,
       // ...
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -176,8 +168,8 @@ const project = new ProjectConfig({
   stages: {
     someStage: {
       // ...
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -203,11 +195,10 @@ During the [`build` command](./build-command.md), the selected stage gets built 
 
 The active stage is determined in the following order (most prioritized first):
 
-* The stage is added as flag, e.g. `jovov4 build --stage someStage`
-* The stage is set in the environment variables with `JOVO_STAGE=someStage`
-* The stage is set in the environment variables with `NODE_ENV=someStage`
-* The default stage is set with `defaultStage: 'someStage'`
-
+- The stage is added as flag, e.g. `jovo build --stage someStage`
+- The stage is set in the environment variables with `JOVO_STAGE=someStage`
+- The stage is set in the environment variables with `NODE_ENV=someStage`
+- The default stage is set with `defaultStage: 'someStage'`
 
 ## Hooks
 
@@ -231,8 +222,10 @@ const project = new ProjectConfig({
   // ...
   hooks: {
     'before.build': [
-      () => { /* Do something here */ }
-    ]
+      () => {
+        /* Do something here */
+      },
+    ],
   },
 });
 ```
@@ -254,14 +247,14 @@ However, hooks usually require a few more lines of code. We recommend placing ea
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli-core');
-const { fetchLanguageModel } = require("./hooks/fetchLanguageModel.hook.js");
+const { fetchLanguageModel } = require('./hooks/fetchLanguageModel.hook.js');
 
 // ...
 
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [ fetchLanguageModel ],
+    'before.build': [fetchLanguageModel],
   },
 });
 ```
@@ -272,9 +265,7 @@ You can also pass the `context` to a hook to access specific information:
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [
-      (context) => console.log(`Skill ID: ${context.alexa.skillId}`),
-    ]
+    'before.build': [(context) => console.log(`Skill ID: ${context.alexa.skillId}`)],
   },
 });
 ```
