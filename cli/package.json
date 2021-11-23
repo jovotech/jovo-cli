@@ -70,7 +70,8 @@
     "hooks": {
       "init": [
         "./dist/hooks/VersionHook.js",
-        "./dist/hooks/InitHook.js"
+        "./dist/hooks/InitHook.js",
+        "./dist/hooks/ScriptsHook.js"
       ]
     },
     "topics": {
