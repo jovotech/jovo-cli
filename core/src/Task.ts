@@ -74,7 +74,7 @@ export class Task {
         Log.info(this.title.trim(), { indent: this.config.indentation });
       } else {
         // Initialize spinner here, since options can change after the task has been initialized
-        this.spinner = ora({ text: this.title, interval: 100 }).start();
+        this.spinner = ora({ text: this.title, interval: 50 }).start();
       }
 
       try {

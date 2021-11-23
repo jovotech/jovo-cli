@@ -28,7 +28,7 @@
     "lodash.merge": "^4.6.2",
     "lodash.mergewith": "^4.6.2",
     "node-emoji": "^1.10.0",
-    "ora": "^6.0.1",
+    "ora": "^5.4.1",
     "prompts": "^2.4.0",
     "strip-ansi": "^6.0.0",
     "ts-mixer": "^5.4.1",
