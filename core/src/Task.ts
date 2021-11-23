@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import Spinnies from 'spinnies';
+import _merge from 'lodash.merge';
+import ora from 'ora';
 import { JovoCliError } from './JovoCliError';
 import { Log } from '.';
 
@@ -9,19 +10,31 @@ import { Log } from '.';
 // This way, the default color of the Command Line can be used.
 chalk['default'] = (text: string) => text;
 
-export class Task {
-  private static spinners: Spinnies = new Spinnies({
-    failPrefix: chalk.red('x'),
-  });
-  private enabled: boolean = true;
-  private indentation: number = 0;
+export type TaskFunction = () => string[] | string | void | Promise<string[] | string | void>;
 
-  constructor(
-    private title: string,
-    private action:
-      | Task[]
-      | (() => string[] | string | void | Promise<string[] | string | void>) = [],
-  ) {}
+export interface TaskConfig {
+  enabled: boolean;
+  indentation: number;
+}
+
+export class Task {
+  private readonly title: string;
+  private readonly action: Task[] | TaskFunction;
+  private readonly config: TaskConfig;
+  private spinner?: any;
+
+  constructor(title: string, action: Task[] | TaskFunction = [], config?: Partial<TaskConfig>) {
+    this.title = title;
+    this.action = action;
+    this.config = _merge(this.getDefaultConfig(), config);
+  }
+
+  getDefaultConfig(): TaskConfig {
+    return {
+      enabled: true,
+      indentation: 0,
+    };
+  }
 
   add(...actions: Task[]): void {
     if (!Array.isArray(this.action)) {
@@ -34,60 +47,52 @@ export class Task {
   }
 
   indent(indentation: number): void {
-    this.indentation = indentation;
+    this.config.indentation = indentation;
   }
 
   enable(): void {
-    this.enabled = true;
+    this.config.enabled = true;
   }
 
   disable(): void {
-    this.enabled = false;
+    this.config.enabled = false;
   }
 
   async run(): Promise<void> {
-    if (!this.enabled) {
+    if (!this.config.enabled) {
       return;
     }
 
-    const spinnerId: string = `spinner-${Math.random()}`;
-
     if (Array.isArray(this.action)) {
-      Log.info(this.title.trim(), { indent: this.indentation });
+      Log.info(this.title.trim(), { indent: this.config.indentation });
       for (const action of this.action) {
-        action.indent(this.indentation + 2);
+        action.indent(this.config.indentation + 2);
         await action.run();
       }
     } else {
       if (Log.isRaw()) {
-        Log.info(this.title.trim(), { indent: this.indentation });
+        Log.info(this.title.trim(), { indent: this.config.indentation });
       } else {
-        Task.spinners.add(spinnerId, {
-          text: this.title,
-          indent: this.indentation,
-        });
-
-        // Let Command Line decide what color to display on succeed.
-        // This has to be overridden after adding the spinner to avoid filtering invalid colours.
-        Task.spinners.pick(spinnerId).succeedColor = 'default';
+        // Initialize spinner here, since options can change after the task has been initialized
+        this.spinner = ora({ text: this.title, interval: 50 }).start();
       }
 
       try {
         let output: string[] | string | void = await this.action();
         if (!Log.isRaw()) {
-          Task.spinners.succeed(spinnerId);
+          this.spinner!.succeed();
         }
         if (output) {
           if (!Array.isArray(output)) {
             output = [output];
           }
           for (const str of output) {
-            Log.info(chalk.white.dim(str), { indent: 2 });
+            Log.info(chalk.white.dim(str), { indent: this.config.indentation + 2 });
           }
         }
       } catch (error) {
         if (!Log.isRaw()) {
-          Task.spinners.fail(spinnerId);
+          this.spinner!.fail();
         }
 
         if (error instanceof JovoCliError) {
