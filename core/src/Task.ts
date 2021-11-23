@@ -4,12 +4,6 @@ import ora from 'ora';
 import { JovoCliError } from './JovoCliError';
 import { Log } from '.';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// Override the behaviour of spinnies that forces the user to pick a colour for spinner text.
-// This way, the default color of the Command Line can be used.
-chalk['default'] = (text: string) => text;
-
 export type TaskFunction = () => string[] | string | void | Promise<string[] | string | void>;
 
 export interface TaskConfig {
@@ -21,7 +15,7 @@ export class Task {
   private readonly title: string;
   private readonly action: Task[] | TaskFunction;
   private readonly config: TaskConfig;
-  private spinner?: any;
+  private spinner?: ora.Ora;
 
   constructor(title: string, action: Task[] | TaskFunction = [], config?: Partial<TaskConfig>) {
     this.title = title;
@@ -74,7 +68,15 @@ export class Task {
         Log.info(this.title.trim(), { indent: this.config.indentation });
       } else {
         // Initialize spinner here, since options can change after the task has been initialized
-        this.spinner = ora({ text: this.title, interval: 50 }).start();
+        this.spinner = ora({
+          text: this.title,
+          interval: 50,
+          indent: this.config.indentation,
+        });
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.spinner['stream'].cursorTo(this.config.indentation);
+        this.spinner.start();
       }
 
       try {
