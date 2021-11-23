@@ -19,24 +19,18 @@ export class UserConfig {
     // Rename the configv4 to config and deprecate the v3 config
     if (!this.config.cli) {
       // Rename the v3 config to config3
-      renameSync(
-        joinPaths(homedir(), UserConfig.getPath()),
-        joinPaths(homedir(), UserConfig.getPathV3()),
-      );
+      renameSync(joinPaths(homedir(), this.path), joinPaths(homedir(), this.pathV3));
 
       // If configv4 exists, rename it, otherwise create a fresh config
       if (existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
-        renameSync(
-          joinPaths(homedir(), '.jovo', 'configv4'),
-          joinPaths(homedir(), UserConfig.getPath()),
-        );
+        renameSync(joinPaths(homedir(), '.jovo', 'configv4'), joinPaths(homedir(), this.path));
       } else {
         this.create();
       }
 
       Log.spacer();
-      Log.warning(`The Jovo CLI @v4 is now using ${UserConfig.getPath()} as the default config.`);
-      Log.warning(`Your existing config has been moved to ${UserConfig.getPathV3()}.`);
+      Log.warning(`The Jovo CLI @v4 is now using ${this.path} as the default config.`);
+      Log.warning(`Your existing config has been moved to ${this.pathV3}.`);
       Log.spacer();
 
       this.config = this.get();
@@ -50,17 +44,24 @@ export class UserConfig {
   }
 
   /**
-   * Returns the path of the Jovo user config.
+   * Returns the path of the Jovo user config
    */
-  static getPath(): string {
-    return joinPaths('.jovo', 'config');
+  get path(): string {
+    return joinPaths(this.directory, 'config');
   }
 
   /**
    * Returns the path of the Jovo user config @v3.
    */
-  static getPathV3(): string {
-    return joinPaths('.jovo', 'config3');
+  get pathV3(): string {
+    return joinPaths(this.directory, 'config3');
+  }
+
+  /**
+   * Returns the directory for Jovo config files
+   */
+  get directory(): string {
+    return '.jovo';
   }
 
   /**
@@ -68,7 +69,7 @@ export class UserConfig {
    */
   get(): JovoUserConfigFile {
     try {
-      const data: string = readFileSync(joinPaths(homedir(), UserConfig.getPath()), 'utf-8');
+      const data: string = readFileSync(joinPaths(homedir(), this.path), 'utf-8');
       return JSON.parse(data);
     } catch (error) {
       // If file cannot be found, create it.
@@ -78,7 +79,7 @@ export class UserConfig {
 
       // Else propagate error.
       throw new JovoCliError({
-        message: `Error while trying to parse ${UserConfig.getPath()}.`,
+        message: `Error while trying to parse ${this.path}.`,
         details: (error as Error).message,
       });
     }
@@ -93,7 +94,7 @@ export class UserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), UserConfig.getPath()), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), this.path), JSON.stringify(config, null, 2));
     this.config = config;
   }
 
@@ -121,7 +122,7 @@ export class UserConfig {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
-    writeFileSync(joinPaths(homedir(), UserConfig.getPath()), JSON.stringify(config, null, 2));
+    writeFileSync(joinPaths(homedir(), this.path), JSON.stringify(config, null, 2));
 
     return config;
   }
