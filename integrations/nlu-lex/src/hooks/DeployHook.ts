@@ -12,7 +12,14 @@ import {
   PutIntentCommandOutput,
 } from '@aws-sdk/client-lex-model-building-service';
 import type { DeployPlatformContext, DeployPlatformEvents } from '@jovotech/cli-command-deploy';
-import { JovoCliError, PluginHook, printHighlight, ROCKET, Task } from '@jovotech/cli-core';
+import {
+  isJovoCliError,
+  JovoCliError,
+  PluginHook,
+  printHighlight,
+  ROCKET,
+  Task,
+} from '@jovotech/cli-core';
 import type { LexModelFile } from '@jovotech/model-lex';
 import { existsSync, writeFileSync } from 'fs';
 import { join as joinPaths } from 'path';
@@ -164,13 +171,14 @@ export class DeployHook extends PluginHook<DeployPlatformEvents> {
       deployTask.add(deployIntentTask, deployBotTask);
       await deployTask.run();
     } catch (error) {
-      if (error instanceof JovoCliError) {
-        throw error;
+      if (!isJovoCliError(error)) {
+        throw new JovoCliError({
+          message: (error as Error).message,
+          module: this.$plugin.constructor.name,
+        });
       }
-      throw new JovoCliError({
-        message: (error as Error).message,
-        module: this.$plugin.constructor.name,
-      });
+
+      throw error;
     }
   }
 

@@ -2,7 +2,8 @@ import chalk from 'chalk';
 import _merge from 'lodash.merge';
 import ora from 'ora';
 import { JovoCliError } from './JovoCliError';
-import { Log } from '.';
+import { Log } from './Logger';
+import { isJovoCliError } from './utilities';
 
 export type TaskFunction = () => string[] | string | void | Promise<string[] | string | void>;
 
@@ -97,11 +98,10 @@ export class Task {
           this.spinner!.fail();
         }
 
-        if (error instanceof JovoCliError) {
-          throw error;
+        if (!isJovoCliError(error)) {
+          throw new JovoCliError({ message: (error as Error).message });
         }
-
-        throw new JovoCliError({ message: (error as Error).message });
+        throw error;
       }
     }
   }

@@ -1,4 +1,4 @@
-import { chalk, JovoCliError, Log, PluginCommand } from '@jovotech/cli-core';
+import { chalk, isJovoCliError, JovoCliError, Log, PluginCommand } from '@jovotech/cli-core';
 import { Command, Topic } from '@oclif/config';
 import { HelpBase } from '@oclif/plugin-help';
 import CommandHelp from './CommandHelp';
@@ -37,7 +37,7 @@ export default class HelpOutput extends HelpBase {
 
       throw new JovoCliError({ message: 'Command not found' });
     } catch (error) {
-      if (!(error instanceof JovoCliError)) {
+      if (!isJovoCliError(error)) {
         error = new JovoCliError({ message: error.message });
       }
 
