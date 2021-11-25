@@ -26,28 +26,6 @@ export async function promptOverwriteReverseBuild(): Promise<{ overwrite: string
 }
 
 /**
- * Prompt for a project, depending on provided choices.
- * @param choices - Array of choices (projects) to choose from.
- */
-export async function promptListForProjectId(
-  choices: prompt.Choice[],
-): Promise<{ projectId: string }> {
-  return await prompt(
-    {
-      name: 'projectId',
-      type: 'select',
-      message: 'Select your project:',
-      choices,
-    },
-    {
-      onCancel() {
-        process.exit();
-      },
-    },
-  );
-}
-
-/**
  * Prompt for overwrite.
  * @param message - Message to display on prompt.
  */
