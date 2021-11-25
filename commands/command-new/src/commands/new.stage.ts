@@ -16,6 +16,7 @@ import {
   Task,
   wait,
   WRENCH,
+  Configurable,
 } from '@jovotech/cli-core';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -23,7 +24,13 @@ import _merge from 'lodash.merge';
 import { join as joinPaths, resolve } from 'path';
 import { Choice } from 'prompts';
 import { promptPlugins, promptServer } from '../prompts';
-import { fetchMarketPlace, insert, runNpmInstall } from '../utilities';
+import {
+  fetchMarketPlace,
+  getFormattedPluginInitConfig,
+  insert,
+  loadPlugin,
+  runNpmInstall,
+} from '../utilities';
 
 export interface NewStageContext extends PluginContext {
   args: CliArgs<typeof NewStage>;
@@ -115,7 +122,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       const packageJson = require(resolve('package.json'));
 
       // Add plugins to package.json
-      for (const plugin of [...appPlugins]) {
+      for (const plugin of appPlugins) {
         packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
       // Add selected server dependency to package.json
@@ -154,9 +161,17 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       const pluginsComment = '// Add Jovo plugins here';
 
       for (const plugin of appPlugins) {
+        const loadedPlugin: Configurable = loadPlugin(
+          this.$cli.projectPath,
+          plugin.package,
+          plugin.module,
+        );
+        console.log(loadedPlugin.getInitConfig?.());
+        const initConfig: string = await getFormattedPluginInitConfig(loadedPlugin);
+
         stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
         stagedApp = insert(
-          `\n\t\tnew ${plugin.module}(),`,
+          `\n\t\tnew ${plugin.module}(${initConfig}),`,
           stagedApp,
           stagedApp.indexOf(pluginsComment) + pluginsComment.length,
         );
