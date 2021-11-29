@@ -55,7 +55,7 @@ export class Task {
     if (Array.isArray(this.action)) {
       Log.info(this.title.trim(), { indent: this.indentation });
       for (const action of this.action) {
-        action.indent(this.indentation + 2);
+        action.indent(this.indentation + 3);
         await action.run();
       }
     } else {

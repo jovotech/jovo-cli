@@ -5,6 +5,7 @@ import { EventEmitter } from './EventEmitter';
 import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
+import { UserConfig } from './UserConfig';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -25,14 +26,24 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
 
   static args: Parser.args.Input = [];
   static flags = {
-    stage: flags.string({
+    'stage': flags.string({
       description: 'Takes configuration from specified stage',
     }),
-    debug: flags.boolean({
+    'debug': flags.boolean({
       description: 'Shows debugging information, such as the error trace stack',
       parse(debug: boolean) {
         if (debug) {
           process.env.JOVO_CLI_LOG_LEVEL = 'DEBUG';
+        }
+      },
+    }),
+    'disable-hints': flags.boolean({
+      description: 'Disables showing hints when executing commands',
+      parse: (disabled: boolean) => {
+        if (disabled) {
+          const config: UserConfig = new UserConfig();
+          config.setParameter('cli.disableHints', false);
+          config.save(config['config']);
         }
       },
     }),

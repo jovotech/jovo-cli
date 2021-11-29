@@ -14,6 +14,8 @@ import {
   TADA,
   Task,
   wait,
+  BULB,
+  chalk,
 } from '@jovotech/cli-core';
 import { existsSync, mkdirSync } from 'fs';
 import _merge from 'lodash.merge';
@@ -36,7 +38,7 @@ export type BuildPlatformEvents =
 @ProjectCommand()
 export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPlatformEvents> {
   static id = 'build:platform';
-  static description = 'Build platform-specific language models based on jovo models folder';
+  static description = 'Build platform-specific language models based on Jovo models folder';
   static examples = ['jovo build:platform alexa'];
   static availablePlatforms: string[] = [];
   static flags = {
@@ -166,6 +168,11 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
 
     Log.spacer();
     Log.info(`${TADA} Build completed.`);
+    Log.spacer();
+    Log.info(`${BULB} To deploy your built platform, run the following command:`);
+    Log.info(chalk.dim(`$ jovo deploy:platform ${this.$context.args.platform.join(' ')}`), {
+      indent: 3,
+    });
     Log.spacer();
   }
 }

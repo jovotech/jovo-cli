@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
+import _set from 'lodash.set';
 import { homedir } from 'os';
 import { join as joinPaths } from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -126,8 +127,12 @@ export class UserConfig {
     return config;
   }
 
-  getParameter(path: string): object | string[] | string | undefined {
+  getParameter(path: string): object | string[] | string | boolean | undefined {
     return _get(this.config, path);
+  }
+
+  setParameter(path: string, value: object | string[] | string | boolean | undefined): void {
+    _set(this.config, path, value);
   }
 
   /**

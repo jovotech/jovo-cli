@@ -1,4 +1,11 @@
-import { chalk, JovoCliError, Log, PluginCommand } from '@jovotech/cli-core';
+import {
+  BULB,
+  chalk,
+  JovoCliError,
+  Log,
+  PluginCommand,
+  printSubHeadline,
+} from '@jovotech/cli-core';
 import { Command, Topic } from '@oclif/config';
 import { HelpBase } from '@oclif/plugin-help';
 import CommandHelp from './CommandHelp';
@@ -21,6 +28,7 @@ export default class HelpOutput extends HelpBase {
         this.printUsage();
         this.printCommands(commands);
         this.printGlobalFlags();
+        this.printHint();
 
         return;
       } else {
@@ -35,7 +43,10 @@ export default class HelpOutput extends HelpBase {
         }
       }
 
-      throw new JovoCliError({ message: 'Command not found' });
+      throw new JovoCliError({
+        message: `jovo ${subject} is not a valid command`,
+        hint: 'Run jovo --help to get a list of available commands',
+      });
     } catch (error) {
       if (!(error instanceof JovoCliError)) {
         error = new JovoCliError({ message: error.message });
@@ -74,11 +85,7 @@ export default class HelpOutput extends HelpBase {
       this.config.pjson.oclif.description || this.config.pjson.description || '';
 
     Log.info(description);
-    Log.spacer();
-    Log.info('To get started, run the following command:');
-    Log.info(`$ ${this.config.bin} new`, { indent: 2 });
-    Log.spacer();
-    Log.info('Read the docs: https://www.jovo.tech/docs/cli');
+    Log.info(printSubHeadline('Read the docs: https://www.jovo.tech/docs/cli'));
     Log.spacer();
   }
 
@@ -138,6 +145,13 @@ export default class HelpOutput extends HelpBase {
       .filter((flag) => !flag.hidden);
 
     Log.info(CommandHelp.prototype.flags.call(this, validFlags)!);
+  }
+
+  private printHint(): void {
+    Log.spacer();
+    Log.info(`${BULB} To get started, run the following command:`);
+    Log.info(`$ ${this.config.bin} new`, { indent: 2 });
+    Log.spacer();
   }
 
   private printTopic(topic: Topic): void {

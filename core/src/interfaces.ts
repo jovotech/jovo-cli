@@ -60,6 +60,7 @@ export interface JovoUserConfigFile {
   cli: {
     plugins: string[];
     presets: Preset[];
+    hintDisabled?: boolean;
   };
   timeLastUpdateMessage?: string | number;
 }
