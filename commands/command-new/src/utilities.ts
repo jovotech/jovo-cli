@@ -1,7 +1,6 @@
 import {
   AnyObject,
   Configurable,
-  ConfigurableInitConfig,
   execAsync,
   ExecResponse,
   JovoCliError,

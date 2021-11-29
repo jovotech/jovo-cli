@@ -27,7 +27,7 @@ import {
 import { existsSync, mkdirSync } from 'fs';
 import _merge from 'lodash.merge';
 import _pick from 'lodash.pick';
-import { join as joinPaths, resolve } from 'path';
+import { join as joinPaths } from 'path';
 import NewCommand from '..';
 import {
   promptPreset,

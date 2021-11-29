@@ -3,7 +3,6 @@ import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import _set from 'lodash.set';
 import { join as joinPaths } from 'path';
-import util from 'util';
 import { NewContext } from './commands/new';
 import { getFormattedPluginInitConfig, insert, loadPlugin } from './utilities';
 

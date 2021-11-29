@@ -166,7 +166,6 @@ export class NewStage extends PluginCommand<NewStageEvents> {
           plugin.package,
           plugin.module,
         );
-        console.log(loadedPlugin.getInitConfig?.());
         const initConfig: string = await getFormattedPluginInitConfig(loadedPlugin);
 
         stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
