@@ -169,10 +169,12 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
     Log.spacer();
     Log.info(`${TADA} Build completed.`);
     Log.spacer();
-    Log.info(`${BULB} To deploy your built platform, run the following command:`);
-    Log.info(chalk.dim(`$ jovo deploy:platform ${this.$context.args.platform.join(' ')}`), {
-      indent: 3,
-    });
-    Log.spacer();
+    // Display a hint for the deployment command, if it's not already been used
+    if (!this.$context.flags.deploy) {
+      Log.info(`${BULB} To deploy your built platform, run the following command:`);
+      Log.info(chalk.dim(`$ jovo deploy:platform ${this.$context.args.platform.join(' ')}`), {
+        indent: 3,
+      });
+    }
   }
 }
