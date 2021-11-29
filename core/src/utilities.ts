@@ -261,3 +261,13 @@ export function getLanguagePascalCase(lng: SupportedLanguages): string {
       return '';
   }
 }
+
+/**
+ * Checks whether the provided error is a JovoCliError.
+ * Since the Jovo CLI uses both global and local modules, an error thrown in a local module
+ * is not the same instance of a JovoCliError as in a global one.
+ * @param error - Error to check
+ */
+export function isJovoCliError(error: Error): error is JovoCliError {
+  return error instanceof JovoCliError || !!(error as JovoCliError)['properties'];
+}
