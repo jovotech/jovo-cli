@@ -207,8 +207,6 @@ export class YourPlugin extends JovoCliPlugin {
     };
   }
 }
-
-export default YourPlugin;
 ```
 
 ### getInitConfig
@@ -232,8 +230,6 @@ export class YourPlugin extends JovoCliPlugin {
     };
   }
 }
-
-export default YourPlugin;
 ```
 
 For example, the above looks like this:
@@ -244,14 +240,22 @@ new YourPlugin({
 }),
 ```
 
-You can also make use of the `RequiredWhere` type. It makes it possible to specify a specific key in an interface:
+You can also make use of the `RequiredWere` type to specify which keys of your type are required, while all other elements are optional.
+This allows you to differentiate between keys that are required to be set by the user, and keys that are required, but can be set in `getDefaultConfig()`.
 
 ```typescript
 import { JovoCliPlugin, PluginConfig, RequiredWhere } from '@jovotech/cli-core';
 // ...
 
+export interface YourPluginConfig extends PluginConfig {
+  apiKey: string;
+  someKey: string;
+  // ...
+}
 
-getInitConfig(): RequiredWhere<YourPluginConfig, 'apiKey'> {
+export type YourPluginInitConfig = RequiredWhere<YourPluginConfig, 'apiKey'>;
+
+getInitConfig(): YourPluginInitConfig {
   return {
     apiKey: '<YOUR-API-KEY>',
   };
@@ -261,7 +265,5 @@ getInitConfig(): RequiredWhere<YourPluginConfig, 'apiKey'> {
 You can also reference multiple keys like this:
 
 ```typescript
-getInitConfig(): RequiredWhere<YourPluginConfig, 'apiKey' | 'someOtherConfig'> {
-  // ...
-}
+export type YourPluginInitConfig = RequiredWhere<YourPluginConfig, 'apiKey' | 'someKey'>;
 ```
