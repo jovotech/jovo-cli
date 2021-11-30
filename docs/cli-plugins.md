@@ -28,8 +28,6 @@ export class YourPlugin extends JovoCliPlugin {
 
   // ...
 }
-
-export default YourPlugin;
 ```
 
 These properties must be set for the plugin to work:
@@ -53,8 +51,6 @@ export class YourPlugin extends JovoCliPlugin {
     return [SomeHook];
   }
 }
-
-export default YourPlugin;
 ```
 
 A CLI hook file looks like this:
@@ -88,8 +84,6 @@ export class YourPlugin extends JovoCliPlugin {
     return [SomeCommand];
   }
 }
-
-export default YourPlugin;
 ```
 
 A CLI command file looks like this:
@@ -181,8 +175,6 @@ export class YourPlugin extends JovoCliPlugin {
     };
   }
 }
-
-export default YourPlugin;
 ```
 
 It includes the following elements:
