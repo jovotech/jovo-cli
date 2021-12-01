@@ -1,5 +1,14 @@
 # Changelog
 
+## [@jovotech/cli@4.0.0-beta.10](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.9...@jovotech/cli@4.0.0-beta.10)
+
+> 16 November 2021
+
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+
 ## [@jovotech/cli@4.0.0-beta.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.7...@jovotech/cli@4.0.0-beta.9)
 
 > 8 October 2021
