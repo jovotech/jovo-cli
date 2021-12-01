@@ -18,12 +18,18 @@ import { Log } from './Logger';
 /**
  * Provides own version of execSync by returning a promise on exec().
  * This offers a few advantages, such as handling stream output more precise.
- * @param cmd - Command to execute
+ * @param cmd - Command to execute, can be an array which will be joined with together with whitespaces
  * @param options - Options to pass to exec()
  */
-export function execAsync(cmd: string, options: ExecOptions = {}): Promise<ExecResponse> {
+export function execAsync(
+  cmd: string | string[],
+  options: ExecOptions = {},
+): Promise<ExecResponse> {
   return new Promise((resolve, reject) => {
-    exec(cmd, options, (error: ExecException | null, stdout: string, stderr: string) => {
+    if (!Array.isArray(cmd)) {
+      cmd = [cmd];
+    }
+    exec(cmd.join(' '), options, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
         reject({ stderr: error.message, stdout });
       } else {
