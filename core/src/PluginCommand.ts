@@ -5,6 +5,7 @@ import { EventEmitter } from './EventEmitter';
 import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
+import { isJovoCliError } from './utilities';
 
 /**
  * Extends abstract Oclif Command class to mixin with PluginCommand.
@@ -84,7 +85,7 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
     // the instanceof parameter won't work at times when an error is
     // thrown in a local and validated in a global module.
     // Hence we must check manually if the error satisfies properties of JovoCliError.
-    if (!(error instanceof JovoCliError) && !(error as JovoCliError)['properties']) {
+    if (!isJovoCliError(error)) {
       error = new JovoCliError({
         message: error.message,
       });

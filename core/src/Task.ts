@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import Spinnies from 'spinnies';
 import { JovoCliError } from './JovoCliError';
-import { Log } from '.';
+import { Log } from './Logger';
+import { isJovoCliError } from './utilities';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -90,11 +91,10 @@ export class Task {
           Task.spinners.fail(spinnerId);
         }
 
-        if (error instanceof JovoCliError) {
-          throw error;
+        if (!isJovoCliError(error)) {
+          throw new JovoCliError({ message: (error as Error).message });
         }
-
-        throw new JovoCliError({ message: (error as Error).message });
+        throw error;
       }
     }
   }
