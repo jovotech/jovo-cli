@@ -9,6 +9,7 @@ import {
   EventEmitter,
   flags,
   GlobalCommand,
+  isJovoCliError,
   JovoCli,
   JovoCliError,
   JovoCliPlugin,
@@ -134,14 +135,14 @@ export class New extends PluginCommand<NewEvents> {
           preset = this.$cli.userConfig.getPreset(selectedPreset);
         }
       } catch (error) {
-        if (error instanceof JovoCliError) {
-          throw error;
+        if (!isJovoCliError(error)) {
+          throw new JovoCliError({
+            message: (error as Error).message,
+            module: this.$plugin.constructor.name,
+          });
         }
 
-        throw new JovoCliError({
-          message: (error as Error).message,
-          module: this.$plugin.constructor.name,
-        });
+        throw error;
       }
     } else if (flags.preset) {
       preset = this.$cli.userConfig.getPreset(flags.preset);

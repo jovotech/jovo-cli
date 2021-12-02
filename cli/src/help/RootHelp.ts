@@ -1,6 +1,7 @@
 import {
   BULB,
   chalk,
+  isJovoCliError,
   JovoCliError,
   Log,
   PluginCommand,
@@ -48,7 +49,7 @@ export default class HelpOutput extends HelpBase {
         hint: 'Run jovo --help to get a list of available commands',
       });
     } catch (error) {
-      if (!(error instanceof JovoCliError)) {
+      if (!isJovoCliError(error)) {
         error = new JovoCliError({ message: error.message });
       }
 

@@ -18,12 +18,18 @@ import { Log } from './Logger';
 /**
  * Provides own version of execSync by returning a promise on exec().
  * This offers a few advantages, such as handling stream output more precise.
- * @param cmd - Command to execute
+ * @param cmd - Command to execute, can be an array which will be joined with together with whitespaces
  * @param options - Options to pass to exec()
  */
-export function execAsync(cmd: string, options: ExecOptions = {}): Promise<ExecResponse> {
+export function execAsync(
+  cmd: string | string[],
+  options: ExecOptions = {},
+): Promise<ExecResponse> {
   return new Promise((resolve, reject) => {
-    exec(cmd, options, (error: ExecException | null, stdout: string, stderr: string) => {
+    if (!Array.isArray(cmd)) {
+      cmd = [cmd];
+    }
+    exec(cmd.join(' '), options, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
         reject({ stderr: error.message, stdout });
       } else {
@@ -260,4 +266,14 @@ export function getLanguagePascalCase(lng: SupportedLanguages): string {
     default:
       return '';
   }
+}
+
+/**
+ * Checks whether the provided error is a JovoCliError.
+ * Since the Jovo CLI uses both global and local modules, an error thrown in a local module
+ * is not the same instance of a JovoCliError as in a global one.
+ * @param error - Error to check
+ */
+export function isJovoCliError(error: Error): error is JovoCliError {
+  return error instanceof JovoCliError || !!(error as JovoCliError)['properties'];
 }
