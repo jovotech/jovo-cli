@@ -3,7 +3,7 @@ import { get } from 'node-emoji';
 import chalk from 'chalk';
 
 export const DEFAULT_LOCALE = 'en';
-export const JOVO_WEBHOOK_URL = 'https://webhookv4.jovo.cloud';
+export const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
 export const ENDPOINTS: string[] = ['jovo-webhook', 'ngrok', 'none'];
 export const REPO_URL = 'https://www.jovo.tech/repo/sample-apps';
 export const SUPPORTED_LANGUAGES = ['typescript', 'javascript'] as const;
