@@ -1,4 +1,6 @@
 import {
+  AnyObject,
+  Configurable,
   execAsync,
   ExecResponse,
   JovoCliError,
@@ -6,6 +8,8 @@ import {
   SupportedLanguages,
 } from '@jovotech/cli-core';
 import downloadGH from 'download-git-repo';
+import { resolve, join as joinPaths } from 'path';
+import { inspect } from 'util';
 
 /**
  * Downloads and extracts a template.
@@ -125,4 +129,25 @@ export function fetchMarketPlace(): MarketplacePlugin[] {
   }
 
   return plugins;
+}
+
+export function loadPlugin(projectPath: string, pkg: string, module: string): Configurable {
+  return new (require(resolve(joinPaths(projectPath, 'node_modules', pkg)))[module])();
+}
+
+export async function getFormattedPluginInitConfig(plugin: Configurable): Promise<string> {
+  const initConfig: AnyObject | undefined = await plugin.getInitConfig?.();
+
+  if (!initConfig || !Object.keys(initConfig)) {
+    return '';
+  }
+
+  // Serialize the plugin's default config for further processing
+  const rawConfig: string = inspect(initConfig, {
+    depth: null,
+    colors: false,
+  });
+
+  // Format default config with correct indentation
+  return rawConfig.replace(/\n/g, '\n\t\t');
 }
