@@ -240,11 +240,11 @@ new YourPlugin({
 }),
 ```
 
-You can also make use of the `RequiredWere` type to specify which keys of your type are required, while all other elements are optional.
+You can also make use of the `RequiredOnlyWhere` type to specify which keys of your type are required, while all other elements are optional.
 This allows you to differentiate between keys that are required to be set by the user, and keys that are required, but can be set in `getDefaultConfig()`.
 
 ```typescript
-import { JovoCliPlugin, PluginConfig, RequiredWhere } from '@jovotech/cli-core';
+import { JovoCliPlugin, PluginConfig, RequiredOnlyWhere } from '@jovotech/cli-core';
 // ...
 
 export interface YourPluginConfig extends PluginConfig {
@@ -253,7 +253,7 @@ export interface YourPluginConfig extends PluginConfig {
   // ...
 }
 
-export type YourPluginInitConfig = RequiredWhere<YourPluginConfig, 'apiKey'>;
+export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey'>;
 
 getInitConfig(): YourPluginInitConfig {
   return {
@@ -265,5 +265,5 @@ getInitConfig(): YourPluginInitConfig {
 You can also reference multiple keys like this:
 
 ```typescript
-export type YourPluginInitConfig = RequiredWhere<YourPluginConfig, 'apiKey' | 'someKey'>;
+export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey' | 'someKey'>;
 ```
