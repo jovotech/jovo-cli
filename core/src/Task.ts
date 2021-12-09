@@ -77,6 +77,9 @@ export class Task {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.spinner['stream'].cursorTo(this.config.indentation);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.spinner['stream'].clearLine = () => {};
         this.spinner.start();
       }
 
