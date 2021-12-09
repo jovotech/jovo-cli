@@ -221,7 +221,6 @@ export class New extends PluginCommand<NewEvents> {
     // Modify package.json to include plugins and omit not needed packages, depending on configuration.
     const generatePackageJsonTask: Task = new Task('Generating package.json', async () => {
       await TemplateBuilder.modifyDependencies(this.$context);
-      await TemplateBuilder.generateAppConfiguration(this.$context);
     });
     await generatePackageJsonTask.run();
 
@@ -253,6 +252,7 @@ export class New extends PluginCommand<NewEvents> {
 
     TemplateBuilder.copyModels(this.$context);
     await TemplateBuilder.generateProjectConfiguration(this.$context);
+    await TemplateBuilder.generateAppConfiguration(this.$context);
 
     Log.spacer();
     Log.info(`${TADA} Successfully created your project!`);
