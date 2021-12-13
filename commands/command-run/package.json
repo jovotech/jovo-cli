@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-run",
   "description": "Jovo CLI Plugin for running a Jovo project with the Jovo Debugger",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,7 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-core": "^4.0.0",
+    "@jovotech/cli-core": "^4.0.1",
     "@oclif/parser": "^3.8.5",
     "boxen": "^5.0.0",
     "global-dirs": "^3.0.0",

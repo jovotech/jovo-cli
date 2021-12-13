@@ -28,6 +28,7 @@ export * from './validators';
 
 export { chalk, prompt, which };
 export { flags } from '@oclif/command';
+export * from '@jovotech/common';
 
 declare module '@oclif/parser/lib/args' {
   interface IArg {

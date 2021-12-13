@@ -16,6 +16,7 @@ import {
   Task,
   wait,
   WRENCH,
+  Configurable,
 } from '@jovotech/cli-core';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
@@ -23,7 +24,13 @@ import _merge from 'lodash.merge';
 import { join as joinPaths, resolve } from 'path';
 import { Choice } from 'prompts';
 import { promptPlugins, promptServer } from '../prompts';
-import { fetchMarketPlace, insert, runNpmInstall } from '../utilities';
+import {
+  fetchMarketPlace,
+  getFormattedPluginInitConfig,
+  insert,
+  loadPlugin,
+  runNpmInstall,
+} from '../utilities';
 
 export interface NewStageContext extends PluginContext {
   args: CliArgs<typeof NewStage>;
@@ -111,42 +118,11 @@ export class NewStage extends PluginCommand<NewStageEvents> {
     Log.spacer();
     const stageTask: Task = new Task(`${WRENCH} Creating new stage`);
 
-    const addPluginsTask: Task = new Task('Generating staged files', async () => {
-      // Create app.{stage}.ts.
-      const appTask: Task = new Task(`app.${this.$context.args.stage}.ts`, async () => {
-        let stagedApp: string = readFileSync(
-          joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
-          'utf-8',
-        );
-        const pluginsComment = '// Add Jovo plugins here';
-
-        for (const plugin of appPlugins) {
-          stagedApp = insert(
-            `import { ${plugin.module} } from '${plugin.package}'\n`,
-            stagedApp,
-            0,
-          );
-          stagedApp = insert(
-            `\n\t\tnew ${plugin.module}(),`,
-            stagedApp,
-            stagedApp.indexOf(pluginsComment) + pluginsComment.length,
-          );
-        }
-
-        stagedApp = insert(`\nexport * from './${serverFileName}';\n`, stagedApp, stagedApp.length);
-
-        writeFileSync(joinPaths('src', `app.${this.$context.args.stage}.ts`), stagedApp);
-        await wait(500);
-      });
-      appTask.indent(4);
-      await appTask.run();
-    });
-
     const installTask: Task = new Task('Installing plugins', async () => {
       const packageJson = require(resolve('package.json'));
 
       // Add plugins to package.json
-      for (const plugin of [...appPlugins]) {
+      for (const plugin of appPlugins) {
         packageJson.dependencies[plugin.package] = await latestVersion(plugin.package);
       }
       // Add selected server dependency to package.json
@@ -174,8 +150,38 @@ export class NewStage extends PluginCommand<NewStageEvents> {
       writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
       await runNpmInstall('./');
     });
+    stageTask.add(installTask);
 
-    stageTask.add(addPluginsTask, installTask);
+    // Create app.{stage}.ts.
+    const appTask: Task = new Task(`Generating app.${this.$context.args.stage}.ts`, async () => {
+      let stagedApp: string = readFileSync(
+        joinPaths('node_modules', '@jovotech', 'framework', 'boilerplate', 'app.stage.ts'),
+        'utf-8',
+      );
+      const pluginsComment = '// Add Jovo plugins here';
+
+      for (const plugin of appPlugins) {
+        const loadedPlugin: Configurable = loadPlugin(
+          this.$cli.projectPath,
+          plugin.package,
+          plugin.module,
+        );
+        const initConfig: string = await getFormattedPluginInitConfig(loadedPlugin);
+
+        stagedApp = insert(`import { ${plugin.module} } from '${plugin.package}'\n`, stagedApp, 0);
+        stagedApp = insert(
+          `\n\t\tnew ${plugin.module}(${initConfig}),`,
+          stagedApp,
+          stagedApp.indexOf(pluginsComment) + pluginsComment.length,
+        );
+      }
+
+      stagedApp = insert(`\nexport * from './${serverFileName}';\n`, stagedApp, stagedApp.length);
+
+      writeFileSync(joinPaths('src', `app.${this.$context.args.stage}.ts`), stagedApp);
+      await wait(500);
+    });
+    stageTask.add(appTask);
 
     await stageTask.run();
 

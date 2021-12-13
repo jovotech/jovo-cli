@@ -1,11 +1,10 @@
-import { Config as ProjectConfig, JovoCliError } from '@jovotech/cli-core';
+import { Config as ProjectConfig, Configurable, JovoCliError } from '@jovotech/cli-core';
 import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import _set from 'lodash.set';
 import { join as joinPaths } from 'path';
-import util from 'util';
 import { NewContext } from './commands/new';
-import { insert } from './utilities';
+import { getFormattedPluginInitConfig, insert, loadPlugin } from './utilities';
 
 /**
  * Mofifies dependencies from the project's package.json. Installs configured CLI plugins and
@@ -48,7 +47,7 @@ export async function modifyDependencies(context: NewContext): Promise<void> {
  * Modifies the project configuration, adding configured CLI plugins with their respective configurations.
  * @param context - Current context, containing configured project properties.
  */
-export function generateProjectConfiguration(context: NewContext): void {
+export async function generateProjectConfiguration(context: NewContext): Promise<void> {
   const projectConfigPath: string = joinPaths(context.projectName, ProjectConfig.getFileName());
 
   // Read project configuration, enhance with platform plugins.
@@ -66,21 +65,10 @@ export function generateProjectConfiguration(context: NewContext): void {
     );
 
     // Build default config for CLI plugin (default = '')
-    let defaultConfig: string = '';
-
-    if (Object.keys(platform.cliPlugin.config).length) {
-      // Serialize the plugin's default config for further processing
-      const unformattedConfig: string = util.inspect(platform.cliPlugin.config, {
-        depth: null,
-        colors: false,
-      });
-
-      // Format default config with correct indentation
-      defaultConfig = unformattedConfig.replace(/\n/g, '\n\t\t');
-    }
+    const initConfig: string = await getFormattedPluginInitConfig(platform.cliPlugin);
 
     projectConfig = insert(
-      `\n\t\tnew ${platform.cliModule}(${defaultConfig}),`,
+      `\n\t\tnew ${platform.cliModule}(${initConfig}),`,
       projectConfig,
       projectConfig.indexOf(cliPluginsComment) + cliPluginsComment.length,
     );
@@ -92,7 +80,7 @@ export function generateProjectConfiguration(context: NewContext): void {
  * Mofifies the app configuration, adding configured Framework plugins.
  * @param context - Current context, containing configured project properties.
  */
-export function generateAppConfiguration(context: NewContext): void {
+export async function generateAppConfiguration(context: NewContext): Promise<void> {
   const packageJsonPath: string = joinPaths(context.projectName, 'package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
   // Read Jovo configuration, modify and enhance with platform plugins.
@@ -107,6 +95,13 @@ export function generateAppConfiguration(context: NewContext): void {
   let appConfig = readFileSync(appConfigPath, 'utf-8');
   const pluginsComment = '// Add Jovo plugins here';
   for (const platform of context.platforms) {
+    const loadedPlugin: Configurable = loadPlugin(
+      context.projectName,
+      platform.package,
+      platform.module,
+    );
+    const initConfig: string = await getFormattedPluginInitConfig(loadedPlugin);
+
     appConfig = insert(
       `import { ${platform.module} } from \'${platform.package}\';\n`,
       appConfig,
@@ -114,7 +109,7 @@ export function generateAppConfiguration(context: NewContext): void {
     );
 
     appConfig = insert(
-      `\n\t\tnew ${platform.module}(),`,
+      `\n\t\tnew ${platform.module}(${initConfig}),`,
       appConfig,
       appConfig.indexOf(pluginsComment) + pluginsComment.length,
     );
