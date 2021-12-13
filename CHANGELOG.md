@@ -1,5 +1,16 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.8...@jovotech/target-serverless@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/target-serverless@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.7...@jovotech/target-serverless@4.0.0-beta.8)
 
 > 17 November 2021
@@ -69,6 +80,17 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/nlu-lex@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.8...@jovotech/nlu-lex@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/nlu-lex@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.7...@jovotech/nlu-lex@4.0.0-beta.8)
 
 > 17 November 2021
@@ -137,6 +159,16 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/cli@4.0.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.1...@jovotech/cli@4.0.2)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
 
 ## [@jovotech/cli@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.0-beta.9...@jovotech/cli@4.0.1)
 
@@ -233,6 +265,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-core@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.8...@jovotech/cli-core@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/cli-core@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.7...@jovotech/cli-core@4.0.0-beta.8)
 
 > 17 November 2021
@@ -308,6 +351,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-run@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.8...@jovotech/cli-command-run@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/cli-command-run@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.7...@jovotech/cli-command-run@4.0.0-beta.8)
 
 > 17 November 2021
@@ -378,6 +432,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.8...@jovotech/cli-command-new@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/cli-command-new@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.7...@jovotech/cli-command-new@4.0.0-beta.8)
 
 > 17 November 2021
@@ -447,6 +512,17 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.8...@jovotech/cli-command-get@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
 
 ## [@jovotech/cli-command-get@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.7...@jovotech/cli-command-get@4.0.0-beta.8)
 
@@ -523,6 +599,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.8...@jovotech/cli-command-deploy@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
 ## [@jovotech/cli-command-deploy@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.7...@jovotech/cli-command-deploy@4.0.0-beta.8)
 
 > 17 November 2021
@@ -597,6 +684,17 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.8...@jovotech/cli-command-build@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
 
 ## [@jovotech/cli-command-build@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.7...@jovotech/cli-command-build@4.0.0-beta.8)
 
@@ -673,10 +771,35 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
-## [@jovotech/cli-command-build@4.0.0-alpha.7]()
+## [@jovotech/cli-command-build@4.0.0]()
 
-> 7 May 2021
+> 18 November 2021
 
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
+- :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
+- :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
+- :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
+- :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+- :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
+- :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
+- Add v4 docs [`#241`](https://github.com/jovotech/jovo-cli/pull/241)
+- :fire: Remove unneeded instance check for plugins [`#238`](https://github.com/jovotech/jovo-cli/pull/238)
+- :sparkles: Add color logging [`#239`](https://github.com/jovotech/jovo-cli/pull/239)
+- 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
+- ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
+- 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
+- Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
+- 🥅 Improve error handling [`#232`](https://github.com/jovotech/jovo-cli/pull/232)
+- ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
+- 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
+- ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
+- Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
+- ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+- ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 - 🚚 Abstract JovoCli class, pass instance to plugins [`#200`](https://github.com/jovotech/jovo-cli/pull/200)
 - 🔨 Update jovo run process [`#199`](https://github.com/jovotech/jovo-cli/pull/199)
 - ⬆️ Set @jovotech/cli-core as dependency [`#198`](https://github.com/jovotech/jovo-cli/pull/198)
