@@ -28,7 +28,7 @@ $ npm install -g @serverless
 Add the plugin to your `jovo.project.js` [project configuration](https://www.jovo.tech/docs/project-config) file like this:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { ServerlessCli } = require('@jovotech/target-serverless');
 
 // ...

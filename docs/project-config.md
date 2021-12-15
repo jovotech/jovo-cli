@@ -14,7 +14,7 @@ The Jovo project configuration is found in a file called `jovo.project.js` in yo
 Here is how it usually looks like for new Jovo projects:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 
 // ...
 
@@ -61,7 +61,7 @@ In the next few sections, we'll take a closer look how CLI plugins can be [insta
 You can add CLI plugins to the `plugins` array of the project config. Here is an example for Amazon Alexa:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { AlexaCli } = require('@jovotech/platform-alexa');
 
 // ...
@@ -246,7 +246,7 @@ const project = new ProjectConfig({
 However, hooks usually require a few more lines of code. We recommend placing each function in a separate file in a `hooks` folder and then referencing it in the `jovo.project.js` file ([you can find an example of this hook here](https://github.com/rubenaeg/fetch-language-model-test/blob/master/hooks/fetchLanguageModel.hook.js)):
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { fetchLanguageModel } = require('./hooks/fetchLanguageModel.hook.js');
 
 // ...

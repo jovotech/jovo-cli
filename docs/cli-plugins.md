@@ -133,7 +133,7 @@ If the command is used outside a Jovo project, the CLI will display an error, le
 After successful creation, you can add the plugin to your [project configuration](./project-config.md) like this:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const YourPlugin = require('./plugins/YourPlugin');
 
 // ...
