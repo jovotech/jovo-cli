@@ -17,7 +17,7 @@ The Jovo CLI can be used to deploy projects to various developer consoles like t
 $ jovo build:platform <platform>
 ```
 
-Running the `build` command from above will execute the command for a platform plugin that needs to added to the [project configuration](./project-config.md) before. Learn more about the command flags in the [`build:platform` section](#build:platform).
+Running the `build` command from above will execute the command for a platform plugin that needs to added to the [project configuration](./project-config.md) before. Learn more about the command flags in the [`build:platform` section](#build-platform).
 
 It is also possible to reverse the process and create `models` from the contents of the `build` folder. Learn more in the [reverse build section](#reverse-build).
 
@@ -36,13 +36,13 @@ If you added stages to your [project configuration](./project-config.md), the pl
 
 You can also add flags from the table below.
 
-| Flag              | Description                                                                                                                          | Examples                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| `--locale`, `-l`  | The locales to be built from the `models` folder                                                                                     | `--locale en`, `--locale en de` |
-| `--stage`         | The stage to be built. See [staging](./project-config.md#staging).                                                                   | `--stage dev`                   |
-| `--clean`         | Delete the relevant folders in `build` at the beginning of the process                                                               |                                 |
-| `--reverse`, `-r` | Turn contents of the `build` folder into `models`. See [reverse build section](#reverse-build) below.                                |                                 |
-| `--deploy`, `-d`  | Directly deploy the platform after the build process. See the [`deploy:platform` command](./deploy-command.md) for more information. |                                 |
+| Flag              | Description                                                                                                                                          | Examples                        |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `--locale`, `-l`  | The locales to be built from the `models` folder                                                                                                     | `--locale en`, `--locale en de` |
+| `--stage`         | The stage to be built. See [staging](./project-config.md#staging).                                                                                   | `--stage dev`                   |
+| `--clean`         | Delete the relevant folders in `build` at the beginning of the process                                                                               |                                 |
+| `--reverse`, `-r` | Turn contents of the `build` folder into `models`. See [reverse build section](#reverse-build) below.                                                |                                 |
+| `--deploy`, `-d`  | Directly deploy the platform after the build process. See the [`deploy:platform` command](./deploy-command.md#deploy-platform) for more information. |                                 |
 
 CLI integrations may also add their own flags. Learn more in the respective docs:
 
