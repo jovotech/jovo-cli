@@ -71,7 +71,7 @@ $ jovo deploy:code <target>
 $ jovo deploy:code serverless
 ```
 
-Jovo uses [`esbuild`](https://github.com/evanw/esbuild) for fast bundling and small file sizes. Depending on the stage, the `deploy:code` command executes the `bundle` (if no stage is used) or `bundle:<stage>` script in your `package.json` (you can find a [sample file here](https://github.com/jovotech/jovo-v4-template/blob/master/package.json)). The [`new:stage` command](./new-command.md#new-stage) automatically creates the appropriate scripts for new stages.
+Jovo uses [`esbuild`](https://github.com/evanw/esbuild) for fast bundling and small file sizes. Depending on the stage, the `deploy:code` command executes the `bundle:<stage>` script in your `package.json` (you can find a [sample file here](https://github.com/jovotech/jovo-v4-template/blob/master/package.json)). The [`new:stage` command](./new-command.md#new-stage) automatically creates the appropriate scripts for new stages.
 
 You can also add flags from the table below.
 
