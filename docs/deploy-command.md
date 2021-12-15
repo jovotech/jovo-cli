@@ -12,7 +12,7 @@ The `jovo deploy` CLI command can be used to deploy your project to various deve
 The `jovo deploy` command offers the following features:
 
 - [`deploy:platform`](#deploy-platform): Upload project files to platform developer consoles (e.g. Amazon Alexa Developer Console, Actions on Google Console)
-- [`deploy:code`](#deploy-platform): Upload the source code to a cloud provider (e.g. AWS Lambda)
+- [`deploy:code`](#deploy-code): Upload the source code to a cloud provider (e.g. AWS Lambda)
 
 For these commands to work, you need to add plugins (for example for the platform you want to deploy to) to your [project configuration](./project-config.md). Here is an example how this looks like for the [serverless integration](https://www.jovo.tech/marketplace/target-serverless):
 
