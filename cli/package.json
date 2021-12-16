@@ -30,8 +30,8 @@
     "@jovotech/cli-core": "^4.0.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
-    "@oclif/plugin-not-found": "^1.2.4",
+    "@oclif/help": "^1.0.1",
+    "@oclif/plugin-not-found": "^2.2.3",
     "envinfo": "^7.8.1",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2"
@@ -63,7 +63,6 @@
   "oclif": {
     "bin": "jovo",
     "plugins": [
-      "@oclif/plugin-help",
       "@oclif/plugin-not-found"
     ],
     "helpClass": "./dist/help/RootHelp.js",

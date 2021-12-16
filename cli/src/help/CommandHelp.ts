@@ -1,9 +1,9 @@
 import { chalk, Log } from '@jovotech/cli-core';
 import { Command } from '@oclif/config';
-import BaseCommandHelp from '@oclif/plugin-help/lib/command';
-import { renderList } from '@oclif/plugin-help/lib/list';
+import BaseCommandHelp from '@oclif/help/lib/command';
+import { renderList } from '@oclif/help/lib/list'
 
-export default class CommandHelp extends BaseCommandHelp {
+export class CommandHelp extends BaseCommandHelp {
   /**
    * Mimicks the functionality of super.flags(), but customizes some minor
    * things such as output of flag parameters
