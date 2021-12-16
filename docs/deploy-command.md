@@ -17,7 +17,7 @@ The `jovo deploy` command offers the following features:
 For these commands to work, you need to add plugins (for example for the platform you want to deploy to) to your [project configuration](./project-config.md). Here is an example how this looks like for the [serverless integration](https://www.jovo.tech/marketplace/target-serverless):
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { ServerlessCli } = require('@jovotech/target-serverless');
 
 // ...
