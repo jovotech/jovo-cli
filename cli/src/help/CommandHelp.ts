@@ -1,7 +1,7 @@
 import { chalk, Log } from '@jovotech/cli-core';
 import { Command } from '@oclif/config';
 import BaseCommandHelp from '@oclif/help/lib/command';
-import { renderList } from '@oclif/help/lib/list'
+import { renderList } from '@oclif/help/lib/list';
 
 export class CommandHelp extends BaseCommandHelp {
   /**
