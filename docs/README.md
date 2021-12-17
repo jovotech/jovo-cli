@@ -41,7 +41,7 @@ $ jovo
 You can configure the Jovo CLI and its plugins in the `jovo.project.js` file in the root of a Jovo project:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 
 // ...
 
