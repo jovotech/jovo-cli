@@ -1,5 +1,28 @@
 # Changelog
 
+## [@jovotech/cli-core@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0...@jovotech/cli-core@4.0.1)
+
+> 10 December 2021
+
+- :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
+- :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
+- :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
+- :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
+- :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
+
+## [@jovotech/cli-core@4.0.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.8...@jovotech/cli-core@4.0.0)
+
+> 18 November 2021
+
+## [@jovotech/cli-core@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.7...@jovotech/cli-core@4.0.0-beta.8)
+
+> 17 November 2021
+
+- Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
+
 ## [@jovotech/cli-core@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.6...@jovotech/cli-core@4.0.0-beta.7)
 
 > 16 November 2021

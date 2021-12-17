@@ -11,8 +11,8 @@ The `jovo deploy` CLI command can be used to deploy your project to various deve
 
 The `jovo deploy` command offers the following features:
 
-- [`deploy:platform`](#deploy:platform): Upload project files to platform developer consoles (e.g. Amazon Alexa Developer Console, Actions on Google Console)
-- [`deploy:code`](#deploy:platform): Upload the source code to a cloud provider (e.g. AWS Lambda)
+- [`deploy:platform`](#deploy-platform): Upload project files to platform developer consoles (e.g. Amazon Alexa Developer Console, Actions on Google Console)
+- [`deploy:code`](#deploy-code): Upload the source code to a cloud provider (e.g. AWS Lambda)
 
 For these commands to work, you need to add plugins (for example for the platform you want to deploy to) to your [project configuration](./project-config.md). Here is an example how this looks like for the [serverless integration](https://www.jovo.tech/marketplace/target-serverless):
 
@@ -70,6 +70,8 @@ $ jovo deploy:code <target>
 # Example
 $ jovo deploy:code serverless
 ```
+
+Jovo uses [`esbuild`](https://github.com/evanw/esbuild) for fast bundling and small file sizes. Depending on the stage, the `deploy:code` command executes the `bundle:<stage>` script in your `package.json` (you can find a [sample file here](https://github.com/jovotech/jovo-v4-template/blob/master/package.json)). The [`new:stage` command](./new-command.md#new-stage) automatically creates the appropriate scripts for new stages.
 
 You can also add flags from the table below.
 
