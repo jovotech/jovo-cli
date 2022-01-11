@@ -100,9 +100,9 @@ export class Run extends PluginCommand<RunEvents> {
 
     // Ensure our child process is terminated upon exit. This is needed in the situation
     // where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
-    process.on('SIGINT', () => {
+    process.on('SIGTERM', () => {
       if (nodeProcess.pid) {
-        process.kill(nodeProcess.pid, 'SIGINT');
+        process.kill(nodeProcess.pid, 'SIGTERM');
       }
       process.exit();
     });
