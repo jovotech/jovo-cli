@@ -1,15 +1,15 @@
 import Command, { flags } from '@oclif/command';
-import * as boxen from 'boxen';
+import boxen, { BorderStyle as BoxenBorderStyle, Options as BoxenOptions } from 'boxen';
 import chalk from 'chalk';
-import spawn from 'cross-spawn';
-import * as JovoWebhookConnector from 'jovo-webhook-connector';
-import * as path from 'path';
-import open from 'open';
-import resolveBin from 'resolve-bin';
 import { ChildProcess } from 'child_process';
-import { accessSync, readFileSync } from 'fs-extra';
-import { getProject, InputFlags, JOVO_WEBHOOK_URL, JovoCliError } from 'jovo-cli-core';
+import spawn from 'cross-spawn';
+import { accessSync } from 'fs-extra';
+import { getProject, InputFlags, JovoCliError, JOVO_WEBHOOK_URL } from 'jovo-cli-core';
+import * as JovoWebhookConnector from 'jovo-webhook-connector';
 import _ from 'lodash';
+import open from 'open';
+import * as path from 'path';
+import resolveBin from 'resolve-bin';
 import {
   addBaseCliOptions,
   getPackageVersionsNpm,
@@ -108,14 +108,13 @@ export class Run extends Command {
 
         outputText.push('\nUse "jovo update" to get the newest versions.');
 
-        const boxOptions = {
+        const boxOptions: BoxenOptions = {
           padding: 1,
           margin: 1,
           borderColor: 'yellow',
-          borderStyle: 'round',
+          borderStyle: BoxenBorderStyle.Round,
         };
 
-        // @ts-ignore
         this.log(boxen(outputText.join('\n'), boxOptions));
         setUpdateMessageDisplayed();
       }
