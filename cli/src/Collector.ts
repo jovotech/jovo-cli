@@ -8,6 +8,7 @@ import {
   PluginContext,
 } from '@jovotech/cli-core';
 import { Command, Plugin, Topic } from '@oclif/config';
+import { dirname } from 'path';
 
 export class Collector extends Plugin {
   get topics(): Topic[] {
@@ -31,6 +32,11 @@ export class Collector extends Plugin {
   async loadPlugins(commandId: string, emitter: EventEmitter): Promise<void> {
     try {
       Log.verbose('Initiating Jovo CLI');
+
+      // Set exec path before loading plugins to prevent
+      // locally installed CLI modules from colliding with the global one
+      process.env.JOVO_CLI_EXEC_PATH = dirname(__dirname);
+
       const cli: JovoCli = JovoCli.getInstance();
       const plugins: JovoCliPlugin[] = cli.loadPlugins();
 
