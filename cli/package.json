@@ -14,7 +14,8 @@
     "jovo": "./bin/run"
   },
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest",
     "link": "node bin/link",
