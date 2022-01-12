@@ -104,6 +104,7 @@ export class SomeCommand extends PluginCommand {
       description: 'A locale the user might provide.',
       multiple: true,
     }),
+    // Insert global flags that are shared between commands
     ...PluginCommand.flags,
   };
   static args = [
