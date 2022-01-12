@@ -92,25 +92,34 @@ A CLI command file looks like this:
 import { PluginCommand } from '@jovotech/cli-core';
 
 export class SomeCommand extends PluginCommand {
-  static id = 'build:serverless';
-  static description = 'Build serverless configuration file.';
-  static examples: string[] = ['jovo build:serverless'];
+  static id = '<id>';
+  static description = 'This command does something.';
+  static examples: string[] = ['jovo <id>'];
   static flags = {
     clean: flags.boolean({
-      description:
-        'Deletes all platform folders and executes a clean build. If --platform is specified, it deletes only the respective platforms folder.',
+      description: 'Executes the command cleanly, making sure data is erased before execution.',
     }),
-    deploy: flags.boolean({
-      char: 'd',
-      description: 'Runs deploy after build.',
-      exclusive: ['reverse'],
+    locale: flags.string({
+      char: 'l',
+      description: 'A locale the user might provide.',
+      multiple: true,
     }),
     ...PluginCommand.flags,
   };
+  static args = [
+    <const>{
+      name: 'platform',
+      description: 'Specifies a platform',
+    },
+  ];
 
-  async run(): Promise<void> {}
+  async run(): Promise<void> {
+    // ...
+  }
 }
 ```
+
+Since `PluginCommand` is an extension to oclif's `Command` class, you can learn more about it's structure [here](https://oclif.io/docs/commands).
 
 ### Command Decorators
 
@@ -126,7 +135,7 @@ export class SomeCommand extends PluginCommand {
 }
 ```
 
-If the command is used outside a Jovo project, the CLI will display an error, letting the user know to go to a valid Jovo project directory.
+If the command is used outside of a Jovo project, the CLI will display an error, letting the user know to go to a valid Jovo project directory.
 
 ## Configuration
 
@@ -148,7 +157,7 @@ It is also possible to add configurations like this, for example:
 
 ```js
 new YourPlugin({
-  someConfig: true,
+  foo: 'bar',
 }),
 ```
 
@@ -158,20 +167,16 @@ This is how a plugin that accepts config looks like:
 import { JovoCliPlugin, PluginType, PluginConfig } from '@jovotech/cli-core';
 
 export interface YourPluginConfig extends PluginConfig {
-  someConfig: boolean;
+  foo: string;
   // ...
 }
 
-export class YourPlugin extends JovoCliPlugin {
+export class YourPlugin extends JovoCliPlugin<YourPluginConfig> {
   // ...
-
-  constructor(config: YourPluginConfig) {
-    super(config);
-  }
 
   getDefaultConfig(): YourPluginConfig {
     return {
-      someConfig: false,
+      foo: 'bar',
     };
   }
 }
@@ -179,8 +184,7 @@ export class YourPlugin extends JovoCliPlugin {
 
 It includes the following elements:
 
-- An type interface (in the example `YourPluginConfig`) where all config options are defined.
-- A `constructor()` that passes the `config` to the `JovoCliPlugin` class.
+- An interface definition (in the example `YourPluginConfig`) where all config options are defined.
 - [A `getDefaultConfig()` method](#getdefaultconfig) that returns the default configuration options in case the config is not defined in the project configuration.
 - [A `getInitConfig()` method](#getinitconfig) that returns the configuration options that should always be added to the `jovo.project.js` file.
 
@@ -194,16 +198,16 @@ The `getDefaultConfig()` method returns the default configuration of your plugin
 import { JovoCliPlugin, PluginConfig } from '@jovotech/cli-core';
 
 export interface YourPluginConfig extends PluginConfig {
-  someConfig: boolean;
+  foo: string;
   // ...
 }
 
-export class YourPlugin extends JovoCliPlugin {
+export class YourPlugin extends JovoCliPlugin<YourPluginConfig> {
   // ...
 
   getDefaultConfig(): YourPluginConfig {
     return {
-      someConfig: false,
+      foo: 'bar',
     };
   }
 }
@@ -221,7 +225,7 @@ export interface YourPluginConfig extends PluginConfig {
   // ...
 }
 
-export class YourPlugin extends JovoCliPlugin {
+export class YourPlugin extends JovoCliPlugin<YourPluginConfig> {
   // ...
 
   getInitConfig(): YourPluginConfig {
@@ -240,7 +244,7 @@ new YourPlugin({
 }),
 ```
 
-You can also make use of the `RequiredOnlyWhere` type to specify which keys of your type are required, while all other elements are optional.
+You can also make use of the [`RequiredOnlyWhere`](https://www.jovo.tech/docs/types#requiredonlywhere) type to specify which keys of your type are required, while all other elements are optional.
 This allows you to differentiate between keys that are required to be set by the user, and keys that are required, but can be set in `getDefaultConfig()`.
 
 ```typescript
@@ -255,15 +259,13 @@ export interface YourPluginConfig extends PluginConfig {
 
 export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey'>;
 
-getInitConfig(): YourPluginInitConfig {
-  return {
-    apiKey: '<YOUR-API-KEY>',
-  };
+export class YourPlugin extends JovoCliPlugin<YourPluginConfig> {
+  // ...
+
+  getInitConfig(): YourPluginInitConfig {
+    return {
+      apiKey: '<YOUR-API-KEY>',
+    };
+  }
 }
-```
-
-You can also reference multiple keys like this:
-
-```typescript
-export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey' | 'someKey'>;
 ```
