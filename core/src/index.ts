@@ -6,7 +6,7 @@ import which from 'which';
 // Load .env variables into process.env
 config();
 
-export * from './Config';
+export * from './ProjectConfig';
 export * from './constants';
 export * from './EventEmitter';
 export * from './interfaces';

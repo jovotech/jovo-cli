@@ -3,7 +3,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFi
 import { join as joinPaths, sep as pathSeperator } from 'path';
 import tv4 from 'tv4';
 import { Log } from '.';
-import { Config } from './Config';
+import { ProjectConfig } from './ProjectConfig';
 import { DEFAULT_LOCALE } from './constants';
 import { JovoCliError } from './JovoCliError';
 import { JovoCliPlugin } from './JovoCliPlugin';
@@ -13,7 +13,7 @@ export class Project {
 
   private projectPath: string;
 
-  readonly config: Config;
+  readonly config: ProjectConfig;
   readonly stage?: string;
 
   constructor(projectPath: string) {
@@ -32,7 +32,7 @@ export class Project {
       }
     }
 
-    this.config = Config.getInstance(this.projectPath, this.stage);
+    this.config = ProjectConfig.getInstance(this.projectPath, this.stage);
 
     // If stage was not explicitly defined, try to get it from config.
     if (!this.stage) {
