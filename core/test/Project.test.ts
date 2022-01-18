@@ -2,7 +2,7 @@ import fs from 'fs';
 import tv4 from 'tv4';
 import { JovoModelData, JovoModelDataV3 } from '@jovotech/model';
 import { join as joinPaths, resolve } from 'path';
-import { Config, deleteFolderRecursive, JovoCliError, JovoCliPlugin, Project } from '../src';
+import { ProjectConfig, deleteFolderRecursive, JovoCliError, JovoCliPlugin, Project } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
@@ -10,9 +10,11 @@ jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
 const testPath: string = resolve(joinPaths('test', 'tmpTestFolderProject'));
 
 beforeEach(() => {
-  jest.spyOn(Config.prototype, 'getContent').mockReturnThis();
-  jest.spyOn(Config.prototype, 'get').mockReturnThis();
-  jest.spyOn(Config, 'getInstance').mockReturnValue(new Config(''));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  jest.spyOn(ProjectConfig.prototype as any, 'loadContent').mockReturnThis();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  jest.spyOn(ProjectConfig.prototype as any, 'load').mockReturnThis();
+  jest.spyOn(ProjectConfig, 'getInstance').mockReturnValue(new ProjectConfig(''));
 });
 
 afterEach(() => {
@@ -46,7 +48,7 @@ describe('Project.getInstance()', () => {
 describe('new Project()', () => {
   test('should instantiate project with project path, config and undefined stage', () => {
     delete process.env.NODE_ENV;
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue(undefined);
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue(undefined);
 
     const project: Project = new Project('testPath');
     expect(project['projectPath']).toMatch('testPath');
@@ -80,7 +82,7 @@ describe('new Project()', () => {
   });
 
   test('should get the stage from config', () => {
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue('dev');
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue('dev');
 
     const project: Project = new Project('');
     expect(project.stage).toBeDefined();
@@ -90,7 +92,7 @@ describe('new Project()', () => {
 
 describe('getBuildDirectory()', () => {
   test('should return default directory "build/"', () => {
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue(undefined);
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue(undefined);
 
     const project: Project = new Project('');
     expect(project.getBuildDirectory()).toMatch('build');
@@ -98,7 +100,7 @@ describe('getBuildDirectory()', () => {
 
   test('should return configured directory from project configuration', () => {
     jest
-      .spyOn(Config.prototype, 'getParameter')
+      .spyOn(ProjectConfig.prototype, 'getParameter')
       .mockReturnValueOnce(undefined)
       .mockReturnValue('modifiedBuildDirectory');
 
@@ -108,7 +110,7 @@ describe('getBuildDirectory()', () => {
 
   test('should return staged build directory', () => {
     jest
-      .spyOn(Config.prototype, 'getParameter')
+      .spyOn(ProjectConfig.prototype, 'getParameter')
       .mockReturnValueOnce('dev')
       .mockReturnValue(undefined);
 
@@ -128,7 +130,7 @@ describe('getBuildPath()', () => {
 
 describe('getModelsDirectory()', () => {
   test('should return default directory "models/"', () => {
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue(undefined);
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue(undefined);
 
     const project: Project = new Project('');
     expect(project.getModelsDirectory()).toMatch('models');
@@ -136,7 +138,7 @@ describe('getModelsDirectory()', () => {
 
   test('should return configured directory from project configuration', () => {
     jest
-      .spyOn(Config.prototype, 'getParameter')
+      .spyOn(ProjectConfig.prototype, 'getParameter')
       .mockReturnValueOnce(undefined)
       .mockReturnValue('modifiedModelsDirectory');
 
@@ -415,7 +417,7 @@ describe('isTypeScriptProject()', () => {
 
 describe('collectPlugins()', () => {
   test('should return an empty array if no plugins could be found', () => {
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue([]);
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue([]);
 
     const project: Project = new Project('');
     const plugins: JovoCliPlugin[] = project.collectPlugins();
@@ -427,7 +429,7 @@ describe('collectPlugins()', () => {
     // Load mocked plugins.
     const plugin: Plugin = new Plugin({ files: { foo: 'bar' } });
 
-    jest.spyOn(Config.prototype, 'getParameter').mockReturnValue([plugin]);
+    jest.spyOn(ProjectConfig.prototype, 'getParameter').mockReturnValue([plugin]);
 
     const project: Project = new Project('');
     const plugins: JovoCliPlugin[] = project.collectPlugins();
