@@ -13,6 +13,11 @@ export class ProjectConfig {
   endpoint?: string;
   plugins?: JovoCliPlugin[];
   hooks?: ConfigHooks;
+  models?: {
+    enabled?: boolean;
+    directory?: string;
+    override?: Record<string, unknown>;
+  };
   defaultStage?: string;
   stages?: { [key: string]: ProjectConfig };
 

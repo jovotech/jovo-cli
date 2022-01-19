@@ -73,7 +73,7 @@ export class Project {
    * Returns directory name for models folder.
    */
   getModelsDirectory(): string {
-    return (this.config.getParameter('modelsDirectory') as string) || 'models';
+    return (this.config.getParameter('models.directory') as string) || 'models';
   }
 
   /**
