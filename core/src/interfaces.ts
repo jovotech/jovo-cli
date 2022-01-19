@@ -53,17 +53,6 @@ export interface PluginContext extends Context {}
 
 export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
 
-export interface JovoUserConfigFile {
-  webhook: {
-    uuid: string;
-  };
-  cli: {
-    plugins: string[];
-    presets: Preset[];
-  };
-  timeLastUpdateMessage?: string | number;
-}
-
 export interface MarketplacePlugin {
   name: string;
   module: string;

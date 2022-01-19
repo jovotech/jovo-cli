@@ -4,34 +4,50 @@ import _get from 'lodash.get';
 import { homedir } from 'os';
 import { join as joinPaths } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { Log } from '.';
+import { Log, PlainObjectType } from '.';
 import { ANSWER_CANCEL } from './constants';
-import { JovoUserConfigFile, Preset } from './interfaces';
+import { Preset } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { promptOverwrite } from './prompts';
 
 export class UserConfig {
-  private config: JovoUserConfigFile;
+  webhook!: {
+    uuid: string;
+  };
+  cli!: {
+    plugins: string[];
+    presets: Preset[];
+  };
+  timeLastUpdateMessage?: string | number;
+
+  static instance?: UserConfig;
+
+  static getInstance(): UserConfig {
+    if (!this.instance) {
+      this.instance = new UserConfig();
+    }
+
+    return this.instance;
+  }
 
   constructor() {
-    this.config = this.get();
+    Object.assign(this, this.load());
 
-    // Rename the configv4 to config and deprecate the v3 config
-    if (!this.config.cli) {
+    // If the loaded config has v3 structure,
+    // rename configv4 to config and deprecate the v3 config
+    if (!this.cli) {
       // Rename the v3 config to config3
       renameSync(
         joinPaths(homedir(), UserConfig.getPath()),
         joinPaths(homedir(), UserConfig.getPathV3()),
       );
 
-      // If configv4 exists, rename it, otherwise create a fresh config
+      // If configv4 exists, rename it, otherwise create a fresh config with this.load()
       if (existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
         renameSync(
           joinPaths(homedir(), '.jovo', 'configv4'),
           joinPaths(homedir(), UserConfig.getPath()),
         );
-      } else {
-        this.create();
       }
 
       Log.spacer();
@@ -39,12 +55,13 @@ export class UserConfig {
       Log.warning(`Your existing config has been moved to ${UserConfig.getPathV3()}.`);
       Log.spacer();
 
-      this.config = this.get();
+      // Reload config if v3 was loaded and detected
+      Object.assign(this, this.load());
     }
 
     // Save a default template for users with the beta configv4 file,
     // since the default template previously had the key "Default_TS"
-    if (!this.config?.cli?.presets?.find((preset) => preset.name === 'default')) {
+    if (!this.cli.presets.find((preset) => preset.name === 'default')) {
       this.savePreset(this.getDefaultPreset());
     }
   }
@@ -66,7 +83,7 @@ export class UserConfig {
   /**
    * Loads and returns Jovo user config.
    */
-  get(): JovoUserConfigFile {
+  load(): PlainObjectType<UserConfig> {
     try {
       const data: string = readFileSync(joinPaths(homedir(), UserConfig.getPath()), 'utf-8');
       return JSON.parse(data);
@@ -88,20 +105,21 @@ export class UserConfig {
    * Saves the provided user config.
    * @param config - JovoUserConfig object.
    */
-  save(config: JovoUserConfigFile): void {
+  save(config: PlainObjectType<UserConfig> = this): void {
     if (!existsSync(joinPaths(homedir(), '.jovo'))) {
       mkdirSync(joinPaths(homedir(), '.jovo'));
     }
 
     writeFileSync(joinPaths(homedir(), UserConfig.getPath()), JSON.stringify(config, null, 2));
-    this.config = config;
+    // Make sure the current instance is updated as well
+    Object.assign(this, config);
   }
 
   /**
    * Creates and returns a new Jovo user config.
    */
-  private create(): JovoUserConfigFile {
-    const config: JovoUserConfigFile = {
+  private create(): PlainObjectType<UserConfig> {
+    const config: PlainObjectType<UserConfig> = {
       webhook: {
         uuid: uuidv4(),
       },
@@ -126,8 +144,8 @@ export class UserConfig {
     return config;
   }
 
-  getParameter(path: string): object | string[] | string | undefined {
-    return _get(this.config, path);
+  getParameter(path: string): unknown {
+    return _get(this, path);
   }
 
   /**
@@ -171,7 +189,7 @@ export class UserConfig {
    */
   async savePreset(preset: Preset): Promise<void> {
     // Check if preset already exists.
-    if (this.config.cli.presets.find((p) => p.name === preset.name)) {
+    if (this.cli.presets.find((p: Preset) => p.name === preset.name)) {
       const { overwrite } = await promptOverwrite(
         `Preset ${preset.name} already exists. Do you want to overwrite it?`,
       );
@@ -179,13 +197,14 @@ export class UserConfig {
         throw new JovoCliError({ message: `Preset ${chalk.bold(preset.name)} already exists.` });
       } else {
         // Remove existing preset.
-        this.config.cli.presets = this.config.cli.presets.filter((p) => p.name !== preset.name);
+        // TODO: Splice better?
+        this.cli.presets = this.cli.presets.filter((p: Preset) => p.name !== preset.name);
       }
     }
 
-    this.config.cli.presets.push(preset);
+    this.cli.presets.push(preset);
 
-    this.save(this.config);
+    this.save();
   }
 
   private getDefaultPreset(): Preset {
