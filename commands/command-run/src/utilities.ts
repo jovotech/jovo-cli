@@ -1,11 +1,11 @@
 import {
   execAsync,
   ExecResponse,
-  getPackageVersions,
   JovoCliError,
   UserConfig,
   JovoUserConfigFile,
-  PackageVersions,
+  Package,
+  getOutdatedPackages,
 } from '@jovotech/cli-core';
 
 /**
