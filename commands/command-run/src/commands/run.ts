@@ -1,6 +1,7 @@
 import {
   CliFlags,
   flags,
+  getOutdatedPackages,
   Log,
   Package,
   PluginCommand,
@@ -46,8 +47,9 @@ export class Run extends PluginCommand<RunEvents> {
 
   async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
-    const outdatedPackages: Package[] = await shouldUpdatePackages(this.$cli.userConfig);
-    if (outdatedPackages.length) {
+    const outdatedPackages: Package[] = await getOutdatedPackages(/@jovotech\//);
+
+    if (shouldUpdatePackages(this.$cli.userConfig, outdatedPackages)) {
       Log.info('Updates available for the following Jovo packages:');
       Log.spacer();
       Log.info(printPackages(outdatedPackages));
