@@ -2,14 +2,15 @@ import { exec, ExecException, ExecOptions } from 'child_process';
 import { existsSync, lstatSync, readdirSync, readFileSync, rmdirSync, unlinkSync } from 'fs';
 import latestVersion from 'latest-version';
 import _get from 'lodash.get';
+import _intersectionBy from 'lodash.intersectionby';
 import { join as joinPaths } from 'path';
 import stripAnsi from 'strip-ansi';
 import {
-  DependencyFile,
+  Dependencies,
   ExecResponse,
   LocaleMap,
-  Packages,
-  PackageVersions,
+  Package,
+  PackageFile,
   SupportedLanguages,
 } from './interfaces';
 import { JovoCliError } from './JovoCliError';
@@ -77,79 +78,73 @@ export function deleteFolderRecursive(path: string): void {
 }
 
 /**
- * Returns packages with their respective versions from the project dependency file, either
- * package-lock.json or package.json.
- * @param packageRegex - RegExp to filter for packages.
+ * Returns packages with their respective versions from project dependency files, comparing dependencies listed
+ * in both package.json and package-lock.json.
+ * @param packageRegex - RegExp to filter for packages
+ * @param projectPath - Path for the current project
  */
-export async function getPackages(packageRegex: RegExp, projectPath: string): Promise<Packages> {
-  let packageFileName: string = '';
+export function getPackages(packageRegex: RegExp): Package[] {
+  // Get all packages matching the regex from either package-lock.json, or package.json
+  const packageFiles: string[] = ['package-lock.json', 'package.json'].filter((file: string) =>
+    existsSync(file),
+  );
 
-  // Get file name depending on what file exists, preferrably package-lock.json.
-  if (existsSync(joinPaths(projectPath, 'package-lock.json'))) {
-    packageFileName = 'package-lock.json';
-  } else if (existsSync(joinPaths(projectPath, 'package.json'))) {
-    packageFileName = 'package.json';
-  } else {
+  if (!packageFiles.length) {
     throw new JovoCliError({
       message: "Could not find an NPM dependency file, such as your project's package.json.",
+      hint: 'Try creating one by running "npm init" inside your project.',
     });
   }
 
-  const packagePath: string = joinPaths(projectPath, packageFileName);
-  let content: string;
+  const versionRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}(?:-(?:alpha|beta).\d{1,2})?$/;
+  const parseDependencyVersion = (dependencies: Dependencies, isDev?: boolean): Package[] => {
+    const packages: Package[] = [];
+
+    for (const [dependencyKey, dependency] of Object.entries(dependencies)) {
+      if (!dependencyKey.match(packageRegex)) {
+        continue;
+      }
+
+      if (typeof dependency === 'string') {
+        if (dependency.match(versionRegex))
+          packages.push({
+            name: dependencyKey,
+            version: { local: dependency.replace('^', '') },
+            isDev,
+          });
+      } else {
+        if (dependency.version.match(versionRegex)) {
+          packages.push({
+            name: dependencyKey,
+            version: { local: dependency.version.replace('^', '') },
+            isDev,
+          });
+        }
+      }
+    }
+
+    return packages;
+  };
+
   try {
-    content = readFileSync(packagePath, 'utf-8');
+    const packages: Package[] = [];
+
+    for (const packageFile of packageFiles) {
+      const rawPackageFileContent: string = readFileSync(packageFile, 'utf-8');
+      const packageFileContent: PackageFile = JSON.parse(rawPackageFileContent);
+
+      packages.push(
+        ...parseDependencyVersion(packageFileContent.dependencies || {}),
+        ...parseDependencyVersion(packageFileContent.devDependencies || {}, true),
+      );
+    }
+    return _intersectionBy(packages, 'name');
   } catch (error) {
+    console.log(error);
     throw new JovoCliError({
-      message: `Something went wrong while reading your ${packageFileName} file.`,
+      message: `Something went wrong while reading your file.`,
     });
   }
-
-  const packageFile: DependencyFile = JSON.parse(content);
-  const packages: Packages = {};
-  const versionNumberRegex: RegExp = /^\^?\d{1,2}\.\d{1,2}\.\d{1,2}(-alpha.\d{1,2})?$/;
-
-  // Look through devDependencies of package.json.
-  for (const [dependencyKey, dependency] of Object.entries(packageFile.devDependencies || {})) {
-    if (!dependencyKey.match(packageRegex)) {
-      continue;
-    }
-
-    if (dependency.match(versionNumberRegex)) {
-      packages[dependencyKey] = {
-        dev: true,
-        inPackageJson: true,
-        version: (dependency as string).replace('^', ''),
-      };
-    }
-  }
-
-  // Look through dependencies of package.json/package-lock.json.
-  for (const [dependencyKey, dependency] of Object.entries(packageFile.dependencies || {})) {
-    if (!dependencyKey.match(packageRegex)) {
-      continue;
-    }
-
-    if (typeof dependency === 'string') {
-      if (dependency.match(versionNumberRegex)) {
-        packages[dependencyKey] = {
-          dev: false,
-          inPackageJson: true,
-          version: dependency.replace('^', ''),
-        };
-      }
-    } else {
-      if (dependency.version.match(versionNumberRegex)) {
-        packages[dependencyKey] = {
-          dev: !!dependency.dev,
-          inPackageJson: false,
-          version: dependency.version.replace('^', ''),
-        };
-      }
-    }
-  }
-
-  return packages;
 }
 
 /**
@@ -157,34 +152,32 @@ export async function getPackages(packageRegex: RegExp, projectPath: string): Pr
  * respective @latest version.
  * @param packageRegex - RegExp to filter for packages.
  */
-export async function getPackageVersions(
-  packageRegex: RegExp,
-  projectPath: string,
-): Promise<PackageVersions> {
-  const packages: Packages = await getPackages(packageRegex, projectPath);
-  const versionPromises: Promise<PackageVersions>[] = [];
-  for (const packageName of Object.keys(packages)) {
+export async function getPackageVersions(packageRegex: RegExp): Promise<Package[]> {
+  const packages: Package[] = getPackages(packageRegex);
+  const versionPromises: Promise<Package>[] = [];
+  for (const pkg of packages) {
     versionPromises.push(
       (async () => ({
-        [packageName]: {
-          npm: await latestVersion(packageName),
-          local: packages[packageName].version,
-          dev: packages[packageName].dev,
-          inPackageJson: packages[packageName].inPackageJson,
-        },
+        ...pkg,
+        ...{ version: { ...pkg.version, npm: await latestVersion(pkg.name) } },
       }))(),
     );
   }
 
-  const packageVersions: PackageVersions[] = await Promise.all(versionPromises);
+  return await Promise.all(versionPromises);
+}
 
-  const returnPackages: PackageVersions = {};
+export async function getOutdatedPackages(packageRegex: RegExp): Promise<Package[]> {
+  const packageVersions: Package[] = await getPackageVersions(packageRegex);
+  const outdatedPackages: Package[] = [];
+
   for (const pkg of packageVersions) {
-    const packageName: string = Object.keys(pkg)[0];
-    returnPackages[packageName] = pkg[packageName];
+    if (pkg.version.local !== pkg.version.npm) {
+      outdatedPackages.push(pkg);
+    }
   }
 
-  return returnPackages;
+  return outdatedPackages;
 }
 
 /**

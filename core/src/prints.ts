@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import indentString from 'indent-string';
+import { Package } from './interfaces';
 
 /**
  * Returns a string of a stage in white bold font.
