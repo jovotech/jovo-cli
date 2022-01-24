@@ -40,3 +40,18 @@ export function printAskProfile(askProfile?: string): string {
 export function printUserInput(input: string): string {
   return chalk.blueBright(input);
 }
+
+export function printOutdatedPackages(outdatedPackages: Package[]): string {
+  const output: string[] = [];
+  if (outdatedPackages.length) {
+    for (const pkg of outdatedPackages) {
+      output.push(
+        `  - ${pkg.name}: ${pkg.version.local} ${pkg.isDev ? chalk.grey('[dev]') : ''} ${
+          pkg.version.npm !== pkg.version.local ? chalk.green(`-> ${pkg.version.npm}`) : ''
+        }`,
+      );
+    }
+  }
+
+  return output.join('\n');
+}
