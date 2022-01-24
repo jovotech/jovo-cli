@@ -3,13 +3,14 @@ import {
   ARROW_UP,
   CliFlags,
   execAsync,
+  flags,
   getOutdatedPackages,
   JovoCliError,
   Log,
   Package,
   PluginCommand,
   PluginContext,
-  printOutdatedPackages,
+  printPackages,
   printSubHeadline,
   ProjectCommand,
   SUCCESS,
@@ -28,8 +29,15 @@ export type UpdateEvents = 'before.update' | 'update' | 'after.update';
 export class Update extends PluginCommand<UpdateEvents> {
   static id = 'update';
 
-  static description =
-    'Start the local development server and test your app using the Jovo Debugger';
+  static description = 'Update all Jovo packages of the current project to their latest version';
+
+  static flags = {
+    yes: flags.boolean({
+      char: 'y',
+      description: 'Skip the prompt to update packages and run the update non-interactively',
+    }),
+    ...PluginCommand.flags,
+  };
 
   static examples: string[] = ['jovo update'];
 
@@ -40,6 +48,8 @@ export class Update extends PluginCommand<UpdateEvents> {
     Log.info(`jovo update: ${Update.description}`);
     Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/update\n'));
 
+    const { flags } = this.parse(Update);
+
     this.$emitter.run('before.update');
 
     const outdatedPackages: Package[] = await getOutdatedPackages(/@jovotech\//);
@@ -49,13 +59,18 @@ export class Update extends PluginCommand<UpdateEvents> {
       return;
     }
 
-    const { update } = await promptUpdate(outdatedPackages);
-
-    if (update === ANSWER_CANCEL) {
-      return;
-    }
-
+    Log.info('Updates available for the following Jovo packages:');
     Log.spacer();
+    Log.info(printPackages(outdatedPackages));
+    Log.spacer();
+
+    if (!flags.yes) {
+      const { update } = await promptUpdate();
+
+      if (update === ANSWER_CANCEL) {
+        return;
+      }
+    }
 
     const updateTask: Task = new Task(`${ARROW_UP} Updating Jovo packages`);
 

@@ -1,24 +1,11 @@
-import {
-  ANSWER_CANCEL,
-  ANSWER_UPDATE,
-  Package,
-  printOutdatedPackages,
-  printUserInput,
-  prompt,
-} from '@jovotech/cli-core';
+import { ANSWER_CANCEL, ANSWER_UPDATE, printUserInput, prompt } from '@jovotech/cli-core';
 
-export async function promptUpdate(outdatedPackages: Package[]): Promise<{ update: string }> {
+export async function promptUpdate(): Promise<{ update: string }> {
   return await prompt(
     {
       name: 'update',
       type: 'select',
-      message: [
-        'Updates available for the following Jovo packages:',
-        '',
-        printOutdatedPackages(outdatedPackages),
-        '',
-        '  How do you want to proceed?',
-      ].join('\n'),
+      message: 'How do you want to proceed?',
       choices: [
         {
           title: printUserInput('Update all packages'),
