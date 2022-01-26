@@ -60,6 +60,11 @@ export class UserConfig {
     if (!this.cli.presets.find((preset) => preset.name === 'default')) {
       this.savePreset(this.getDefaultPreset());
     }
+
+    if (!this.cli.plugins.find((plugin) => plugin === '@jovotech/cli-command-update')) {
+      this.cli.plugins.push('@jovotech/cli-command-update');
+      this.save();
+    }
   }
 
   static getInstance(): UserConfig {
@@ -127,6 +132,7 @@ export class UserConfig {
           '@jovotech/cli-command-get',
           '@jovotech/cli-command-new',
           '@jovotech/cli-command-run',
+          '@jovotech/cli-command-update',
         ],
         presets: [this.getDefaultPreset()],
       },
