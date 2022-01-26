@@ -238,13 +238,13 @@ const project = new ProjectConfig({
 });
 ```
 
-You can into any command, for example `before.build` or `after.build`:
+You can hook into any command, for example `before.build:platform` or `after.build:platform`:
 
 ```js
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [
+    'before.build:platform': [
       () => {
         /* Do something here */
       },
@@ -259,7 +259,7 @@ A first example to test hooks might be to log something:
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [
+    'before.build:platform': [
       () => console.log('Starting the build process now');
     ]
   },
@@ -277,7 +277,7 @@ const { fetchLanguageModel } = require('./hooks/fetchLanguageModel.hook.js');
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [fetchLanguageModel],
+    'before.build:platform': [fetchLanguageModel],
   },
 });
 ```
@@ -288,7 +288,7 @@ You can also pass the `context` to a hook to access specific information:
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [(context) => console.log(`Skill ID: ${context.alexa.skillId}`)],
+    'before.build:platform': [(context) => console.log(`Skill ID: ${context.alexa.skillId}`)],
   },
 });
 ```
