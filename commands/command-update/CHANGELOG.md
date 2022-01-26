@@ -1,99 +1,49 @@
 # Changelog
 
-## [@jovotech/cli-command-run@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0...@jovotech/cli-command-run@4.0.1)
+## [@jovotech/cli-command-update@4.1.0]()
 
-> 10 December 2021
+> 26 January 2022
 
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
 - :sparkles: Implement getInitConfig() [`#267`](https://github.com/jovotech/jovo-cli/pull/267)
 - :bug: Fix blinking spinner on Windows [`#273`](https://github.com/jovotech/jovo-cli/pull/273)
 - :ambulance: Adjust webhook [`#272`](https://github.com/jovotech/jovo-cli/pull/272)
 - :recycle: Replace Spinnies library with Ora [`#266`](https://github.com/jovotech/jovo-cli/pull/266)
 - :goal_net: Introduce JovoCliError instance check [`#271`](https://github.com/jovotech/jovo-cli/pull/271)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
 - :hammer: Uninstall Jovo CLI v3 before installing v4 [`#263`](https://github.com/jovotech/jovo-cli/pull/263)
-
-## [@jovotech/cli-command-run@4.0.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.8...@jovotech/cli-command-run@4.0.0)
-
-> 18 November 2021
-
-## [@jovotech/cli-command-run@4.0.0-beta.8](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.7...@jovotech/cli-command-run@4.0.0-beta.8)
-
-> 17 November 2021
-
 - Fix piping process.stdin to child process [`#259`](https://github.com/jovotech/jovo-cli/pull/259)
-- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
-- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
-
-## [@jovotech/cli-command-run@4.0.0-beta.7](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.6...@jovotech/cli-command-run@4.0.0-beta.7)
-
-> 16 November 2021
-
 - :bug: Fix decorators blocking command execution [`#255`](https://github.com/jovotech/jovo-cli/pull/255)
 - :recycle: Refactor Jovo CLI Wizard [`#254`](https://github.com/jovotech/jovo-cli/pull/254)
 - :sparkles: Introduce command decorators [`#249`](https://github.com/jovotech/jovo-cli/pull/249)
 - :fire: Remove socket connection instantiation  [`#251`](https://github.com/jovotech/jovo-cli/pull/251)
-
-## [@jovotech/cli-command-run@4.0.0-beta.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.5...@jovotech/cli-command-run@4.0.0-beta.6)
-
-> 8 October 2021
-
+- :bookmark: Publish [`#248`](https://github.com/jovotech/jovo-cli/pull/248)
 - :label: Remove @ts-ignores [`#247`](https://github.com/jovotech/jovo-cli/pull/247)
 - :adhesive_bandage: Enhance instance check on JovoCliError [`#245`](https://github.com/jovotech/jovo-cli/pull/245)
-
-## [@jovotech/cli-command-run@4.0.0-beta.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.4...@jovotech/cli-command-run@4.0.0-beta.5)
-
-> 5 October 2021
-
+- :bookmark: Release [`#244`](https://github.com/jovotech/jovo-cli/pull/244)
 - :recycle: Refactoring and Purging [`#243`](https://github.com/jovotech/jovo-cli/pull/243)
 - :sparkles: Generate build files according to a provided stage [`#240`](https://github.com/jovotech/jovo-cli/pull/240)
 - Add v4 docs [`#241`](https://github.com/jovotech/jovo-cli/pull/241)
 - :fire: Remove unneeded instance check for plugins [`#238`](https://github.com/jovotech/jovo-cli/pull/238)
 - :sparkles: Add color logging [`#239`](https://github.com/jovotech/jovo-cli/pull/239)
-
-## [@jovotech/cli-command-run@4.0.0-beta.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.3...@jovotech/cli-command-run@4.0.0-beta.4)
-
-> 13 September 2021
-
 - 🚑️ Fix installation of CLI commands [`#237`](https://github.com/jovotech/jovo-cli/pull/237)
 - ✨ Improve Model Validation [`#235`](https://github.com/jovotech/jovo-cli/pull/235)
-
-## [@jovotech/cli-command-run@4.0.0-beta.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.2...@jovotech/cli-command-run@4.0.0-beta.3)
-
-> 27 August 2021
-
 - 🔖 Publish [`#234`](https://github.com/jovotech/jovo-cli/pull/234)
 - Async Model [`#233`](https://github.com/jovotech/jovo-cli/pull/233)
 - 🥅 Improve error handling [`#232`](https://github.com/jovotech/jovo-cli/pull/232)
-
-## [@jovotech/cli-command-run@4.0.0-beta.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.1...@jovotech/cli-command-run@4.0.0-beta.2)
-
-> 19 August 2021
-
 - ♻️ Prepare v4 Beta Launch  [`#230`](https://github.com/jovotech/jovo-cli/pull/230)
 - 🐛 Fix merging on postpublish [`#229`](https://github.com/jovotech/jovo-cli/pull/229)
 - ✨ Add automatic changelog generation [`#226`](https://github.com/jovotech/jovo-cli/pull/226)
-
-## [@jovotech/cli-command-run@4.0.0-beta.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-alpha.10...@jovotech/cli-command-run@4.0.0-beta.1)
-
-> 29 June 2021
-
 - Publish [`#222`](https://github.com/jovotech/jovo-cli/pull/222)
-
-## [@jovotech/cli-command-run@4.0.0-alpha.10](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-alpha.9...@jovotech/cli-command-run@4.0.0-alpha.10)
-
-> 1 June 2021
-
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
-
-## [@jovotech/cli-command-run@4.0.0-alpha.9](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-alpha.8...@jovotech/cli-command-run@4.0.0-alpha.9)
-
-> 26 May 2021
-
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
-
-## [@jovotech/cli-command-run@4.0.0-alpha.8]()
-
-> 7 May 2021
-
 - 🚚 Abstract JovoCli class, pass instance to plugins [`#200`](https://github.com/jovotech/jovo-cli/pull/200)
 - 🔨 Update jovo run process [`#199`](https://github.com/jovotech/jovo-cli/pull/199)
 - ⬆️ Set @jovotech/cli-core as dependency [`#198`](https://github.com/jovotech/jovo-cli/pull/198)
