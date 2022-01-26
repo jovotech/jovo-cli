@@ -1,15 +1,15 @@
 import {
-  chalk,
   CliFlags,
   flags,
+  getOutdatedPackages,
   Log,
-  PackageVersions,
+  Package,
   PluginCommand,
   PluginContext,
-  ProjectCommand,
+  printPackages,
   printSubHeadline,
+  ProjectCommand,
 } from '@jovotech/cli-core';
-import boxen from 'boxen';
 import { ChildProcess, spawn } from 'child_process';
 import { shouldUpdatePackages } from '../utilities';
 
@@ -47,28 +47,15 @@ export class Run extends PluginCommand<RunEvents> {
 
   async checkForOutdatedPackages(): Promise<void> {
     // Update message should be displayed in case old packages get used
-    const outOfDatePackages: PackageVersions = await shouldUpdatePackages(
-      this.$cli.projectPath,
-      this.$cli.userConfig,
-    );
-    if (Object.keys(outOfDatePackages).length) {
-      const outputText: string[] = [];
-      outputText.push('Updates available for the following Jovo packages:');
-      for (const [key, pkg] of Object.entries(outOfDatePackages)) {
-        const text = `  - ${key}: ${pkg.local} ${chalk.grey(`-> ${pkg.npm}`)}`;
-        outputText.push(text);
-      }
+    const outdatedPackages: Package[] = await getOutdatedPackages(/@jovotech\//);
 
-      outputText.push('\nUse "npm update" to get the newest versions.');
-
-      Log.info(
-        boxen(outputText.join('\n'), {
-          padding: 1,
-          margin: 1,
-          borderColor: 'yellow',
-          borderStyle: 'round',
-        }),
-      );
+    if (shouldUpdatePackages(this.$cli.userConfig, outdatedPackages)) {
+      Log.info('Updates available for the following Jovo packages:');
+      Log.spacer();
+      Log.info(printPackages(outdatedPackages));
+      Log.spacer();
+      Log.info("Use 'jovo update' to get the newest versions.");
+      Log.spacer();
     }
   }
 

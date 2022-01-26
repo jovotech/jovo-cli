@@ -20,7 +20,7 @@ With the Jovo CLI, you can do many things, including:
 
 Learn how to install the Jovo CLI in the [installation](#installation) section. In the [configuration](#configuration) section, we'll take a look at configurations and plugins that can be added to the CLI.
 
-After that, we'll take a look at all [CLI commands](#commands) and ways to [extend the Jovo CLI](#extend-the-jovo-cli).
+After that, we'll take a look at all [CLI commands](#commands) and ways to [extend the Jovo CLI](#extend-the-jovo-cli). For bugfixes, take a look at the [local setup](#local-setup) section.
 
 ## Installation
 
@@ -80,8 +80,9 @@ Learn more about the Jovo CLI commands:
 - [`new`](https://www.jovo.tech/docs/new-command): Create a new Jovo project
 - [`run`](https://www.jovo.tech/docs/run-command): Start the local development server
 - [`build`](https://www.jovo.tech/docs/build-command): Create platform-specific project files
-- [`deploy`](https://www.jovo.tech/docs/deplooy-command): Deploy to various platforms and services
+- [`deploy`](https://www.jovo.tech/docs/deploy-command): Deploy to various platforms and services
 - [`get`](https://www.jovo.tech/docs/get-command): Sync your local files with platform files
+- [`update](https://www.jovo.tech/docs/update-command): Update Jovo packages in your project
 
 ## Integrations
 
@@ -99,3 +100,42 @@ There are two ways how you can extend the Jovo CLI:
 
 - [CLI hooks](https://www.jovo.tech/docs/project-config#hooks): Hook into existing CLI commands. For example, call an API and retrieve data as part of the `build` command.
 - [CLI plugins](https://www.jovo.tech/docs/cli-plugins): Create your own plugins that could hook into commands, or even create commands on their own.
+
+### Local Setup
+
+If you want to extend the Jovo CLI functionality, it should be sufficient to follow the steps mentioned above. However, if you encounter any issues or want to dig deeper into core functionality, it might be useful to set up the CLI for local development.
+
+To get started, clone the CLI repository to your workspace. Here is a list of options:
+
+```sh
+# HTTPS
+$ git clone https://github.com/jovotech/jovo-cli.git
+
+# SSH
+$ git clone git@github.com:jovotech/jovo-cli.git
+
+# GitHub ClI
+$ gh repo clone jovotech/jovo-cli
+```
+
+Now, go to the created project and run the local setup script:
+
+```sh
+# Change directory to the created project
+$ cd jovo-cli
+
+# Run the local setup script
+$ npm run setup:dev
+```
+
+This will install all necessary dependencies and link the local binary to `jovodev`. This allows you to apply and test changes in the code directly by recompiling the corresponding module and running `jovodev`.
+
+```sh
+$ jovodev
+```
+
+For example, if you need to make some changes to the `build:platform` command, you need to go into `jovo-cli/commands/command-build`, adjust the code to your needs and recompile it using `npm run build`, or `npm run build:watch` if you want to recompile on code changes automatically (similar to `nodemon`). When running the command using `jovodev`, you should see your changes implemented:
+
+```sh
+$ jovodev build:platform
+```

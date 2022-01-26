@@ -75,30 +75,20 @@ export interface Preset extends ProjectProperties {
 
 // ####### PACKAGE MANAGEMENT #######
 
-export interface DependencyFile {
-  devDependencies?: {
-    [dependency: string]: string;
-  };
-  dependencies?: {
-    [dependency: string]: string | { version: string; dev?: boolean };
-  };
+export type Dependencies = Record<string, string | { version: string; dev?: boolean }>;
+
+export interface PackageFile {
+  dependencies?: Dependencies;
+  devDependencies?: Dependencies;
 }
 
-export interface Packages {
-  [key: string]: {
-    version: string;
-    dev: boolean;
-    inPackageJson: boolean;
-  };
-}
-
-export interface PackageVersions {
-  [key: string]: {
+export interface Package {
+  name: string;
+  version: {
     local: string;
-    npm: string;
-    dev: boolean;
-    inPackageJson: boolean;
+    npm?: string;
   };
+  isDev?: boolean;
 }
 
 // ####### CLI COMMAND #######

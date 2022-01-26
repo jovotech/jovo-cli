@@ -1,7 +1,7 @@
 {
-  "name": "@jovotech/cli-command-get",
-  "description": "Jovo CLI Plugin for fetching platform files",
-  "version": "4.0.1",
+  "name": "@jovotech/cli-command-update",
+  "description": "Jovo CLI Plugin for updating Jovo packages",
+  "version": "4.0.0-alpha.0",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,18 +13,15 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-command-build": "^4.0.1",
     "@jovotech/cli-core": "^4.0.1",
-    "@oclif/parser": "^3.8.5",
-    "global-dirs": "^3.0.0",
-    "lodash.merge": "^4.6.2"
+    "@oclif/parser": "^3.8.5"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
-    "@types/lodash.merge": "^4.6.6",
     "@types/node": "^16.11.7",
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
     "symlink-dir": "^5.0.1",
     "ts-jest": "^27.0.7",
     "typescript": "~4.2.4"
