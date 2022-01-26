@@ -1,4 +1,3 @@
-import { ENOENT } from 'constants';
 import fs from 'fs';
 import { homedir } from 'os';
 import { join as joinPaths } from 'path';
@@ -424,6 +423,7 @@ describe('create()', () => {
       },
       webhook: { uuid: '' },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(UserConfig.prototype as any, 'getDefaultPreset').mockReturnThis();
     jest.spyOn(fs, 'existsSync').mockReturnValue(false);
     jest.spyOn(fs, 'writeFileSync').mockReturnThis();

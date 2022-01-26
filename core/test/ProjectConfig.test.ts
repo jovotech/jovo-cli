@@ -1,5 +1,5 @@
 import { join as joinPaths, resolve } from 'path';
-import { PlainObjectType, ProjectConfig } from '../src';
+import { ProjectConfig } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
