@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import indentString from 'indent-string';
+import { Package } from './interfaces';
 
 /**
  * Returns a string of a stage in white bold font.
@@ -39,4 +40,19 @@ export function printAskProfile(askProfile?: string): string {
  */
 export function printUserInput(input: string): string {
   return chalk.blueBright(input);
+}
+
+export function printPackages(packages: Package[]): string {
+  const output: string[] = [];
+  if (packages.length) {
+    for (const pkg of packages) {
+      output.push(
+        `  - ${pkg.name}: ${pkg.version.local} ${pkg.isDev ? chalk.grey('[dev]') : ''} ${
+          pkg.version.npm !== pkg.version.local ? chalk.green(`-> ${pkg.version.npm}`) : ''
+        }`,
+      );
+    }
+  }
+
+  return output.join('\n');
 }

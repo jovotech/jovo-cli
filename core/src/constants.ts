@@ -9,6 +9,7 @@ export const SUPPORTED_LANGUAGES = ['typescript', 'javascript'] as const;
 
 // ####### PROMPT ANSWERS #######
 export const ANSWER_OVERWRITE = 'overwrite';
+export const ANSWER_UPDATE = 'update';
 export const ANSWER_CANCEL = 'cancel';
 export const ANSWER_BACKUP = 'backup';
 
@@ -25,10 +26,12 @@ export const CRYSTAL_BALL: string = SUPPORTS_EMOJI ? get('crystal_ball') : '';
 export const WRENCH: string = SUPPORTS_EMOJI ? get('wrench') : '';
 export const ROCKET: string = SUPPORTS_EMOJI ? get('rocket') : '';
 export const WARNING: string = chalk.yellow('WARN');
+export const SUCCESS: string = SUPPORTS_EMOJI ? chalk.green('✔') : chalk.green('√');
 export const ERROR: string = chalk.red('x');
 export const ERROR_PREFIX: string = chalk.red('›');
 export const SPARKLES: string = SUPPORTS_EMOJI ? get('sparkles') : '';
 export const REVERSE_ARROWS: string = SUPPORTS_EMOJI ? get('leftwards_arrow_with_hook:') : '';
+export const ARROW_UP: string = SUPPORTS_EMOJI ? get('arrow_up') : '';
 export const PACKAGE: string = SUPPORTS_EMOJI ? get('package') : '';
 export const DOWNLOAD: string = SUPPORTS_EMOJI ? get('inbox_tray') : '';
 export const MAGNIFYING_GLASS: string = SUPPORTS_EMOJI ? get('mag') : '';
