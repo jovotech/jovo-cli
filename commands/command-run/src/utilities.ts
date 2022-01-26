@@ -1,4 +1,4 @@
-import { UserConfig, Package } from '@jovotech/cli-core';
+import { Package, UserConfig } from '@jovotech/cli-core';
 
 /**
  * Checks whether to display an update message for out-of-date packages or not.

@@ -14,6 +14,10 @@ import {
 jest.mock('../src/UserConfig');
 jest.spyOn(Project, 'getInstance').mockReturnThis();
 
+beforeAll(() => {
+  UserConfig.getInstance = jest.fn().mockReturnValue(new UserConfig());
+});
+
 describe('JovoCli.getInstance()', () => {
   beforeEach(() => {
     delete JovoCli['instance'];

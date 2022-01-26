@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'fs';
 import _get from 'lodash.get';
+import _set from 'lodash.set';
 import { homedir } from 'os';
 import { join as joinPaths } from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,6 +18,7 @@ export class UserConfig {
   cli!: {
     plugins: string[];
     presets: Preset[];
+    omitHints?: boolean;
   };
   timeLastUpdateMessage?: string;
 
@@ -141,6 +143,10 @@ export class UserConfig {
 
   getParameter(path: string): unknown {
     return _get(this, path);
+  }
+
+  setParameter(path: string, value: unknown): void {
+    _set(this, path, value);
   }
 
   /**
