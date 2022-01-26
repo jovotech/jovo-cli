@@ -5,8 +5,6 @@ import { join as joinPaths, resolve } from 'path';
 import { ProjectConfig, deleteFolderRecursive, JovoCliError, JovoCliPlugin, Project } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
-jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
-
 const testPath: string = resolve(joinPaths('test', 'tmpTestFolderProject'));
 
 beforeEach(() => {

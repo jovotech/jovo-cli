@@ -1,9 +1,63 @@
 import { join as joinPaths, resolve } from 'path';
-import { ProjectConfig } from '../src';
+import { PlainObjectType, ProjectConfig } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
   jest.restoreAllMocks();
+});
+
+describe('new ProjectConfig()', () => {
+  test('should accept a config object and assign it to the current instance', () => {
+    const endpoint: string = 'https://test.com';
+    const config: ProjectConfig = new ProjectConfig({ endpoint });
+    expect(config.endpoint).toBeDefined();
+    expect(config.endpoint).toMatch(endpoint);
+  });
+
+  test('should accept a path and load the config accordingly', () => {
+    const endpoint: string = 'https://test.com';
+    const mockedLoadContent: jest.SpyInstance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(ProjectConfig.prototype as any, 'loadContent')
+      .mockReturnThis();
+    const mockedLoad: jest.SpyInstance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(ProjectConfig.prototype as any, 'load')
+      .mockReturnValue({ endpoint });
+
+    const path: string = '/path/to/config';
+    const stage: string = 'dev';
+    const config: ProjectConfig = new ProjectConfig(path, stage);
+
+    expect(mockedLoadContent).toBeCalledTimes(1);
+    expect(mockedLoadContent).toBeCalledWith(path);
+    expect(mockedLoad).toBeCalledTimes(1);
+    expect(mockedLoad).toBeCalledWith(path, stage);
+    expect(config.endpoint).toBeDefined();
+    expect(config.endpoint).toMatch(endpoint);
+  });
+
+  test('should accept a path and load the config accordingly, with a defaultStage', () => {
+    const endpoint: string = 'https://test.com';
+    const mockedLoadContent: jest.SpyInstance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(ProjectConfig.prototype as any, 'loadContent')
+      .mockReturnValue({ defaultStage: 'prod' });
+    const mockedLoad: jest.SpyInstance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(ProjectConfig.prototype as any, 'load')
+      .mockReturnValue({ endpoint });
+
+    const path: string = '/path/to/config';
+    const config: ProjectConfig = new ProjectConfig(path);
+
+    expect(mockedLoadContent).toBeCalledTimes(1);
+    expect(mockedLoadContent).toBeCalledWith(path);
+    expect(mockedLoad).toBeCalledTimes(1);
+    expect(mockedLoad).toBeCalledWith(path, 'prod');
+    expect(config.endpoint).toBeDefined();
+    expect(config.endpoint).toMatch(endpoint);
+  });
 });
 
 describe('ProjectConfig.getInstance()', () => {
