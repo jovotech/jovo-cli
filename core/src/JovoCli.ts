@@ -3,9 +3,14 @@ import _get from 'lodash.get';
 import { dirname, join as joinPaths } from 'path';
 import { URL } from 'url';
 import which from 'which';
-import { Config, JovoCliPlugin, UserConfig, JOVO_WEBHOOK_URL, PluginType, Project } from '.';
+import { ProjectConfig } from './ProjectConfig';
+import { JovoCliPlugin } from './JovoCliPlugin';
 import { Log } from './Logger';
 import { printHighlight } from './prints';
+import { Project } from './Project';
+import { UserConfig } from './UserConfig';
+import { PluginType } from './interfaces';
+import { JOVO_WEBHOOK_URL } from './constants';
 
 export class JovoCli {
   private static instance?: JovoCli;
@@ -18,7 +23,7 @@ export class JovoCli {
 
   constructor() {
     this.projectPath = process.cwd();
-    this.userConfig = new UserConfig();
+    this.userConfig = UserConfig.getInstance();
 
     if (this.isInV3ProjectDirectory()) {
       Log.spacer();
@@ -61,7 +66,7 @@ export class JovoCli {
       return false;
     }
 
-    return existsSync(joinPaths(this.projectPath, Config.getV3FileName()));
+    return existsSync(joinPaths(this.projectPath, ProjectConfig.getFileName('v3')));
   }
 
   /**
@@ -78,7 +83,7 @@ export class JovoCli {
       return false;
     }
 
-    return existsSync(joinPaths(this.projectPath, Config.getFileName()));
+    return existsSync(joinPaths(this.projectPath, ProjectConfig.getFileName()));
   }
 
   collectCommandPlugins(): JovoCliPlugin[] {

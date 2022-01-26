@@ -29,8 +29,10 @@ const project = new ProjectConfig({
 It consists of the following elements:
 
 - [`endpoint`](#endpoint): How the platform can call your Jovo app, e.g. Jovo Webhook URL.
+- [`models`](#models): Override the default behavior for building your language models.
 - [`plugins`](#plugins): CLI plugins that are used, e.g. Alexa.
-- [Staging](#staging): Set up different staging environments, e.g. `dev` and `prod`.
+- [`stages`](#staging): Set up different staging environments, e.g. `dev` and `prod`.
+- [`defaultStage`](#staging): Set a default stage.
 - [`hooks`](#hooks): Hook into CLI commands, e.g. to retrieve data from an API before running the `build` command.
 
 ## Endpoint
@@ -45,6 +47,27 @@ const project = new ProjectConfig({
   // ...
 });
 ```
+
+## Models
+
+With `models`, you can modify and override the behavior of the [`build:platform`]() command. 
+
+```js
+const project = new ProjectConfig({
+  models: {
+    enabled: true,
+    directory: 'models',
+    override: {
+      en: {
+        invocation: 'my overriden invocation name'
+      }
+    }
+  },
+  // ...
+});
+```
+
+This allows you to enable/disable building your language models, if you only care about configuration-related files, for example. You can also customize the folder where your language models are stored, and even override elements of your language model.
 
 ## Plugins
 
@@ -215,13 +238,13 @@ const project = new ProjectConfig({
 });
 ```
 
-You can into any command, for example `before.build` or `after.build`:
+You can hook into any command, for example `before.build:platform` or `after.build:platform`:
 
 ```js
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [
+    'before.build:platform': [
       () => {
         /* Do something here */
       },
@@ -236,7 +259,7 @@ A first example to test hooks might be to log something:
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [
+    'before.build:platform': [
       () => console.log('Starting the build process now');
     ]
   },
@@ -254,7 +277,7 @@ const { fetchLanguageModel } = require('./hooks/fetchLanguageModel.hook.js');
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [fetchLanguageModel],
+    'before.build:platform': [fetchLanguageModel],
   },
 });
 ```
@@ -265,7 +288,7 @@ You can also pass the `context` to a hook to access specific information:
 const project = new ProjectConfig({
   // ...
   hooks: {
-    'before.build': [(context) => console.log(`Skill ID: ${context.alexa.skillId}`)],
+    'before.build:platform': [(context) => console.log(`Skill ID: ${context.alexa.skillId}`)],
   },
 });
 ```

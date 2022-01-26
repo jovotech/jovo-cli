@@ -1,5 +1,12 @@
 import { Hook } from '@oclif/config';
-import { chalk, getPackageVersions, JovoCli, PackageVersions, Log } from '@jovotech/cli-core';
+import {
+  chalk,
+  getPackageVersions,
+  JovoCli,
+  Package,
+  Log,
+  printPackages,
+} from '@jovotech/cli-core';
 import latestVersion from 'latest-version';
 import envinfo from 'envinfo';
 
@@ -22,22 +29,17 @@ const hook: Hook<'init'> = async function () {
   // Check for versions of Jovo modules within a project
   const cli: JovoCli = JovoCli.getInstance();
   if (cli.isInProjectDirectory()) {
-    const versions: PackageVersions = await getPackageVersions(/^@jovotech/, cli.projectPath);
-    if (Object.keys(versions).length) {
-      const output: string[] = [];
-      let updatesAvailable: boolean = false;
-      for (const [packageName, version] of Object.entries(versions)) {
-        let versionOutput: string = `  - ${packageName}: ${version.local}`;
-        if (version.npm !== version.local) {
-          updatesAvailable = true;
-          versionOutput += chalk.green(` -> ${version.npm}`);
-        }
-        output.push(versionOutput);
-      }
-
-      output.unshift(
-        `\nJovo packages of the current project ${updatesAvailable ? '(updates available)' : ''}:`,
+    const packages: Package[] = await getPackageVersions(/^@jovotech/);
+    if (packages.length) {
+      const updatesAvailable: boolean = packages.some(
+        (pkg) => pkg.version.npm !== pkg.version.local,
       );
+      const output: string[] = [
+        '',
+        `Jovo packages of the current project ${updatesAvailable ? '(updates available)' : ''}:`,
+        printPackages(packages),
+      ];
+
       if (updatesAvailable) {
         output.push('\nUse "jovo update" to get the newest versions.');
       }

@@ -1,19 +1,20 @@
 {
   "name": "@jovotech/cli-command-build",
   "description": "Jovo CLI Plugin for building platform files",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "eslint": "eslint src --ext .ts --fix",
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-command-deploy": "^4.0.1",
-    "@jovotech/cli-core": "^4.0.1",
+    "@jovotech/cli-command-deploy": "^4.1.0",
+    "@jovotech/cli-core": "^4.1.0",
     "@oclif/parser": "^3.8.5",
     "global-dirs": "^3.0.0",
     "lodash.merge": "^4.6.2"
