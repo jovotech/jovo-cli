@@ -1,27 +1,4 @@
-import {
-  execAsync,
-  ExecResponse,
-  JovoCliError,
-  JovoUserConfigFile,
-  Package,
-  UserConfig,
-} from '@jovotech/cli-core';
-
-/**
- * Compile TypeScript code of Jovo project to JavaScript.
- * @param sourceFolder - Source folder.
- */
-export async function compileTypeScriptProject(sourceFolder: string): Promise<void> {
-  try {
-    await execAsync('npm run tsc', { cwd: sourceFolder });
-  } catch (error) {
-    throw new JovoCliError({
-      message: (error as ExecResponse).stderr!,
-      module: 'RunCommand',
-      details: (error as ExecResponse).stdout,
-    });
-  }
-}
+import { JovoUserConfigFile, Package, UserConfig } from '@jovotech/cli-core';
 
 /**
  * Checks whether to display an update message for out-of-date packages or not.
