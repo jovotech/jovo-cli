@@ -18,17 +18,9 @@ export class UserConfig {
     plugins: string[];
     presets: Preset[];
   };
-  timeLastUpdateMessage?: string | number;
+  timeLastUpdateMessage?: string;
 
   static instance?: UserConfig;
-
-  static getInstance(): UserConfig {
-    if (!this.instance) {
-      this.instance = new UserConfig();
-    }
-
-    return this.instance;
-  }
 
   constructor() {
     Object.assign(this, this.load());
@@ -66,11 +58,12 @@ export class UserConfig {
     }
   }
 
-  /**
-   * Returns the path of the Jovo user config.
-   */
-  static getPath(): string {
-    return joinPaths('.jovo', 'config');
+  static getInstance(): UserConfig {
+    if (!this.instance) {
+      this.instance = new UserConfig();
+    }
+
+    return this.instance;
   }
 
   /**
