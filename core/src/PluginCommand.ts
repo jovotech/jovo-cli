@@ -5,6 +5,7 @@ import { EventEmitter } from './EventEmitter';
 import { DefaultEvents, Events, MiddlewareCollection } from './interfaces';
 import { JovoCliError } from './JovoCliError';
 import { PluginComponent } from './PluginComponent';
+import { UserConfig } from './UserConfig';
 import { isJovoCliError } from './utilities';
 
 /**

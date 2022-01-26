@@ -1,5 +1,7 @@
 import {
   ANSWER_CANCEL,
+  BULB,
+  chalk,
   CliArgs,
   CliFlags,
   CRYSTAL_BALL,
@@ -225,10 +227,16 @@ export class New extends PluginCommand<NewEvents> {
     await generatePackageJsonTask.run();
 
     // Install npm dependencies
-    const installNpmTask: Task = new Task('Installing npm dependencies', async () => {
-      await runNpmInstall(joinPaths(this.$cli.projectPath, this.$context.projectName));
-    });
+    const installNpmTask: Task = new Task(
+      'Installing npm dependencies',
+      async () => await runNpmInstall(joinPaths(this.$cli.projectPath, this.$context.projectName)),
+    );
     await installNpmTask.run();
+
+    const generateAppConfigTask: Task = new Task('Building configuration', async () =>
+      TemplateBuilder.generateAppConfiguration(this.$context),
+    );
+    await generateAppConfigTask.run();
 
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating an initial config
@@ -257,5 +265,12 @@ export class New extends PluginCommand<NewEvents> {
     Log.spacer();
     Log.info(`${TADA} Successfully created your project!`);
     Log.spacer();
+
+    if (!this.$cli.userConfig.cli.omitHints) {
+      Log.info(`${BULB} To run your Jovo project, use the following commands:`);
+      Log.info(chalk.dim(`$ cd ${this.$context.projectName}`), { indent: 3 });
+      Log.info(chalk.dim('$ jovo run'), { indent: 3 });
+      Log.spacer();
+    }
   }
 }

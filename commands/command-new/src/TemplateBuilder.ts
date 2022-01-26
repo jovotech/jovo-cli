@@ -1,4 +1,4 @@
-import { Config as ProjectConfig, Configurable, JovoCliError } from '@jovotech/cli-core';
+import { ProjectConfig, Configurable, JovoCliError } from '@jovotech/cli-core';
 import { copyFileSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import latestVersion from 'latest-version';
 import _set from 'lodash.set';
