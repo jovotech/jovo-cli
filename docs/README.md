@@ -64,6 +64,7 @@ Learn more about the Jovo CLI commands:
 - [`build`](https://www.jovo.tech/docs/build-command): Create platform-specific project files
 - [`deploy`](https://www.jovo.tech/docs/deplooy-command): Deploy to various platforms and services
 - [`get`](https://www.jovo.tech/docs/get-command): Sync your local files with platform files
+- [`update](https://www.jovo.tech/docs/update-command): Update Jovo packages in your project
 
 ## Integrations
 
