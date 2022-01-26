@@ -38,7 +38,7 @@ $ jovo
 
 ## Configuration
 
-You can configure the Jovo CLI and its plugins in the `jovo.project.js` file in the root of a Jovo project:
+For each project, you can configure the Jovo CLI and its plugins in the [`jovo.project.js` project configuration file](https://www.jovo.tech/docs/project-config) in the root of a Jovo project:
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli');
@@ -53,7 +53,25 @@ const project = new ProjectConfig({
 });
 ```
 
-[Learn more in the project configuration documentation](https://www.jovo.tech/docs/project-config).
+There is also a global `config` file for the Jovo CLI that gets saved into a `.jovo` folder in your root user directory. It includes the following configurations:
+
+```typescript
+{
+  webhook!: {
+    uuid: string;
+  };
+  cli!: {
+    plugins: string[];
+    presets: Preset[];
+    omitHints?: boolean;
+  };
+  timeLastUpdateMessage?: string;
+}
+```
+
+- `webhook`: This includes configuration for your [Jovo Webhook](https://www.jovo.tech/docs/webhook) URL.
+- `cli`: This includes global plugins (all installed CLI commands), presets (that are used and added during the [`new` command](https://www.jovo.tech/docs/new-command)), and a flag `omitHints` that can be modified to suppress the display of hints when using Jovo CLI commands.
+- `timeLastUpdateMessage`: This is an internal value that tracks when was the last time the CLI checked for potential updates.
 
 ## Commands
 
