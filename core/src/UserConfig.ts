@@ -30,21 +30,23 @@ export class UserConfig {
     if (!this.cli) {
       // Rename the v3 config to config3
       renameSync(
-        joinPaths(homedir(), UserConfig.getPath()),
-        joinPaths(homedir(), UserConfig.getPathV3()),
+        joinPaths(homedir(), UserConfig.getPath('v4')),
+        joinPaths(homedir(), UserConfig.getPath('v3')),
       );
 
       // If configv4 exists, rename it, otherwise create a fresh config with this.load()
       if (existsSync(joinPaths(homedir(), '.jovo', 'configv4'))) {
         renameSync(
           joinPaths(homedir(), '.jovo', 'configv4'),
-          joinPaths(homedir(), UserConfig.getPath()),
+          joinPaths(homedir(), UserConfig.getPath('v4')),
         );
       }
 
       Log.spacer();
-      Log.warning(`The Jovo CLI @v4 is now using ${UserConfig.getPath()} as the default config.`);
-      Log.warning(`Your existing config has been moved to ${UserConfig.getPathV3()}.`);
+      Log.warning(
+        `The Jovo CLI @v4 is now using ${UserConfig.getPath('v4')} as the default config.`,
+      );
+      Log.warning(`Your existing config has been moved to ${UserConfig.getPath('v3')}.`);
       Log.spacer();
 
       // Reload config if v3 was loaded and detected
@@ -67,10 +69,10 @@ export class UserConfig {
   }
 
   /**
-   * Returns the path of the Jovo user config @v3.
+   * Returns the path of the Jovo user config.
    */
-  static getPathV3(): string {
-    return joinPaths('.jovo', 'config3');
+  static getPath(version: 'v4' | 'v3' = 'v4'): string {
+    return version === 'v4' ? joinPaths('.jovo', 'config') : joinPaths('.jovo', 'config3');
   }
 
   /**
@@ -82,14 +84,14 @@ export class UserConfig {
       return JSON.parse(data);
     } catch (error) {
       // If file cannot be found, create it.
-      if ((error as { code: string }).code === 'ENOENT') {
+      if (error.code === 'ENOENT') {
         return this.create();
       }
 
-      // Else propagate error.
+      // Otherwise propagate error.
       throw new JovoCliError({
         message: `Error while trying to parse ${UserConfig.getPath()}.`,
-        details: (error as Error).message,
+        details: error.message,
       });
     }
   }
@@ -164,8 +166,6 @@ export class UserConfig {
     const presets: Preset[] = this.getPresets();
     const preset: Preset | undefined = presets.find((preset) => preset.name === presetKey);
 
-    //
-
     if (!preset) {
       throw new JovoCliError({
         message: `Could not find preset ${presetKey}.`,
@@ -190,7 +190,6 @@ export class UserConfig {
         throw new JovoCliError({ message: `Preset ${chalk.bold(preset.name)} already exists.` });
       } else {
         // Remove existing preset.
-        // TODO: Splice better?
         this.cli.presets = this.cli.presets.filter((p: Preset) => p.name !== preset.name);
       }
     }
