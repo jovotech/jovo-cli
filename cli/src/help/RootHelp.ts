@@ -151,7 +151,7 @@ export default class HelpOutput extends HelpBase {
   private printHint(): void {
     Log.spacer();
     Log.info(`${BULB} To get started, run the following command:`);
-    Log.info(`$ ${this.config.bin} new`, { indent: 2 });
+    Log.info(`$ ${this.config.bin} new`, { indent: 3 });
     Log.spacer();
   }
 

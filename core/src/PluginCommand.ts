@@ -42,9 +42,9 @@ export abstract class PluginCommand<T extends Events = DefaultEvents> extends Mi
       description: 'Disables showing hints when executing commands',
       parse: (disabled: boolean) => {
         if (disabled) {
-          const config: UserConfig = new UserConfig();
-          config.setParameter('cli.disableHints', false);
-          config.save(config['config']);
+          const config: UserConfig = UserConfig.getInstance();
+          config.setParameter('cli.omitHints', true);
+          config.save();
         }
       },
     }),

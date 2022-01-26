@@ -23,7 +23,7 @@ export class JovoCli {
 
   constructor() {
     this.projectPath = process.cwd();
-    this.userConfig = new UserConfig();
+    this.userConfig = UserConfig.getInstance();
 
     if (this.isInV3ProjectDirectory()) {
       Log.spacer();

@@ -265,9 +265,12 @@ export class New extends PluginCommand<NewEvents> {
     Log.spacer();
     Log.info(`${TADA} Successfully created your project!`);
     Log.spacer();
-    Log.info(`${BULB} To run your Jovo project, use the following commands:`);
-    Log.info(chalk.dim(`$ cd ${this.$context.projectName}`), { indent: 3 });
-    Log.info(chalk.dim('$ jovo run'), { indent: 3 });
-    Log.spacer();
+
+    if (!this.$cli.userConfig.cli.omitHints) {
+      Log.info(`${BULB} To run your Jovo project, use the following commands:`);
+      Log.info(chalk.dim(`$ cd ${this.$context.projectName}`), { indent: 3 });
+      Log.info(chalk.dim('$ jovo run'), { indent: 3 });
+      Log.spacer();
+    }
   }
 }
