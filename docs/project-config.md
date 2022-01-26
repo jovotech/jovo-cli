@@ -29,8 +29,10 @@ const project = new ProjectConfig({
 It consists of the following elements:
 
 - [`endpoint`](#endpoint): How the platform can call your Jovo app, e.g. Jovo Webhook URL.
+- [`models`](#models): Override the default behavior for building your language models.
 - [`plugins`](#plugins): CLI plugins that are used, e.g. Alexa.
-- [Staging](#staging): Set up different staging environments, e.g. `dev` and `prod`.
+- [`stages`](#staging): Set up different staging environments, e.g. `dev` and `prod`.
+- [`defaultStage`](#staging): Set a default stage.
 - [`hooks`](#hooks): Hook into CLI commands, e.g. to retrieve data from an API before running the `build` command.
 
 ## Endpoint
@@ -45,6 +47,27 @@ const project = new ProjectConfig({
   // ...
 });
 ```
+
+## Models
+
+With `models`, you can modify and override the behavior of the [`build:platform`]() command. 
+
+```js
+const project = new ProjectConfig({
+  models: {
+    enabled: true,
+    directory: 'models',
+    override: {
+      en: {
+        invocation: 'my overriden invocation name'
+      }
+    }
+  },
+  // ...
+});
+```
+
+This allows you to enable/disable building your language models, if you only care about configuration-related files, for example. You can also customize the folder where your language models are stored, and even override elements of your language model.
 
 ## Plugins
 
