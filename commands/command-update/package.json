@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-update",
   "description": "Jovo CLI Plugin for updating Jovo packages",
-  "version": "4.0.0-alpha.0",
+  "version": "4.1.0",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-core": "^4.0.1",
+    "@jovotech/cli-core": "^4.1.0",
     "@oclif/parser": "^3.8.5"
   },
   "devDependencies": {
