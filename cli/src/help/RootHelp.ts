@@ -8,8 +8,8 @@ import {
   printSubHeadline,
 } from '@jovotech/cli-core';
 import { Command, Topic } from '@oclif/config';
-import { HelpBase } from '@oclif/plugin-help';
-import CommandHelp from './CommandHelp';
+import { HelpBase } from '@oclif/help';
+import { CommandHelp } from './CommandHelp';
 
 export default class HelpOutput extends HelpBase {
   globalFlags: Record<string, Command.Flag> = PluginCommand.flags as Record<string, Command.Flag>;

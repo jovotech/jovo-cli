@@ -6,7 +6,7 @@ import which from 'which';
 // Load .env variables into process.env
 config();
 
-export * from './Config';
+export * from './ProjectConfig';
 export * from './constants';
 export * from './EventEmitter';
 export * from './interfaces';
@@ -28,6 +28,7 @@ export * from './validators';
 
 export { chalk, prompt, which };
 export { flags } from '@oclif/command';
+export * from '@jovotech/common';
 
 declare module '@oclif/parser/lib/args' {
   interface IArg {

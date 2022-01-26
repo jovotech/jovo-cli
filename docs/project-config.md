@@ -14,7 +14,7 @@ The Jovo project configuration is found in a file called `jovo.project.js` in yo
 Here is how it usually looks like for new Jovo projects:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 
 // ...
 
@@ -50,8 +50,8 @@ const project = new ProjectConfig({
 
 Jovo CLI plugins can be used for many use cases. Here are some examples:
 
-- [Platform](https://www.jovo.tech/docs/platforms) CLI integrations like `AlexaCli` provide the necessary tools to [`build`](./build-command.md) the Alexa interaction model and [`deploy`](./deploy-command.md#deploy:platform) the project to the Alexa developer console.
-- Deployment CLI integrations like [`ServerlessCli`](https://www.jovo.tech/marketplace/target-serverless) allow you to [`deploy`](./deploy-command.md#deploy:code) your Jovo app to a cloud environment using the Serverless Framework.
+- [Platform](https://www.jovo.tech/docs/platforms) CLI integrations like `AlexaCli` provide the necessary tools to [`build`](./build-command.md) the Alexa interaction model and [`deploy`](./deploy-command.md#deploy-platform) the project to the Alexa developer console.
+- Deployment CLI integrations like [`ServerlessCli`](https://www.jovo.tech/marketplace/target-serverless) allow you to [`deploy`](./deploy-command.md#deploy-code) your Jovo app to a cloud environment using the Serverless Framework.
 - CLI plugins can even create their own Jovo CLI commands.
 
 In the next few sections, we'll take a closer look how CLI plugins can be [installed](#installation), [configured](#configuration), and how the Jovo [File Builder](#file-builder) can be used in some cases.
@@ -61,7 +61,7 @@ In the next few sections, we'll take a closer look how CLI plugins can be [insta
 You can add CLI plugins to the `plugins` array of the project config. Here is an example for Amazon Alexa:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { AlexaCli } = require('@jovotech/platform-alexa');
 
 // ...
@@ -246,7 +246,7 @@ const project = new ProjectConfig({
 However, hooks usually require a few more lines of code. We recommend placing each function in a separate file in a `hooks` folder and then referencing it in the `jovo.project.js` file ([you can find an example of this hook here](https://github.com/rubenaeg/fetch-language-model-test/blob/master/hooks/fetchLanguageModel.hook.js)):
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const { fetchLanguageModel } = require('./hooks/fetchLanguageModel.hook.js');
 
 // ...

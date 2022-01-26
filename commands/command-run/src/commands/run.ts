@@ -88,6 +88,8 @@ export class Run extends PluginCommand<RunEvents> {
       process.env.JOVO_PORT = flags.port;
     }
 
+    process.env.JOVO_CLI_PROCESS_ID = `${process.pid}`;
+
     const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
       windowsVerbatimArguments: true,
@@ -98,8 +100,11 @@ export class Run extends PluginCommand<RunEvents> {
 
     // Ensure our child process is terminated upon exit. This is needed in the situation
     // where we're on Linux and are the child of another process (grandchild processes are orphaned in Linux).
-    process.on('exit', () => {
-      nodeProcess.kill();
+    process.on('SIGTERM', () => {
+      if (nodeProcess.pid) {
+        process.kill(nodeProcess.pid, 'SIGTERM');
+      }
+      process.exit();
     });
   }
 }

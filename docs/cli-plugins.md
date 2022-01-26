@@ -28,8 +28,6 @@ export class YourPlugin extends JovoCliPlugin {
 
   // ...
 }
-
-export default YourPlugin;
 ```
 
 These properties must be set for the plugin to work:
@@ -53,8 +51,6 @@ export class YourPlugin extends JovoCliPlugin {
     return [SomeHook];
   }
 }
-
-export default YourPlugin;
 ```
 
 A CLI hook file looks like this:
@@ -88,8 +84,6 @@ export class YourPlugin extends JovoCliPlugin {
     return [SomeCommand];
   }
 }
-
-export default YourPlugin;
 ```
 
 A CLI command file looks like this:
@@ -139,7 +133,7 @@ If the command is used outside a Jovo project, the CLI will display an error, le
 After successful creation, you can add the plugin to your [project configuration](./project-config.md) like this:
 
 ```js
-const { ProjectConfig } = require('@jovotech/cli-core');
+const { ProjectConfig } = require('@jovotech/cli');
 const YourPlugin = require('./plugins/YourPlugin');
 
 // ...
@@ -177,18 +171,99 @@ export class YourPlugin extends JovoCliPlugin {
 
   getDefaultConfig(): YourPluginConfig {
     return {
-      someConfig: default
+      someConfig: false,
     };
   }
 }
-
-export default YourPlugin;
 ```
 
 It includes the following elements:
 
 - An type interface (in the example `YourPluginConfig`) where all config options are defined.
 - A `constructor()` that passes the `config` to the `JovoCliPlugin` class.
-- A `getDefaultConfig()` method that returns the default configuration options in case the config is not defined in the project configuration.
+- [A `getDefaultConfig()` method](#getdefaultconfig) that returns the default configuration options in case the config is not defined in the project configuration.
+- [A `getInitConfig()` method](#getinitconfig) that returns the configuration options that should always be added to the `jovo.project.js` file.
 
 You can then access the config object using `this.$config`.
+
+### getDefaultConfig
+
+The `getDefaultConfig()` method returns the default configuration of your plugin:
+
+```typescript
+import { JovoCliPlugin, PluginConfig } from '@jovotech/cli-core';
+
+export interface YourPluginConfig extends PluginConfig {
+  someConfig: boolean;
+  // ...
+}
+
+export class YourPlugin extends JovoCliPlugin {
+  // ...
+
+  getDefaultConfig(): YourPluginConfig {
+    return {
+      someConfig: false,
+    };
+  }
+}
+```
+
+### getInitConfig
+
+The `getInitConfig()` returns the configuration options that should be added to the [project configuration](./project-config.md) for the plugin to work. The Jovo CLI automatically adds this config to the `jovo.project.js` after installing the plugin using the [`new` command](./new-command.md).
+
+```typescript
+import { JovoCliPlugin, PluginConfig } from '@jovotech/cli-core';
+
+export interface YourPluginConfig extends PluginConfig {
+  apiKey: string;
+  // ...
+}
+
+export class YourPlugin extends JovoCliPlugin {
+  // ...
+
+  getInitConfig(): YourPluginConfig {
+    return {
+      apiKey: '<YOUR-API-KEY>',
+    };
+  }
+}
+```
+
+For example, the above looks like this:
+
+```js
+new YourPlugin({
+  apiKey: '<YOUR-API-KEY>',
+}),
+```
+
+You can also make use of the `RequiredOnlyWhere` type to specify which keys of your type are required, while all other elements are optional.
+This allows you to differentiate between keys that are required to be set by the user, and keys that are required, but can be set in `getDefaultConfig()`.
+
+```typescript
+import { JovoCliPlugin, PluginConfig, RequiredOnlyWhere } from '@jovotech/cli-core';
+// ...
+
+export interface YourPluginConfig extends PluginConfig {
+  apiKey: string;
+  someKey: string;
+  // ...
+}
+
+export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey'>;
+
+getInitConfig(): YourPluginInitConfig {
+  return {
+    apiKey: '<YOUR-API-KEY>',
+  };
+}
+```
+
+You can also reference multiple keys like this:
+
+```typescript
+export type YourPluginInitConfig = RequiredOnlyWhere<YourPluginConfig, 'apiKey' | 'someKey'>;
+```

@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli",
   "description": "Jovo Command Line Interface (Beta) ",
-  "version": "4.0.1",
+  "version": "4.0.3",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,16 +22,16 @@
   },
   "bugs": "https://github.com/jovotech/jovo-cli/issues",
   "dependencies": {
-    "@jovotech/cli-command-build": "^4.0.0",
-    "@jovotech/cli-command-deploy": "^4.0.0",
-    "@jovotech/cli-command-get": "^4.0.0",
-    "@jovotech/cli-command-new": "^4.0.0",
-    "@jovotech/cli-command-run": "^4.0.0",
-    "@jovotech/cli-core": "^4.0.0",
+    "@jovotech/cli-command-build": "^4.0.1",
+    "@jovotech/cli-command-deploy": "^4.0.1",
+    "@jovotech/cli-command-get": "^4.0.1",
+    "@jovotech/cli-command-new": "^4.0.1",
+    "@jovotech/cli-command-run": "^4.0.1",
+    "@jovotech/cli-core": "^4.0.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
-    "@oclif/plugin-not-found": "^1.2.4",
+    "@oclif/help": "^1.0.1",
+    "@oclif/plugin-not-found": "^2.2.3",
     "envinfo": "^7.8.1",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2"
@@ -63,7 +63,6 @@
   "oclif": {
     "bin": "jovo",
     "plugins": [
-      "@oclif/plugin-help",
       "@oclif/plugin-not-found"
     ],
     "helpClass": "./dist/help/RootHelp.js",

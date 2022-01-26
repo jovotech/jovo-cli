@@ -12,7 +12,7 @@ Learn how to create new Jovo projects and other files using the `jovo new` comma
 `jovo new` can be used for the following features:
 
 - [`new`](#new-project): Create a new Jovo project
-- [`new:stage`](#new:stage): Create a new app stage
+- [`new:stage`](#new-stage): Create a new app stage
 
 ## New Project
 
@@ -45,4 +45,4 @@ The command will do the following:
 
 - Create a new file `app.<stage>.ts`
 - Prompt to specify which server will be used, and create a server file, for example `server.express.ts` or `server.lambda.ts`
-- Add npm scripts `bundle:<stage>` (used by the [`deploy:code` command](./deploy-command.md#deploy:code)) and `start:<stage>` (used by the [`run` command](./run-command.md)) to the project's `package.json` file
+- Add npm scripts `bundle:<stage>` (used by the [`deploy:code` command](./deploy-command.md#deploy-code)) and `start:<stage>` (used by the [`run` command](./run-command.md)) to the project's `package.json` file

@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join as joinPaths, resolve } from 'path';
 import {
-  Config,
+  ProjectConfig,
   deleteFolderRecursive,
   JovoCli,
   JovoCliPlugin,
@@ -110,7 +110,7 @@ describe('isInProjectDirectory()', () => {
     jest.mock(joinPaths(testPath, 'package.json'), () => packageJsonFile, { virtual: true });
 
     writeFileSync(joinPaths(testPath, 'package.json'), JSON.stringify(packageJsonFile));
-    writeFileSync(joinPaths(testPath, Config.getFileName()), '');
+    writeFileSync(joinPaths(testPath, ProjectConfig.getFileName()), '');
 
     expect(jovo.isInProjectDirectory()).toBeTruthy();
   });
@@ -142,7 +142,7 @@ describe('getJovoWebhookUrl()', () => {
 
     const jovo: JovoCli = new JovoCli();
 
-    expect(jovo.getJovoWebhookUrl()).toMatch('https://webhookv4.jovo.cloud/1234');
+    expect(jovo.getJovoWebhookUrl()).toMatch('https://webhook.jovo.cloud/1234');
 
     mockedWebhook.mockRestore();
   });
