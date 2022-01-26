@@ -81,6 +81,10 @@ export class ProjectConfig {
         }
         configContent.plugins = Object.values(mergedPlugins);
         delete configContent.stages;
+      } else {
+        Log.warning(
+          `Stage ${stage} could not be found in your project configuration. Taking default configuration...`,
+        );
       }
     }
 
