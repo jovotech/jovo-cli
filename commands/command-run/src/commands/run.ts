@@ -10,6 +10,7 @@ import {
   printSubHeadline,
   ProjectCommand,
 } from '@jovotech/cli-core';
+import open from 'open';
 import { ChildProcess, spawn } from 'child_process';
 import { shouldUpdatePackages } from '../utilities';
 
@@ -75,13 +76,57 @@ export class Run extends PluginCommand<RunEvents> {
       process.env.JOVO_PORT = flags.port;
     }
 
-    process.env.JOVO_CLI_PROCESS_ID = `${process.pid}`;
-
     const nodeProcess: ChildProcess = spawn('npm', ['run', `start:${flags.stage || 'dev'}`], {
       shell: true,
       windowsVerbatimArguments: true,
       stdio: [process.stdin, process.stdout, process.stderr],
     });
+
+    // Check if we can enable raw mode for input stream to capture raw keystrokes
+    if (process.stdin.isTTY && process.stdin.setRawMode) {
+      setTimeout(() => {
+        // eslint-disable-next-line no-console
+        console.log(`\nTo open Jovo Debugger in your browser, press the "." key.\n`);
+      }, 500);
+
+      // Capture unprocessed key input.
+      process.stdin.setRawMode(true);
+      // Explicitly resume emitting data from the stream.
+      process.stdin.resume();
+      // Capture readable input as opposed to binary.
+      process.stdin.setEncoding('utf-8');
+
+      // Collect input text from input stream.
+      process.stdin.on('data', async (keyRaw: Buffer) => {
+        const key: string = keyRaw.toString();
+        // When dot gets pressed, try to open the debugger in browser.
+        if (key === '.') {
+          try {
+            await open(this.$cli.getJovoWebhookUrl());
+          } catch (error) {
+            Log.info(
+              `Could not open browser. Please open debugger manually by visiting this url: ${this.$cli.getJovoWebhookUrl()}`,
+            );
+          }
+        } else {
+          if (key.charCodeAt(0) === 3) {
+            // Ctrl+C has been pressed, kill process.
+
+            if (process.platform === 'win32') {
+              process.stdin.pause();
+              process.stdin.setRawMode(false);
+              console.log('Press Ctrl + C again to exit...');
+            } else {
+              nodeProcess.kill();
+              process.exit();
+            }
+          } else {
+            // Record input text and write it into terminal.
+            process.stdout.write(key);
+          }
+        }
+      });
+    }
 
     await this.$emitter.run('run');
 
