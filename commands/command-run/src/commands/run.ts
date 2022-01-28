@@ -111,15 +111,14 @@ export class Run extends PluginCommand<RunEvents> {
         } else {
           if (key.charCodeAt(0) === 3) {
             // Ctrl+C has been pressed, kill process.
-            
-            if(process.platform === 'win32') {
+
+            if (process.platform === 'win32') {
               process.stdin.pause();
               process.stdin.setRawMode?.(false);
               console.log('Press Ctrl + C again to exit...');
-
             } else {
-            nodeProcess.kill();
-            process.exit();
+              nodeProcess.kill();
+              process.exit();
             }
           } else {
             // Record input text and write it into terminal.
