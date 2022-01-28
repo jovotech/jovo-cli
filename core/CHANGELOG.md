@@ -1,5 +1,11 @@
 # Changelog
 
+## [@jovotech/cli-core@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.0...@jovotech/cli-core@4.1.1)
+
+> 28 January 2022
+
+- :bug: Add @jovotech/cli-command-update plugin to config [`#293`](https://github.com/jovotech/jovo-cli/pull/293)
+
 ## [@jovotech/cli-core@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.1...@jovotech/cli-core@4.1.0)
 
 > 26 January 2022
