@@ -12,8 +12,6 @@ jest.mock('os', () => ({
   },
 }));
 
-jest.mock('fs', () => ({ ...Object.assign({}, jest.requireActual('fs')) }));
-
 afterEach(() => {
   jest.restoreAllMocks();
 });
@@ -24,7 +22,7 @@ describe('new UserConfig()', () => {
 
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValue({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           {
             name: 'default',
@@ -58,7 +56,7 @@ describe('new UserConfig()', () => {
       })
       .mockReturnValue({
         cli: {
-          plugins: [],
+          plugins: ['@jovotech/cli-command-update'],
           presets: [
             {
               name: 'default',
@@ -100,7 +98,7 @@ describe('new UserConfig()', () => {
       })
       .mockReturnValue({
         cli: {
-          plugins: [],
+          plugins: ['@jovotech/cli-command-update'],
           presets: [
             {
               name: 'default',
@@ -132,7 +130,10 @@ describe('new UserConfig()', () => {
     const mockedWebhookUuid: string = '1234test';
 
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValue({
-      cli: { plugins: [], presets: [] },
+      cli: {
+        plugins: ['@jovotech/cli-command-update'],
+        presets: [],
+      },
       webhook: { uuid: mockedWebhookUuid },
     });
     const mockedGetDefaultPreset: jest.SpyInstance = jest
@@ -164,7 +165,7 @@ describe('UserConfig.getInstance()', () => {
 
     const mockedLoad: jest.SpyInstance = jest.spyOn(UserConfig.prototype, 'load').mockReturnValue({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -188,7 +189,7 @@ describe('UserConfig.getInstance()', () => {
 
     const mockedLoad: jest.SpyInstance = jest.spyOn(UserConfig.prototype, 'load').mockReturnValue({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -230,7 +231,7 @@ describe('load()', () => {
       .mockReturnValue(`{ "webhook": { "uuid": "${mockedWebhookUuid}" } }`);
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -262,7 +263,7 @@ describe('load()', () => {
       });
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -292,7 +293,7 @@ describe('load()', () => {
     jest.spyOn(fs, 'readFileSync').mockReturnValue(`{ invalid`);
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -314,7 +315,7 @@ describe('save()', () => {
         uuid: 'test12345',
       },
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [],
       },
     };
@@ -325,7 +326,7 @@ describe('save()', () => {
 
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -356,7 +357,7 @@ describe('save()', () => {
         uuid: 'test12345',
       },
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [],
       },
     };
@@ -366,7 +367,7 @@ describe('save()', () => {
 
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -393,7 +394,7 @@ describe('create()', () => {
   test('should create config', () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -410,13 +411,13 @@ describe('create()', () => {
 
     expect(createdConfig).toHaveProperty('cli');
     expect(createdConfig.cli).toHaveProperty('plugins');
-    expect(createdConfig.cli.plugins).toHaveLength(5);
+    expect(createdConfig.cli.plugins).toHaveLength(6);
   });
 
   test("should create config folder if it doesn't exist", () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -435,7 +436,7 @@ describe('create()', () => {
     expect(mockedMkdirSync).toBeCalledTimes(1);
     expect(createdConfig).toHaveProperty('cli');
     expect(createdConfig.cli).toHaveProperty('plugins');
-    expect(createdConfig.cli.plugins).toHaveLength(5);
+    expect(createdConfig.cli.plugins).toHaveLength(6);
   });
 });
 
@@ -444,7 +445,7 @@ describe('getParameter()', () => {
     const mockedWebhookUuid: string = '1234test';
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -461,7 +462,7 @@ describe('getParameter()', () => {
     const mockedWebhookUuid: string = '1234test';
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -480,7 +481,7 @@ describe('getWebhookUuid()', () => {
     const mockedWebhookUuid: string = '1234test';
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -505,7 +506,7 @@ describe('getPresets()', () => {
   test('should return presets', () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -532,7 +533,7 @@ describe('getPreset()', () => {
   test('should return correct preset', () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -556,7 +557,7 @@ describe('getPreset()', () => {
   test('should fail if preset does not exist', () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
@@ -577,7 +578,7 @@ describe('savePreset()', () => {
   test('should save preset', async () => {
     jest.spyOn(UserConfig.prototype, 'load').mockReturnValueOnce({
       cli: {
-        plugins: [],
+        plugins: ['@jovotech/cli-command-update'],
         presets: [
           { name: 'default', projectName: '', locales: [], language: 'typescript', platforms: [] },
         ],
