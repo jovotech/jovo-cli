@@ -114,7 +114,7 @@ export class Run extends PluginCommand<RunEvents> {
 
             if (process.platform === 'win32') {
               process.stdin.pause();
-              process.stdin.setRawMode?.(false);
+              process.stdin.setRawMode(false);
               console.log('Press Ctrl + C again to exit...');
             } else {
               nodeProcess.kill();
