@@ -104,19 +104,23 @@ export class Run extends PluginCommand<RunEvents> {
           try {
             await open(this.$cli.getJovoWebhookUrl());
           } catch (error) {
-            // eslint-disable-next-line no-console
-            console.log(
+            Log.info(
               `Could not open browser. Please open debugger manually by visiting this url: ${this.$cli.getJovoWebhookUrl()}`,
             );
           }
         } else {
           if (key.charCodeAt(0) === 3) {
             // Ctrl+C has been pressed, kill process.
-            process.stdin.pause();
-            process.stdin.setRawMode?.(false);
+            
+            if(process.platform === 'win32') {
+              process.stdin.pause();
+              process.stdin.setRawMode?.(false);
+              console.log('Press Ctrl + C again to exit...');
+
+            } else {
             nodeProcess.kill();
             process.exit();
-            console.log('Press Ctrl + C again to exit...');
+            }
           } else {
             // Record input text and write it into terminal.
             process.stdout.write(key);
