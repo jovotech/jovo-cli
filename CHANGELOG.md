@@ -1,5 +1,24 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.2...@jovotech/target-serverless@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
+## [@jovotech/target-serverless@4.0.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.1...@jovotech/target-serverless@4.0.2)
+
+> 17 December 2021
+
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+
 ## [@jovotech/target-serverless@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.0.0-beta.8...@jovotech/target-serverless@4.0.1)
 
 > 10 December 2021
@@ -80,6 +99,20 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/nlu-lex@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.1...@jovotech/nlu-lex@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/nlu-lex@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.0.0-beta.8...@jovotech/nlu-lex@4.0.1)
 
 > 10 December 2021
@@ -159,6 +192,25 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/cli@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.3...@jovotech/cli@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
+## [@jovotech/cli@4.0.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.2...@jovotech/cli@4.0.3)
+
+> 17 December 2021
+
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
 
 ## [@jovotech/cli@4.0.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.0.1...@jovotech/cli@4.0.2)
 
@@ -265,6 +317,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-core@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.1...@jovotech/cli-core@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/cli-core@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.0.0-beta.8...@jovotech/cli-core@4.0.1)
 
 > 10 December 2021
@@ -351,6 +417,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-run@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.1...@jovotech/cli-command-run@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/cli-command-run@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0-beta.8...@jovotech/cli-command-run@4.0.1)
 
 > 10 December 2021
@@ -432,6 +512,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.1...@jovotech/cli-command-new@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/cli-command-new@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.0.0-beta.8...@jovotech/cli-command-new@4.0.1)
 
 > 10 December 2021
@@ -512,6 +606,20 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.1...@jovotech/cli-command-get@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
 
 ## [@jovotech/cli-command-get@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.0.0-beta.8...@jovotech/cli-command-get@4.0.1)
 
@@ -599,6 +707,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.1...@jovotech/cli-command-deploy@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/cli-command-deploy@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.0.0-beta.8...@jovotech/cli-command-deploy@4.0.1)
 
 > 10 December 2021
@@ -684,6 +806,20 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.1...@jovotech/cli-command-build@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
 
 ## [@jovotech/cli-command-build@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.0.0-beta.8...@jovotech/cli-command-build@4.0.1)
 

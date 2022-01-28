@@ -1,5 +1,19 @@
 # Changelog
 
+## [@jovotech/cli-command-run@4.1.0](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.1...@jovotech/cli-command-run@4.1.0)
+
+> 26 January 2022
+
+- :recycle: Improve config implementation [`#291`](https://github.com/jovotech/jovo-cli/pull/291)
+- :children_crossing: Introduce hints [`#270`](https://github.com/jovotech/jovo-cli/pull/270)
+- :memo: Improve docs [`#285`](https://github.com/jovotech/jovo-cli/pull/285)
+- :sparkles: Add jovo update [`#290`](https://github.com/jovotech/jovo-cli/pull/290)
+- :bug: Set process ID to environment [`#282`](https://github.com/jovotech/jovo-cli/pull/282)
+- :ambulance: Prevent collision of exec paths [`#283`](https://github.com/jovotech/jovo-cli/pull/283)
+- :alien: Use @oclif/help and fix vulnerabilities [`#278`](https://github.com/jovotech/jovo-cli/pull/278)
+- :children_crossing: Re-export ProjectConfig [`#276`](https://github.com/jovotech/jovo-cli/pull/276)
+- :bookmark: Publish [`#264`](https://github.com/jovotech/jovo-cli/pull/264)
+
 ## [@jovotech/cli-command-run@4.0.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.0.0...@jovotech/cli-command-run@4.0.1)
 
 > 10 December 2021
