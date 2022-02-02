@@ -1,0 +1,24 @@
+name: e2e test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install @jovotech/cli -g
+      - run: yes | jovo new
+      - run: cd helloworld
+      - run: npm install @jovotech/platform-alexa
+      - run: echo '{const {ProjectConfig}=require("@jovotech/cli-core");const {AlexaCli}=require("@jovotech/platform-alexa");module.exports={endpoint:"${JOVO_WEBHOOK_URL}",plugins:[new AlexaCli({locales:{en: ["en-US"]}})]}}' | cat > jovo.project.js
+      - run: jovo build:platform
+
