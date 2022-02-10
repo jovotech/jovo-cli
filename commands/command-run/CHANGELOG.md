@@ -1,5 +1,13 @@
 # Changelog
 
+## [@jovotech/cli-command-run@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.1...@jovotech/cli-command-run@4.1.2)
+
+> 10 February 2022
+
+- :bug: Fix multiple template builder calls [`#306`](https://github.com/jovotech/jovo-cli/pull/306)
+- :bookmark: Publish [`#294`](https://github.com/jovotech/jovo-cli/pull/294)
+- :bookmark: Publish [`#279`](https://github.com/jovotech/jovo-cli/pull/279)
+
 ## [@jovotech/cli-command-run@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.0...@jovotech/cli-command-run@4.1.1)
 
 > 28 January 2022
