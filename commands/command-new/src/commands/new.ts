@@ -233,11 +233,6 @@ export class New extends PluginCommand<NewEvents> {
     );
     await installNpmTask.run();
 
-    const generateAppConfigTask: Task = new Task('Building configuration', async () =>
-      TemplateBuilder.generateAppConfiguration(this.$context),
-    );
-    await generateAppConfigTask.run();
-
     // For each selected CLI plugin, load the plugin from node_modules/ to let it potentially hook into the EventEmitter.
     // This allows the plugin to do some configuration on creating a new project, such as generating an initial config
     // based on the current context.
@@ -259,8 +254,12 @@ export class New extends PluginCommand<NewEvents> {
     await this.$emitter.run('new');
 
     TemplateBuilder.copyModels(this.$context);
-    await TemplateBuilder.generateProjectConfiguration(this.$context);
-    await TemplateBuilder.generateAppConfiguration(this.$context);
+
+    const generateAppConfigTask: Task = new Task('Building configuration', async () => {
+      await TemplateBuilder.generateProjectConfiguration(this.$context);
+      await TemplateBuilder.generateAppConfiguration(this.$context);
+    });
+    await generateAppConfigTask.run();
 
     Log.spacer();
     Log.info(`${TADA} Successfully created your project!`);
