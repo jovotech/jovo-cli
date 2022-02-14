@@ -19,7 +19,7 @@ $ npm install @jovotech/target-serverless
 If you haven't installed the official Serverless CLI globally yet, you can do so with this command:
 
 ```sh
-$ npm install -g @serverless
+$ npm install -g serverless
 ```
 
 Add the plugin to your `jovo.project.js` [project configuration](https://www.jovo.tech/docs/project-config) file like this:
