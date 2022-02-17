@@ -1,5 +1,16 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.1.1...@jovotech/target-serverless@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/target-serverless@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.1.0...@jovotech/target-serverless@4.1.1)
 
 > 10 February 2022
@@ -109,6 +120,17 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/nlu-lex@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.1...@jovotech/nlu-lex@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/nlu-lex@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.0...@jovotech/nlu-lex@4.1.1)
 
 > 10 February 2022
@@ -212,6 +234,17 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/cli@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.1.1...@jovotech/cli@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
 
 ## [@jovotech/cli@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.1.0...@jovotech/cli@4.1.1)
 
@@ -347,6 +380,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-core@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.2...@jovotech/cli-core@4.1.3)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/cli-core@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.1...@jovotech/cli-core@4.1.2)
 
 > 10 February 2022
@@ -462,6 +506,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-update@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.1...@jovotech/cli-command-update@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/cli-command-update@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.0...@jovotech/cli-command-update@4.1.1)
 
 > 10 February 2022
@@ -471,6 +526,17 @@
 - :bookmark: Publish [`#294`](https://github.com/jovotech/jovo-cli/pull/294)
 - :bug: Add @jovotech/cli-command-update plugin to config [`#293`](https://github.com/jovotech/jovo-cli/pull/293)
 - :bookmark: Publish [`#279`](https://github.com/jovotech/jovo-cli/pull/279)
+
+## [@jovotech/cli-command-run@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.2...@jovotech/cli-command-run@4.1.3)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
 
 ## [@jovotech/cli-command-run@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.1...@jovotech/cli-command-run@4.1.2)
 
@@ -582,6 +648,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.1...@jovotech/cli-command-new@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/cli-command-new@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.0...@jovotech/cli-command-new@4.1.1)
 
 > 10 February 2022
@@ -686,6 +763,17 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.1...@jovotech/cli-command-get@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
 
 ## [@jovotech/cli-command-get@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.0...@jovotech/cli-command-get@4.1.1)
 
@@ -797,6 +885,17 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.1.1...@jovotech/cli-command-deploy@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+
 ## [@jovotech/cli-command-deploy@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.1.0...@jovotech/cli-command-deploy@4.1.1)
 
 > 10 February 2022
@@ -906,6 +1005,17 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.1.1...@jovotech/cli-command-build@4.1.2)
+
+> 17 February 2022
+
+- :bug: Fixes spinner in CI environments #308 [`#312`](https://github.com/jovotech/jovo-cli/pull/312)
+- :bug: Pass args to serverless exec Fixes #310 [`#311`](https://github.com/jovotech/jovo-cli/pull/311)
+- :bookmark: Publish @jovotech/cli-command-run@4.1.1 [`#298`](https://github.com/jovotech/jovo-cli/pull/298)
+
+- Merge pull request #311 from jovotech/v4/fix/args [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
+- :bug: Pass args to serverless exec Fixes #310 [`#310`](https://github.com/jovotech/jovo-cli/issues/310)
 
 ## [@jovotech/cli-command-build@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.1.0...@jovotech/cli-command-build@4.1.1)
 
