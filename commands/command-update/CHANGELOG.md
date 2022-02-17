@@ -1,5 +1,15 @@
 # Changelog
 
+## [@jovotech/cli-command-update@4.1.1](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.0...@jovotech/cli-command-update@4.1.1)
+
+> 10 February 2022
+
+- :bug: Fix multiple template builder calls [`#306`](https://github.com/jovotech/jovo-cli/pull/306)
+- :bug: Fix raw mode [`#297`](https://github.com/jovotech/jovo-cli/pull/297)
+- :bookmark: Publish [`#294`](https://github.com/jovotech/jovo-cli/pull/294)
+- :bug: Add @jovotech/cli-command-update plugin to config [`#293`](https://github.com/jovotech/jovo-cli/pull/293)
+- :bookmark: Publish [`#279`](https://github.com/jovotech/jovo-cli/pull/279)
+
 ## [@jovotech/cli-command-update@4.1.0]()
 
 > 26 January 2022
