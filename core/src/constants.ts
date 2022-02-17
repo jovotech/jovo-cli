@@ -1,6 +1,7 @@
 import * as os from 'os';
 import { get } from 'node-emoji';
 import chalk from 'chalk';
+import isCI from 'is-ci';
 
 export const DEFAULT_LOCALE = 'en';
 export const JOVO_WEBHOOK_URL = 'https://webhook.jovo.cloud';
@@ -16,7 +17,8 @@ export const ANSWER_BACKUP = 'backup';
 // ####### EMOJIS #######
 // Check if current shell supports emoji. On Windows, this is only the case for Windows Terminal.
 // Available emoji can be found here: https://www.webfx.com/tools/emoji-cheat-sheet
-const SUPPORTS_EMOJI: boolean = os.platform() === 'win32' ? !!process.env.WT_SESSION : true;
+const SUPPORTS_EMOJI: boolean =
+  !isCI && (os.platform() === 'win32' ? !!process.env.WT_SESSION : true);
 
 export const OK_HAND: string = SUPPORTS_EMOJI ? get('ok_hand') : '';
 export const TADA: string = SUPPORTS_EMOJI ? get('tada') : '';
