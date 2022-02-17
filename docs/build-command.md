@@ -65,3 +65,25 @@ This will prompt you if you want to overwrite the existing files or rather creat
 ```sh
 $ jovo build:platform <platform> --reverse --clean
 ```
+
+## Troubleshooting
+
+### Command Not Found
+
+All [global CLI commands](https://www.jovo.tech/docs/cli#commands) are referenced in the [user config](https://www.jovo.tech/docs/cli#user-config) file in `.jovo/config`. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
+
+If you need to access local versions of this command, for example in an npm script or CI environment, you can add it to the [`jovo.project.js` configuration](./project-config.md) like this:
+
+```js
+const { ProjectConfig } = require('@jovotech/cli');
+const { BuildCommand } = require('@jovotech/cli-command-build');
+// ...
+
+const project = new ProjectConfig({
+  endpoint: '${JOVO_WEBHOOK_URL}',
+  plugins: [
+    new BuildCommand(),
+    // ...
+  ],
+});
+```

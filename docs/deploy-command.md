@@ -83,3 +83,25 @@ You can also add flags from the table below.
 Deployment target integrations may also add their own flags and commands. Learn more in the respective docs:
 
 - [Serverless deployment](https://www.jovo.tech/marketplace/target-serverless)
+
+## Troubleshooting
+
+### Command Not Found
+
+All [global CLI commands](https://www.jovo.tech/docs/cli#commands) are referenced in the [user config](https://www.jovo.tech/docs/cli#user-config) file in `.jovo/config`. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
+
+If you need to access local versions of this command, for example in an npm script or CI environment, you can add it to the [`jovo.project.js` configuration](./project-config.md) like this:
+
+```js
+const { ProjectConfig } = require('@jovotech/cli');
+const { DeployCommand } = require('@jovotech/cli-command-deploy');
+// ...
+
+const project = new ProjectConfig({
+  endpoint: '${JOVO_WEBHOOK_URL}',
+  plugins: [
+    new DeployCommand(),
+    // ...
+  ],
+});
+```

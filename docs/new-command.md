@@ -46,3 +46,9 @@ The command will do the following:
 - Create a new file `app.<stage>.ts`
 - Prompt to specify which server will be used, and create a server file, for example `server.express.ts` or `server.lambda.ts`
 - Add npm scripts `bundle:<stage>` (used by the [`deploy:code` command](./deploy-command.md#deploy-code)) and `start:<stage>` (used by the [`run` command](./run-command.md)) to the project's `package.json` file
+
+## Troubleshooting
+
+### Command Not Found
+
+All [global CLI commands](https://www.jovo.tech/docs/cli#commands) are referenced in the [user config](https://www.jovo.tech/docs/cli#user-config) file in `.jovo/config`. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
