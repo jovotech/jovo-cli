@@ -38,11 +38,17 @@ $ jovo
 
 ## Configuration
 
+There are two types of Jovo CLI configurations:
+
+- [Project config](#project-config): Project specific configurations, mostly used for [`build`](https://www.jovo.tech/docs/build-command) and [`deploy`](https://www.jovo.tech/docs/deploy-command) commands.
+- [User config](#user-config): Global configurations, includes the [webhook](https://www.jovo.tech/docs/webhook) ID and all globally installed [CLI commands](#commands).
+
+## Project Config
+
 For each project, you can configure the Jovo CLI and its plugins in the [`jovo.project.js` project configuration file](https://www.jovo.tech/docs/project-config) in the root of a Jovo project:
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli');
-
 // ...
 
 const project = new ProjectConfig({
@@ -53,7 +59,13 @@ const project = new ProjectConfig({
 });
 ```
 
-There is also a global `config` file for the Jovo CLI that gets saved into a `.jovo` folder in your root user directory. It includes the following configurations:
+[Learn more about project configuration here](https://www.jovo.tech/docs/project-config).
+
+## User Config
+
+There is also a global `config` file for the Jovo CLI that gets saved into a `.jovo` folder in your root user directory. This is called [`UserConfig`](https://github.com/jovotech/jovo-cli/blob/v4/latest/core/src/UserConfig.ts).
+
+It includes the following configurations:
 
 ```typescript
 {
@@ -69,20 +81,70 @@ There is also a global `config` file for the Jovo CLI that gets saved into a `.j
 }
 ```
 
-- `webhook`: This includes configuration for your [Jovo Webhook](https://www.jovo.tech/docs/webhook) URL.
+- `webhook`: Configuration for your [Jovo Webhook](https://www.jovo.tech/docs/webhook) URL.
 - `cli`: This includes global plugins (all installed CLI commands), presets (that are used and added during the [`new` command](https://www.jovo.tech/docs/new-command)), and a flag `omitHints` that can be modified to suppress the display of hints when using Jovo CLI commands.
 - `timeLastUpdateMessage`: This is an internal value that tracks when was the last time the CLI checked for potential updates.
 
+Here is an example `config` file:
+
+```json
+{
+  "webhook": {
+    "uuid": "<your-webhook-id>"
+  },
+  "cli": {
+    "plugins": [
+      "@jovotech/cli-command-build",
+      "@jovotech/cli-command-deploy",
+      "@jovotech/cli-command-get",
+      "@jovotech/cli-command-new",
+      "@jovotech/cli-command-run",
+      "@jovotech/cli-command-update"
+    ],
+    "presets": [
+      {
+        "name": "default",
+        "projectName": "helloworld",
+        "locales": ["en"],
+        "platforms": [],
+        "language": "typescript"
+      }
+    ]
+  },
+  "timeLastUpdateMessage": "2022-02-16T16:27:39.960Z"
+}
+```
+
+As you can see in the `plugins` section in the example above, all [global CLI commands](#commands) are referenced in the user config. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
+
+If you need to access local versions of the commands, for example in an npm script or CI environment, you can add them to the [project configuration](#project-config) like this:
+
+```js
+const { ProjectConfig } = require('@jovotech/cli');
+const { BuildCommand } = require('@jovotech/cli-command-build');
+// ...
+
+const project = new ProjectConfig({
+  endpoint: '${JOVO_WEBHOOK_URL}',
+  plugins: [
+    new BuildCommand(),
+    // ...
+  ],
+});
+```
+
 ## Commands
 
-Learn more about the Jovo CLI commands:
+Learn more about all global Jovo CLI commands:
 
 - [`new`](https://www.jovo.tech/docs/new-command): Create a new Jovo project
 - [`run`](https://www.jovo.tech/docs/run-command): Start the local development server
 - [`build`](https://www.jovo.tech/docs/build-command): Create platform-specific project files
 - [`deploy`](https://www.jovo.tech/docs/deploy-command): Deploy to various platforms and services
 - [`get`](https://www.jovo.tech/docs/get-command): Sync your local files with platform files
-- [`update](https://www.jovo.tech/docs/update-command): Update Jovo packages in your project
+- [`update`](https://www.jovo.tech/docs/update-command): Update Jovo packages in your project
+
+You can also add your own commands. Learn more in the [extend the Jovo CLI](#extend-the-jovo-cli) section.
 
 ## Integrations
 
@@ -94,7 +156,7 @@ Currently, these integrations are available for the Jovo CLI:
 
 ## Extend the Jovo CLI
 
-There are many use cases where it could make sense to customize the Jovo CLI to fit your workflow. For example, it could be necessary to call an API to get some external data that is relevant for the language model in the `build` process. Or you might want to build your own deployment integration.
+There are many use cases where it could make sense to customize the Jovo CLI to fit your workflow. For example, it could be necessary to call an API to get some external data that is relevant for the language model in the [`build` process](https://www.jovo.tech/docs/build-command). Or you might want to build your own deployment integration.
 
 There are two ways how you can extend the Jovo CLI:
 
@@ -105,23 +167,13 @@ There are two ways how you can extend the Jovo CLI:
 
 If you want to extend the Jovo CLI functionality, it should be sufficient to follow the steps mentioned above. However, if you encounter any issues or want to dig deeper into core functionality, it might be useful to set up the CLI for local development.
 
-To get started, clone the CLI repository to your workspace. Here is a list of options:
+To get started, clone the CLI repository to your workspace and run the local setup script:
 
 ```sh
-# HTTPS
+# Clone CLI repository
 $ git clone https://github.com/jovotech/jovo-cli.git
 
-# SSH
-$ git clone git@github.com:jovotech/jovo-cli.git
-
-# GitHub ClI
-$ gh repo clone jovotech/jovo-cli
-```
-
-Now, go to the created project and run the local setup script:
-
-```sh
-# Change directory to the created project
+# Go to the CLI directory
 $ cd jovo-cli
 
 # Run the local setup script

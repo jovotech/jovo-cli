@@ -41,3 +41,25 @@ CLI integrations may also add their own flags. Learn more in the respective plat
 
 - [Alexa `get`](https://www.jovo.tech/marketplace/platform-alexa/cli-commands#get)
 - [Google Assistant `get`](https://www.jovo.tech/marketplace/platform-googleassistant/cli-commands#get)
+
+## Troubleshooting
+
+### Command Not Found
+
+All [global CLI commands](https://www.jovo.tech/docs/cli#commands) are referenced in the [user config](https://www.jovo.tech/docs/cli#user-config) file in `.jovo/config`. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
+
+If you need to access local versions of this command, for example in an npm script or CI environment, you can add it to the [`jovo.project.js` configuration](./project-config.md) like this:
+
+```js
+const { ProjectConfig } = require('@jovotech/cli');
+const { GetCommand } = require('@jovotech/cli-command-get');
+// ...
+
+const project = new ProjectConfig({
+  endpoint: '${JOVO_WEBHOOK_URL}',
+  plugins: [
+    new GetCommand(),
+    // ...
+  ],
+});
+```
