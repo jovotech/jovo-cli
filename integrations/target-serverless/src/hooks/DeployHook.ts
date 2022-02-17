@@ -65,7 +65,8 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
   async deployServerless(): Promise<void> {
     const deployTask: Task = new Task(`${ROCKET} Deploying to Serverless`, async () => {
       try {
-        await execAsync('serverless deploy', { cwd: this.$cli.projectPath });
+        const passingArguments = process.argv.slice(4).join(' ');
+        await execAsync('serverless deploy ' + passingArguments, { cwd: this.$cli.projectPath });
       } catch (error) {
         throw new JovoCliError({
           message: 'Serverless deployment failed.',

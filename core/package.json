@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-core",
   "description": "Jovo CLI Core Functionality",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,6 +23,7 @@
     "dotenv": "^10.0.0",
     "global-dirs": "^3.0.0",
     "indent-string": "^4.0.0",
+    "is-ci": "^3.0.1",
     "latest-version": "^5.1.0",
     "lodash.get": "^4.4.2",
     "lodash.intersectionby": "^4.7.0",
@@ -40,6 +41,7 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
+    "@types/is-ci": "^3.0.0",
     "@types/jest": "^27.0.2",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.intersectionby": "^4.7.6",

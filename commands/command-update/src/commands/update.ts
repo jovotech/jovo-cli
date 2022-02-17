@@ -46,7 +46,7 @@ export class Update extends PluginCommand<UpdateEvents> {
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo update: ${Update.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/update\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/update-command'));
 
     const { flags } = this.parse(Update);
 

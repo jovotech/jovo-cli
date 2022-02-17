@@ -64,7 +64,7 @@ export class DeployCode extends PluginCommand<DeployCodeEvents> {
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo deploy:code: ${DeployCode.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-code'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/deploy-command#deploy-code'));
     Log.spacer();
 
     const { args, flags } = this.parse(DeployCode);

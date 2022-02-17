@@ -81,7 +81,7 @@ export class GetPlatform extends PluginCommand<BuildPlatformEvents | GetPlatform
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo get: ${GetPlatform.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/get'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/get-command'));
     Log.spacer();
 
     const { args, flags } = this.parse(GetPlatform);
