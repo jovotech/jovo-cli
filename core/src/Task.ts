@@ -4,6 +4,7 @@ import ora from 'ora';
 import { JovoCliError } from './JovoCliError';
 import { Log } from './Logger';
 import { isJovoCliError } from './utilities';
+import isCI from 'is-ci';
 
 export type TaskFunction = () => string[] | string | void | Promise<string[] | string | void>;
 
@@ -73,14 +74,17 @@ export class Task {
           text: this.title,
           interval: 50,
           indent: this.config.indentation,
+          isEnabled: isCI ? false : undefined, // // fallback to default config of ora, unless explicitly set
         });
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.spinner['stream'].cursorTo(this.config.indentation);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.spinner['stream'].clearLine = () => {};
-        this.spinner.start();
+        if (!isCI) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.spinner['stream'].cursorTo(this.config.indentation);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          this.spinner['stream'].clearLine = () => {};
+          this.spinner.start();
+        }
       }
 
       try {
