@@ -37,7 +37,7 @@ export class BuildServerless extends PluginCommand<DeployCodeEvents> {
 
     Log.spacer();
     Log.info(`jovo build:serverless: ${BuildServerless.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/marketplace/target-serverless'));
     Log.spacer();
 
     const { flags } = this.parse(BuildServerless);

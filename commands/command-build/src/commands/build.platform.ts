@@ -125,7 +125,7 @@ export class BuildPlatform extends PluginCommand<BuildPlatformEvents | DeployPla
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo build:platform: ${BuildPlatform.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/build\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/build-command#build-platform'));
 
     const { args, flags } = this.parse(BuildPlatform);
 

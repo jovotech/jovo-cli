@@ -84,7 +84,7 @@ export class DeployPlatform extends PluginCommand<DeployPlatformEvents> {
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo deploy:platform: ${DeployPlatform.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/deploy-platform'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/deploy-command#deploy-platform'));
     Log.spacer();
 
     const { args, flags } = this.parse(DeployPlatform);
