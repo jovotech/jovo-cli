@@ -135,7 +135,7 @@ const project = new ProjectConfig({
 
 ## Commands
 
-Learn more about the Jovo CLI commands:
+Learn more about all global Jovo CLI commands:
 
 - [`new`](https://www.jovo.tech/docs/new-command): Create a new Jovo project
 - [`run`](https://www.jovo.tech/docs/run-command): Start the local development server
@@ -143,6 +143,8 @@ Learn more about the Jovo CLI commands:
 - [`deploy`](https://www.jovo.tech/docs/deploy-command): Deploy to various platforms and services
 - [`get`](https://www.jovo.tech/docs/get-command): Sync your local files with platform files
 - [`update`](https://www.jovo.tech/docs/update-command): Update Jovo packages in your project
+
+You can also add your own commands. Learn more in the [extend the Jovo CLI](#extend-the-jovo-cli) section.
 
 ## Integrations
 
