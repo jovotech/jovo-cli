@@ -63,7 +63,7 @@ export class Run extends PluginCommand<RunEvents> {
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo run: ${Run.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/run\n'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/run-command'));
 
     const { flags } = this.parse(Run);
 

@@ -212,7 +212,7 @@ export class NewStage extends PluginCommand<NewStageEvents> {
   async run(): Promise<void> {
     Log.spacer();
     Log.info(`jovo new:stage: ${NewStage.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new:stage'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/new-command#new-stage'));
     Log.spacer();
 
     const { args, flags } = this.parse(NewStage);

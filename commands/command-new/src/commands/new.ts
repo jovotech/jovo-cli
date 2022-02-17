@@ -103,7 +103,7 @@ export class New extends PluginCommand<NewEvents> {
 
     Log.spacer();
     Log.info(`jovo new: ${New.description}`);
-    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/cli/new'));
+    Log.info(printSubHeadline('Learn more: https://jovo.tech/docs/new-command'));
     Log.spacer();
 
     let preset: Preset | undefined;
