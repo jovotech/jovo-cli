@@ -43,7 +43,7 @@ There are two types of Jovo CLI configurations:
 - [Project config](#project-config): Project specific configurations, mostly used for [`build`](https://www.jovo.tech/docs/build-command) and [`deploy`](https://www.jovo.tech/docs/deploy-command) commands.
 - [User config](#user-config): Global configurations, includes the [webhook](https://www.jovo.tech/docs/webhook) ID and all globally installed [CLI commands](#commands).
 
-## Project Config
+### Project Config
 
 For each project, you can configure the Jovo CLI and its plugins in the [`jovo.project.js` project configuration file](https://www.jovo.tech/docs/project-config) in the root of a Jovo project:
 
@@ -61,7 +61,7 @@ const project = new ProjectConfig({
 
 [Learn more about project configuration here](https://www.jovo.tech/docs/project-config).
 
-## User Config
+### User Config
 
 There is also a global `config` file for the Jovo CLI that gets saved into a `.jovo` folder in your root user directory. This is called [`UserConfig`](https://github.com/jovotech/jovo-cli/blob/v4/latest/core/src/UserConfig.ts).
 
