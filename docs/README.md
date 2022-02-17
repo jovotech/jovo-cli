@@ -115,7 +115,9 @@ Here is an example `config` file:
 }
 ```
 
-As you can see in the `plugins` section in the example above, all [global CLI commands](#commands) are referenced in the user config. If you need to access local versions of the commands, for example in an npm script or CI environment, you can add them to the [project configuration](#project-config) like this:
+As you can see in the `plugins` section in the example above, all [global CLI commands](#commands) are referenced in the user config. If you run into `command not found` errors, it's possible that the CLI can't access the user config.
+
+If you need to access local versions of the commands, for example in an npm script or CI environment, you can add them to the [project configuration](#project-config) like this:
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli');
