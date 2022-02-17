@@ -23,7 +23,7 @@ export function printHighlight(text: string): string {
  * @param hl - Subheadline to print.
  */
 export function printSubHeadline(hl: string): string {
-  return chalk.white.dim(indentString(`>> ${hl}`, 2));
+  return chalk.white.dim(indentString(`>> ${hl}\n`, 2));
 }
 
 /**
