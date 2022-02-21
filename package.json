@@ -2,14 +2,18 @@
   "name": "root",
   "private": true,
   "scripts": {
+	"setup:dev": "npm i && npm run bootstrap && npm run link && npm run build",
     "bootstrap": "lerna bootstrap --hoist --ignore-scripts",
     "build": "lerna exec npm run build",
-    "link": "lerna run link",
+	"clean": "lerna clean",
+	"prettier": "lerna exec npm run prettier",
+	"link": "lerna run link",
     "eslint": "lerna exec npm run eslint",
     "test": "lerna exec npm run test -- -- --passWithNoTests",
-    "setup:dev": "npm i && npm run bootstrap && npm run link && npm run build",
-    "setup:prod": "npm install && npm run bootstrap && npm run build && npm run test && npm run eslint",
-    "publish": "lerna publish"
+    "preparePublish": "npm install && npm run bootstrap && npm run build && npm run prettier && npm run eslint && npm run test",
+	"updateVersions": "lerna version --no-push",
+	"publishPackages": "lerna publish from-package",
+	"doPublish": "npm run updateVersions && npm run publishPackages"
   },
   "devDependencies": {
     "@lerna/project": "^4.0.0",
