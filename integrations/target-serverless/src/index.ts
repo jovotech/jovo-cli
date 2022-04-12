@@ -22,7 +22,7 @@ export class ServerlessCli extends JovoCliPlugin {
   getDefaultConfig(): ServerlessConfig {
     return {
       service: 'my-jovo-serverless-app',
-      frameworkVersion: '2',
+      frameworkVersion: '3',
       package: {
         artifact: './bundle.zip',
       },

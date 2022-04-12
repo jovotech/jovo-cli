@@ -81,7 +81,7 @@ const project = new ProjectConfig({
     // ...
     new ServerlessCli({
       service: 'my-jovo-serverless-app',
-      frameworkVersion: '2',
+      frameworkVersion: '3',
       package: {
         artifact: './bundle.zip',
       },
@@ -110,7 +110,7 @@ This is the file that gets generated based on the default configuration:
 
 ```yaml
 service: my-jovo-serverless-app
-frameworkVersion: "2"
+frameworkVersion: "3"
 package:
   artifact: ./bundle.zip
 provider:
