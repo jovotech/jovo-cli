@@ -123,6 +123,8 @@ functions:
 
 You can either generate the `serverless.yaml` once and modify it directly, or update the plugin configuration and generate a new file using the `build:serverless` command.
 
+Before you proceed make sure that the generated entry for the property `"frameworkVersion"` in the file `serverless.yaml` matches the version number of your local serverless installation. Not sure? Find out with the command `serverless --version`. 
+
 There are also additional configurations that may be needed for the [deployment](#deployment) process. Learn more about Serverless configuration in their [official documentation](https://www.serverless.com/framework/docs/).
 
 For example, to get started with AWS; you need to make the following keys accessible:
