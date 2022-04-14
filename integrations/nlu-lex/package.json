@@ -1,23 +1,26 @@
 {
   "name": "@jovotech/nlu-lex",
   "description": "Jovo CLI Plugin for building and deploying to Amazon Lex",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "tsc",
-    "build:watch": "tsc --watch",
+    "watch": "tsc --watch",
     "eslint": "eslint src --ext .ts --fix",
+    "prettier": "prettier -w -l src test package.json",
+    "rimraf": "rimraf dist",
     "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-lex-model-building-service": "^3.14.0",
-    "@jovotech/cli-command-build": "^4.1.2",
-    "@jovotech/cli-command-deploy": "^4.1.2",
-    "@jovotech/cli-command-get": "^4.1.2",
-    "@jovotech/cli-core": "^4.1.3",
+    "@jovotech/cli-command-build": "^4.1.3",
+    "@jovotech/cli-command-deploy": "^4.1.3",
+    "@jovotech/cli-command-get": "^4.1.3",
+    "@jovotech/cli-core": "^4.1.4",
     "@jovotech/model": "^4.0.0-beta.2",
     "@jovotech/model-lex": "^4.0.0-beta.2",
     "@oclif/parser": "^3.8.5",
@@ -29,15 +32,22 @@
     "@types/jest": "^27.0.2",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.mergewith": "^4.6.6",
+    "@types/lodash.pick": "^4.4.0",
     "@types/node": "^16.11.7",
-    "jest": "^27.3.1",
-    "lodash.pick": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^4.12.0",
+    "@typescript-eslint/parser": "^4.12.0",
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "jest": "^27.3.1",
     "ts-jest": "^27.0.7",
     "typescript": "~4.2.4"
   },
   "files": [
     "dist"
   ],
-  "gitHead": "9edb66662ac080853fd9fe02524c2d2ed88aa952"
+  "gitHead": "9edb66662ac080853fd9fe02524c2d2ed88aa952",
+  "prettier": "../../.prettierrc.js"
 }

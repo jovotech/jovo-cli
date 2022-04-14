@@ -76,7 +76,9 @@ export class Task {
           indent: this.config.indentation,
           isEnabled: isCI ? false : undefined, // // fallback to default config of ora, unless explicitly set
         });
-        if (!isCI) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (!isCI && this.spinner['stream'] && this.spinner['stream'].isTTY) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           this.spinner['stream'].cursorTo(this.config.indentation);
