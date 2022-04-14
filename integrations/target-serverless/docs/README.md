@@ -16,13 +16,13 @@ Install the plugin like this:
 $ npm install @jovotech/target-serverless
 ```
 
-If you haven't installed the official Serverless CLI globally yet, you can do so with this command:
+If you haven't installed the official Serverless CLI globally yet, you can do so with the below command. By default, this integration assumes the Serverless CLI version `3`. Learn more in the [configuration](#configuration) section.
 
 ```sh
 $ npm install -g serverless
 ```
 
-Add the plugin to your `jovo.project.js` [project configuration](https://www.jovo.tech/docs/project-config) file like this:
+Add the plugin to your `jovo.project.js` [project configuration](#configuration) file like this:
 
 ```js
 const { ProjectConfig } = require('@jovotech/cli');
@@ -81,7 +81,7 @@ const project = new ProjectConfig({
     // ...
     new ServerlessCli({
       service: 'my-jovo-serverless-app',
-      frameworkVersion: '3',
+      frameworkVersion: '3', // Needs to match your Serverless CLI version
       package: {
         artifact: './bundle.zip',
       },
@@ -98,6 +98,8 @@ const project = new ProjectConfig({
   ],
 });
 ```
+
+Make sure that the property `"frameworkVersion"` matches the version number of your local Serverless installation. Not sure? Find out with the command `serverless --version`.
 
 When running the `build:serverless` command, this configuration gets converted into YAML format to generate the `serverless.yaml` file that is needed for [deployment](#deployment). Learn more about all possible properties in the [official `serverless.yml` reference](https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml).
 
@@ -123,8 +125,6 @@ functions:
 
 You can either generate the `serverless.yaml` once and modify it directly, or update the plugin configuration and generate a new file using the `build:serverless` command.
 
-Before you proceed make sure that the generated entry for the property `"frameworkVersion"` in the file `serverless.yaml` matches the version number of your local serverless installation. Not sure? Find out with the command `serverless --version`. 
-
 There are also additional configurations that may be needed for the [deployment](#deployment) process. Learn more about Serverless configuration in their [official documentation](https://www.serverless.com/framework/docs/).
 
 For example, to get started with AWS; you need to make the following keys accessible:
@@ -137,7 +137,7 @@ export AWS_SECRET_ACCESS_KEY=<your-secret-key-here>
 
 ## Deployment
 
-After generating a `serverless.yaml` file using the `build:serverless` command, you can use the [`deploy:code` command](https://www.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code:
+After generating a `serverless.yaml` file using the `build:serverless` command, you can use the [`deploy:code` command](https://www.jovo.tech/docs/deploy-command#deploy:code) to bundle and deploy your code.
 
 ```sh
 # Deploy the code using 'serverless deploy'
