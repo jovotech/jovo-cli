@@ -1,5 +1,19 @@
 # Changelog
 
+## [@jovotech/cli-command-new@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.3...@jovotech/cli-command-new@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-new@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.2...@jovotech/cli-command-new@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/cli-command-new@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.1...@jovotech/cli-command-new@4.1.2)
 
 > 17 February 2022
