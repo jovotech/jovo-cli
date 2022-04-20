@@ -80,6 +80,11 @@ export class ProjectConfig {
           }
         }
         configContent.plugins = Object.values(mergedPlugins);
+
+        for (const plugin of configContent.plugins) {
+          plugin.mergeConfig(plugin.initConfig);
+        }
+
         delete configContent.stages;
       } else {
         Log.warning(

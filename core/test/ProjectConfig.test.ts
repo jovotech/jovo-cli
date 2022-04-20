@@ -1,5 +1,5 @@
 import { join as joinPaths, resolve } from 'path';
-import { ProjectConfig } from '../src';
+import { PluginType, ProjectConfig } from '../src';
 import { Plugin } from './__mocks__/plugins/Plugin';
 
 afterEach(() => {
@@ -178,12 +178,34 @@ describe('load()', () => {
   });
 
   test('should merge and return the config with merged plugins for the provided stage', () => {
-    const stagedPlugin: Plugin = new Plugin({ files: { foo2: 'bar2' } });
+    interface TestPluginConfig {
+      files: { foo1?: string; foo2?: string };
+    }
+
+    class TestPlugin extends Plugin {
+      id: string = 'testplugin';
+      type: PluginType = 'target';
+
+      constructor(config: TestPluginConfig) {
+        super(config);
+      }
+
+      getDefaultConfig(): TestPluginConfig {
+        return {
+          files: {
+            foo1: 'defaultBar1',
+            foo2: 'defaultBar2',
+          },
+        };
+      }
+    }
+
+    const stagedPlugin: TestPlugin = new TestPlugin({ files: { foo2: 'bar2' } });
     stagedPlugin.id = 'stagedCliPlugin';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(ProjectConfig.prototype as any, 'loadContent').mockReturnValue({
-      plugins: [new Plugin({ files: { foo1: 'bar1' } })],
+      plugins: [new TestPlugin({ files: { foo1: 'bar1' } })],
       stages: {
         dev: {
           plugins: [stagedPlugin],
