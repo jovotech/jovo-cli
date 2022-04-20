@@ -1,7 +1,7 @@
 {
   "name": "@jovotech/cli-command-deploy",
   "description": "Jovo CLI Plugin for deployment",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "author": "jovotech",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@jovotech/cli-core": "^4.1.5",
+    "@jovotech/cli-core": "^4.1.6",
     "@oclif/parser": "^3.8.5",
     "global-dirs": "^3.0.0"
   },
