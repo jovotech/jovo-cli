@@ -11,7 +11,7 @@ This Jovo CLI plugin bundles and deploys your Jovo app code using the [Serverles
 
 [Serverless](https://www.serverless.com/) is a framework and CLI that makes it easier to deploy your code to various cloud providers.
 
-With this integration for the [Jovo CLI](https://www.jovo.tech/docs/cli), you can us Serverless to upload your `src` code to providers like [AWS](https://www.jovo.tech/marketplace/server-lambda) with the [`deploy:code` command](https://www.jovo.tech/docs/deploy-command#deploy:code).
+With this integration for the [Jovo CLI](https://www.jovo.tech/docs/cli), you can use Serverless to upload your `src` code to providers like [AWS](https://www.jovo.tech/marketplace/server-lambda) with the [`deploy:code` command](https://www.jovo.tech/docs/deploy-command#deploy:code).
 
 [You can find an example on GitHub](https://github.com/jovotech/jovo-sample-alexa-googleassistant-lambda).
 
