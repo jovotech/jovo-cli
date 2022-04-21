@@ -172,7 +172,7 @@ The command does the following:
 
 To deploy your Jovo app to [AWS Lambda](https://www.jovo.tech/marketplace/server-lambda), you can use [this example on GitHub](https://github.com/jovotech/jovo-sample-alexa-googleassistant-lambda).
 
-To enable a [URL endpoint](https://www.serverless.com/blog/aws-lambda-function-urls-with-serverless-framework) for your function, you can add the following property:
+To enable a [URL endpoint](https://www.serverless.com/blog/aws-lambda-function-urls-with-serverless-framework) for your function, you can add the following property. This is supported by Serverless `v3.12.0` and up.
 
 ```js
 new ServerlessCli({
