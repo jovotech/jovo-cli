@@ -1,5 +1,11 @@
 # Changelog
 
+## [@jovotech/cli-command-run@4.1.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.5...@jovotech/cli-command-run@4.1.6)
+
+> 20 April 2022
+
+- 🐛 Fix bug in project config merge [`#328`](https://github.com/jovotech/jovo-cli/pull/328)
+
 ## [@jovotech/cli-command-run@4.1.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.4...@jovotech/cli-command-run@4.1.5)
 
 > 14 April 2022

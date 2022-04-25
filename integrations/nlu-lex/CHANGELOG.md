@@ -1,5 +1,11 @@
 # Changelog
 
+## [@jovotech/nlu-lex@4.1.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.4...@jovotech/nlu-lex@4.1.5)
+
+> 20 April 2022
+
+- 🐛 Fix bug in project config merge [`#328`](https://github.com/jovotech/jovo-cli/pull/328)
+
 ## [@jovotech/nlu-lex@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.3...@jovotech/nlu-lex@4.1.4)
 
 > 14 April 2022
