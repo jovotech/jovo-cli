@@ -1,5 +1,19 @@
 # Changelog
 
+## [@jovotech/target-serverless@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.1.3...@jovotech/target-serverless@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/target-serverless@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.1.2...@jovotech/target-serverless@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/target-serverless@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/target-serverless@4.1.1...@jovotech/target-serverless@4.1.2)
 
 > 17 February 2022
@@ -120,6 +134,20 @@
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
 
+## [@jovotech/nlu-lex@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.3...@jovotech/nlu-lex@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/nlu-lex@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.2...@jovotech/nlu-lex@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/nlu-lex@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/nlu-lex@4.1.1...@jovotech/nlu-lex@4.1.2)
 
 > 17 February 2022
@@ -234,6 +262,20 @@
 > 1 June 2021
 
 - ✨ Add Custom Logger, Fix new:stage [`#217`](https://github.com/jovotech/jovo-cli/pull/217)
+
+## [@jovotech/cli@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.1.3...@jovotech/cli@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.1.2...@jovotech/cli@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
 
 ## [@jovotech/cli@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli@4.1.1...@jovotech/cli@4.1.2)
 
@@ -380,6 +422,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-core@4.1.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.4...@jovotech/cli-core@4.1.5)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-core@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.3...@jovotech/cli-core@4.1.4)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/cli-core@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-core@4.1.2...@jovotech/cli-core@4.1.3)
 
 > 17 February 2022
@@ -506,6 +562,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-update@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.3...@jovotech/cli-command-update@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-update@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.2...@jovotech/cli-command-update@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/cli-command-update@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-update@4.1.1...@jovotech/cli-command-update@4.1.2)
 
 > 17 February 2022
@@ -526,6 +596,20 @@
 - :bookmark: Publish [`#294`](https://github.com/jovotech/jovo-cli/pull/294)
 - :bug: Add @jovotech/cli-command-update plugin to config [`#293`](https://github.com/jovotech/jovo-cli/pull/293)
 - :bookmark: Publish [`#279`](https://github.com/jovotech/jovo-cli/pull/279)
+
+## [@jovotech/cli-command-run@4.1.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.4...@jovotech/cli-command-run@4.1.5)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-run@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.3...@jovotech/cli-command-run@4.1.4)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
 
 ## [@jovotech/cli-command-run@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-run@4.1.2...@jovotech/cli-command-run@4.1.3)
 
@@ -648,6 +732,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-new@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.3...@jovotech/cli-command-new@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-new@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.2...@jovotech/cli-command-new@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/cli-command-new@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-new@4.1.1...@jovotech/cli-command-new@4.1.2)
 
 > 17 February 2022
@@ -763,6 +861,20 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-get@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.3...@jovotech/cli-command-get@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-get@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.2...@jovotech/cli-command-get@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
 
 ## [@jovotech/cli-command-get@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.1...@jovotech/cli-command-get@4.1.2)
 
@@ -885,6 +997,20 @@
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
 
+## [@jovotech/cli-command-deploy@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.1.3...@jovotech/cli-command-deploy@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-deploy@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.1.2...@jovotech/cli-command-deploy@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
+
 ## [@jovotech/cli-command-deploy@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-deploy@4.1.1...@jovotech/cli-command-deploy@4.1.2)
 
 > 17 February 2022
@@ -1005,6 +1131,20 @@
 > 26 May 2021
 
 - ✨ Add Serverless Integration [`#201`](https://github.com/jovotech/jovo-cli/pull/201)
+
+## [@jovotech/cli-command-build@4.1.4](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.1.3...@jovotech/cli-command-build@4.1.4)
+
+> 14 April 2022
+
+- :construction_worker: Updates npm scripts [`#320`](https://github.com/jovotech/jovo-cli/pull/320)
+
+## [@jovotech/cli-command-build@4.1.3](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.1.2...@jovotech/cli-command-build@4.1.3)
+
+> 17 February 2022
+
+- :bug: Add isTTY check [`#317`](https://github.com/jovotech/jovo-cli/pull/317)
+- Remove typo in shell command [`#309`](https://github.com/jovotech/jovo-cli/pull/309)
+- 🔖 Publish 4.1.1 [`#307`](https://github.com/jovotech/jovo-cli/pull/307)
 
 ## [@jovotech/cli-command-build@4.1.2](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-build@4.1.1...@jovotech/cli-command-build@4.1.2)
 
