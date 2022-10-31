@@ -85,7 +85,9 @@ export class Update extends PluginCommand<UpdateEvents> {
       'Installing dependencies',
       async () => {
         try {
-          const { stdout } = await execAsync(`npm i ${prodPackages.join(' ')} --log-level verbose`);
+          const { stdout } = await execAsync(
+            `npm i ${prodPackages.join(' ')}  --legacy-peer-deps --log-level verbose`,
+          );
           return stdout;
         } catch (error) {
           throw new JovoCliError({ message: error.stderr });
