@@ -1,13 +1,17 @@
 name: jovo-cli workflow
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:    
+      - 'v4/dev'
+      - '!v4/latest'
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [14.x, 16.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2

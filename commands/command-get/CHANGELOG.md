@@ -1,5 +1,11 @@
 # Changelog
 
+## [@jovotech/cli-command-get@4.1.6](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.5...@jovotech/cli-command-get@4.1.6)
+
+> 25 April 2022
+
+- :bug: Fix "mergeConfig is not a function" #333 [`#334`](https://github.com/jovotech/jovo-cli/pull/334)
+
 ## [@jovotech/cli-command-get@4.1.5](https://github.com/jovotech/jovo-cli/compare/@jovotech/cli-command-get@4.1.4...@jovotech/cli-command-get@4.1.5)
 
 > 20 April 2022
