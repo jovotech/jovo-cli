@@ -19,7 +19,7 @@ export type DefaultEvents = 'install';
 export type PluginType = 'platform' | 'target' | 'command' | '';
 
 export interface Files {
-  [key: string]: string | Files;
+  [key: string]: string | Files | Files[];
 }
 
 export interface LocaleMap {
