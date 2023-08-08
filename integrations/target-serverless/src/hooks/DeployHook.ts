@@ -16,9 +16,18 @@ export class DeployHook extends PluginHook<DeployCodeEvents> {
 
   install(): void {
     this.middlewareCollection = {
-      'before.deploy:code': [this.checkForTarget.bind(this), this.checkForServerlessCli.bind(this)],
+      'before.deploy:code': [this.checkForTarget.bind(this), this.checkForArgsOrder.bind(this), this.checkForServerlessCli.bind(this)],
       'deploy:code': [this.bundle.bind(this), this.deployServerless.bind(this)],
     };
+  }
+
+  checkForArgsOrder(): void {
+    if (process.argv[4] !== 'serverless') {
+      throw new JovoCliError({
+        module: 'ServerlessTarget',
+        message: 'Please put all flags after `serverless`. Remember they will be used from serverless deploy',
+      });
+    }
   }
 
   checkForTarget(): void {
