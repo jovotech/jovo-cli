@@ -7,7 +7,7 @@ export class GetCommand extends JovoCliPlugin {
   id: string = 'get';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [GetPlatform];
   }
 }

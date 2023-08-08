@@ -9,7 +9,7 @@ export class NewCommand extends JovoCliPlugin {
   id: string = 'new';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [New, NewStage];
   }
 }

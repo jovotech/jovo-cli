@@ -23,7 +23,7 @@ export class LexCli extends JovoCliPlugin {
     super(config);
   }
 
-  getHooks(): typeof PluginHook[] {
+  getHooks(): (typeof PluginHook)[] {
     return [BuildHook, DeployHook, GetHook];
   }
 

@@ -51,7 +51,7 @@ export interface PluginContext extends Context {}
 
 // ####### CONFIG #######
 
-export type SupportedLanguages = typeof SUPPORTED_LANGUAGES[number];
+export type SupportedLanguages = (typeof SUPPORTED_LANGUAGES)[number];
 
 export interface MarketplacePlugin {
   name: string;

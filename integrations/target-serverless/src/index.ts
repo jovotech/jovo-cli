@@ -11,11 +11,11 @@ export class ServerlessCli extends JovoCliPlugin {
     super(config);
   }
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [BuildServerless];
   }
 
-  getHooks(): typeof PluginHook[] {
+  getHooks(): (typeof PluginHook)[] {
     return [DeployHook];
   }
 

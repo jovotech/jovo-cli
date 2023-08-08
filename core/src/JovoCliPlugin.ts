@@ -14,11 +14,11 @@ export abstract class JovoCliPlugin<
   $cli!: JovoCli;
   $context!: PluginContext;
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [];
   }
 
-  getHooks(): typeof PluginHook[] {
+  getHooks(): (typeof PluginHook)[] {
     return [];
   }
 

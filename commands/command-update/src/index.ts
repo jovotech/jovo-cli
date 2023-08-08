@@ -7,7 +7,7 @@ export class UpdateCommand extends JovoCliPlugin {
   id: string = 'run';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [Update];
   }
 }

@@ -7,7 +7,7 @@ export class RunCommand extends JovoCliPlugin {
   id: string = 'run';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [Run];
   }
 }

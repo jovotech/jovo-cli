@@ -7,7 +7,7 @@ export class BuildCommand extends JovoCliPlugin {
   id: string = 'build';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [BuildPlatform];
   }
 }

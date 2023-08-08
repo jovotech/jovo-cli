@@ -2,7 +2,7 @@ import { PluginConfig } from '@jovotech/cli-core';
 import { LexModelIntentResource } from '@jovotech/model-lex';
 import { SupportedLocales } from './constants';
 
-export type SupportedLocalesType = typeof SupportedLocales[number];
+export type SupportedLocalesType = (typeof SupportedLocales)[number];
 
 export interface LexCliConfig extends PluginConfig {
   locales?: {

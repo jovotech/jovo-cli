@@ -9,7 +9,7 @@ export class DeployCommand extends JovoCliPlugin {
   id: string = 'deploy';
   type: PluginType = 'command';
 
-  getCommands(): typeof PluginCommand[] {
+  getCommands(): (typeof PluginCommand)[] {
     return [DeployCode, DeployPlatform];
   }
 }
